@@ -1643,8 +1643,13 @@ function initPrescriptionUploader(whatsappNumber) {
           });
         }
 
-        // Post to backend API
-        const response = await fetch("/api/send-inquiry", {
+        // Post to backend API (Railway / Localhost)
+        const backendBase = (window.DW_CONFIG && typeof window.DW_CONFIG.getBackendUrl === "function")
+          ? window.DW_CONFIG.getBackendUrl()
+          : "";
+        const endpoint = `${backendBase}/api/send-inquiry`;
+
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, email, department: dept, message })

@@ -7,12 +7,16 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
+// Middleware with full cross-origin resource sharing (CORS) for Vercel frontend
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static assets from project root
+// Serve static assets from project root (for local preview)
 app.use(express.static(path.join(__dirname)));
 
 // Configure Nodemailer Transporter using Gmail SMTP
@@ -33,10 +37,33 @@ transporter.verify((error, success) => {
   }
 });
 
+// Root API Status Endpoint (for Railway dashboard / health probes)
+app.get('/', (req, res) => {
+  const acceptsHtml = req.headers.accept && req.headers.accept.includes('text/html');
+  const hasIndexHtml = require('fs').existsSync(path.join(__dirname, 'index.html'));
+
+  if (acceptsHtml && hasIndexHtml) {
+    return res.sendFile(path.join(__dirname, 'index.html'));
+  }
+
+  res.json({
+    service: 'D. Watson Official Portal Backend API',
+    status: 'ONLINE',
+    version: '1.0.0',
+    endpoints: {
+      health: 'GET /api/health',
+      sendInquiry: 'POST /api/send-inquiry'
+    },
+    emailConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASS),
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
+    service: 'D. Watson Backend API',
     emailConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASS),
     timestamp: new Date().toISOString()
   });
