@@ -2,11 +2,9 @@
   "name": "dwatson-portal",
   "version": "1.0.0",
   "description": "D. Watson Chemist & Department Store - Portal with Direct Inquiry Email System",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "build": "echo 'Frontend build ready'"
+    "dev": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
