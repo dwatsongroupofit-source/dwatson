@@ -1552,13 +1552,14 @@ h1, h2, h3, h4, h5, h6 {
 /* Master-Detail Interactive Hub */
 .branch-hub-layout {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 420px 1fr;
   background: white;
   border-radius: 18px;
   border: 1px solid #E2E8F0;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
   overflow: hidden;
-  height: 590px;
+  height: 600px;
+  max-height: 600px;
 }
 
 /* Left Pane: Scrollable List */
@@ -1566,17 +1567,22 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-direction: column;
   height: 100%;
+  max-height: 100%;
+  min-height: 0;
   border-right: 1px solid #E2E8F0;
   background: #F8FAFC;
+  overflow: hidden;
 }
 
 .branch-list-header {
+  flex-shrink: 0;
   padding: 14px 18px;
   border-bottom: 1px solid #E2E8F0;
   background: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 2;
 }
 
 .branch-list-header span {
@@ -1586,18 +1592,23 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .branch-scroll-list {
-  flex: 1;
-  overflow-y: scroll; /* Always show scrollbar */
+  flex: 1 1 0px;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 12px 14px 14px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   scrollbar-width: thin;
   scrollbar-color: var(--dw-red) #F1F5F9;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .branch-scroll-list::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
   display: block;
 }
 
@@ -1610,7 +1621,7 @@ h1, h2, h3, h4, h5, h6 {
 .branch-scroll-list::-webkit-scrollbar-thumb {
   background: var(--dw-red);
   border-radius: 8px;
-  border: 2px solid #F1F5F9;
+  border: 1px solid #F1F5F9;
 }
 
 .branch-scroll-list::-webkit-scrollbar-thumb:hover {
@@ -1618,6 +1629,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .branch-list-footer {
+  flex-shrink: 0;
   padding: 10px 14px;
   background: #FFFFFF;
   border-top: 1px solid #E2E8F0;
@@ -1629,6 +1641,7 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
   gap: 8px;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+  z-index: 2;
 }
 
 .branch-list-footer i {

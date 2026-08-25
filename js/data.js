@@ -15,7 +15,7 @@ const DEFAULT_SITE_DATA = {
     whatsapp: "923329716666",
     whatsappDisplay: "0332-9716666",
     messenger: "https://m.me/DWatsonChemist",
-    email: "care@dwatson.co",
+    email: "dwatsonconsultation@gmail.com",
     website: "https://dwatson.co",
     address: "Head Office: School Road, Super Market, F-6 Markaz, Islamabad",
     announcement: "✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • WhatsApp Express Delivery: 0332-9716666",
@@ -621,35 +621,135 @@ const DEFAULT_SITE_DATA = {
     }
   ],
 
-  // Complete Official D. Watson Branch Locator from dwatson.co & dwatson.pk
+  // Complete Official D. Watson Branch Network - Focused Flagship Outlets
   branches: [
-    // --- ISLAMABAD (14 Branches) ---
-    {
-      id: "b_blue_area",
-      name: "Blue Area Flagship Mega Store",
-      city: "Islamabad",
-      area: "Blue Area",
-      address: "94-West, Jinnah Avenue, Block I, Blue Area (Opposite Saudi Pak Tower), Islamabad",
-      phone: "051-8438111 / 051-2822222",
-      timings: "Open 24 Hours • 7 Days a Week",
-      is24Hours: true,
-      image: "assets/images/branches/blue-area.jpg",
-      services: ["24/7 Pharmacy", "Cosmetics Studio", "Mega Superstore", "Optics Clinic", "Surgical Supplies", "Undergarments"],
-      mapUrl: "https://maps.google.com/?q=D.+Watson+Blue+Area+Islamabad",
-      whatsapp: "923329716666"
-    },
+    // === ⭐ ABID BAKHTAWARI FLAGSHIP BRANCHES (7 PRIMARY OUTLETS) ===
     {
       id: "b_f6",
-      name: "Super Market F-6 Markaz",
+      name: "D. Watson Branch No. 1 - F-6 Super Market (Flagship)",
       city: "Islamabad",
       area: "Sector F-6",
       address: "School Road, Super Market, F-6 Markaz, Islamabad",
       phone: "051-8438111 / 051-2827534",
-      timings: "Open 24 Hours • 7 Days a Week",
-      is24Hours: true,
+      timings: "08:00 AM - 01:00 AM Daily",
+      is24Hours: false,
+      isFlagship: true,
+      flagshipBadge: "⭐ Flagship Branch #1",
       image: "assets/images/branches/D-Watson_f6.jpg",
-      services: ["24/7 Pharmacy", "Luxury Cosmetics", "Grocery Essentials", "Optics", "Undergarments"],
+      services: ["Pharmacy", "Luxury Cosmetics", "Grocery Essentials", "Optics", "Undergarments", "Surgical"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+F-6+Super+Market+Islamabad",
+      whatsapp: "923329716666"
+    },
+    {
+      id: "b_pwd",
+      name: "D. Watson PWD Main Boulevard (Flagship)",
+      city: "Islamabad",
+      area: "PWD / Pakistan Town",
+      address: "Main PWD Road, Block B, PWD Society, Islamabad",
+      phone: "051-5156072 / 051-5156062",
+      timings: "08:00 AM - 01:00 AM Daily",
+      is24Hours: false,
+      isFlagship: true,
+      flagshipBadge: "⭐ Flagship Branch",
+      image: "assets/images/branches/pwd.jpg",
+      services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care", "Surgical Supplies"],
+      mapUrl: "https://maps.google.com/?q=D.+Watson+PWD+Islamabad",
+      whatsapp: "923329716666"
+    },
+    {
+      id: "b_ghauri",
+      name: "D. Watson Ghouri Town Branch (Flagship)",
+      city: "Islamabad",
+      area: "Ghouri Town",
+      address: "Zohaib Arcade, Main Double Road, Phase 5-A, Ghauri Town, Islamabad",
+      phone: "051-8438111",
+      timings: "08:00 AM - 12:00 AM Daily",
+      is24Hours: false,
+      isFlagship: true,
+      flagshipBadge: "⭐ Flagship Branch",
+      image: "assets/images/branches/ghauri-town.jpg",
+      services: ["Pharmacy", "Superstore", "Cosmetics", "Personal Care"],
+      mapUrl: "https://maps.google.com/?q=D.+Watson+Ghauri+Town+Islamabad",
+      whatsapp: "923329716666"
+    },
+    {
+      id: "b_chandni",
+      name: "D. Watson Chandni Chowk Branch (Flagship)",
+      city: "Rawalpindi",
+      area: "Chandni Chowk",
+      address: "Al-Fateh Plaza, Chandni Chowk, Murree Road, Rawalpindi",
+      phone: "051-4571471 / 051-4571472",
+      timings: "08:00 AM - 01:00 AM Daily",
+      is24Hours: false,
+      isFlagship: true,
+      flagshipBadge: "⭐ Flagship Branch",
+      image: "assets/images/branches/chandni-chowk.jpg",
+      services: ["Pharmacy", "Superstore", "Cosmetics", "Surgical Supplies", "Optics"],
+      mapUrl: "https://maps.google.com/?q=D.+Watson+Chandni+Chowk+Rawalpindi",
+      whatsapp: "923329716666"
+    },
+    {
+      id: "b_gujar_khan",
+      name: "D. Watson Gujar Khan Branch (Flagship)",
+      city: "Other Cities",
+      area: "Gujar Khan",
+      address: "Ward No. 2, New Barki Jadeed, Main G.T. Road, Gujar Khan",
+      phone: "051-3511111 / 051-8438111",
+      timings: "08:00 AM - 11:00 PM Daily",
+      is24Hours: false,
+      isFlagship: true,
+      flagshipBadge: "⭐ Flagship Branch",
+      image: "assets/images/branches/gujar-khan.jpg",
+      services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care", "Surgical"],
+      mapUrl: "https://maps.google.com/?q=D.+Watson+Gujar+Khan",
+      whatsapp: "923329716666"
+    },
+    {
+      id: "b_g15",
+      name: "D. Watson G-15 Markaz Branch (Flagship)",
+      city: "Islamabad",
+      area: "Sector G-15",
+      address: "Commercial Market, JK Housing Society, G-15 Markaz, Islamabad",
+      phone: "051-8438111",
+      timings: "08:00 AM - 11:00 PM Daily",
+      is24Hours: false,
+      isFlagship: true,
+      flagshipBadge: "⭐ Flagship Branch",
+      image: "assets/images/branches/g15-markaz.jpg",
+      services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care"],
+      mapUrl: "https://maps.google.com/?q=D.+Watson+G-15+Markaz+Islamabad",
+      whatsapp: "923329716666"
+    },
+    {
+      id: "b_attock",
+      name: "D. Watson Attock City Branch (Flagship)",
+      city: "Other Cities",
+      area: "Attock",
+      address: "Al Kareem Plaza, Near DHQ Hospital, Attock City",
+      phone: "057-2611111 / 051-8438111",
+      timings: "08:00 AM - 11:00 PM Daily",
+      is24Hours: false,
+      isFlagship: true,
+      flagshipBadge: "⭐ Flagship Branch",
+      image: "assets/images/branches/attock.jpg",
+      services: ["Pharmacy", "Surgical Supplies", "Cosmetics", "Grocery"],
+      mapUrl: "https://maps.google.com/?q=D.+Watson+Attock",
+      whatsapp: "923329716666"
+    },
+
+    // === ADDITIONAL NETWORK OUTLETS ===
+    {
+      id: "b_blue_area",
+      name: "Blue Area Mega Flagship Store",
+      city: "Islamabad",
+      area: "Blue Area",
+      address: "94-West, Jinnah Avenue, Block I, Blue Area (Opposite Saudi Pak Tower), Islamabad",
+      phone: "051-8438111 / 051-2822222",
+      timings: "08:00 AM - 01:00 AM Daily",
+      is24Hours: false,
+      image: "assets/images/branches/blue-area.jpg",
+      services: ["Pharmacy", "Cosmetics Studio", "Mega Superstore", "Optics Clinic", "Surgical Supplies", "Undergarments"],
+      mapUrl: "https://maps.google.com/?q=D.+Watson+Blue+Area+Islamabad",
       whatsapp: "923329716666"
     },
     {
@@ -673,10 +773,10 @@ const DEFAULT_SITE_DATA = {
       area: "Sector F-10",
       address: "Plot 14, Main Double Road, F-10 Markaz, Islamabad",
       phone: "051-2215784 / 051-8438111",
-      timings: "Open 24 Hours • 7 Days a Week",
-      is24Hours: true,
+      timings: "08:00 AM - 01:00 AM Daily",
+      is24Hours: false,
       image: "assets/images/branches/f10-markaz.jpg",
-      services: ["24/7 Pharmacy", "Cosmetics Counter", "Superstore", "Optics Clinic", "Surgical Dept"],
+      services: ["Pharmacy", "Cosmetics Counter", "Superstore", "Optics Clinic", "Surgical Dept"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+F-10+Markaz+Islamabad",
       whatsapp: "923329716666"
     },
@@ -687,10 +787,10 @@ const DEFAULT_SITE_DATA = {
       area: "Sector F-11",
       address: "Time Square Plaza, Hilal Road, F-11 Markaz, Islamabad",
       phone: "051-8441791 / 051-2102882",
-      timings: "Open 24 Hours • 7 Days a Week",
-      is24Hours: true,
+      timings: "08:00 AM - 01:00 AM Daily",
+      is24Hours: false,
       image: "assets/images/branches/f11-markaz.jpg",
-      services: ["24/7 Pharmacy", "Superstore", "Cosmetics", "Optics"],
+      services: ["Pharmacy", "Superstore", "Cosmetics", "Optics"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+F-11+Markaz+Islamabad",
       whatsapp: "923329716666"
     },
@@ -720,20 +820,6 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/g11-markaz.jpg",
       services: ["Pharmacy", "Cosmetics", "Superstore Essentials"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+G-11+Markaz+Islamabad",
-      whatsapp: "923329716666"
-    },
-    {
-      id: "b_g15",
-      name: "G-15 Markaz (JK Housing)",
-      city: "Islamabad",
-      area: "Sector G-15",
-      address: "Commercial Market, JK Housing Society, G-15 Markaz, Islamabad",
-      phone: "051-8438111",
-      timings: "08:00 AM - 11:00 PM Daily",
-      is24Hours: false,
-      image: "assets/images/branches/g15-markaz.jpg",
-      services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care"],
-      mapUrl: "https://maps.google.com/?q=D.+Watson+G-15+Markaz+Islamabad",
       whatsapp: "923329716666"
     },
     {
@@ -771,39 +857,11 @@ const DEFAULT_SITE_DATA = {
       area: "DHA / Bahria",
       address: "Main Commercial Boulevard, Sector A, DHA Phase 2, Islamabad",
       phone: "051-6101287 / 051-8438111",
-      timings: "Open 24 Hours • 7 Days a Week",
-      is24Hours: true,
-      image: "assets/images/branches/dha-phase2.jpg",
-      services: ["24/7 Pharmacy", "Cosmetics", "Superstore", "Optics", "Surgical"],
-      mapUrl: "https://maps.google.com/?q=D.+Watson+DHA+Phase+2+Islamabad",
-      whatsapp: "923329716666"
-    },
-    {
-      id: "b_pwd",
-      name: "PWD Main Boulevard Branch",
-      city: "Islamabad",
-      area: "PWD / Pakistan Town",
-      address: "Main PWD Road, Block B, PWD Society, Islamabad",
-      phone: "051-5156072 / 051-5156062",
       timings: "08:00 AM - 01:00 AM Daily",
       is24Hours: false,
-      image: "assets/images/branches/pwd.jpg",
-      services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care"],
-      mapUrl: "https://maps.google.com/?q=D.+Watson+PWD+Islamabad",
-      whatsapp: "923329716666"
-    },
-    {
-      id: "b_ghauri",
-      name: "Ghauri Town Branch",
-      city: "Islamabad",
-      area: "Ghauri Town",
-      address: "Zohaib Arcade, Main Double Road, Phase 5-A, Ghauri Town, Islamabad",
-      phone: "051-8438111",
-      timings: "08:00 AM - 12:00 AM Daily",
-      is24Hours: false,
-      image: "assets/images/branches/ghauri-town.jpg",
-      services: ["Pharmacy", "Superstore", "Cosmetics", "Personal Care"],
-      mapUrl: "https://maps.google.com/?q=D.+Watson+Ghauri+Town+Islamabad",
+      image: "assets/images/branches/dha-phase2.jpg",
+      services: ["Pharmacy", "Cosmetics", "Superstore", "Optics", "Surgical"],
+      mapUrl: "https://maps.google.com/?q=D.+Watson+DHA+Phase+2+Islamabad",
       whatsapp: "923329716666"
     },
     {
@@ -820,8 +878,6 @@ const DEFAULT_SITE_DATA = {
       mapUrl: "https://maps.google.com/?q=D.+Watson+Gulberg+Greens+Islamabad",
       whatsapp: "923329716666"
     },
-
-    // --- RAWALPINDI (5 Branches) ---
     {
       id: "b_saddar",
       name: "Saddar Cantonment Branch",
@@ -829,25 +885,11 @@ const DEFAULT_SITE_DATA = {
       area: "Saddar",
       address: "Al-Amin Plaza, Bank Road, Saddar Cantt, Rawalpindi",
       phone: "051-5701070 / 051-5701071",
-      timings: "Open 24 Hours • 7 Days a Week",
-      is24Hours: true,
+      timings: "08:00 AM - 01:00 AM Daily",
+      is24Hours: false,
       image: "assets/images/branches/saddar-rawalpindi.jpg",
-      services: ["24/7 Pharmacy", "Optics Lab", "Surgical Hub", "Cosmetics", "Undergarments"],
+      services: ["Pharmacy", "Optics Lab", "Surgical Hub", "Cosmetics", "Undergarments"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Saddar+Rawalpindi",
-      whatsapp: "923329716666"
-    },
-    {
-      id: "b_chandni",
-      name: "Chandni Chowk Branch",
-      city: "Rawalpindi",
-      area: "Chandni Chowk",
-      address: "Al-Fateh Plaza, Chandni Chowk, Murree Road, Rawalpindi",
-      phone: "051-4571471 / 051-4571472",
-      timings: "Open 24 Hours • 7 Days a Week",
-      is24Hours: true,
-      image: "assets/images/branches/chandni-chowk.jpg",
-      services: ["24/7 Pharmacy", "Superstore", "Cosmetics", "Surgical Supplies"],
-      mapUrl: "https://maps.google.com/?q=D.+Watson+Chandni+Chowk+Rawalpindi",
       whatsapp: "923329716666"
     },
     {
@@ -892,8 +934,6 @@ const DEFAULT_SITE_DATA = {
       mapUrl: "https://maps.google.com/?q=D.+Watson+Chaklala+Scheme+3",
       whatsapp: "923329716666"
     },
-
-    // --- LAHORE & REGIONAL HUBS (6 Branches) ---
     {
       id: "b_lahore",
       name: "Gulberg III Mega Center",
@@ -901,10 +941,10 @@ const DEFAULT_SITE_DATA = {
       area: "Gulberg",
       address: "Main Boulevard, Gulberg III (Near MM Alam Road), Lahore",
       phone: "042-35712345 / 051-8438111",
-      timings: "Open 24 Hours • 7 Days a Week",
-      is24Hours: true,
+      timings: "08:00 AM - 01:00 AM Daily",
+      is24Hours: false,
       image: "assets/images/branches/gulberg-lahore.jpg",
-      services: ["24/7 Pharmacy", "Luxury Cosmetics", "Gourmet Supermarket", "Optics", "Surgical"],
+      services: ["Pharmacy", "Luxury Cosmetics", "Gourmet Supermarket", "Optics", "Surgical"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Gulberg+Lahore",
       whatsapp: "923329716666"
     },
@@ -920,34 +960,6 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/abbottabad.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Surgical"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Abbottabad",
-      whatsapp: "923329716666"
-    },
-    {
-      id: "b_attock",
-      name: "Attock City Branch",
-      city: "Other Cities",
-      area: "Attock",
-      address: "Al Kareem Plaza, Near DHQ Hospital, Attock City",
-      phone: "057-2611111 / 051-8438111",
-      timings: "08:00 AM - 11:00 PM Daily",
-      is24Hours: false,
-      image: "assets/images/branches/attock.jpg",
-      services: ["Pharmacy", "Surgical Supplies", "Cosmetics", "Grocery"],
-      mapUrl: "https://maps.google.com/?q=D.+Watson+Attock",
-      whatsapp: "923329716666"
-    },
-    {
-      id: "b_gujar_khan",
-      name: "Gujar Khan Branch",
-      city: "Other Cities",
-      area: "Gujar Khan",
-      address: "Ward No. 2, New Barki Jadeed, Main G.T. Road, Gujar Khan",
-      phone: "051-3511111 / 051-8438111",
-      timings: "08:00 AM - 11:00 PM Daily",
-      is24Hours: false,
-      image: "assets/images/branches/gujar-khan.jpg",
-      services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care"],
-      mapUrl: "https://maps.google.com/?q=D.+Watson+Gujar+Khan",
       whatsapp: "923329716666"
     },
     {
@@ -1236,8 +1248,8 @@ const DEFAULT_SITE_DATA = {
   ]
 };
 
-// LocalStorage Storage Key (v12 - Authentic Storefront Branch Showcase & Emblem Footer)
-const STORAGE_KEY = "dwatson_site_data_v12";
+// LocalStorage Storage Key (v18 - Accurate Daily Store Timings 08:00 AM - 01:00 AM)
+const STORAGE_KEY = "dwatson_site_data_v18";
 
 /**
  * Get current site data (from LocalStorage or fallback to default)

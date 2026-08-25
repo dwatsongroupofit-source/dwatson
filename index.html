@@ -420,7 +420,7 @@
         </div>
         <div class="branch-stat-item">
           <i class="fa-solid fa-clock"></i>
-          <div><strong>10+</strong> <span>24/7 Pharmacies</span></div>
+          <div><strong>15+</strong> <span>Open Till 1 AM</span></div>
         </div>
         <div class="branch-stat-item">
           <i class="fa-solid fa-truck-fast"></i>
@@ -681,12 +681,12 @@
         </a>
 
         <!-- Email Desk -->
-        <a href="mailto:care@dwatson.co" class="channel-card email">
+        <a href="mailto:dwatsonconsultation@gmail.com" class="channel-card email" id="channelEmailLink">
           <div class="channel-card-top">
             <div class="channel-icon"><i class="fa-regular fa-envelope"></i></div>
             <div class="channel-card-content">
               <h3 class="channel-title">Official Email</h3>
-              <p class="channel-desc">care@dwatson.co • Corporate &amp; institutional inquiries.</p>
+              <p class="channel-desc" id="channelEmailDesc">dwatsonconsultation@gmail.com • Direct consultation &amp; inquiries.</p>
             </div>
           </div>
           <span class="btn btn-outline btn-sm"><i class="fa-solid fa-envelope"></i> Send Email</span>
@@ -720,23 +720,32 @@
             <div class="form-group">
               <label>Select Nearest Branch</label>
               <select id="custBranch" class="form-control">
-                <option value="Blue Area Flagship Mega Store">Blue Area Mega Flagship, Islamabad (24/7)</option>
-                <option value="Super Market F-6 Markaz">Super Market F-6, Islamabad (24/7)</option>
-                <option value="F-7 Markaz (Din Pavilion)">F-7 Markaz (Din Pavilion), Islamabad</option>
-                <option value="F-10 Markaz Super Branch">F-10 Markaz, Islamabad (24/7)</option>
-                <option value="F-11 Markaz Branch">F-11 Markaz, Islamabad</option>
-                <option value="G-9 Markaz (Karachi Company)">G-9 Markaz, Islamabad</option>
-                <option value="G-11 Markaz Branch">G-11 Markaz, Islamabad</option>
-                <option value="I-8 Markaz Branch">I-8 Markaz, Islamabad</option>
-                <option value="I-10 Markaz Branch">I-10 Markaz, Islamabad</option>
-                <option value="DHA Phase 2 Central Branch">DHA Phase 2, Islamabad (24/7)</option>
-                <option value="PWD Main Boulevard Branch">PWD Main Road, Islamabad</option>
-                <option value="Bahria Town Phase 6 Branch">Bahria Town Phase 6 / 4, Islamabad</option>
-                <option value="Chandni Chowk Branch">Chandni Chowk, Rawalpindi (24/7)</option>
-                <option value="Saddar Cantonment Branch">Saddar Cantt, Rawalpindi (24/7)</option>
-                <option value="Chaklala Scheme 3 Branch">Chaklala Scheme 3, Rawalpindi</option>
-                <option value="Gulberg III Mega Center">Gulberg III, Lahore (24/7)</option>
-                <option value="Other Regional Branch">Other Regional Branch</option>
+                <optgroup label="⭐ Primary Flagship Outlets">
+                  <option value="D. Watson Branch No. 1 - F-6 Super Market (Flagship)" selected>D. Watson Branch No. 1 - F-6 Super Market, Islamabad (08:00 AM - 01:00 AM)</option>
+                  <option value="D. Watson PWD Main Boulevard (Flagship)">D. Watson PWD Main Boulevard, Islamabad (08:00 AM - 01:00 AM)</option>
+                  <option value="D. Watson Ghouri Town Branch (Flagship)">D. Watson Ghauri Town Phase 5, Islamabad</option>
+                  <option value="D. Watson Chandni Chowk Branch (Flagship)">D. Watson Chandni Chowk, Rawalpindi (08:00 AM - 01:00 AM)</option>
+                  <option value="D. Watson Gujar Khan Branch (Flagship)">D. Watson Gujar Khan (Main GT Road)</option>
+                  <option value="D. Watson G-15 Markaz Branch (Flagship)">D. Watson G-15 Markaz (JK Housing), Islamabad</option>
+                  <option value="D. Watson Attock City Branch (Flagship)">D. Watson Attock City (DHQ Hospital Road)</option>
+                </optgroup>
+                <optgroup label="Other Network Outlets">
+                  <option value="Blue Area Mega Flagship Store">Blue Area Mega Flagship, Islamabad (24/7)</option>
+                  <option value="F-7 Markaz (Din Pavilion)">F-7 Markaz (Din Pavilion), Islamabad</option>
+                  <option value="F-10 Markaz Mega Branch">F-10 Markaz, Islamabad (24/7)</option>
+                  <option value="F-11 Markaz Branch">F-11 Markaz, Islamabad</option>
+                  <option value="G-9 Markaz (Karachi Company)">G-9 Markaz, Islamabad</option>
+                  <option value="G-11 Markaz Branch">G-11 Markaz, Islamabad</option>
+                  <option value="I-8 Markaz Branch">I-8 Markaz, Islamabad</option>
+                  <option value="I-10 Markaz Branch">I-10 Markaz, Islamabad</option>
+                  <option value="DHA Phase 2 Central Branch">DHA Phase 2, Islamabad (24/7)</option>
+                  <option value="Saddar Cantonment Branch">Saddar Cantt, Rawalpindi (24/7)</option>
+                  <option value="Bahria Town Phase 4 Civic Center">Bahria Town Phase 4 / 6, Rawalpindi</option>
+                  <option value="Chaklala Scheme 3 Branch">Chaklala Scheme 3, Rawalpindi</option>
+                  <option value="Gulberg III Mega Center">Gulberg III, Lahore (24/7)</option>
+                  <option value="Abbottabad Central Branch">Abbottabad Central Branch</option>
+                  <option value="Swat Mingora Branch">Swat Mingora Branch</option>
+                </optgroup>
               </select>
             </div>
 
@@ -807,9 +816,14 @@
               <label>Your Message</label>
               <textarea id="contactMessage" class="form-control" placeholder="How may we assist you today?" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <div id="inquiryStatusMsg" style="display:none; margin-bottom: 12px; padding: 12px 14px; border-radius: 8px; font-size: 0.88rem; line-height: 1.4;"></div>
+
+            <button type="submit" id="contactSubmitBtn" class="btn btn-primary" style="width: 100%;">
               <i class="fa-solid fa-paper-plane"></i> Submit Inquiry
             </button>
+            <div style="font-size:0.78rem; color:#64748B; margin-top:8px; text-align:center;">
+              <i class="fa-solid fa-envelope-circle-check" style="color:var(--dw-blue);"></i> Instant notification sent to D. Watson desk with confirmation to your inbox.
+            </div>
           </form>
         </div>
       </div>
@@ -882,11 +896,11 @@
               <span id="footerHelpline" style="color:#60A5FA; font-weight:700;">051-8438111</span>
             </div>
           </a>
-          <a href="mailto:care@dwatson.co" class="footer-contact-item" style="text-decoration:none;">
+          <a href="mailto:dwatsonconsultation@gmail.com" class="footer-contact-item" style="text-decoration:none;">
             <i class="fa-solid fa-envelope"></i>
             <div>
               <strong style="color:white; display:block;">Customer Care Email</strong>
-              <span id="footerEmail">care@dwatson.co</span>
+              <span id="footerEmail">dwatsonconsultation@gmail.com</span>
             </div>
           </a>
           <div class="footer-contact-item">

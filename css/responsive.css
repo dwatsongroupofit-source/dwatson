@@ -927,7 +927,9 @@ section, header, footer, nav, main, .container {
   }
 
   .branch-list-pane {
-    height: 250px !important;
+    height: 280px !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
     border-right: none !important;
     border-bottom: 2px solid #E2E8F0 !important;
     background: #F8FAFC !important;
@@ -935,6 +937,7 @@ section, header, footer, nav, main, .container {
   }
 
   .branch-list-header {
+    flex-shrink: 0 !important;
     padding: 10px 14px !important;
     background: #FFFFFF !important;
     border-radius: 18px 18px 0 0 !important;
@@ -943,12 +946,15 @@ section, header, footer, nav, main, .container {
   }
 
   .branch-scroll-list {
-    flex: 1 !important;
-    overflow-y: scroll !important;
+    flex: 1 1 0px !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
     padding: 8px 10px !important;
     gap: 8px !important;
     scrollbar-width: thin !important;
     scrollbar-color: var(--dw-red) #F1F5F9 !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   .branch-list-footer {

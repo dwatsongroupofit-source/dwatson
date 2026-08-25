@@ -895,9 +895,6 @@ window.closeProductZoomModal = function() {
  * Interactive Master-Detail Branches Locator & Directory (25+ Network)
  */
 let activeBranchId = null;
-let currentBranchView = "hub";
-let filteredBranchesData = [];
-
 function renderBranches(branches) {
   allBranchesData = branches || [];
   filteredBranchesData = allBranchesData;
@@ -907,17 +904,19 @@ function renderBranches(branches) {
   if (!allBranchesData.length) return;
 
   // Render City Pills with actual counts
+  const flagshipCount = allBranchesData.filter(b => b.isFlagship).length;
   const isbCount = allBranchesData.filter(b => b.city.toLowerCase() === "islamabad").length;
   const rwpCount = allBranchesData.filter(b => b.city.toLowerCase() === "rawalpindi").length;
-  const lhrCount = allBranchesData.filter(b => b.city.toLowerCase() === "lahore").length;
-  const open24Count = allBranchesData.filter(b => b.is24Hours).length;
+  const otherCount = allBranchesData.filter(b => b.city.toLowerCase() !== "islamabad" && b.city.toLowerCase() !== "rawalpindi" && b.city.toLowerCase() !== "lahore").length;
+  const lateNightCount = allBranchesData.filter(b => b.timings && b.timings.includes("01:00 AM")).length;
 
   const cityOptions = [
     { key: "all", label: `All Outlets (${allBranchesData.length})` },
+    { key: "flagship", label: `⭐ Flagship Branches (${flagshipCount})` },
     { key: "Islamabad", label: `Islamabad (${isbCount})` },
     { key: "Rawalpindi", label: `Rawalpindi (${rwpCount})` },
-    { key: "Lahore", label: `Lahore (${lhrCount})` },
-    { key: "24hours", label: `⚡ 24/7 Open (${open24Count})` }
+    { key: "Other Cities", label: `Regional Hubs (${otherCount})` },
+    { key: "latenight", label: `🌙 Open Till 1 AM (${lateNightCount})` }
   ];
 
   if (pillsContainer) {
@@ -928,7 +927,7 @@ function renderBranches(branches) {
     `).join("");
   }
 
-  // Set default active branch to first branch (e.g. Blue Area Flagship)
+  // Set default active branch to first flagship branch (F-6 Super Market)
   activeBranchId = allBranchesData[0].id;
 
   renderBranchHub(filteredBranchesData);
@@ -1010,6 +1009,7 @@ function renderBranchHub(branches) {
         <div class="branch-mini-top">
           <span class="branch-mini-name">${escapeHtml(b.name)}</span>
           <div class="branch-mini-badges">
+            ${b.isFlagship ? '<span class="branch-mini-flagship" style="background:#FEF3C7; color:#92400E; font-weight:800; font-size:0.68rem; padding:2px 6px; border-radius:4px; border:1px solid #FCD34D;"><i class="fa-solid fa-star"></i> Flagship</span>' : ''}
             <span class="branch-mini-city">${escapeHtml(b.city)}</span>
             ${b.is24Hours ? '<span class="branch-mini-24">24/7</span>' : ''}
           </div>
@@ -1047,9 +1047,16 @@ function renderActiveBranchDetail(b) {
       <img src="${encodeURI(b.image || 'assets/images/store_flagship.jpg')}" alt="${escapeHtml(b.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/store_flagship.jpg';">
       <div class="branch-detail-hero-overlay">
         <div>
-          <span style="display:inline-flex; align-items:center; gap:6px; background:${b.is24Hours ? 'var(--dw-red)' : '#10B981'}; color:white; font-size:0.75rem; font-weight:800; padding:3px 10px; border-radius:9999px; text-transform:uppercase; margin-bottom:6px;">
-            <i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> ${b.is24Hours ? 'Open 24 Hours • 7 Days' : 'Open Daily'}
-          </span>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
+            ${b.isFlagship ? `
+              <span style="display:inline-flex; align-items:center; gap:5px; background:linear-gradient(135deg, #F59E0B, #D97706); color:white; font-size:0.75rem; font-weight:800; padding:3px 10px; border-radius:9999px; text-transform:uppercase; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+                <i class="fa-solid fa-star"></i> Flagship Branch
+              </span>
+            ` : ''}
+            <span style="display:inline-flex; align-items:center; gap:6px; background:${b.is24Hours ? 'var(--dw-red)' : '#10B981'}; color:white; font-size:0.75rem; font-weight:800; padding:3px 10px; border-radius:9999px; text-transform:uppercase;">
+              <i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> ${b.is24Hours ? 'Open 24 Hours • 7 Days' : 'Open Daily'}
+            </span>
+          </div>
           <h3 class="branch-detail-hero-title">${escapeHtml(b.name)}</h3>
         </div>
         <span class="branch-detail-hero-city"><i class="fa-solid fa-map-pin"></i> ${escapeHtml(b.city)}</span>
@@ -1147,8 +1154,12 @@ window.filterBranchesByCity = function(cityOption, btn) {
 
   if (cityOption === "all") {
     filteredBranchesData = allBranchesData;
-  } else if (cityOption === "24hours") {
-    filteredBranchesData = allBranchesData.filter(b => b.is24Hours === true);
+  } else if (cityOption === "flagship") {
+    filteredBranchesData = allBranchesData.filter(b => b.isFlagship === true);
+  } else if (cityOption === "latenight") {
+    filteredBranchesData = allBranchesData.filter(b => b.timings && b.timings.includes("01:00 AM"));
+  } else if (cityOption === "Other Cities") {
+    filteredBranchesData = allBranchesData.filter(b => b.city.toLowerCase() !== "islamabad" && b.city.toLowerCase() !== "rawalpindi" && b.city.toLowerCase() !== "lahore");
   } else {
     filteredBranchesData = allBranchesData.filter(b => b.city.toLowerCase() === cityOption.toLowerCase());
   }
@@ -1203,46 +1214,28 @@ function renderBranchCards(branches) {
   }
 
   container.innerHTML = branches.map(b => `
-    <div class="branch-card">
+    <div class="branch-card" style="position:relative;">
       <div class="branch-card-header">
         <img src="${encodeURI(b.image || 'assets/images/store_flagship.jpg')}" alt="${escapeHtml(b.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/store_flagship.jpg';">
+        ${b.isFlagship ? '<span style="position:absolute; top:12px; left:12px; background:linear-gradient(135deg, #F59E0B, #D97706); color:white; font-weight:800; font-size:0.72rem; padding:3px 8px; border-radius:6px; z-index:2; box-shadow:0 2px 6px rgba(0,0,0,0.2);"><i class="fa-solid fa-star"></i> Flagship</span>' : ''}
         ${b.is24Hours ? '<span class="branch-badge-24"><i class="fa-solid fa-clock"></i> 24/7 OPEN</span>' : ''}
         <span class="branch-city-badge">${escapeHtml(b.city)}</span>
       </div>
-      <div class="branch-body">
-        <h3 class="branch-name">${escapeHtml(b.name)}</h3>
-        
-        <div class="branch-info-row">
-          <i class="fa-solid fa-location-dot"></i>
-          <span>${escapeHtml(b.address)}</span>
+      <div class="branch-card-body">
+        <h3 class="branch-card-name">${escapeHtml(b.name)}</h3>
+        <p class="branch-card-address"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(b.address)}</p>
+        <p class="branch-card-timings"><i class="fa-regular fa-clock"></i> ${escapeHtml(b.timings)}</p>
+        <div class="branch-card-tags">
+          ${(b.services || []).slice(0, 3).map(s => `<span class="branch-tag">${escapeHtml(s)}</span>`).join("")}
         </div>
-
-        <div class="branch-info-row">
-          <i class="fa-solid fa-phone"></i>
-          <a href="tel:${getBranchPhone(b.phone)}" style="color: var(--dw-blue); font-weight: 600;">
-            ${escapeHtml(b.phone)}
-          </a>
-        </div>
-
-        <div class="branch-info-row">
-          <i class="fa-regular fa-clock"></i>
-          <span>${escapeHtml(b.timings)}</span>
-        </div>
-
-        <div class="branch-services">
-          ${(b.services || []).map(s => `
-            <span class="branch-srv-tag">${escapeHtml(s)}</span>
-          `).join("")}
-        </div>
-
-        <div class="branch-actions">
-          <a href="${b.mapUrl || '#'}" target="_blank" class="btn btn-outline btn-sm">
-            <i class="fa-solid fa-diamond-turn-right"></i> Directions
-          </a>
-          <a href="tel:${getBranchPhone(b.phone)}" class="btn btn-blue btn-sm">
-            <i class="fa-solid fa-phone"></i> Call Branch
-          </a>
-        </div>
+      </div>
+      <div class="branch-card-footer">
+        <a href="${b.mapUrl || `https://maps.google.com/?q=D.+Watson+${encodeURIComponent(b.name)}`}" target="_blank" class="btn btn-outline btn-sm">
+          <i class="fa-solid fa-location-arrow"></i> Map
+        </a>
+        <a href="tel:${getBranchPhone(b.phone)}" class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-phone"></i> Call
+        </a>
       </div>
     </div>
   `).join("");
@@ -1365,6 +1358,12 @@ function renderFooter(company, branches) {
 
   const footerEmail = document.getElementById("footerEmail");
   if (footerEmail) footerEmail.textContent = company.email;
+
+  const channelEmailLink = document.getElementById("channelEmailLink");
+  if (channelEmailLink) channelEmailLink.href = `mailto:${company.email}`;
+
+  const channelEmailDesc = document.getElementById("channelEmailDesc");
+  if (channelEmailDesc) channelEmailDesc.textContent = `${company.email} • Direct consultation & inquiries.`;
 
   const footerAddress = document.getElementById("footerAddress");
   if (footerAddress) footerAddress.textContent = company.address;
@@ -1591,21 +1590,112 @@ function initPrescriptionUploader(whatsappNumber) {
 
   const contactForm = document.getElementById("contactForm");
   if (contactForm) {
-    contactForm.addEventListener("submit", (e) => {
+    contactForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = document.getElementById("contactName")?.value || "";
-      const email = document.getElementById("contactEmail")?.value || "";
+      const name = document.getElementById("contactName")?.value?.trim() || "";
+      const email = document.getElementById("contactEmail")?.value?.trim() || "";
       const dept = document.getElementById("contactDept")?.value || "General Inquiry";
-      const message = document.getElementById("contactMessage")?.value || "";
+      const message = document.getElementById("contactMessage")?.value?.trim() || "";
+      const submitBtn = document.getElementById("contactSubmitBtn") || contactForm.querySelector('button[type="submit"]');
+      const statusMsg = document.getElementById("inquiryStatusMsg");
 
-      let msg = `*--- D. WATSON CUSTOMER INQUIRY ---*\n`;
-      msg += `👤 *Name:* ${name}\n`;
-      msg += `📧 *Email:* ${email}\n`;
-      msg += `🏢 *Department:* ${dept}\n`;
-      msg += `💬 *Message:* ${message}\n`;
+      if (!name || !email || !message) {
+        if (statusMsg) {
+          statusMsg.style.display = "block";
+          statusMsg.style.background = "#FEE2E2";
+          statusMsg.style.color = "#991B1B";
+          statusMsg.style.border = "1px solid #F87171";
+          statusMsg.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Please fill out all required fields.';
+        }
+        return;
+      }
 
-      const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
-      window.open(waUrl, "_blank");
+      // Set Loading state
+      const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '<i class="fa-solid fa-paper-plane"></i> Submit Inquiry';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending Inquiry via Email...';
+      }
+
+      if (statusMsg) {
+        statusMsg.style.display = "block";
+        statusMsg.style.background = "#EFF6FF";
+        statusMsg.style.color = "#1E40AF";
+        statusMsg.style.border = "1px solid #93C5FD";
+        statusMsg.innerHTML = '<i class="fa-solid fa-paper-plane fa-fade"></i> Dispatching notification to D. Watson desk...';
+      }
+
+      try {
+        // Save locally to Admin Dashboard
+        const inquiryId = "INQ-" + Math.floor(100000 + Math.random() * 900000);
+        if (typeof saveCustomerInquiry === "function") {
+          await saveCustomerInquiry({
+            id: inquiryId,
+            type: "product",
+            name: name,
+            email: email,
+            productName: `Direct Inquiry: ${dept}`,
+            price: "Inquiry Desk",
+            brand: "D. Watson Portal",
+            category: dept,
+            notes: `[Email: ${email} | Dept: ${dept}] ${message}`,
+            date: new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" })
+          });
+        }
+
+        // Post to backend API
+        const response = await fetch("/api/send-inquiry", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, department: dept, message })
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (response.ok && result.success) {
+          if (statusMsg) {
+            statusMsg.style.display = "block";
+            statusMsg.style.background = "#F0FDF4";
+            statusMsg.style.color = "#166534";
+            statusMsg.style.border = "1px solid #86EFAC";
+            statusMsg.innerHTML = `
+              <div style="font-weight: 700; margin-bottom: 3px;">
+                <i class="fa-solid fa-circle-check" style="color:#16A34A;"></i> Inquiry Dispatched Successfully!
+              </div>
+              <div style="font-size: 0.82rem; color: #15803D;">
+                A confirmation has been sent to <strong>${email}</strong>. Our <strong>${dept}</strong> team will reply to your email shortly.
+              </div>
+            `;
+          }
+          contactForm.reset();
+        } else {
+          throw new Error(result.error || "Email server error");
+        }
+      } catch (err) {
+        console.warn("Direct Inquiry Email Error:", err);
+        if (statusMsg) {
+          statusMsg.style.display = "block";
+          statusMsg.style.background = "#FEF3C7";
+          statusMsg.style.color = "#92400E";
+          statusMsg.style.border = "1px solid #FCD34D";
+          statusMsg.innerHTML = `
+            <div style="font-weight: 700; margin-bottom: 4px;">
+              <i class="fa-solid fa-circle-check" style="color:#16A34A;"></i> Inquiry Logged in Portal
+            </div>
+            <div style="font-size: 0.82rem; color: #B45309; margin-bottom: 8px;">
+              Your inquiry has been recorded in D. Watson Portal Desk. For instant urgent response, you can also forward to WhatsApp:
+            </div>
+            <a href="https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`*--- D. WATSON INQUIRY ---*\n👤 *Name:* ${name}\n📧 *Email:* ${email}\n🏢 *Dept:* ${dept}\n💬 *Message:* ${message}`)}" target="_blank" class="btn btn-whatsapp btn-sm" style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; font-size:0.8rem; text-decoration:none; color:white; background:#16A34A; border-radius:6px;">
+              <i class="fa-brands fa-whatsapp"></i> Open WhatsApp Chat
+            </a>
+          `;
+        }
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnHtml;
+        }
+      }
     });
   }
 }
