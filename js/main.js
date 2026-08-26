@@ -1643,21 +1643,55 @@ function initPrescriptionUploader(whatsappNumber) {
           });
         }
 
-        // Post to backend API (Railway / Localhost)
-        const backendBase = (window.DW_CONFIG && typeof window.DW_CONFIG.getBackendUrl === "function")
-          ? window.DW_CONFIG.getBackendUrl()
-          : "";
-        const endpoint = `${backendBase}/api/send-inquiry`;
+        let emailSuccess = false;
 
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, department: dept, message })
-        });
+        // Try using EmailJS if configured
+        if (window.DW_CONFIG && window.DW_CONFIG.EMAILJS_PUBLIC_KEY && window.DW_CONFIG.EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY" && window.DW_CONFIG.EMAILJS_PUBLIC_KEY.trim() !== "") {
+          // Initialize EmailJS
+          emailjs.init(window.DW_CONFIG.EMAILJS_PUBLIC_KEY);
 
-        const result = await response.json().catch(() => ({}));
+          const templateParams = {
+            name: name,
+            email: email,
+            department: dept,
+            message: message,
+            now: new Date().toLocaleString("en-US", {
+              timeZone: "Asia/Karachi",
+              dateStyle: "full",
+              timeStyle: "medium"
+            })
+          };
 
-        if (response.ok && result.success) {
+          // Send both templates concurrently
+          await Promise.all([
+            emailjs.send(window.DW_CONFIG.EMAILJS_SERVICE_ID, window.DW_CONFIG.EMAILJS_TEMPLATE_ADMIN, templateParams),
+            emailjs.send(window.DW_CONFIG.EMAILJS_SERVICE_ID, window.DW_CONFIG.EMAILJS_TEMPLATE_CUSTOMER, templateParams)
+          ]);
+          
+          emailSuccess = true;
+        } else {
+          // Fallback to legacy server API call (useful for local development or Vercel serverless functions)
+          const backendBase = (window.DW_CONFIG && typeof window.DW_CONFIG.getBackendUrl === "function")
+            ? window.DW_CONFIG.getBackendUrl()
+            : "";
+          const endpoint = `${backendBase}/api/send-inquiry`;
+
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, department: dept, message })
+          });
+
+          const result = await response.json().catch(() => ({}));
+
+          if (response.ok && result.success) {
+            emailSuccess = true;
+          } else {
+            throw new Error(result.error || "Email server error");
+          }
+        }
+
+        if (emailSuccess) {
           if (statusMsg) {
             statusMsg.style.display = "block";
             statusMsg.style.background = "#F0FDF4";

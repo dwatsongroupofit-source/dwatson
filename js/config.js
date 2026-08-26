@@ -9,6 +9,12 @@
  */
 
 window.DW_CONFIG = {
+  // ✉️ EmailJS Serverless Configurations (Host your site anywhere!)
+  EMAILJS_PUBLIC_KEY: "YOUR_PUBLIC_KEY",
+  EMAILJS_SERVICE_ID: "service_z5e9jtl",
+  EMAILJS_TEMPLATE_ADMIN: "YOUR_TEMPLATE_ADMIN_ID",
+  EMAILJS_TEMPLATE_CUSTOMER: "YOUR_TEMPLATE_CUSTOMER_ID",
+
   // 🔗 Set to empty to use the serverless same-origin relative path (e.g. Vercel Serverless Functions)
   RAILWAY_BACKEND_URL: "",
 
