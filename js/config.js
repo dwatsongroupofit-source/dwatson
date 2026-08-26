@@ -9,8 +9,8 @@
  */
 
 window.DW_CONFIG = {
-  // 🔗 Put your live Railway backend URL here (e.g. 'https://dwatson-production.up.railway.app')
-  RAILWAY_BACKEND_URL: "https://dwatson-production.up.railway.app",
+  // 🔗 Set to empty to use the serverless same-origin relative path (e.g. Vercel Serverless Functions)
+  RAILWAY_BACKEND_URL: "",
 
   /**
    * Resolves the active backend API endpoint dynamically.
@@ -22,15 +22,9 @@ window.DW_CONFIG = {
       return customUrl.trim().replace(/\/+$/, "");
     }
 
-    // 2. Local development fallback (relative path on same port)
-    const host = window.location.hostname;
-    if (host === "localhost" || host === "127.0.0.1" || host === "") {
-      return "";
-    }
-
-    // 3. Remote Production (Vercel -> Railway)
-    const railwayUrl = (this.RAILWAY_BACKEND_URL || "").trim().replace(/\/+$/, "");
-    return railwayUrl;
+    // 2. Local development & Serverless Vercel fallback (same-origin relative paths)
+    // Both localhost and live Vercel deployments run frontend and functions on the same domain.
+    return (this.RAILWAY_BACKEND_URL || "").trim().replace(/\/+$/, "");
   },
 
   /**

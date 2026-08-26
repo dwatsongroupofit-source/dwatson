@@ -3,13 +3,10 @@
   "version": "1.0.0",
   "description": "D. Watson Chemist & Department Store - Portal with Direct Inquiry Email System",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "vercel dev",
+    "dev": "vercel dev"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
     "nodemailer": "^6.10.0"
   }
 }
