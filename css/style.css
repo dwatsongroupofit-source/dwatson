@@ -333,7 +333,7 @@ h1, h2, h3, h4, h5, h6 {
   color: #FFFFFF;
 }
 
-.portal-link-btn {
+.portal-link-btn, .system-link-btn {
   background: rgba(255, 255, 255, 0.15);
   padding: 3px 10px;
   border-radius: 4px;
@@ -341,11 +341,20 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: #F8FAFC !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
 }
 
 .portal-link-btn:hover {
   background: var(--dw-red);
   border-color: var(--dw-red);
+}
+
+.system-link-btn:hover {
+  background: #2563EB;
+  border-color: #2563EB;
 }
 
 /* Header & Navigation */
@@ -2686,7 +2695,7 @@ textarea.form-control {
   gap: 16px;
 }
 
-.portal-link-badge, .system-login-badge {
+.admin-portal-badge, .system-portal-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -2698,24 +2707,24 @@ textarea.form-control {
   text-decoration: none;
 }
 
-.portal-link-badge {
+.admin-portal-badge {
   background: rgba(220, 38, 38, 0.15);
   color: #EF4444 !important;
   border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
-.portal-link-badge:hover {
+.admin-portal-badge:hover {
   background: rgba(220, 38, 38, 0.25);
   border-color: #EF4444;
 }
 
-.system-login-badge {
+.system-portal-badge {
   background: rgba(37, 99, 235, 0.15);
   color: #3B82F6 !important;
   border: 1px solid rgba(37, 99, 235, 0.3);
 }
 
-.system-login-badge:hover {
+.system-portal-badge:hover {
   background: rgba(37, 99, 235, 0.25);
   border-color: #3B82F6;
   transform: translateY(-1px);

@@ -1371,13 +1371,22 @@ section, header, footer, nav, main, .container {
     font-size: 0.82rem;
   }
 
-  .portal-link-badge {
+  .admin-portal-badge {
     background: rgba(220, 38, 38, 0.15);
     color: #EF4444 !important;
     padding: 4px 10px;
     border-radius: 6px;
     font-weight: 700;
     border: 1px solid rgba(220, 38, 38, 0.3);
+  }
+
+  .system-portal-badge {
+    background: rgba(37, 99, 235, 0.15);
+    color: #3B82F6 !important;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 700;
+    border: 1px solid rgba(37, 99, 235, 0.3);
   }
 }
 
