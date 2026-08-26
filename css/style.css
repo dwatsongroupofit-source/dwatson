@@ -2751,6 +2751,17 @@ textarea.form-control {
   transform: translateY(-2px);
 }
 
+.footer-copyright-link {
+  color: #94A3B8; /* Hidden: looks identical to standard copyright text */
+  text-decoration: none;
+  transition: color 0.25s ease;
+  cursor: pointer;
+}
+
+.footer-copyright-link:hover {
+  color: #EF4444; /* Reveals on hover: glows in brand red */
+}
+
 /* ==========================================================================
    Floating WhatsApp & Quick Action Button
    ========================================================================== */
