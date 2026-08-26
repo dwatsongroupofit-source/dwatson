@@ -400,8 +400,16 @@ function renderBranchesList() {
     <div class="editable-item-card">
       <img src="${branch.image || 'assets/images/store_flagship.jpg'}" class="item-thumbnail" alt="${escapeAdminHtml(branch.name)}" onerror="this.onerror=null; this.src='assets/images/store_flagship.jpg';">
       <div class="item-info">
-        <div class="item-title">${escapeAdminHtml(branch.name)} ${branch.is24Hours ? '<span style="color:#DC2626; font-size:0.75rem; font-weight:800;">[24/7 OPEN]</span>' : ''}</div>
-        <div class="item-sub"><strong>City:</strong> ${escapeAdminHtml(branch.city)} • <strong>Phone:</strong> ${escapeAdminHtml(branch.phone)}</div>
+        <div class="item-title">
+          ${escapeAdminHtml(branch.name)} 
+          ${branch.is24Hours ? '<span style="color:#DC2626; font-size:0.75rem; font-weight:800; margin-left:5px;">[24/7 OPEN]</span>' : ''}
+          ${branch.isFlagship ? '<span style="color:#2563EB; font-size:0.75rem; font-weight:800; margin-left:5px;">[⭐ FLAGSHIP]</span>' : ''}
+        </div>
+        <div class="item-sub">
+          <strong>City:</strong> ${escapeAdminHtml(branch.city)} • 
+          <strong>Phone:</strong> ${escapeAdminHtml(branch.phone)} • 
+          <strong>WhatsApp:</strong> <span style="color:#16A34A; font-weight:700;">${escapeAdminHtml(branch.whatsapp || 'None')}</span>
+        </div>
         <div style="font-size:0.78rem; color:#64748B; margin-top:2px;">${escapeAdminHtml(branch.address)}</div>
       </div>
       <div class="item-actions">
@@ -497,6 +505,20 @@ window.openBranchModal = function(index = -1) {
         </div>
       </div>
 
+      <div class="form-grid-2">
+        <div class="admin-form-group">
+          <label>WhatsApp Number for Prescription Order</label>
+          <input type="text" class="admin-form-input" id="branchWhatsapp" value="${escapeAdminHtml(branch.whatsapp || '923329716666')}" placeholder="e.g. 923329716666" required>
+          <small style="color:#64748B; font-size:0.78rem;">Country code first without + (e.g. 923329716666).</small>
+        </div>
+        <div class="admin-form-group" style="display:flex; flex-direction:column; justify-content:center;">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:15px;">
+            <input type="checkbox" id="branchFlagship" ${branch.isFlagship ? 'checked' : ''}>
+            <strong>Mark as Flagship Outlet (Shows in Prescription Dropdown)</strong>
+          </label>
+        </div>
+      </div>
+
       <div class="admin-form-group">
         <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
           <input type="checkbox" id="branch24" ${branch.is24Hours ? 'checked' : ''}>
@@ -525,10 +547,11 @@ window.saveBranchModal = function(e) {
     phone: document.getElementById("branchPhone").value.trim(),
     timings: document.getElementById("branchTimings").value.trim(),
     is24Hours: document.getElementById("branch24").checked,
+    isFlagship: document.getElementById("branchFlagship").checked,
     image: document.getElementById("branchImage").value.trim() || "assets/images/store_flagship.jpg",
     services: ["Pharmacy", "Superstore", "Cosmetics", "Optics"],
     mapUrl: document.getElementById("branchMap").value.trim() || `https://maps.google.com/?q=${encodeURIComponent(document.getElementById("branchName").value)}`,
-    whatsapp: adminData.company.whatsapp || "923329716666"
+    whatsapp: document.getElementById("branchWhatsapp").value.trim() || "923329716666"
   };
 
   if (editItemIndex === -1) {

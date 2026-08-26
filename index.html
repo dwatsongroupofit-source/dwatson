@@ -628,6 +628,30 @@
           <!-- Populated dynamically -->
         </div>
       </div>
+  </div>
+
+  <!-- Dynamic Branch Selector Modal for Product Orders -->
+  <div class="product-zoom-modal" id="branchSelectorModal" role="dialog" aria-modal="true" aria-hidden="true" style="z-index: 10000;">
+    <div class="product-zoom-backdrop" onclick="closeBranchSelectorModal()"></div>
+    <div class="product-zoom-dialog" style="max-width: 480px; min-height: auto; height: auto; border-radius: 16px; overflow: hidden; background: #FFFFFF; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+      <div class="zoom-modal-header" style="padding: 18px 24px; border-bottom: 1px solid #E2E8F0; background: #F8FAFC;">
+        <h3 style="margin:0; font-size:1.15rem; color:#0F172A; font-weight:700;"><i class="fa-solid fa-store" style="color:var(--dw-red); margin-right:8px;"></i> Select Delivery Branch</h3>
+        <button class="zoom-tool-btn zoom-close-btn" onclick="closeBranchSelectorModal()" title="Close" style="color:#64748B; background:none; border:none; font-size:1.2rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="zoom-modal-body" style="padding: 24px; color:#334155; display: block;">
+        <p style="font-size:0.9rem; margin-top:0; margin-bottom:18px; color:#475569; line-height:1.5;">Please select the nearest D. Watson flagship branch to process your inquiry and confirm stock availability.</p>
+        
+        <div class="form-group" style="margin-bottom:20px;">
+          <label style="display:block; font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#475569; margin-bottom:8px;">Nearest Flagship Branch</label>
+          <select id="orderBranchSelect" class="form-control" style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid #CBD5E1; font-size:0.95rem; outline:none; background-color:#F8FAFC; color:#0F172A;">
+            <!-- Loaded dynamically from js/main.js -->
+          </select>
+        </div>
+
+        <button id="confirmOrderBtn" class="btn btn-whatsapp" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; font-weight:700; border-radius:8px; font-size:0.98rem; border:none; color:white; background:#16A34A; cursor:pointer;">
+          <i class="fa-brands fa-whatsapp"></i> Confirm &amp; Open WhatsApp
+        </button>
+      </div>
     </div>
   </div>
 
@@ -720,32 +744,7 @@
             <div class="form-group">
               <label>Select Nearest Branch</label>
               <select id="custBranch" class="form-control">
-                <optgroup label="⭐ Primary Flagship Outlets">
-                  <option value="D. Watson Branch No. 1 - F-6 Super Market (Flagship)" selected>D. Watson Branch No. 1 - F-6 Super Market, Islamabad (08:00 AM - 01:00 AM)</option>
-                  <option value="D. Watson PWD Main Boulevard (Flagship)">D. Watson PWD Main Boulevard, Islamabad (08:00 AM - 01:00 AM)</option>
-                  <option value="D. Watson Ghouri Town Branch (Flagship)">D. Watson Ghauri Town Phase 5, Islamabad</option>
-                  <option value="D. Watson Chandni Chowk Branch (Flagship)">D. Watson Chandni Chowk, Rawalpindi (08:00 AM - 01:00 AM)</option>
-                  <option value="D. Watson Gujar Khan Branch (Flagship)">D. Watson Gujar Khan (Main GT Road)</option>
-                  <option value="D. Watson G-15 Markaz Branch (Flagship)">D. Watson G-15 Markaz (JK Housing), Islamabad</option>
-                  <option value="D. Watson Attock City Branch (Flagship)">D. Watson Attock City (DHQ Hospital Road)</option>
-                </optgroup>
-                <optgroup label="Other Network Outlets">
-                  <option value="Blue Area Mega Flagship Store">Blue Area Mega Flagship, Islamabad (24/7)</option>
-                  <option value="F-7 Markaz (Din Pavilion)">F-7 Markaz (Din Pavilion), Islamabad</option>
-                  <option value="F-10 Markaz Mega Branch">F-10 Markaz, Islamabad (24/7)</option>
-                  <option value="F-11 Markaz Branch">F-11 Markaz, Islamabad</option>
-                  <option value="G-9 Markaz (Karachi Company)">G-9 Markaz, Islamabad</option>
-                  <option value="G-11 Markaz Branch">G-11 Markaz, Islamabad</option>
-                  <option value="I-8 Markaz Branch">I-8 Markaz, Islamabad</option>
-                  <option value="I-10 Markaz Branch">I-10 Markaz, Islamabad</option>
-                  <option value="DHA Phase 2 Central Branch">DHA Phase 2, Islamabad (24/7)</option>
-                  <option value="Saddar Cantonment Branch">Saddar Cantt, Rawalpindi (24/7)</option>
-                  <option value="Bahria Town Phase 4 Civic Center">Bahria Town Phase 4 / 6, Rawalpindi</option>
-                  <option value="Chaklala Scheme 3 Branch">Chaklala Scheme 3, Rawalpindi</option>
-                  <option value="Gulberg III Mega Center">Gulberg III, Lahore (24/7)</option>
-                  <option value="Abbottabad Central Branch">Abbottabad Central Branch</option>
-                  <option value="Swat Mingora Branch">Swat Mingora Branch</option>
-                </optgroup>
+                <!-- Loaded dynamically via js/main.js -->
               </select>
             </div>
 

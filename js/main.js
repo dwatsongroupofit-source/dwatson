@@ -24,6 +24,7 @@ window.slideProducts = function(direction) {
 
 document.addEventListener("DOMContentLoaded", () => {
   initWebsite();
+  initOrderBranchSelector();
 
   // Listen for real-time site data updates from the Admin Portal
   window.addEventListener("siteDataUpdated", () => {
@@ -1390,6 +1391,44 @@ function getFullImageUrl(imagePath) {
   return `https://raw.githubusercontent.com/wasidevxyz-pixel/dwatson/main/${encodedPath}`;
 }
 
+let activeOrderProduct = null;
+
+window.openBranchSelectorModal = function(product) {
+  activeOrderProduct = product;
+  
+  const data = getSiteData();
+  const branches = data.branches || [];
+  const flagshipBranches = branches.filter(b => b.isFlagship);
+  
+  const selectEl = document.getElementById("orderBranchSelect");
+  if (selectEl) {
+    if (flagshipBranches.length > 0) {
+      selectEl.innerHTML = flagshipBranches.map((b, idx) => `
+        <option value="${escapeHtml(b.name)}" ${idx === 0 ? 'selected' : ''}>${escapeHtml(b.name)}</option>
+      `).join("");
+    } else {
+      selectEl.innerHTML = `<option value="D. Watson General Pharmacy">D. Watson General Pharmacy</option>`;
+    }
+  }
+  
+  const modal = document.getElementById("branchSelectorModal");
+  if (modal) {
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+  }
+  document.body.style.overflow = "hidden";
+};
+
+window.closeBranchSelectorModal = function() {
+  const modal = document.getElementById("branchSelectorModal");
+  if (modal) {
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+  }
+  document.body.style.overflow = "";
+  activeOrderProduct = null;
+};
+
 /**
  * Handle Product Order Click: Awaits Real-Time Cloud Sync & opens WhatsApp
  */
@@ -1402,35 +1441,7 @@ window.handleProductOrderClick = async function(event, productId, waUrl) {
     return;
   }
 
-  const randomCode = Math.floor(1000 + Math.random() * 9000);
-  const refId = `DW-ORD-${randomCode}`;
-  const timestamp = new Date().toLocaleString();
-  const fullImgUrl = getFullImageUrl(p.image);
-
-  if (typeof saveCustomerInquiry === "function") {
-    try {
-      await saveCustomerInquiry({
-        id: refId,
-        type: "product",
-        productName: p.name,
-        brand: p.brand || "D. Watson Certified",
-        price: p.price || "Inquire",
-        category: p.categoryName || p.category || "General Essential",
-        photoUrl: fullImgUrl,
-        image: fullImgUrl,
-        customerName: "Online WhatsApp Customer",
-        notes: `Product inquiry for ${p.name} (${p.price || 'Inquire'})`,
-        date: timestamp,
-        status: "New Product Order"
-      });
-    } catch (e) {
-      console.warn("Inquiry sync error:", e);
-    }
-  }
-
-  if (waUrl) {
-    window.open(waUrl, "_blank");
-  }
+  openBranchSelectorModal(p);
 };
 
 let selectedPrescriptionBase64 = null;
@@ -1476,8 +1487,48 @@ function initPrescriptionUploader(whatsappNumber) {
   const fileNameTxt = document.getElementById("prescriptionFileName");
   const uploadStatus = document.getElementById("prescriptionUploadStatus");
   const form = document.getElementById("prescriptionForm");
+  const selectEl = document.getElementById("custBranch");
+
+  const escapeHtml = (str) => (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+
+  // Load and filter branches dynamically
+  const data = getSiteData();
+  const branches = data.branches || [];
+  const flagshipBranches = branches.filter(b => b.isFlagship);
+
+  // Populate select options dynamically
+  if (selectEl) {
+    if (flagshipBranches.length > 0) {
+      selectEl.innerHTML = flagshipBranches.map((b, idx) => `
+        <option value="${escapeHtml(b.name)}" ${idx === 0 ? 'selected' : ''}>${escapeHtml(b.name)}</option>
+      `).join("");
+    } else {
+      selectEl.innerHTML = `<option value="D. Watson General Pharmacy">D. Watson General Pharmacy</option>`;
+    }
+  }
 
   if (!dropzone || !fileInput) return;
+
+  const submitBtn = form ? form.querySelector("button[type='submit']") : null;
+
+  // Dynamically update submit button WhatsApp display
+  function updateWhatsappBtnText() {
+    if (!selectEl || !submitBtn) return;
+    const selectedBranchName = selectEl.value;
+    const selectedBranch = branches.find(b => b.name === selectedBranchName);
+    const activeWa = selectedBranch && selectedBranch.whatsapp ? selectedBranch.whatsapp : whatsappNumber;
+
+    let displayWa = activeWa;
+    if (activeWa && activeWa.startsWith("92")) {
+      displayWa = "0" + activeWa.slice(2, 5) + "-" + activeWa.slice(5);
+    }
+    submitBtn.innerHTML = `<i class="fa-brands fa-whatsapp"></i> Send to Pharmacy Desk on WhatsApp (${displayWa})`;
+  }
+
+  if (selectEl) {
+    selectEl.addEventListener("change", updateWhatsappBtnText);
+    updateWhatsappBtnText();
+  }
 
   dropzone.addEventListener("click", () => fileInput.click());
 
@@ -1583,10 +1634,15 @@ function initPrescriptionUploader(whatsappNumber) {
       }
       msg += `✅ *Please verify stock and send price & delivery confirmation.*`;
 
-      const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
+      // Get selected branch's custom WhatsApp number
+      const selectedBranchObj = branches.find(b => b.name === branch);
+      const activeWa = selectedBranchObj && selectedBranchObj.whatsapp ? selectedBranchObj.whatsapp : whatsappNumber;
+
+      const waUrl = `https://wa.me/${activeWa}?text=${encodeURIComponent(msg)}`;
       window.open(waUrl, "_blank");
     });
   }
+}
 
   const contactForm = document.getElementById("contactForm");
   if (contactForm) {
@@ -1813,4 +1869,63 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function initOrderBranchSelector() {
+  const confirmBtn = document.getElementById("confirmOrderBtn");
+  if (confirmBtn) {
+    confirmBtn.addEventListener("click", async () => {
+      if (!activeOrderProduct) return;
+      
+      const selectEl = document.getElementById("orderBranchSelect");
+      const selectedBranchName = selectEl ? selectEl.value : "";
+      
+      const data = getSiteData();
+      const branches = data.branches || [];
+      const selectedBranchObj = branches.find(b => b.name === selectedBranchName);
+      const activeWa = selectedBranchObj && selectedBranchObj.whatsapp ? selectedBranchObj.whatsapp : data.company.whatsapp;
+      
+      const randomCode = Math.floor(1000 + Math.random() * 9000);
+      const refId = `DW-ORD-${randomCode}`;
+      const timestamp = new Date().toLocaleString();
+      const fullImgUrl = getFullImageUrl(activeOrderProduct.image);
+      
+      if (typeof saveCustomerInquiry === "function") {
+        try {
+          await saveCustomerInquiry({
+            id: refId,
+            type: "product",
+            productName: activeOrderProduct.name,
+            brand: activeOrderProduct.brand || "D. Watson Certified",
+            price: activeOrderProduct.price || "Inquire",
+            category: activeOrderProduct.categoryName || activeOrderProduct.category || "General Essential",
+            photoUrl: fullImgUrl,
+            image: fullImgUrl,
+            customerName: "Online WhatsApp Customer",
+            notes: `Product inquiry for ${activeOrderProduct.name} (${activeOrderProduct.price || 'Inquire'}) via branch: ${selectedBranchName}`,
+            date: timestamp,
+            status: "New Product Order"
+          });
+        } catch (e) {
+          console.warn("Inquiry sync error:", e);
+        }
+      }
+      
+      let msg = `*--- D. WATSON PRODUCT INQUIRY & ORDER ---*\n`;
+      msg += `🛍️ *Product:* ${activeOrderProduct.name}\n`;
+      msg += `🏷️ *Brand:* ${activeOrderProduct.brand || 'D. Watson'}\n`;
+      msg += `💰 *Price:* ${activeOrderProduct.price || 'Inquire'}\n`;
+      msg += `📂 *Category:* ${activeOrderProduct.categoryName || activeOrderProduct.category}\n`;
+      msg += `📍 *Selected Branch:* ${selectedBranchName}\n`;
+      if (fullImgUrl) {
+        msg += `📸 *Product Photo Link:* ${fullImgUrl}\n`;
+      }
+      msg += `\n📝 *Inquiry Note:* Hi D.Watson Chemist, please confirm stock availability and express delivery.`;
+      
+      const waUrl = `https://wa.me/${activeWa}?text=${encodeURIComponent(msg)}`;
+      window.open(waUrl, "_blank");
+      
+      closeBranchSelectorModal();
+    });
+  }
 }
