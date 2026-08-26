@@ -1793,7 +1793,6 @@ function initPrescriptionUploader(whatsappNumber) {
       }
     });
   }
-}
 
 /**
  * Header Scroll & Mobile Navigation
