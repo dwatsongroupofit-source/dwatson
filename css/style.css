@@ -2686,6 +2686,41 @@ textarea.form-control {
   gap: 16px;
 }
 
+.portal-link-badge, .system-login-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.portal-link-badge {
+  background: rgba(220, 38, 38, 0.15);
+  color: #EF4444 !important;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.portal-link-badge:hover {
+  background: rgba(220, 38, 38, 0.25);
+  border-color: #EF4444;
+}
+
+.system-login-badge {
+  background: rgba(37, 99, 235, 0.15);
+  color: #3B82F6 !important;
+  border: 1px solid rgba(37, 99, 235, 0.3);
+}
+
+.system-login-badge:hover {
+  background: rgba(37, 99, 235, 0.25);
+  border-color: #3B82F6;
+  transform: translateY(-1px);
+}
+
 /* ==========================================================================
    Floating WhatsApp & Quick Action Button
    ========================================================================== */
