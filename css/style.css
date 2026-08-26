@@ -334,27 +334,41 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .portal-link-btn, .system-link-btn {
-  background: rgba(255, 255, 255, 0.15);
-  padding: 3px 10px;
-  border-radius: 4px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #F8FAFC !important;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #F1F5F9 !important;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.2px;
+}
+
+.portal-link-btn {
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .portal-link-btn:hover {
-  background: var(--dw-red);
-  border-color: var(--dw-red);
+  background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
+  border-color: #EF4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+  transform: translateY(-1px);
+}
+
+.system-link-btn {
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .system-link-btn:hover {
-  background: #2563EB;
-  border-color: #2563EB;
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  border-color: #3B82F6;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
 }
 
 /* Header & Navigation */
@@ -2699,35 +2713,42 @@ textarea.form-control {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
-  border-radius: 6px;
+  padding: 5px 12px;
+  border-radius: 8px;
   font-weight: 700;
   font-size: 0.8rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
 }
 
 .admin-portal-badge {
-  background: rgba(220, 38, 38, 0.15);
-  color: #EF4444 !important;
-  border: 1px solid rgba(220, 38, 38, 0.3);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%);
+  color: #FCA5A5 !important;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .admin-portal-badge:hover {
-  background: rgba(220, 38, 38, 0.25);
+  background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
+  color: #FFFFFF !important;
   border-color: #EF4444;
+  box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3), 0 0 12px rgba(239, 68, 68, 0.2);
+  transform: translateY(-2px);
 }
 
 .system-portal-badge {
-  background: rgba(37, 99, 235, 0.15);
-  color: #3B82F6 !important;
-  border: 1px solid rgba(37, 99, 235, 0.3);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(29, 78, 216, 0.05) 100%);
+  color: #93C5FD !important;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .system-portal-badge:hover {
-  background: rgba(37, 99, 235, 0.25);
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFFFFF !important;
   border-color: #3B82F6;
-  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3), 0 0 12px rgba(59, 130, 246, 0.2);
+  transform: translateY(-2px);
 }
 
 /* ==========================================================================

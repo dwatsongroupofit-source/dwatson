@@ -1372,21 +1372,23 @@ section, header, footer, nav, main, .container {
   }
 
   .admin-portal-badge {
-    background: rgba(220, 38, 38, 0.15);
-    color: #EF4444 !important;
-    padding: 4px 10px;
-    border-radius: 6px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%);
+    color: #FCA5A5 !important;
+    padding: 5px 12px;
+    border-radius: 8px;
     font-weight: 700;
-    border: 1px solid rgba(220, 38, 38, 0.3);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .system-portal-badge {
-    background: rgba(37, 99, 235, 0.15);
-    color: #3B82F6 !important;
-    padding: 4px 10px;
-    border-radius: 6px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(29, 78, 216, 0.05) 100%);
+    color: #93C5FD !important;
+    padding: 5px 12px;
+    border-radius: 8px;
     font-weight: 700;
-    border: 1px solid rgba(37, 99, 235, 0.3);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 }
 
