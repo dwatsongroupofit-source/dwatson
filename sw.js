@@ -1,71 +1,105 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker
- * Ultra-fast caching & offline resilience for mobile devices
+ * D. Watson Chemist & Superstore - Service Worker (v8.0)
+ * Ultra-fast caching, zero unhandled promise rejections & robust offline resilience
  */
 
-const CACHE_NAME = "dwatson-cache-v1";
+const CACHE_NAME = "dwatson-cache-v8";
 const STATIC_ASSETS = [
-  "/",
-  "/index.html",
-  "/journey.html",
-  "/css/style.css?v=5.8",
-  "/css/responsive.css?v=5.8",
-  "/js/config.js?v=1.1",
-  "/js/data.js?v=5.7",
-  "/js/main.js?v=5.7",
-  "/assets/images/logo-emblem.png"
+  "./",
+  "./index.html",
+  "./departments.html",
+  "./branches.html",
+  "./prescription.html",
+  "./journey.html",
+  "./contact.html",
+  "./css/style.css?v=8.0",
+  "./css/responsive.css?v=8.0",
+  "./js/config.js?v=1.1",
+  "./js/data.js?v=8.0",
+  "./js/main.js?v=8.0",
+  "./assets/images/logo.svg",
+  "./assets/images/logo-white.svg",
+  "./assets/images/logo-official.png",
+  "./manifest.json",
+  "./favicon.ico"
 ];
 
-// Install Event - Pre-cache core shell
+// Install Event - Pre-cache core shell safely
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn("PWA pre-cache warning:", err);
+        console.warn("D. Watson PWA pre-cache warning:", err);
       });
     })
   );
   self.skipWaiting();
 });
 
-// Activate Event - Clean up stale caches
+// Activate Event - Clean up all stale v1..v7 caches immediately
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch Event - Network First with Cache Fallback for dynamic fresh content
+// Fetch Event - Network First with Safe Fallback (Guaranteed to return a valid Response)
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
-  // Handle cross-origin or chrome-extension URLs gracefully
-  if (!event.request.url.startsWith(self.location.origin)) {
+  // Only handle http/https requests belonging to our same origin
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin !== self.location.origin) {
     return;
   }
 
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
+        // Cache successful basic responses
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === "basic") {
           const responseClone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
+            cache.put(event.request, responseClone).catch(() => {});
           });
         }
         return networkResponse;
       })
-      .catch(() => {
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) return cachedResponse;
-          if (event.request.headers.get("accept")?.includes("text/html")) {
-            return caches.match("/index.html");
+      .catch(async () => {
+        // Safe cache fallback: NEVER return undefined to respondWith!
+        try {
+          // 1. Exact URL match
+          const cached = await caches.match(event.request);
+          if (cached) return cached;
+
+          // 2. Match ignoring search query parameters (e.g. ?v=8.0 vs ?v=7.0)
+          const cachedNoSearch = await caches.match(event.request, { ignoreSearch: true });
+          if (cachedNoSearch) return cachedNoSearch;
+
+          // 3. For navigation or HTML requests, return offline app shell
+          const isHtmlRequest = event.request.mode === "navigate" || 
+            (event.request.headers && event.request.headers.get("accept") && event.request.headers.get("accept").includes("text/html"));
+
+          if (isHtmlRequest) {
+            const fallbackShell = await caches.match("./index.html") || 
+                                  await caches.match("/index.html") || 
+                                  await caches.match("./") ||
+                                  await caches.match("/");
+            if (fallbackShell) return fallbackShell;
           }
+        } catch (cacheErr) {
+          console.warn("Service worker cache read error:", cacheErr);
+        }
+
+        // 4. Guaranteed fallback Response to avoid TypeError: Failed to convert value to 'Response'
+        return new Response("D. Watson Chemist & Superstore - Network connection unavailable.", {
+          status: 503,
+          statusText: "Service Unavailable",
+          headers: new Headers({ "Content-Type": "text/plain; charset=utf-8" })
         });
       })
   );

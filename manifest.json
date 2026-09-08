@@ -2,12 +2,12 @@
   "name": "D. Watson Chemist & Superstore",
   "short_name": "D. Watson",
   "description": "Pakistan's premier trusted pharmacy and superstore chain since 1978. 100% genuine medicines, international cosmetics, and 24/7 express home delivery.",
-  "start_url": "/index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0F172A",
   "theme_color": "#0F172A",
   "orientation": "portrait",
-  "scope": "/",
+  "scope": "./",
   "lang": "en",
   "categories": ["shopping", "medical", "health"],
   "icons": [
@@ -41,28 +41,28 @@
       "name": "Upload Prescription",
       "short_name": "Upload Rx",
       "description": "Express prescription upload & pharmacist WhatsApp delivery",
-      "url": "/index.html#prescription-box",
+      "url": "prescription.html",
       "icons": [{ "src": "assets/images/pwa-icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Find Nearest Branch",
       "short_name": "Find Branch",
       "description": "GPS branch locator across 25+ D. Watson outlets",
-      "url": "/index.html#branches",
+      "url": "branches.html",
       "icons": [{ "src": "assets/images/pwa-icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Search Products & Medicines",
-      "short_name": "Search",
-      "description": "Live search across 20,000+ medicines and cosmetics",
-      "url": "/index.html#products",
+      "name": "13 Departments",
+      "short_name": "Departments",
+      "description": "Explore pharmacy, cosmetics, surgical, optics & grocery",
+      "url": "departments.html",
       "icons": [{ "src": "assets/images/pwa-icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "WhatsApp Pharmacist",
-      "short_name": "WhatsApp",
-      "description": "Live 24/7 pharmacist consultation and order desk",
-      "url": "https://wa.me/923329716666?text=Hi%20D.Watson%20Chemist,%20I%20need%20assistance.",
+      "name": "Customer Support",
+      "short_name": "Support",
+      "description": "24/7 helpline and branch contact directory",
+      "url": "contact.html",
       "icons": [{ "src": "assets/images/pwa-icon-192.png", "sizes": "192x192" }]
     }
   ]
