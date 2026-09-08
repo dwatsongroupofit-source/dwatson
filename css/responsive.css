@@ -1537,3 +1537,260 @@ section, header, footer, nav, main, .container {
     border-radius: 8px;
   }
 }
+
+/* ==========================================================================
+   MOBILE-FIRST ENHANCEMENTS: Search Modal, GPS Locator, Prescription, PWA
+   Optimized for 85%+ Mobile Smartphone & iPhone/Android Users in Pakistan
+   ========================================================================== */
+
+/* Header Search Button on Mobile & Tablets */
+@media (max-width: 992px) {
+  .nav-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .header-search-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 20px;
+    background: #F1F5F9;
+    color: var(--dw-navy);
+    font-size: 0.85rem;
+    font-weight: 700;
+    gap: 6px;
+    border: 1px solid var(--border-subtle);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .header-search-btn:active {
+    background: #E2E8F0;
+    transform: scale(0.96);
+  }
+
+  .header-search-btn i {
+    color: var(--dw-red);
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .header-search-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 12px;
+  }
+
+  .header-search-btn .search-btn-label {
+    display: none; /* Icon-only on small smartphones for clean layout */
+  }
+
+  .header-search-btn .search-kbd-shortcut {
+    display: none;
+  }
+}
+
+/* Global Search Modal Mobile Optimization */
+@media (max-width: 768px) {
+  .global-search-modal {
+    padding: 0;
+    align-items: flex-end; /* Slide up from bottom like native mobile sheet */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .search-modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92vh !important;
+    height: 92vh;
+    border-radius: 24px 24px 0 0 !important;
+    padding: 16px 16px 24px !important;
+    display: flex;
+    flex-direction: column;
+    animation: slideUpModal 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  @keyframes slideUpModal {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .search-modal-header {
+    margin-bottom: 12px;
+  }
+
+  /* 16px input font size prevents annoying iOS Safari auto-zoom */
+  .search-input-wrap input {
+    font-size: 16px !important;
+    height: 48px;
+    padding: 0 44px 0 42px;
+  }
+
+  .search-input-wrap .search-icon-inside {
+    left: 14px;
+    font-size: 1rem;
+  }
+
+  .search-clear-btn {
+    right: 10px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .search-popular-tags {
+    margin-bottom: 12px;
+  }
+
+  .search-tag-chip {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    min-height: 34px;
+  }
+
+  .search-results-list {
+    flex: 1;
+    max-height: calc(92vh - 170px) !important;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+  }
+
+  .search-result-item {
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+
+  .search-result-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+  }
+
+  .search-result-title {
+    font-size: 0.88rem;
+  }
+
+  .search-result-meta {
+    font-size: 0.74rem;
+  }
+
+  .search-result-price {
+    font-size: 0.92rem;
+  }
+
+  .btn-search-wa {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    min-height: 40px;
+  }
+
+  .btn-search-wa span {
+    display: none; /* Show icon only or short label on mobile */
+  }
+
+  .btn-search-wa::after {
+    content: "Order";
+    margin-left: 4px;
+  }
+}
+
+/* GPS Branch Locator on Mobile */
+@media (max-width: 768px) {
+  .branch-filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .btn-gps-locate {
+    width: 100%;
+    min-height: 46px;
+    justify-content: center;
+    font-size: 0.92rem;
+    padding: 12px 18px;
+  }
+
+  .nearest-branch-banner {
+    padding: 14px 16px;
+    border-radius: 14px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .nearest-branch-banner .btn-nearest-action {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .branch-card-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .branch-gps-distance-badge {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+  }
+}
+
+/* Prescription Fulfillment Selector Mobile */
+@media (max-width: 768px) {
+  .prescription-fulfillment-mode {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .fulfillment-radio-label {
+    padding: 12px 14px;
+    min-height: 58px;
+    border-radius: 12px;
+  }
+
+  .fulfillment-radio-label i {
+    font-size: 1.3rem;
+  }
+
+  .fulfillment-radio-label div strong {
+    font-size: 0.92rem;
+  }
+
+  .fulfillment-radio-label div span {
+    font-size: 0.75rem;
+  }
+}
+
+/* PWA App Install Mobile Banner Adjustment */
+@media (max-width: 576px) {
+  .pwa-install-banner {
+    bottom: 70px !important;
+    left: 10px !important;
+    right: 10px !important;
+    padding: 10px 12px !important;
+    border-radius: 14px !important;
+  }
+
+  .pwa-banner-left img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .pwa-banner-text strong {
+    font-size: 0.82rem;
+  }
+
+  .pwa-banner-text span {
+    font-size: 0.7rem;
+  }
+
+  .btn-pwa-install {
+    padding: 6px 12px;
+    font-size: 0.76rem;
+  }
+}

@@ -80,13 +80,19 @@
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <!-- Favicon -->
+  <!-- Favicon & PWA App Manifest -->
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <link rel="shortcut icon" href="favicon.ico">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="D. Watson">
+  <link rel="apple-touch-icon" href="assets/images/logo-emblem.png">
+  <meta name="theme-color" content="#0F172A">
 
-  <!-- Stylesheets (v5.8 - Footer Organization & Sticky Header) -->
-  <link rel="stylesheet" href="css/style.css?v=5.8">
-  <link rel="stylesheet" href="css/responsive.css?v=5.8">
+  <!-- Stylesheets (v5.9 - Mobile First Search, GPS Locator, PWA) -->
+  <link rel="stylesheet" href="css/style.css?v=5.9">
+  <link rel="stylesheet" href="css/responsive.css?v=5.9">
 </head>
 <body>
 
@@ -132,6 +138,11 @@
 
           <!-- Right Action Button -->
           <div class="nav-actions">
+            <button class="header-search-btn" id="headerSearchBtn" onclick="openGlobalSearch()" aria-label="Search Medicines and Products">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span class="search-btn-label">Search</span>
+              <span class="search-kbd-shortcut">/</span>
+            </button>
             <a href="#prescription-box" class="btn btn-primary btn-sm">
               <i class="fa-solid fa-file-prescription"></i> Upload Prescription
             </a>
@@ -488,6 +499,11 @@
           <button class="branch-search-clear" id="branchSearchClear" onclick="clearBranchSearch()" style="display:none;" title="Clear search"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
+        <button class="btn btn-gps-locate" id="gpsLocateBtn" onclick="findNearestBranchGPS()" title="Find Nearest Branch to My Current Location">
+          <i class="fa-solid fa-location-crosshairs"></i>
+          <span>Find Nearest to Me</span>
+        </button>
+
         <div class="branch-pills" id="branchCityPills">
           <!-- City pills rendered dynamically via main.js -->
         </div>
@@ -794,6 +810,35 @@
               </div>
             </div>
 
+            <!-- Delivery vs Branch Pickup Fulfillment Mode -->
+            <div class="form-group">
+              <label>Fulfillment Method *</label>
+              <div class="prescription-fulfillment-mode">
+                <label class="fulfillment-radio-label active" id="modeDeliveryLabel">
+                  <input type="radio" name="fulfillmentMode" id="rxModeDelivery" value="delivery" checked onchange="setRxFulfillmentMode('delivery')">
+                  <i class="fa-solid fa-truck-fast"></i>
+                  <div>
+                    <strong>Express Home Delivery</strong>
+                    <span>Delivered to your doorstep in 2-4 hours</span>
+                  </div>
+                </label>
+                <label class="fulfillment-radio-label" id="modePickupLabel">
+                  <input type="radio" name="fulfillmentMode" id="rxModePickup" value="pickup" onchange="setRxFulfillmentMode('pickup')">
+                  <i class="fa-solid fa-store"></i>
+                  <div>
+                    <strong>Branch Self-Pickup</strong>
+                    <span>Ready for pickup at your selected branch</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Conditional Delivery Address Row (Default: Visible) -->
+            <div class="form-group" id="deliveryAddressRow">
+              <label>Complete Home / Delivery Address *</label>
+              <textarea id="custAddress" class="form-control" placeholder="House / Flat #, Street, Sector / Area, City (e.g. House 12, St 44, F-10/1, Islamabad)" rows="2"></textarea>
+            </div>
+
             <div class="form-group">
               <label>Select Nearest Branch</label>
               <select id="custBranch" class="form-control">
@@ -1025,10 +1070,58 @@
     </a>
   </nav>
 
-  <!-- Scripts (v5.4) -->
+  <!-- Global Instant Product & Medicine Search Modal -->
+  <div class="global-search-modal" id="globalSearchModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="search-modal-backdrop" onclick="closeGlobalSearch()"></div>
+    <div class="search-modal-content">
+      <div class="search-modal-header">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass search-icon-inside"></i>
+          <input type="search" id="globalSearchInput" placeholder="Search medicines, skincare, brands (e.g. Panadol, CeraVe, Augmentin)..." autocomplete="off" spellcheck="false">
+          <button class="search-clear-btn" id="globalSearchClear" onclick="clearGlobalSearch()" title="Clear search" style="display:none;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <button class="search-close-btn" onclick="closeGlobalSearch()" title="Close Search (Esc)"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="search-popular-tags">
+        <span class="search-tags-label"><i class="fa-solid fa-fire"></i> Popular:</span>
+        <div class="search-tags-scroll">
+          <button class="search-tag-chip" onclick="searchByChip('Panadol')">Panadol</button>
+          <button class="search-tag-chip" onclick="searchByChip('CeraVe')">CeraVe</button>
+          <button class="search-tag-chip" onclick="searchByChip('Insulin')">Insulin</button>
+          <button class="search-tag-chip" onclick="searchByChip('Anua')">Anua K-Beauty</button>
+          <button class="search-tag-chip" onclick="searchByChip('COSRX')">COSRX</button>
+          <button class="search-tag-chip" onclick="searchByChip('Golden Rose')">Golden Rose</button>
+          <button class="search-tag-chip" onclick="searchByChip('Flormar')">Flormar</button>
+          <button class="search-tag-chip" onclick="searchByChip('Surgical')">Surgical</button>
+        </div>
+      </div>
+
+      <div class="search-results-list" id="globalSearchResults">
+        <!-- Live search results rendered here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Progressive Web App (PWA) Mobile Install Prompt -->
+  <div class="pwa-install-banner" id="pwaInstallBanner" style="display:none;">
+    <div class="pwa-banner-left">
+      <img src="assets/images/logo-emblem.png" alt="D. Watson App Icon">
+      <div class="pwa-banner-text">
+        <strong>Install D. Watson App</strong>
+        <span>Instant WhatsApp orders &amp; branch locator</span>
+      </div>
+    </div>
+    <div class="pwa-banner-actions">
+      <button class="btn-pwa-install" id="btnPwaInstall">Install</button>
+      <button class="btn-pwa-dismiss" id="btnPwaDismiss" aria-label="Dismiss">&times;</button>
+    </div>
+  </div>
+
+  <!-- Scripts (v5.9) -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="js/config.js?v=1.1"></script>
-  <script src="js/data.js?v=5.7"></script>
-  <script src="js/main.js?v=5.7"></script>
+  <script src="js/data.js?v=5.9"></script>
+  <script src="js/main.js?v=5.9"></script>
 </body>
 </html>

@@ -77,6 +77,8 @@ function initWebsite() {
   initProductZoomEvents();
   initHeaderScroll();
   initMobileMenu();
+  initGlobalSearch();
+  initPWAInstall();
 }
 
 /**
@@ -893,6 +895,194 @@ window.closeProductZoomModal = function() {
 };
 
 /**
+ * ==========================================================================
+ * Real-Time Branch Operating Status & GPS Branch Locator Engine
+ * ==========================================================================
+ */
+const BRANCH_GPS_COORDINATES = {
+  "b_f6": { lat: 33.7297, lng: 73.0746 },
+  "b_pwd": { lat: 33.5855, lng: 73.1554 },
+  "b_ghauri": { lat: 33.6267, lng: 73.1360 },
+  "b_chandni": { lat: 33.6231, lng: 73.0694 },
+  "b_gujar_khan": { lat: 33.2556, lng: 73.3039 },
+  "b_g15": { lat: 33.6421, lng: 72.9325 },
+  "b_f10": { lat: 33.6931, lng: 73.0076 },
+  "b_f11": { lat: 33.6845, lng: 72.9885 },
+  "b_bluearea": { lat: 33.7103, lng: 73.0571 },
+  "b_saddar": { lat: 33.5975, lng: 73.0543 },
+  "b_bahria": { lat: 33.5353, lng: 73.1195 },
+  "b_dha": { lat: 33.5283, lng: 73.1492 },
+  "b_peshawar": { lat: 34.0151, lng: 71.5249 },
+  "b_abbottabad": { lat: 34.1688, lng: 73.2215 },
+  "b_lahore": { lat: 31.5204, lng: 74.3587 }
+};
+
+// Returns accurate live open/closed status using Pakistan Standard Time (Asia/Karachi UTC+5)
+function getBranchLiveStatus(timingsStr, is24Hours) {
+  if (is24Hours) {
+    return {
+      isOpen: true,
+      label: "Open 24/7",
+      badge: `<span class="badge-live-open"><i class="fa-solid fa-circle"></i> Open 24/7</span>`
+    };
+  }
+
+  // Calculate current hour and minute in Pakistan Standard Time (UTC+5)
+  const now = new Date();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const pktDate = new Date(utc + (3600000 * 5));
+  const currentMinutes = pktDate.getHours() * 60 + pktDate.getMinutes();
+
+  const isTill1AM = (timingsStr || "").includes("01:00 AM") || (timingsStr || "").includes("1:00 AM");
+  const isTillMidnight = (timingsStr || "").includes("12:00 AM");
+
+  const openMinute = 8 * 60; // 08:00 AM = 480
+  let closeMinute = 23 * 60; // default 11:00 PM = 1380
+  let closeDisplay = "11:00 PM";
+
+  if (isTill1AM) {
+    closeMinute = 25 * 60; // 01:00 AM next day = 1500
+    closeDisplay = "1:00 AM";
+  } else if (isTillMidnight) {
+    closeMinute = 24 * 60; // 12:00 AM midnight = 1440
+    closeDisplay = "Midnight";
+  }
+
+  let testMinute = currentMinutes;
+  if (isTill1AM && currentMinutes < 8 * 60) {
+    testMinute = currentMinutes + 24 * 60;
+  }
+
+  const isOpen = (testMinute >= openMinute && testMinute < closeMinute);
+
+  if (isOpen) {
+    return {
+      isOpen: true,
+      label: `Open Now • Closes ${closeDisplay}`,
+      badge: `<span class="badge-live-open"><i class="fa-solid fa-circle"></i> Open Now &bull; Closes ${closeDisplay}</span>`
+    };
+  } else {
+    return {
+      isOpen: false,
+      label: "Closed • Opens 8:00 AM",
+      badge: `<span class="badge-live-closed"><i class="fa-solid fa-circle"></i> Closed &bull; Opens 8:00 AM</span>`
+    };
+  }
+}
+
+// Haversine formula to compute great-circle distance in kilometers
+function haversineDistanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function getFallbackBranchCoords(b) {
+  const city = (b.city || "").toLowerCase();
+  if (city.includes("islamabad")) return { lat: 33.6844, lng: 73.0479 };
+  if (city.includes("rawalpindi")) return { lat: 33.5973, lng: 73.0479 };
+  if (city.includes("lahore")) return { lat: 31.5204, lng: 74.3587 };
+  if (city.includes("peshawar")) return { lat: 34.0151, lng: 71.5249 };
+  if (city.includes("abbottabad")) return { lat: 34.1688, lng: 73.2215 };
+  return { lat: 33.7297, lng: 73.0746 };
+}
+
+window.findNearestBranchGPS = function() {
+  const btn = document.getElementById("gpsLocateBtn");
+  const origHtml = btn ? btn.innerHTML : "";
+
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your mobile browser. Please search branches by sector or city name.");
+    return;
+  }
+
+  if (btn) {
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Locating You...</span>`;
+    btn.disabled = true;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const userLat = pos.coords.latitude;
+      const userLng = pos.coords.longitude;
+
+      allBranchesData.forEach(b => {
+        const coords = BRANCH_GPS_COORDINATES[b.id] || getFallbackBranchCoords(b);
+        b.distanceKm = haversineDistanceKm(userLat, userLng, coords.lat, coords.lng);
+      });
+
+      filteredBranchesData.sort((a, b) => (a.distanceKm || 9999) - (b.distanceKm || 9999));
+      const closest = filteredBranchesData[0];
+
+      if (btn) {
+        btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>Nearest: ${closest.name.split('-')[0].trim()} (${closest.distanceKm.toFixed(1)} km)</span>`;
+        btn.classList.add("located");
+        btn.disabled = false;
+      }
+
+      renderNearestBranchBanner(closest);
+      activeBranchId = closest.id;
+
+      renderBranchHub(filteredBranchesData);
+      renderBranchCards(filteredBranchesData);
+
+      const branchSec = document.getElementById("branches");
+      if (branchSec) {
+        branchSec.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    },
+    (err) => {
+      if (btn) {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+      }
+      let errNote = "Unable to retrieve your location. Please check your device location settings.";
+      if (err.code === 1) errNote = "Location permission denied. Please allow location access in your browser to find the nearest branch.";
+      alert(errNote);
+    },
+    { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+  );
+};
+
+function renderNearestBranchBanner(closestBranch) {
+  let banner = document.getElementById("nearestBranchBanner");
+  const toolbar = document.querySelector(".branch-toolbar");
+  if (!toolbar) return;
+
+  if (!banner) {
+    banner = document.createElement("div");
+    banner.id = "nearestBranchBanner";
+    banner.className = "nearest-branch-banner";
+    toolbar.parentNode.insertBefore(banner, toolbar.nextSibling);
+  }
+
+  const phoneCall = getBranchPhone(closestBranch.phone);
+  const mapUrl = closestBranch.mapUrl || `https://maps.google.com/?q=D.+Watson+${encodeURIComponent(closestBranch.name)}`;
+
+  banner.innerHTML = `
+    <div class="nearest-branch-info">
+      <div class="nearest-branch-badge"><i class="fa-solid fa-location-crosshairs"></i> Nearest Branch to Your Current Location</div>
+      <h3 style="margin:4px 0 2px; font-size:1.1rem; color:#0F172A;">${escapeHtml(closestBranch.name)}</h3>
+      <p style="margin:0; font-size:0.85rem; color:#64748B;"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(closestBranch.address)} &bull; <strong>${closestBranch.distanceKm.toFixed(1)} km away</strong></p>
+    </div>
+    <div class="nearest-branch-actions" style="display:flex; gap:8px; flex-wrap:wrap;">
+      <a href="${mapUrl}" target="_blank" class="btn btn-outline-primary btn-sm btn-nearest-action">
+        <i class="fa-solid fa-diamond-turn-right"></i> Get Directions
+      </a>
+      <a href="tel:${phoneCall}" class="btn btn-primary btn-sm btn-nearest-action">
+        <i class="fa-solid fa-phone"></i> Call Outlet
+      </a>
+    </div>
+  `;
+  banner.style.display = "flex";
+}
+
+/**
  * Interactive Master-Detail Branches Locator & Directory (25+ Network)
  */
 let activeBranchId = null;
@@ -1005,12 +1195,15 @@ function renderBranchHub(branches) {
 
   scrollList.innerHTML = branches.map(b => {
     const isActive = b.id === activeBranchId;
+    const liveStatus = getBranchLiveStatus(b.timings, b.is24Hours);
+    const distBadge = (typeof b.distanceKm === "number") ? `<span style="background:#EFF6FF; color:#1D4ED8; font-weight:700; font-size:0.68rem; padding:2px 6px; border-radius:4px; border:1px solid #BFDBFE;"><i class="fa-solid fa-location-arrow"></i> ${b.distanceKm.toFixed(1)} km</span>` : '';
     return `
       <div class="branch-mini-item ${isActive ? 'active' : ''}" onclick="selectActiveBranch('${b.id}', true)" id="branch-mini-${b.id}">
         <div class="branch-mini-top">
           <span class="branch-mini-name">${escapeHtml(b.name)}</span>
           <div class="branch-mini-badges">
             ${b.isFlagship ? '<span class="branch-mini-flagship" style="background:#FEF3C7; color:#92400E; font-weight:800; font-size:0.68rem; padding:2px 6px; border-radius:4px; border:1px solid #FCD34D;"><i class="fa-solid fa-star"></i> Flagship</span>' : ''}
+            ${distBadge}
             <span class="branch-mini-city">${escapeHtml(b.city)}</span>
             ${b.is24Hours ? '<span class="branch-mini-24">24/7</span>' : ''}
           </div>
@@ -1042,6 +1235,12 @@ function renderActiveBranchDetail(b) {
   const phoneCall = getBranchPhone(b.phone);
   const waNumber = b.whatsapp || "923329716666";
   const waMsg = encodeURIComponent(`Hi D. Watson ${b.name}, I need assistance with medicine availability / delivery.`);
+  const liveStatus = getBranchLiveStatus(b.timings, b.is24Hours);
+  const distBadge = (typeof b.distanceKm === "number") ? `
+    <span style="display:inline-flex; align-items:center; gap:5px; background:#EFF6FF; color:#1D4ED8; font-size:0.75rem; font-weight:800; padding:3px 10px; border-radius:9999px; text-transform:uppercase; border:1px solid #BFDBFE;">
+      <i class="fa-solid fa-location-arrow"></i> ${b.distanceKm.toFixed(1)} km away
+    </span>
+  ` : '';
 
   detailPane.innerHTML = `
     <div class="branch-detail-hero">
@@ -1054,9 +1253,8 @@ function renderActiveBranchDetail(b) {
                 <i class="fa-solid fa-star"></i> Flagship Branch
               </span>
             ` : ''}
-            <span style="display:inline-flex; align-items:center; gap:6px; background:${b.is24Hours ? 'var(--dw-red)' : '#10B981'}; color:white; font-size:0.75rem; font-weight:800; padding:3px 10px; border-radius:9999px; text-transform:uppercase;">
-              <i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> ${b.is24Hours ? 'Open 24 Hours • 7 Days' : 'Open Daily'}
-            </span>
+            ${distBadge}
+            ${liveStatus.badge}
           </div>
           <h3 class="branch-detail-hero-title">${escapeHtml(b.name)}</h3>
         </div>
@@ -1098,92 +1296,73 @@ function renderActiveBranchDetail(b) {
     <div class="branch-amenities">
       <div class="branch-amenities-title">Available Departments &amp; Services</div>
       <div class="branch-amenities-tags">
-        ${(b.services || ["Pharmacy", "Cosmetics", "Superstore", "Optics"]).map(srv => `
-          <span class="branch-amenity-tag">
-            <i class="fa-solid fa-circle-check" style="color:var(--dw-blue); font-size:0.7rem;"></i> ${escapeHtml(srv)}
-          </span>
-        `).join("")}
-        <span class="branch-amenity-tag" style="background:#ECFDF5; color:#059669;">
-          <i class="fa-solid fa-truck-fast"></i> Home Delivery
-        </span>
-        <span class="branch-amenity-tag" style="background:#F8FAFC; color:#475569; border:1px solid #E2E8F0;">
-          <i class="fa-solid fa-wheelchair"></i> Accessible
-        </span>
+        ${(b.services || []).map(s => `<span class="branch-amenity-tag">${escapeHtml(s)}</span>`).join("")}
       </div>
     </div>
 
-    <div class="branch-action-buttons-hub">
-      <a href="${b.mapUrl || `https://maps.google.com/?q=D.+Watson+${encodeURIComponent(b.name)}`}" target="_blank" class="btn btn-outline">
-        <i class="fa-solid fa-diamond-turn-right"></i> Google Directions
+    <div class="branch-detail-actions">
+      <a href="${b.mapUrl || `https://maps.google.com/?q=D.+Watson+${encodeURIComponent(b.name)}`}" target="_blank" class="btn btn-outline" style="flex:1;">
+        <i class="fa-solid fa-location-arrow"></i> Google Maps Directions
       </a>
-      <a href="tel:${phoneCall}" class="btn btn-blue">
-        <i class="fa-solid fa-phone"></i> Call Branch
+      <a href="https://wa.me/${waNumber}?text=${waMsg}" target="_blank" class="btn btn-whatsapp" style="flex:1;">
+        <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+      </a>
+      <a href="tel:${phoneCall}" class="btn btn-primary" style="padding:10px 18px;">
+        <i class="fa-solid fa-phone"></i>
       </a>
     </div>
   `;
 }
 
-window.selectActiveBranch = function(branchId, userTriggered = false) {
-  activeBranchId = branchId;
-  document.querySelectorAll(".branch-mini-item").forEach(el => el.classList.remove("active"));
-  const activeEl = document.getElementById(`branch-mini-${branchId}`);
-  if (activeEl) activeEl.classList.add("active");
-
-  const branch = allBranchesData.find(b => b.id === branchId);
-  if (branch) {
-    renderActiveBranchDetail(branch);
-  }
-
-  // If on mobile/tablet and user explicitly tapped a branch, smooth-scroll down to showcase card
-  if (userTriggered && window.innerWidth <= 992) {
-    const detailPane = document.getElementById("branchDetailPane");
-    if (detailPane) {
-      const topOffset = detailPane.getBoundingClientRect().top + window.pageYOffset - 90;
-      window.scrollTo({ top: topOffset, behavior: "smooth" });
-    }
-  }
-};
-
-window.filterBranchesByCity = function(cityOption, btn) {
-  document.querySelectorAll("#branchCityPills .branch-pill-btn").forEach(p => p.classList.remove("active"));
+/**
+ * Filter Branches by City Pill
+ */
+window.filterBranchesByCity = function(cityKey, btn) {
+  document.querySelectorAll("#branchCityPills .branch-pill-btn").forEach(b => b.classList.remove("active"));
   if (btn) btn.classList.add("active");
 
-  const searchInput = document.getElementById("branchSearchInput");
-  if (searchInput) searchInput.value = "";
-  const clearBtn = document.getElementById("branchSearchClear");
-  if (clearBtn) clearBtn.style.display = "none";
+  const data = getSiteData();
+  const allBranches = data.branches || [];
 
-  if (cityOption === "all") {
-    filteredBranchesData = allBranchesData;
-  } else if (cityOption === "flagship") {
-    filteredBranchesData = allBranchesData.filter(b => b.isFlagship === true);
-  } else if (cityOption === "latenight") {
-    filteredBranchesData = allBranchesData.filter(b => b.timings && b.timings.includes("01:00 AM"));
-  } else if (cityOption === "Other Cities") {
-    filteredBranchesData = allBranchesData.filter(b => b.city.toLowerCase() !== "islamabad" && b.city.toLowerCase() !== "rawalpindi" && b.city.toLowerCase() !== "lahore");
+  if (cityKey === "all") {
+    filteredBranchesData = allBranches;
+  } else if (cityKey === "flagship") {
+    filteredBranchesData = allBranches.filter(b => b.isFlagship);
+  } else if (cityKey === "latenight") {
+    filteredBranchesData = allBranches.filter(b => b.timings && b.timings.includes("01:00 AM"));
+  } else if (cityKey === "Other Cities") {
+    filteredBranchesData = allBranches.filter(b => 
+      b.city.toLowerCase() !== "islamabad" && 
+      b.city.toLowerCase() !== "rawalpindi" && 
+      b.city.toLowerCase() !== "lahore"
+    );
   } else {
-    filteredBranchesData = allBranchesData.filter(b => b.city.toLowerCase() === cityOption.toLowerCase());
+    filteredBranchesData = allBranches.filter(b => b.city.toLowerCase() === cityKey.toLowerCase());
+  }
+
+  // Preserve distance sorting if GPS was run
+  if (allBranchesData[0] && typeof allBranchesData[0].distanceKm === "number") {
+    filteredBranchesData.sort((a, b) => (a.distanceKm || 9999) - (b.distanceKm || 9999));
   }
 
   renderBranchHub(filteredBranchesData);
   renderBranchCards(filteredBranchesData);
 };
 
-window.switchBranchView = function(viewMode) {
-  currentBranchView = viewMode;
-  const hubLayout = document.getElementById("branchHubLayout");
-  const gridLayout = document.getElementById("branchesGrid");
+window.switchBranchView = function(viewType) {
+  const hub = document.getElementById("branchHubLayout");
+  const grid = document.getElementById("branchesGrid");
   const btnHub = document.getElementById("viewBtnHub");
   const btnGrid = document.getElementById("viewBtnGrid");
 
-  if (viewMode === "hub") {
-    if (hubLayout) hubLayout.style.display = "grid";
-    if (gridLayout) gridLayout.style.display = "none";
+  if (viewType === "hub") {
+    if (hub) hub.style.display = "grid";
+    if (grid) grid.style.display = "none";
     if (btnHub) btnHub.classList.add("active");
     if (btnGrid) btnGrid.classList.remove("active");
   } else {
-    if (hubLayout) hubLayout.style.display = "none";
-    if (gridLayout) gridLayout.style.display = "grid";
+    if (hub) hub.style.display = "none";
+    if (grid) grid.style.display = "grid";
     if (btnHub) btnHub.classList.remove("active");
     if (btnGrid) btnGrid.classList.add("active");
   }
@@ -1192,11 +1371,32 @@ window.switchBranchView = function(viewMode) {
 window.clearBranchSearch = function() {
   const searchInput = document.getElementById("branchSearchInput");
   const clearBtn = document.getElementById("branchSearchClear");
-  if (searchInput) searchInput.value = "";
-  if (clearBtn) clearBtn.style.display = "none";
-  filteredBranchesData = allBranchesData;
-  renderBranchHub(filteredBranchesData);
-  renderBranchCards(filteredBranchesData);
+  if (searchInput) {
+    searchInput.value = "";
+    if (clearBtn) clearBtn.style.display = "none";
+    filteredBranchesData = allBranchesData;
+    renderBranchHub(filteredBranchesData);
+    renderBranchCards(filteredBranchesData);
+  }
+};
+
+window.selectActiveBranch = function(branchId, shouldScroll) {
+  activeBranchId = branchId;
+  const branch = allBranchesData.find(b => b.id === branchId);
+
+  // Update mini list highlight
+  document.querySelectorAll(".branch-mini-item").forEach(el => el.classList.remove("active"));
+  const activeMini = document.getElementById(`branch-mini-${branchId}`);
+  if (activeMini) {
+    activeMini.classList.add("active");
+    if (shouldScroll) {
+      activeMini.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+
+  if (branch) {
+    renderActiveBranchDetail(branch);
+  }
 };
 
 function renderBranchCards(branches) {
@@ -1214,12 +1414,16 @@ function renderBranchCards(branches) {
     return;
   }
 
-  container.innerHTML = branches.map(b => `
+  container.innerHTML = branches.map(b => {
+    const liveStatus = getBranchLiveStatus(b.timings, b.is24Hours);
+    const distBadge = (typeof b.distanceKm === "number") ? `<span class="branch-gps-distance-badge"><i class="fa-solid fa-location-arrow"></i> ${b.distanceKm.toFixed(1)} km</span>` : '';
+    return `
     <div class="branch-card" style="position:relative;">
       <div class="branch-card-header">
         <img src="${encodeURI(b.image || 'assets/images/store_flagship.jpg')}" alt="${escapeHtml(b.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/store_flagship.jpg';">
         ${b.isFlagship ? '<span style="position:absolute; top:12px; left:12px; background:linear-gradient(135deg, #F59E0B, #D97706); color:white; font-weight:800; font-size:0.72rem; padding:3px 8px; border-radius:6px; z-index:2; box-shadow:0 2px 6px rgba(0,0,0,0.2);"><i class="fa-solid fa-star"></i> Flagship</span>' : ''}
-        ${b.is24Hours ? '<span class="branch-badge-24"><i class="fa-solid fa-clock"></i> 24/7 OPEN</span>' : ''}
+        ${distBadge}
+        ${liveStatus.badge}
         <span class="branch-city-badge">${escapeHtml(b.city)}</span>
       </div>
       <div class="branch-card-body">
@@ -1239,7 +1443,8 @@ function renderBranchCards(branches) {
         </a>
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 }
 
 /**
@@ -1597,6 +1802,8 @@ function initPrescriptionUploader(whatsappNumber) {
       const phone = document.getElementById("custPhone")?.value.trim() || "";
       const branch = document.getElementById("custBranch")?.value || "Nearest Branch";
       const notes = document.getElementById("custNotes")?.value.trim() || "";
+      const fulfillmentMode = document.querySelector("input[name='fulfillmentMode']:checked")?.value || "delivery";
+      const deliveryAddress = document.getElementById("custAddress")?.value.trim() || "";
 
       // Generate unique Reference Code
       const randomCode = Math.floor(1000 + Math.random() * 9000);
@@ -1610,6 +1817,8 @@ function initPrescriptionUploader(whatsappNumber) {
             id: refId,
             name: name,
             phone: phone,
+            fulfillmentMode: fulfillmentMode,
+            address: deliveryAddress,
             branch: branch,
             notes: notes,
             photoUrl: uploadedCleanPhotoUrl || "",
@@ -1625,6 +1834,12 @@ function initPrescriptionUploader(whatsappNumber) {
       let msg = `*--- D. WATSON PRESCRIPTION & MEDICINE ORDER ---*\n`;
       msg += `👤 *Customer Name:* ${name}\n`;
       msg += `📞 *Contact Phone:* ${phone}\n`;
+      if (fulfillmentMode === "delivery") {
+        msg += `🚚 *Fulfillment:* 🏠 Express Home Delivery\n`;
+        if (deliveryAddress) msg += `🏠 *Delivery Address:* ${deliveryAddress}\n`;
+      } else {
+        msg += `🚚 *Fulfillment:* 🏬 Branch Self-Pickup\n`;
+      }
       msg += `📍 *Selected Branch:* ${branch}\n`;
       msg += `🆔 *Prescription Ref ID:* ${refId}\n`;
       if (notes) msg += `📝 *Prescription / Medicine Details:* ${notes}\n`;
@@ -1929,4 +2144,243 @@ function initOrderBranchSelector() {
       closeBranchSelectorModal();
     });
   }
+}
+
+/**
+ * ==========================================================================
+ * Global Instant Product & Medicine Search Modal Controller
+ * ==========================================================================
+ */
+let isGlobalSearchInit = false;
+let globalSearchDebounce = null;
+
+function initGlobalSearch() {
+  if (isGlobalSearchInit) return;
+  isGlobalSearchInit = true;
+
+  const input = document.getElementById("globalSearchInput");
+  const clearBtn = document.getElementById("globalSearchClear");
+
+  if (input) {
+    input.addEventListener("input", (e) => {
+      const term = e.target.value.trim();
+      if (clearBtn) clearBtn.style.display = term ? "flex" : "none";
+
+      clearTimeout(globalSearchDebounce);
+      globalSearchDebounce = setTimeout(() => {
+        renderGlobalSearchResults(term);
+      }, 180);
+    });
+  }
+
+  // Keyboard shortcut listener: Esc to close, '/' to open
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeGlobalSearch();
+    } else if (e.key === "/" && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) {
+      e.preventDefault();
+      openGlobalSearch();
+    }
+  });
+}
+
+window.openGlobalSearch = function() {
+  initGlobalSearch();
+  const modal = document.getElementById("globalSearchModal");
+  const input = document.getElementById("globalSearchInput");
+  if (!modal) return;
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+
+  if (input) {
+    setTimeout(() => input.focus(), 80);
+    renderGlobalSearchResults(input.value.trim());
+  }
+};
+
+window.closeGlobalSearch = function() {
+  const modal = document.getElementById("globalSearchModal");
+  if (!modal) return;
+
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+};
+
+window.clearGlobalSearch = function() {
+  const input = document.getElementById("globalSearchInput");
+  const clearBtn = document.getElementById("globalSearchClear");
+  if (input) {
+    input.value = "";
+    input.focus();
+  }
+  if (clearBtn) clearBtn.style.display = "none";
+  renderGlobalSearchResults("");
+};
+
+window.searchByChip = function(query) {
+  openGlobalSearch();
+  const input = document.getElementById("globalSearchInput");
+  const clearBtn = document.getElementById("globalSearchClear");
+  if (input) {
+    input.value = query;
+    if (clearBtn) clearBtn.style.display = "flex";
+    renderGlobalSearchResults(query);
+  }
+};
+
+function renderGlobalSearchResults(term) {
+  const container = document.getElementById("globalSearchResults");
+  if (!container) return;
+
+  const data = getSiteData();
+  const products = data.products || [];
+  const query = (term || "").toLowerCase();
+
+  if (!query) {
+    const recommended = products.slice(0, 8);
+    container.innerHTML = `
+      <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#94A3B8; margin-bottom:10px; padding:0 4px;">
+        <i class="fa-solid fa-sparkles" style="color:var(--dw-red);"></i> Recommended Products &amp; Medicines
+      </div>
+      ${recommended.map(p => renderSearchResultItem(p, data.company.whatsapp)).join("")}
+    `;
+    return;
+  }
+
+  const matches = products.filter(p => {
+    return (p.name && p.name.toLowerCase().includes(query)) ||
+           (p.brand && p.brand.toLowerCase().includes(query)) ||
+           (p.categoryName && p.categoryName.toLowerCase().includes(query)) ||
+           (p.category && p.category.toLowerCase().includes(query)) ||
+           (p.description && p.description.toLowerCase().includes(query)) ||
+           (p.tag && p.tag.toLowerCase().includes(query));
+  });
+
+  if (matches.length === 0) {
+    container.innerHTML = `
+      <div class="search-empty-state" style="text-align:center; padding:40px 16px; color:#64748B;">
+        <i class="fa-solid fa-magnifying-glass-arrow-right" style="font-size: 2.4rem; color: #CBD5E1; margin-bottom: 12px; display:block;"></i>
+        <h4 style="color:#0F172A; margin:0 0 6px; font-size:1.1rem;">No Direct Matches for "${escapeHtml(term)}"</h4>
+        <p style="font-size:0.85rem; max-width:400px; margin:0 auto 16px; line-height:1.5;">Can't find your specific medicine or cosmetic product? Send us a quick inquiry directly on WhatsApp — we stock 20,000+ items across our network.</p>
+        <a href="https://wa.me/${data.company.whatsapp}?text=${encodeURIComponent(`Hi D.Watson Chemist, I am searching for "${term}". Is this product available in stock?`)}" target="_blank" class="btn btn-whatsapp" style="display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:10px; font-weight:700; text-decoration:none; color:white; background:#16A34A;">
+          <i class="fa-brands fa-whatsapp"></i> Ask Pharmacist on WhatsApp
+        </a>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#64748B; margin-bottom:10px; padding:0 4px;">
+      Found ${matches.length} ${matches.length === 1 ? 'Product' : 'Products'}
+    </div>
+    ${matches.map(p => renderSearchResultItem(p, data.company.whatsapp)).join("")}
+  `;
+}
+
+function renderSearchResultItem(p, fallbackWa) {
+  const pName = escapeHtml(p.name);
+  const pBrand = escapeHtml(p.brand || "D. Watson Certified");
+  const pPrice = escapeHtml(p.price || "Inquire");
+  const pCat = escapeHtml(p.categoryName || p.category || "Healthcare");
+  const pImg = encodeURI(p.image || "assets/images/pharmacy.jpg");
+  const waMsg = encodeURIComponent(`Hi D. Watson Chemist, I would like to order: ${p.name} (${p.price || 'Inquire'}). Please confirm stock and delivery.`);
+  const waUrl = `https://wa.me/${fallbackWa}?text=${waMsg}`;
+
+  return `
+    <div class="search-result-item" onclick="closeGlobalSearch(); openProductZoomModal('${p.id}')">
+      <img src="${pImg}" alt="${pName}" class="search-result-img" loading="lazy" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+      <div class="search-result-info">
+        <div class="search-result-title">${pName}</div>
+        <div class="search-result-meta">${pBrand} &bull; ${pCat}</div>
+        <div class="search-result-price">${pPrice}</div>
+      </div>
+      <a href="${waUrl}" target="_blank" class="btn-search-wa" onclick="event.stopPropagation();" title="Order on WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span>
+      </a>
+    </div>
+  `;
+}
+
+/**
+ * ==========================================================================
+ * Prescription Fulfillment Selector (Home Delivery vs Branch Self-Pickup)
+ * ==========================================================================
+ */
+window.setRxFulfillmentMode = function(mode) {
+  const deliveryLabel = document.getElementById("modeDeliveryLabel");
+  const pickupLabel = document.getElementById("modePickupLabel");
+  const addressRow = document.getElementById("deliveryAddressRow");
+  const addressInput = document.getElementById("custAddress");
+
+  if (mode === "delivery") {
+    if (deliveryLabel) deliveryLabel.classList.add("active");
+    if (pickupLabel) pickupLabel.classList.remove("active");
+    if (addressRow) addressRow.style.display = "block";
+    if (addressInput) addressInput.required = true;
+  } else {
+    if (pickupLabel) pickupLabel.classList.add("active");
+    if (deliveryLabel) deliveryLabel.classList.remove("active");
+    if (addressRow) addressRow.style.display = "none";
+    if (addressInput) addressInput.required = false;
+  }
+};
+
+/**
+ * ==========================================================================
+ * Progressive Web App (PWA) Service Worker & Mobile Install Controller
+ * ==========================================================================
+ */
+let deferredPwaPrompt = null;
+
+function initPWAInstall() {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js")
+        .then(reg => console.log("🟢 D. Watson PWA Service Worker Registered", reg.scope))
+        .catch(err => console.warn("PWA Service Worker Registration failed", err));
+    });
+  }
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPwaPrompt = e;
+
+    const dismissed = localStorage.getItem("dw_pwa_dismissed");
+    const banner = document.getElementById("pwaInstallBanner");
+    if (banner && !dismissed) {
+      banner.style.display = "flex";
+    }
+  });
+
+  const installBtn = document.getElementById("btnPwaInstall");
+  const dismissBtn = document.getElementById("btnPwaDismiss");
+  const banner = document.getElementById("pwaInstallBanner");
+
+  if (installBtn) {
+    installBtn.addEventListener("click", async () => {
+      if (!deferredPwaPrompt) return;
+      deferredPwaPrompt.prompt();
+      const { outcome } = await deferredPwaPrompt.userChoice;
+      console.log(`PWA Install Outcome: ${outcome}`);
+      deferredPwaPrompt = null;
+      if (banner) banner.style.display = "none";
+    });
+  }
+
+  if (dismissBtn) {
+    dismissBtn.addEventListener("click", () => {
+      if (banner) banner.style.display = "none";
+      localStorage.setItem("dw_pwa_dismissed", Date.now().toString());
+    });
+  }
+
+  window.addEventListener("appinstalled", () => {
+    console.log("🟢 D. Watson PWA App Installed Successfully");
+    if (banner) banner.style.display = "none";
+    deferredPwaPrompt = null;
+  });
 }
