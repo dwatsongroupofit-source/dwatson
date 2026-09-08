@@ -43,14 +43,15 @@ section, header, footer, nav, main, .container {
   width: 100% !important;
   max-width: 100% !important;
   height: 64px;
-  background: #0B132B !important;
-  background: rgba(11, 19, 43, 0.98) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, #A50505 0%, #800000 100%) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
   z-index: 999999 !important;
-  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.45);
-  padding: 0 6px;
+  box-shadow: 0 -8px 24px rgba(128, 0, 0, 0.4);
+  padding: 0 4px;
   padding-bottom: env(safe-area-inset-bottom, 0);
   align-items: center;
   justify-content: space-around;
@@ -64,32 +65,38 @@ section, header, footer, nav, main, .container {
   justify-content: center;
   flex: 1;
   height: 100%;
-  color: #94A3B8;
+  color: rgba(255, 255, 255, 0.88);
+  background: transparent;
+  border: none;
   text-decoration: none;
   font-size: 0.72rem;
   font-weight: 700;
   gap: 3px;
+  cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   -webkit-tap-highlight-color: transparent;
 }
 
 .mobile-nav-tab i {
-  font-size: 1.18rem;
+  font-size: 1.2rem;
+  color: #FFFFFF;
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .mobile-nav-tab.active,
+.mobile-nav-tab:hover,
 .mobile-nav-tab:active {
-  color: #FFFFFF;
+  color: #FDE047 !important;
 }
 
-.mobile-nav-tab.active i {
+.mobile-nav-tab.active i,
+.mobile-nav-tab:hover i {
   transform: translateY(-2px);
-  color: var(--dw-red);
+  color: #FDE047 !important;
 }
 
 .mobile-nav-tab.mobile-wa-tab i {
-  color: #25D366;
+  color: #25D366 !important;
 }
 
 /* Elevated Highlight Rx Bubble Button */
@@ -1892,9 +1899,11 @@ section, header, footer, nav, main, .container {
   .department-card .dept-features {
     display: none;
     margin-top: 8px !important;
+    width: 100% !important;
   }
   .department-card .dept-features.open {
-    display: flex !important;
+    display: block !important;
+    width: 100% !important;
   }
   .prescription-form-card {
     padding: 24px 18px !important;

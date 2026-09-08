@@ -83,6 +83,7 @@ function initWebsite() {
   initHeaderScroll();
   initMobileMenu();
   initGlobalSearch();
+  initHelplineDropdown();
   initPWAInstall();
 }
 
@@ -466,8 +467,8 @@ function renderHomeFlagshipBranches(branches, filter = "all") {
     if (!displayList.length) displayList = branchList;
   }
 
-  // Display top 4 premier branches for clean, full-width responsive grid
-  const selectedBranches = displayList.slice(0, 4);
+  // Display all official flagship branches in full-width responsive grid
+  const selectedBranches = displayList;
 
   container.innerHTML = selectedBranches.map((b) => {
     const rawPhone = (b.phone || "051-8438111").split("/")[0].replace(/[^0-9]/g, "");
@@ -2067,9 +2068,17 @@ function renderFooter(company, branches) {
 
   const footerBranchList = document.getElementById("footerBranchList");
   if (footerBranchList && branches) {
-    const isJourneyPage = window.location.pathname.includes("journey");
-    const branchPrefix = isJourneyPage ? "index.html#branches" : "#branches";
-    footerBranchList.innerHTML = branches.slice(0, 6).map(b => `
+    const isSubpage = window.location.pathname.includes("departments") || 
+                      window.location.pathname.includes("branches") || 
+                      window.location.pathname.includes("prescription") || 
+                      window.location.pathname.includes("journey") || 
+                      window.location.pathname.includes("contact") ||
+                      window.location.pathname.includes("privacy") ||
+                      window.location.pathname.includes("terms");
+    const branchPrefix = isSubpage ? "branches.html" : "branches.html";
+    const flagshipBranches = branches.filter(b => b.isFlagship);
+    const displayBranches = (flagshipBranches.length >= 7 ? flagshipBranches.slice(0, 7) : branches.slice(0, 7));
+    footerBranchList.innerHTML = displayBranches.map(b => `
       <li><a href="${branchPrefix}"><i class="fa-solid fa-angle-right"></i> ${escapeHtml(b.name)}</a></li>
     `).join("");
   }
@@ -2734,6 +2743,94 @@ window.closeGlobalSearch = function() {
   modal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
 };
+
+/**
+ * Flagship Branch Call Modal Handler (Mobile 1-Tap Branch Dialing)
+ */
+window.openFlagshipCallModal = function() {
+  const modal = document.getElementById("flagshipCallModal");
+  if (!modal) return;
+
+  const callList = document.getElementById("flagshipCallList");
+  if (callList) {
+    const siteData = typeof getSiteData === "function" ? getSiteData() : null;
+    const branches = (siteData && siteData.branches) ? siteData.branches : (allBranchesData || []);
+    const flagshipList = branches.filter(b => b.isFlagship);
+    const displayList = flagshipList.length ? flagshipList : branches.slice(0, 7);
+
+    callList.innerHTML = displayList.map(b => {
+      const rawPhone = (b.phone || "051-8438111").split("/")[0].replace(/[^0-9]/g, "");
+      const cleanPhone = (b.phone || "051-8438111").split("/")[0].trim();
+      return `
+        <div class="flagship-call-card">
+          <div class="flagship-call-details">
+            <span class="flagship-call-city-badge"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(b.city || "Islamabad")}</span>
+            <h4 class="flagship-call-title">${escapeHtml(b.name)}</h4>
+            <p class="flagship-call-meta"><i class="fa-regular fa-clock"></i> ${escapeHtml(b.timings || "Open Daily")}</p>
+          </div>
+          <a href="tel:${rawPhone}" class="flagship-dial-btn" aria-label="Call ${escapeHtml(b.name)}">
+            <i class="fa-solid fa-phone"></i>
+            <span>${escapeHtml(cleanPhone)}</span>
+          </a>
+        </div>
+      `;
+    }).join("");
+  }
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+};
+
+window.closeFlagshipCallModal = function() {
+  const modal = document.getElementById("flagshipCallModal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+};
+
+/**
+ * Interactive Topbar Helpline Dropdown with Click-to-Call
+ */
+function initHelplineDropdown() {
+  const dropdownWrap = document.getElementById("topHelplineDropdownWrap");
+  const dropdownList = document.getElementById("helplineDropdownList");
+  if (!dropdownWrap || !dropdownList) return;
+
+  const siteData = typeof getSiteData === "function" ? getSiteData() : null;
+  const branches = (siteData && siteData.branches) ? siteData.branches : (allBranchesData || []);
+  const flagshipList = branches.filter(b => b.isFlagship);
+  const displayList = flagshipList.length ? flagshipList : branches.slice(0, 7);
+
+  dropdownList.innerHTML = displayList.map(b => {
+    const rawPhone = (b.phone || "051-8438111").split("/")[0].replace(/[^0-9]/g, "");
+    const cleanPhone = (b.phone || "051-8438111").split("/")[0].trim();
+    return `
+      <a href="tel:${rawPhone}" class="helpline-dropdown-item">
+        <div class="helpline-branch-info">
+          <strong class="helpline-branch-name">${escapeHtml(b.name)}</strong>
+          <small class="helpline-branch-time"><i class="fa-regular fa-clock"></i> ${escapeHtml(b.timings || "Daily")}</small>
+        </div>
+        <span class="helpline-dial-pill"><i class="fa-solid fa-phone"></i> ${escapeHtml(cleanPhone)}</span>
+      </a>
+    `;
+  }).join("");
+
+  const toggleBtn = document.getElementById("topPhoneBtn");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdownWrap.classList.toggle("open");
+    });
+  }
+
+  document.addEventListener("click", (e) => {
+    if (!dropdownWrap.contains(e.target)) {
+      dropdownWrap.classList.remove("open");
+    }
+  });
+}
 
 window.clearGlobalSearch = function() {
   const input = document.getElementById("globalSearchInput");

@@ -163,24 +163,110 @@ window.togglePasswordVisibility = function(inputId, iconEl) {
 };
 
 /**
- * Universal Image Upload Handler with Instant Local File Preview
+ * Smart In-Browser Canvas Image Compressor
+ * Resizes large gallery/camera photos (e.g. 10MB) down to ~60KB web-ready images
  */
-window.handleAdminImageUpload = function(inputEl, targetInputId, previewImgId) {
-  if (inputEl.files && inputEl.files[0]) {
-    const file = inputEl.files[0];
-    if (file.size > 5 * 1024 * 1024) {
-      showToast("Selected image is large (>5MB). Consider a smaller file.", "info");
-    }
+function compressImageFile(file, maxDim = 1200, quality = 0.82) {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = function(e) {
-      const dataUrl = e.target.result;
-      const targetInput = document.getElementById(targetInputId);
-      if (targetInput) targetInput.value = dataUrl;
-      const previewImg = document.getElementById(previewImgId);
-      if (previewImg) previewImg.src = dataUrl;
-      showToast("Photo selected! Click Save to apply.", "success");
+    reader.onerror = reject;
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        let width = img.naturalWidth || img.width;
+        let height = img.naturalHeight || img.height;
+
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        canvas.toBlob((blob) => {
+          resolve({ dataUrl, blob, width, height });
+        }, "image/jpeg", quality);
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Universal Image Upload Handler with Smart Canvas Compression & Live Cloud Link Generation
+ */
+window.handleAdminImageUpload = async function(inputEl, targetInputId, previewImgId) {
+  if (!inputEl.files || !inputEl.files[0]) return;
+  const file = inputEl.files[0];
+  const targetInput = document.getElementById(targetInputId);
+  const previewImg = document.getElementById(previewImgId);
+
+  try {
+    showToast("Optimizing photo from gallery...", "info");
+
+    // 1. Compress image in-browser to avoid browser LocalStorage quota errors
+    const { dataUrl, blob } = await compressImageFile(file, 1200, 0.82);
+
+    // Set immediate preview and compressed value
+    if (previewImg) previewImg.src = dataUrl;
+    if (targetInput) targetInput.value = dataUrl;
+
+    // 2. Attempt to upload to public cloud CDN to generate a direct permanent live URL
+    let uploadedLiveUrl = null;
+    try {
+      const formData = new FormData();
+      formData.append("key", "6d207e02198a847aa98d0a2a901485a5");
+      formData.append("action", "upload");
+      formData.append("source", blob, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
+      formData.append("format", "json");
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+      const res = await fetch("https://freeimage.host/api/1/upload", {
+        method: "POST",
+        body: formData,
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.image && json.image.url) {
+          uploadedLiveUrl = json.image.url;
+        }
+      }
+    } catch (cdnErr) {
+      console.warn("Cloud CDN upload fallback to compressed DataURL:", cdnErr.message);
+    }
+
+    if (uploadedLiveUrl) {
+      if (targetInput) targetInput.value = uploadedLiveUrl;
+      if (previewImg) previewImg.src = uploadedLiveUrl;
+      showToast("Photo uploaded live to cloud! Link generated.", "success");
+    } else {
+      showToast("Photo compressed & ready! Click Save to apply.", "success");
+    }
+  } catch (err) {
+    console.error("Image processing error:", err);
+    showToast("Error processing photo. Please try again or paste image URL.", "error");
+  } finally {
+    // Reset file input so user can pick the same file again if desired
+    inputEl.value = "";
   }
 };
 

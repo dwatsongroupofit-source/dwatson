@@ -771,11 +771,11 @@ const DEFAULT_SITE_DATA = {
       phone: "051-8438111 / 051-2822222",
       timings: "08:00 AM - 01:00 AM Daily",
       is24Hours: false,
-      isFlagship: true,
+      isFlagship: false,
       expressDelivery: true,
       deliveryFee: 200,
       minOrderAmount: 1000,
-      flagshipBadge: "⭐ Flagship Mega Store",
+      flagshipBadge: "⭐ Premier Mega Store",
       image: "assets/images/branches/blue-area.jpg",
       services: ["Pharmacy", "Cosmetics Studio", "Mega Superstore", "Optics Clinic", "Surgical Supplies", "Undergarments"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Blue+Area+Islamabad",
@@ -1495,15 +1495,22 @@ function getSiteData() {
 }
 
 /**
- * Save updated site data to LocalStorage
+ * Save updated site data to LocalStorage with robust quota management
  */
 function saveSiteData(data) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const jsonStr = JSON.stringify(data);
+    localStorage.setItem(STORAGE_KEY, jsonStr);
     window.dispatchEvent(new Event("siteDataUpdated"));
     return true;
   } catch (e) {
-    console.error("Failed to save site data:", e);
+    console.error("Failed to save site data to LocalStorage:", e);
+    if (e.name === "QuotaExceededError" || e.code === 22 || e.code === 1014) {
+      console.warn("Storage quota reached. Consider using CDN image URLs instead of heavy local images.");
+      if (typeof showToast === "function") {
+        showToast("Storage quota reached! Please use an image link or smaller compressed image.", "error");
+      }
+    }
     return false;
   }
 }

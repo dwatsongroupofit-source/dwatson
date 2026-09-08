@@ -7534,3 +7534,351 @@ textarea.form-control {
   font-size: 0.82rem;
 }
 
+/* ==========================================================================
+   OFFICIAL BRANCH CARDS - INTERNAL PADDING & MARGINS
+   ========================================================================== */
+.branch-card-body,
+.branch-body {
+  padding: 22px 24px !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.branch-card-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: var(--dw-navy);
+  line-height: 1.35;
+}
+
+.branch-card-address {
+  font-size: 0.86rem;
+  color: #475569;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.45;
+}
+
+.branch-card-address i {
+  color: var(--dw-red);
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.branch-card-timings {
+  font-size: 0.82rem;
+  color: #64748B;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.branch-card-timings i {
+  color: #0284C7;
+}
+
+.branch-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  margin-bottom: 8px;
+}
+
+.branch-card-footer {
+  padding: 0 24px 22px !important;
+  display: flex;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   FLAGSHIP BRANCHES CALL PICKER MODAL (1-Tap Dialing on Mobile)
+   ========================================================================== */
+.flagship-call-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100050;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.flagship-call-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.flagship-call-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.flagship-call-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  background: #FFFFFF;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.flagship-call-modal.active .flagship-call-sheet {
+  transform: translateY(0);
+}
+
+.flagship-call-header {
+  padding: 18px 22px;
+  background: linear-gradient(135deg, #A50505 0%, #800000 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flagship-call-header-text h3 {
+  font-size: 1.12rem;
+  font-weight: 800;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #FFFFFF;
+}
+
+.flagship-call-header-text p {
+  font-size: 0.8rem;
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.flagship-call-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #FFFFFF;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.flagship-call-close:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.flagship-call-list {
+  padding: 16px 20px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.flagship-call-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.flagship-call-card:hover {
+  transform: translateY(-1px);
+  border-color: #CBD5E1;
+}
+
+.flagship-call-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.flagship-call-city-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #A50505;
+  background: #FEE2E2;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.flagship-call-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flagship-call-meta {
+  font-size: 0.78rem;
+  color: #64748B;
+  margin: 0;
+}
+
+.flagship-dial-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.flagship-dial-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
+}
+
+/* ==========================================================================
+   DESKTOP TOPBAR HELPLINE DROPDOWN
+   ========================================================================== */
+.topbar-helpline-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.topbar-helpline-btn {
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.topbar-helpline-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.topbar-helpline-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 330px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  border: 1px solid #E2E8F0;
+  z-index: 99999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+  overflow: hidden;
+}
+
+.topbar-helpline-wrap.open .topbar-helpline-dropdown,
+.topbar-helpline-wrap:hover .topbar-helpline-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.helpline-dropdown-header {
+  background: #F8FAFC;
+  padding: 10px 14px;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+}
+
+.helpline-dropdown-header strong {
+  font-size: 0.84rem;
+  color: #0F172A;
+}
+
+.helpline-dropdown-header small {
+  font-size: 0.72rem;
+  color: #64748B;
+}
+
+.helpline-dropdown-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.helpline-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid #F1F5F9;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.helpline-dropdown-item:hover {
+  background: #FEF2F2;
+}
+
+.helpline-branch-info strong {
+  display: block;
+  font-size: 0.82rem;
+  color: #0F172A;
+}
+
+.helpline-branch-time {
+  font-size: 0.72rem;
+  color: #64748B;
+}
+
+.helpline-dial-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #DC2626;
+  color: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+

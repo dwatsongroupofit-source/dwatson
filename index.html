@@ -84,7 +84,18 @@
           <span id="topAnnouncement">✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • WhatsApp Express Delivery: 0332-9716666</span>
         </div>
         <div class="top-bar-links">
-          <a href="tel:0518438111" id="topPhone"><i class="fa-solid fa-phone"></i> Helpline: 051-8438111</a>
+          <div class="topbar-helpline-wrap" id="topHelplineDropdownWrap">
+            <button type="button" class="topbar-helpline-btn" id="topPhoneBtn" aria-label="Flagship Branch Helplines">
+              <i class="fa-solid fa-phone-volume"></i> Helpline: 051-8438111 <i class="fa-solid fa-chevron-down" style="font-size:0.75rem; margin-left:4px;"></i>
+            </button>
+            <div class="topbar-helpline-dropdown" id="topHelplineDropdown">
+              <div class="helpline-dropdown-header">
+                <strong><i class="fa-solid fa-hospital"></i> Flagship Branch Helplines</strong>
+                <small>Click to call directly</small>
+              </div>
+              <div class="helpline-dropdown-list" id="helplineDropdownList"></div>
+            </div>
+          </div>
           <a href="https://wa.me/923329716666" id="topWhatsApp" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666</a>
         </div>
       </div>
@@ -575,6 +586,8 @@
             <li><a href="journey.html"><i class="fa-solid fa-angle-right"></i> The Journey of D. Watson</a></li>
             <li><a href="prescription.html"><i class="fa-solid fa-angle-right"></i> Upload Prescription</a></li>
             <li><a href="contact.html"><i class="fa-solid fa-angle-right"></i> Customer Care &amp; Support</a></li>
+            <li><a href="privacy.html"><i class="fa-solid fa-angle-right"></i> Privacy Policy</a></li>
+            <li><a href="terms.html"><i class="fa-solid fa-angle-right"></i> Terms of Service</a></li>
             <li><a href="admin.html"><i class="fa-solid fa-angle-right"></i> Admin Portal</a></li>
           </ul>
         </div>
@@ -667,13 +680,13 @@
       </div>
       <span>Upload Rx</span>
     </a>
-    <a href="branches.html" class="mobile-nav-tab" id="mobTabBranches">
-      <i class="fa-solid fa-location-dot"></i>
-      <span>Branches</span>
-    </a>
+    <button type="button" class="mobile-nav-tab" id="mobTabCall" onclick="openFlagshipCallModal()" aria-label="Call Flagship Branches">
+      <i class="fa-solid fa-phone-volume"></i>
+      <span>Call</span>
+    </button>
     <a href="https://wa.me/923329716666?text=Hi%20D.Watson%20Chemist,%20I%20need%20assistance." target="_blank" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa">
       <i class="fa-brands fa-whatsapp"></i>
-      <span>WhatsApp Chat</span>
+      <span>Chat</span>
     </a>
   </nav>
 
@@ -779,6 +792,19 @@
           <i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666
         </a>
       </div>
+    </div>
+  <!-- Flagship Call Modal -->
+  <div class="flagship-call-modal" id="flagshipCallModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="flagship-call-backdrop" onclick="closeFlagshipCallModal()"></div>
+    <div class="flagship-call-sheet">
+      <div class="flagship-call-header">
+        <div class="flagship-call-header-text">
+          <h3><i class="fa-solid fa-phone-volume"></i> Call Flagship Branches</h3>
+          <p>Choose any branch below for instant telephone connection</p>
+        </div>
+        <button type="button" class="flagship-call-close" onclick="closeFlagshipCallModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="flagship-call-list" id="flagshipCallList"></div>
     </div>
   </div>
 
