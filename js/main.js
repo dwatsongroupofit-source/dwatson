@@ -23,6 +23,7 @@ window.slideProducts = function(direction) {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  initAppSplashScreen();
   initWebsite();
   initOrderBranchSelector();
 
@@ -3037,10 +3038,83 @@ function initPWAInstall() {
 }
 
 /**
- * PWA Native App Launch Splash Screen Controller (Disabled: Instant Load Active)
+ * PWA Native App Launch Splash Screen Controller
+ * CRITICAL USER REQUIREMENT:
+ * - ONLY show when opened as the installed mobile app (standalone PWA).
+ * - NEVER show for regular web visitors (desktop or mobile browser tabs).
+ * - Pure white background (#FFFFFF) with crystal-clear high-definition D. Watson logo.
  */
 function initAppSplashScreen() {
-  // Disabled: zero-delay instant load active
+  try {
+    // 1. Strict check: ONLY show when running as an installed standalone mobile app
+    const isStandaloneMatch = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+    const isIosStandalone = window.navigator.standalone === true;
+    const isPwaUrl = window.location.search.includes('source=pwa') || window.location.search.includes('utm_source=pwa');
+    const isAndroidAppReferrer = document.referrer && document.referrer.includes('android-app://');
+
+    const isInstalledMobileApp = Boolean(isStandaloneMatch || isIosStandalone || isPwaUrl || isAndroidAppReferrer);
+
+    // If regular web browser browsing (desktop or mobile browser tabs), DO NOT SHOW (instant direct load)
+    if (!isInstalledMobileApp) {
+      return;
+    }
+
+    // 2. Only show once per app session so navigating between pages does not re-trigger it
+    if (sessionStorage.getItem('dw_app_splash_seen')) {
+      return;
+    }
+    sessionStorage.setItem('dw_app_splash_seen', '1');
+
+    // 3. Mount splash screen
+    const mountSplash = () => {
+      if (!document.body || document.getElementById('pwaAppSplash')) return;
+
+      const splashEl = document.createElement('div');
+      splashEl.className = 'pwa-app-splash';
+      splashEl.id = 'pwaAppSplash';
+      splashEl.setAttribute('role', 'dialog');
+      splashEl.setAttribute('aria-modal', 'true');
+      splashEl.setAttribute('aria-label', 'Launching D. Watson Mobile App');
+
+      splashEl.innerHTML = `
+        <div style="height: 16px;"></div>
+        <div class="splash-center-content">
+          <div class="splash-emblem-wrap">
+            <div class="splash-emblem-halo"></div>
+            <img src="assets/images/pwa-icon-512.png" alt="D. Watson Emblem" class="splash-emblem-img" width="104" height="104">
+          </div>
+          <h1 class="splash-brand-title">D. Watson</h1>
+          <div class="splash-brand-sub">Chemist &amp; Superstore</div>
+          <div class="splash-brand-motto">Trusted Healthcare Since 1978</div>
+          <div class="splash-loader-track">
+            <div class="splash-loader-bar"></div>
+          </div>
+        </div>
+        <div class="splash-footer-badge">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Official Mobile App • 100% Genuine</span>
+        </div>
+      `;
+
+      document.body.prepend(splashEl);
+
+      // Smooth dismiss after 1.1s
+      setTimeout(() => {
+        splashEl.classList.add('splash-hiding');
+        setTimeout(() => {
+          splashEl.remove();
+        }, 380);
+      }, 1100);
+    };
+
+    if (document.body) {
+      mountSplash();
+    } else {
+      document.addEventListener('DOMContentLoaded', mountSplash);
+    }
+  } catch (err) {
+    console.warn('Splash screen error:', err);
+  }
 }
 
 /**
@@ -3622,3 +3696,6 @@ function filterBranchesSearch(query) {
 
   renderBranchCards(filtered);
 }
+
+// Early evaluation for standalone mobile app launch screen
+initAppSplashScreen();

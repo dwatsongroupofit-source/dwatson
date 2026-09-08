@@ -3,7 +3,7 @@
  * Ultra-fast caching, zero unhandled promise rejections & robust offline resilience
  */
 
-const CACHE_NAME = "dwatson-cache-v8.1";
+const CACHE_NAME = "dwatson-cache-v9.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -12,11 +12,18 @@ const STATIC_ASSETS = [
   "./prescription.html",
   "./journey.html",
   "./contact.html",
+  "./privacy.html",
+  "./terms.html",
   "./css/style.css?v=8.1",
   "./css/responsive.css?v=8.1",
   "./js/config.js?v=1.1",
   "./js/data.js?v=8.0",
   "./js/main.js?v=8.0",
+  "./assets/images/pwa-icon-192.png",
+  "./assets/images/pwa-icon-512.png",
+  "./assets/images/pwa-maskable-192.png",
+  "./assets/images/pwa-maskable-512.png",
+  "./assets/images/apple-touch-icon-180.png",
   "./assets/images/logo.svg",
   "./assets/images/logo-white.svg",
   "./assets/images/logo-official.png",
