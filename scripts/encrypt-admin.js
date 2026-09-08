@@ -251,20 +251,46 @@ const finalAdminHtml = `<!DOCTYPE html>
         return new TextDecoder().decode(decryptedBuffer);
       }
 
-      // Mount decrypted DOM and execute scripts in order
-      function mountStudio(decryptedHtml) {
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          if (document.querySelector('script[src="' + src + '"]')) {
+            return resolve();
+          }
+          const s = document.createElement("script");
+          s.src = src;
+          s.async = false;
+          s.onload = () => resolve();
+          s.onerror = (e) => {
+            console.error("Failed loading script:", src, e);
+            reject(e);
+          };
+          document.body.appendChild(s);
+        });
+      }
+
+      // Mount decrypted DOM and execute scripts in strict order
+      async function mountStudio(decryptedHtml) {
         mountEl.innerHTML = decryptedHtml;
 
-        // Execute any script elements contained inside the decrypted HTML
-        const scripts = Array.from(mountEl.querySelectorAll("script"));
-        scripts.forEach(oldScript => {
-          const newScript = document.createElement("script");
-          Array.from(oldScript.attributes).forEach(attr => {
-            newScript.setAttribute(attr.name, attr.value);
-          });
-          newScript.textContent = oldScript.textContent;
-          oldScript.parentNode.replaceChild(newScript, oldScript);
-        });
+        // Load dependencies in exact sequence
+        try {
+          if (!window.DW_CONFIG) await loadScript("js/config.js?v=1.1");
+          if (!window.getSiteData) await loadScript("js/data.js?v=5.5");
+          await loadScript("js/admin.js?v=5.5");
+        } catch (err) {
+          console.error("Error loading studio dependencies:", err);
+        }
+
+        // Initialize state, tab navigation and render all modules
+        if (typeof window.bootAdminApp === "function") {
+          window.bootAdminApp();
+        }
+        if (typeof window.initTabNavigation === "function") {
+          window.initTabNavigation();
+        }
+        if (typeof window.renderAllSections === "function") {
+          window.renderAllSections();
+        }
 
         // Hide login overlay
         overlay.classList.add("authenticated");
@@ -294,7 +320,7 @@ const finalAdminHtml = `<!DOCTYPE html>
             localStorage.removeItem(STORAGE_KEY_PASS);
           }
 
-          mountStudio(decryptedHtml);
+          await mountStudio(decryptedHtml);
           return true;
         } catch (err) {
           console.warn("Decryption failed:", err);

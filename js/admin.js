@@ -9,6 +9,11 @@ let editItemIndex = -1;
 let failedAttempts = 0;
 let lockoutTimer = null;
 let inactivityTimer = null;
+let activeInquiryFilter = "all";
+let isCloudSyncInitialized = false;
+const ADMIN_CLOUD_TOPIC = "dwatson_pharmacy_inquiries_2026";
+const ADMIN_CLOUD_URL = `https://ntfy.sh/${ADMIN_CLOUD_TOPIC}`;
+let lastCloudPollTimestamp = Math.floor(Date.now() / 1000) - 30;
 
 // SHA-256 Utility for secure client-side password hashing
 async function sha256(message) {
@@ -36,6 +41,10 @@ function bootAdminApp() {
   initInactivityWatcher();
 }
 
+window.bootAdminApp = bootAdminApp;
+window.initTabNavigation = initTabNavigation;
+window.renderAllSections = renderAllSections;
+
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", bootAdminApp);
 } else {
@@ -59,10 +68,10 @@ function initAuthGuard() {
   const isAuthSession = sessionStorage.getItem("dwatson_admin_auth") === "true" || localStorage.getItem("dwatson_admin_remember") === "true";
 
   if (isAuthSession) {
-    overlay.classList.add("authenticated");
+    if (overlay) overlay.classList.add("authenticated");
     renderAllSections();
   } else {
-    overlay.classList.remove("authenticated");
+    if (overlay) overlay.classList.remove("authenticated");
   }
 
   if (loginForm) {
@@ -1121,7 +1130,6 @@ window.saveSecurityCredentials = async function(e) {
 /* ==========================================================================
    6b. CUSTOMER ORDERS & INQUIRIES DESK
    ========================================================================== */
-let activeInquiryFilter = "all";
 
 window.filterInquiriesType = function(type, btnEl) {
   activeInquiryFilter = type;
@@ -1363,9 +1371,6 @@ function escapeAdminHtml(str) {
 /* ==========================================================================
    8. REAL-TIME CLOUD DATABASE SYNC ENGINE (Multi-Device Live Sync)
    ========================================================================== */
-let isCloudSyncInitialized = false;
-const ADMIN_CLOUD_TOPIC = "dwatson_pharmacy_inquiries_2026";
-const ADMIN_CLOUD_URL = `https://ntfy.sh/${ADMIN_CLOUD_TOPIC}`;
 
 function initRealtimeCloudSync() {
   if (isCloudSyncInitialized) return;
@@ -1406,8 +1411,6 @@ function initRealtimeCloudSync() {
   // 3. Resilient Cloud Polling Backup (every 10 seconds)
   setInterval(fetchRecentCloudInquiries, 10000);
 }
-
-let lastCloudPollTimestamp = Math.floor(Date.now() / 1000) - 30;
 
 async function fetchRecentCloudInquiries() {
   try {
