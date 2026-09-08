@@ -1883,85 +1883,179 @@ section, header, footer, nav, main, .container {
   }
 }
 
-@media (max-width: 576px) {
-  .app-quick-dock {
-    grid-template-columns: repeat(5, 1fr) !important;
-    gap: 4px !important;
+/* ==========================================================================
+   OFFICIAL D. WATSON MOBILE RESPONSIVE SYSTEM (ALIGNED WITH DWATSON.PK)
+   ========================================================================== */
+@media (max-width: 992px) {
+  .dwatson-categories-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 12px !important;
   }
-  .app-dock-icon {
-    width: 44px !important;
-    height: 44px !important;
-    font-size: 1.1rem !important;
-    border-radius: 12px !important;
+
+  .mockup-leadership-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
   }
-  .app-dock-label {
-    font-size: 0.65rem !important;
+
+  .dwatson-rx-banner-card {
+    flex-direction: column !important;
+    text-align: center !important;
+    padding: 20px 18px !important;
+  }
+
+  .dwatson-rx-banner-left {
+    flex-direction: column !important;
+    text-align: center !important;
+  }
+
+  .dwatson-rx-banner-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .mockup-flagship-upper {
+    grid-template-columns: 1fr !important;
   }
 }
 
-/* ==========================================================================
-   Mockup 1 & 2 Mobile Refinements (< 576px)
-   ========================================================================== */
-@media (max-width: 576px) {
-  .mockup-app-dock-card {
-    padding: 12px 6px !important;
+@media (max-width: 768px) {
+  .dwatson-categories-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 10px !important;
   }
-  .mockup-dock-bubble {
-    width: 44px !important;
-    height: 44px !important;
-    font-size: 1.15rem !important;
-    margin-bottom: 4px !important;
+
+  .dwatson-cat-card {
+    padding: 12px 6px 10px !important;
+    border-radius: 14px !important;
   }
-  .mockup-dock-text {
-    font-size: 0.65rem !important;
+
+  .dwatson-cat-circle {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 1.45rem !important;
+    margin-bottom: 6px !important;
   }
-  .mockup-rx-camera-box {
-    width: 46px !important;
-    height: 46px !important;
-    font-size: 1.35rem !important;
-  }
-  .mockup-rx-card-title {
-    font-size: 0.88rem !important;
-  }
-  .mockup-rx-snap-btn {
-    padding: 6px 12px !important;
+
+  .dwatson-cat-title {
     font-size: 0.78rem !important;
+    line-height: 1.2 !important;
   }
-  .home-dept-card {
-    flex: 0 0 125px !important;
-    width: 125px !important;
-    height: 155px !important;
-  }
+
+  /* Generous Mobile Product Cards (Matching dwatson.pk) */
   .home-product-card {
-    flex: 0 0 220px !important;
-    width: 220px !important;
-    padding: 8px 10px !important;
+    flex: 0 0 190px !important;
+    width: 190px !important;
+    padding: 12px !important;
+    border-radius: 14px !important;
   }
+
   .home-product-img-wrap {
-    width: 54px !important;
-    height: 54px !important;
+    height: 125px !important;
+    width: 100% !important;
+    margin-bottom: 8px !important;
+    padding: 6px !important;
   }
-  .home-product-price {
-    font-size: 0.9rem !important;
+
+  .home-product-img-wrap img {
+    max-height: 115px !important;
+    max-width: 100% !important;
   }
+
+  .home-product-brand {
+    font-size: 0.68rem !important;
+  }
+
   .home-product-title {
-    font-size: 0.72rem !important;
+    font-size: 0.82rem !important;
+    height: 2.7em !important;
   }
-  .mockup-flagship-img-wrap {
-    width: 95px !important;
-    height: 85px !important;
+
+  .home-product-price {
+    font-size: 1.05rem !important;
+    margin-bottom: 8px !important;
   }
-  .mockup-flagship-title {
+
+  .home-product-buy-btn {
+    font-size: 0.76rem !important;
+    padding: 8px 10px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Generous Mobile Department Cards */
+  .home-dept-card {
+    flex: 0 0 180px !important;
+    width: 180px !important;
+    height: 155px !important;
+    border-radius: 14px !important;
+  }
+
+  .home-dept-card-name {
+    font-size: 0.95rem !important;
+  }
+
+  /* Executive Leadership 2-Column Mobile Grid */
+  .mockup-leadership-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+
+  .mockup-leader-box:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .mockup-leader-avatar {
+    width: 68px !important;
+    height: 68px !important;
+  }
+
+  .mockup-leader-name {
     font-size: 0.85rem !important;
   }
-  .mockup-flagship-actions {
-    flex-direction: column !important;
-    gap: 6px !important;
+
+  /* Flagship Outlets on Mobile */
+  .mockup-flagship-card {
+    padding: 14px !important;
   }
+
+  .mockup-flagship-img-wrap {
+    height: 130px !important;
+  }
+
+  .mockup-flagship-actions {
+    flex-direction: row !important;
+  }
+
   .btn-flagship-call, .btn-flagship-dir {
+    flex: 1 !important;
     justify-content: center !important;
-    padding: 6px 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .dwatson-categories-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .dwatson-cat-circle {
+    width: 54px !important;
+    height: 54px !important;
+    font-size: 1.3rem !important;
+  }
+
+  .dwatson-cat-title {
     font-size: 0.72rem !important;
+  }
+
+  .home-product-card {
+    flex: 0 0 180px !important;
+    width: 180px !important;
+  }
+
+  .home-dept-card {
+    flex: 0 0 165px !important;
+    width: 165px !important;
+    height: 145px !important;
   }
 }
 

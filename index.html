@@ -38,32 +38,16 @@
   <meta name="apple-mobile-web-app-title" content="D. Watson">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon-180.png">
 
-  <!-- Stylesheets (v7.0 - Mockup 1 & 2 Exact Match) -->
-  <link rel="stylesheet" href="css/style.css?v=7.0">
-  <link rel="stylesheet" href="css/responsive.css?v=7.0">
+  <!-- Stylesheets (v8.0 - DWatson.pk Full Design Match) -->
+  <link rel="stylesheet" href="css/style.css?v=8.0">
+  <link rel="stylesheet" href="css/responsive.css?v=8.0">
 </head>
 <body class="page-home">
 
-  <!-- PWA Native App Launch Splash Screen -->
-  <div class="pwa-app-splash" id="pwaAppSplash" aria-hidden="true">
-    <div class="splash-inner">
-      <div class="splash-emblem-wrap">
-        <div class="splash-emblem-halo"></div>
-        <img src="assets/images/pwa-icon-192.png" alt="D. Watson Emblem" class="splash-logo-img">
-      </div>
-      <div class="splash-brand-title">D. WATSON</div>
-      <div class="splash-brand-subtitle">CHEMIST &amp; SUPERSTORE</div>
-      <div class="splash-tagline">Since 1978 • 100% Genuine Healthcare</div>
-      <div class="splash-loader-bar">
-        <div class="splash-loader-progress"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Mobile App Top Bar (Mockup 1 - Active on Mobile) -->
+  <!-- Mobile App Top Bar (Sticky Header matching dwatson.pk) -->
   <div class="mobile-app-header" id="mobileAppHeader">
     <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
-      <img src="assets/images/logo-emblem.png" alt="D. Watson Emblem Logo" class="mobile-app-emblem">
+      <img src="assets/images/logo-white.svg" alt="D. Watson Official Logo" class="mobile-app-emblem" onerror="this.onerror=null; this.src='assets/images/logo-white.png';">
     </a>
     <div class="mobile-app-search-wrap" onclick="openGlobalSearch()" role="button" aria-label="Open search">
       <i class="fa-solid fa-magnifying-glass"></i>
@@ -95,9 +79,9 @@
     <header class="site-header" id="siteHeader">
       <div class="container">
         <nav class="navbar">
-          <!-- Official Logo Emblem -->
+          <!-- Official Horizontal Brand Logo -->
           <a href="index.html" class="brand-logo" title="D. Watson Chemist &amp; Superstore">
-            <img src="assets/images/logo-emblem.png" alt="D. Watson Emblem Logo">
+            <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
           </a>
 
           <!-- Desktop Navigation Links -->
@@ -151,95 +135,149 @@
       <div class="slider-progress" id="sliderProgressBar"></div>
     </section>
 
-    <!-- ================= QUICK ACTION APP DOCK (MOCKUP 1) ================= -->
-    <section class="mockup-app-dock-section">
+    <!-- ================= EXPLORE POPULAR CATEGORIES (DWATSON.PK STYLE) ================= -->
+    <section class="dwatson-categories-section">
       <div class="container">
-        <h3 class="mockup-section-heading">Quick Action App Dock</h3>
-        <div class="mockup-app-dock-card">
-          <a href="prescription.html" class="mockup-dock-item">
-            <div class="mockup-dock-bubble bubble-mint">
+        <div class="dwatson-section-title-wrap">
+          <h3 class="dwatson-section-title">Explore Popular Categories</h3>
+          <span class="dwatson-section-sub">Genuine Medicines &amp; Healthcare Essentials</span>
+        </div>
+        <div class="dwatson-categories-grid">
+          <a href="departments.html#dept-pharmacy" class="dwatson-cat-card" title="Medicines &amp; Pharmacy">
+            <div class="dwatson-cat-circle cat-medicines">
               <i class="fa-solid fa-capsules"></i>
             </div>
-            <span class="mockup-dock-text">Upload Rx</span>
+            <span class="dwatson-cat-title">Medicines &amp; Pharmacy</span>
           </a>
-          <a href="departments.html" class="mockup-dock-item">
-            <div class="mockup-dock-bubble bubble-lavender">
-              <i class="fa-solid fa-store"></i>
+          <a href="departments.html#dept-supplements" class="dwatson-cat-card" title="Vitamins &amp; Nutrition">
+            <div class="dwatson-cat-circle cat-supplements">
+              <i class="fa-solid fa-pills"></i>
             </div>
-            <span class="mockup-dock-text">13 Departments</span>
+            <span class="dwatson-cat-title">Vitamins &amp; Nutrition</span>
           </a>
-          <a href="branches.html" class="mockup-dock-item">
-            <div class="mockup-dock-bubble bubble-cyan">
-              <i class="fa-solid fa-location-dot"></i>
-            </div>
-            <span class="mockup-dock-text">Store Locator</span>
-          </a>
-          <a href="departments.html#dept-cosmetics" class="mockup-dock-item">
-            <div class="mockup-dock-bubble bubble-gold">
-              <i class="fa-solid fa-wand-magic-sparkles"></i>
-            </div>
-            <span class="mockup-dock-text">Luxury Beauty</span>
-          </a>
-          <a href="departments.html#dept-babycare" class="mockup-dock-item">
-            <div class="mockup-dock-bubble bubble-pink">
+          <a href="departments.html#dept-babycare" class="dwatson-cat-card" title="Baby &amp; Mother Care">
+            <div class="dwatson-cat-circle cat-baby">
               <i class="fa-solid fa-baby-carriage"></i>
             </div>
-            <span class="mockup-dock-text">Baby Care</span>
+            <span class="dwatson-cat-title">Baby &amp; Mother Care</span>
+          </a>
+          <a href="departments.html#dept-cosmetics" class="dwatson-cat-card" title="Cosmetics &amp; Skincare">
+            <div class="dwatson-cat-circle cat-skincare">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <span class="dwatson-cat-title">Cosmetics &amp; Skincare</span>
+          </a>
+          <a href="departments.html#dept-optics" class="dwatson-cat-card" title="Optics &amp; Eyewear">
+            <div class="dwatson-cat-circle cat-devices">
+              <i class="fa-solid fa-glasses"></i>
+            </div>
+            <span class="dwatson-cat-title">Optics &amp; Eyewear</span>
+          </a>
+          <a href="departments.html#dept-surgical" class="dwatson-cat-card" title="Hospital &amp; Surgical">
+            <div class="dwatson-cat-circle cat-personal">
+              <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <span class="dwatson-cat-title">Hospital &amp; Surgical</span>
+          </a>
+          <a href="departments.html#dept-perfumes" class="dwatson-cat-card" title="Luxury Fragrances">
+            <div class="dwatson-cat-circle cat-fragrances">
+              <i class="fa-solid fa-spray-can-sparkles"></i>
+            </div>
+            <span class="dwatson-cat-title">Luxury Fragrances</span>
+          </a>
+          <a href="departments.html#dept-superstore" class="dwatson-cat-card" title="Gourmet Superstore">
+            <div class="dwatson-cat-circle cat-superstore">
+              <i class="fa-solid fa-cart-shopping"></i>
+            </div>
+            <span class="dwatson-cat-title">Gourmet Superstore</span>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- ================= 1-TAP QUICK PRESCRIPTION CAMERA CARD (MOCKUP 1) ================= -->
-    <section class="mockup-quick-rx-section">
+    <!-- ================= 1-TAP QUICK PRESCRIPTION & EXPRESS DELIVERY ================= -->
+    <section class="dwatson-rx-banner-section">
       <div class="container">
-        <a href="prescription.html" class="mockup-quick-rx-card">
-          <div class="mockup-rx-camera-box">
-            <i class="fa-solid fa-camera"></i>
+        <div class="dwatson-rx-banner-card">
+          <div class="dwatson-rx-banner-left">
+            <div class="dwatson-rx-banner-icon">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+            <div>
+              <div class="dwatson-rx-banner-title">1-Tap Prescription Consultation</div>
+              <p class="dwatson-rx-banner-desc">Upload doctor's prescription for instant pharmacist verification and express home delivery.</p>
+            </div>
           </div>
-          <div class="mockup-rx-content">
-            <div class="mockup-rx-card-title">1-Tap Quick Prescription Camera Card</div>
-            <span class="mockup-rx-snap-btn">
-              <i class="fa-solid fa-camera"></i> Snap Photo &amp; Order
-            </span>
-          </div>
-        </a>
+          <a href="prescription.html" class="dwatson-rx-banner-btn" title="Snap Prescription &amp; Order">
+            <i class="fa-solid fa-bolt"></i> Order via Prescription
+          </a>
+        </div>
       </div>
     </section>
 
-    <!-- ================= FEATURED DEPARTMENTS (MOCKUP 1 - HORIZONTAL CAROUSEL) ================= -->
-    <section class="mockup-carousel-section" id="featuredDepartments">
+    <!-- ================= TRENDING PRODUCTS (AUTO-SLIDING CAROUSEL) ================= -->
+    <section class="dwatson-carousel-section" id="trendingProducts">
       <div class="container">
-        <div class="mockup-carousel-header">
-          <h3 class="mockup-section-heading" style="margin-bottom:0;">Featured Departments</h3>
-          <div class="mockup-carousel-controls">
-            <button class="mockup-arrow-btn" onclick="scrollCarouselTrack('homeDeptCarousel', -1)" aria-label="Previous Departments"><i class="fa-solid fa-chevron-left"></i></button>
-            <button class="mockup-arrow-btn" onclick="scrollCarouselTrack('homeDeptCarousel', 1)" aria-label="Next Departments"><i class="fa-solid fa-chevron-right"></i></button>
+        <div class="dwatson-carousel-header">
+          <div>
+            <h3 class="dwatson-section-title" style="margin-bottom:2px;">Trending Products</h3>
+            <span class="dwatson-section-sub">100% genuine guaranteed medicines, wellness &amp; beauty</span>
+          </div>
+          <div class="dwatson-carousel-controls">
+            <button class="dwatson-arrow-btn" onclick="scrollCarouselTrack('homeProductsCarousel', -1)" aria-label="Previous Products"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="dwatson-arrow-btn" onclick="scrollCarouselTrack('homeProductsCarousel', 1)" aria-label="Next Products"><i class="fa-solid fa-chevron-right"></i></button>
           </div>
         </div>
-        <div class="mockup-horizontal-track" id="homeDeptCarousel">
+        <div class="dwatson-horizontal-track" id="homeProductsCarousel">
+          <!-- Populated & auto-sliding via renderHomeProducts() in main.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TOP PHARMACEUTICAL & HEALTHCARE BRANDS ================= -->
+    <section class="top-brands-section">
+      <div class="container">
+        <div class="dwatson-carousel-header" style="margin-bottom:10px;">
+          <div>
+            <h3 class="dwatson-section-title" style="font-size:1.15rem; margin-bottom:2px;">Trusted Partner Brands</h3>
+            <span class="dwatson-section-sub">Official direct distributor products</span>
+          </div>
+        </div>
+        <div class="top-brands-strip">
+          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#2563EB;"></i> Abbott</span>
+          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#DC2626;"></i> GSK</span>
+          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#059669;"></i> Hilton Pharma</span>
+          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#0D9488;"></i> Getz Pharma</span>
+          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#9333EA;"></i> CeraVe</span>
+          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#2563EB;"></i> Cetaphil</span>
+          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#D97706;"></i> The Ordinary</span>
+          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#E11D48;"></i> Aveeno</span>
+          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#059669;"></i> Nutraxin</span>
+          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#2563EB;"></i> Beurer</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FEATURED DEPARTMENTS (13 DEPARTMENTS) ================= -->
+    <section class="dwatson-carousel-section" id="featuredDepartments">
+      <div class="container">
+        <div class="dwatson-carousel-header">
+          <div>
+            <h3 class="dwatson-section-title" style="margin-bottom:2px;">Featured Departments</h3>
+            <span class="dwatson-section-sub">Comprehensive healthcare, luxury beauty &amp; retail superstore</span>
+          </div>
+          <div class="dwatson-carousel-controls">
+            <button class="dwatson-arrow-btn" onclick="scrollCarouselTrack('homeDeptCarousel', -1)" aria-label="Previous Departments"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="dwatson-arrow-btn" onclick="scrollCarouselTrack('homeDeptCarousel', 1)" aria-label="Next Departments"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+        <div class="dwatson-horizontal-track" id="homeDeptCarousel">
           <!-- Populated by renderHomeDepartments() in main.js -->
         </div>
       </div>
     </section>
 
-    <!-- ================= TRENDING PRODUCTS (MOCKUP 1 - BUY ON WHATSAPP) ================= -->
-    <section class="mockup-carousel-section" id="trendingProducts">
-      <div class="container">
-        <div class="mockup-carousel-header">
-          <h3 class="mockup-section-heading" style="margin-bottom:0;">Trending Products</h3>
-          <div class="mockup-carousel-controls">
-            <button class="mockup-arrow-btn" onclick="scrollCarouselTrack('homeProductsCarousel', -1)" aria-label="Previous Products"><i class="fa-solid fa-chevron-left"></i></button>
-            <button class="mockup-arrow-btn" onclick="scrollCarouselTrack('homeProductsCarousel', 1)" aria-label="Next Products"><i class="fa-solid fa-chevron-right"></i></button>
-          </div>
-        </div>
-        <div class="mockup-horizontal-track" id="homeProductsCarousel">
-          <!-- Populated by renderHomeProducts() in main.js -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= OFFICIAL FLAGSHIP OUTLETS (MOCKUP 2) ================= -->
+    <!-- ================= OFFICIAL FLAGSHIP OUTLETS ================= -->
     <section class="mockup-flagship-section">
       <div class="container">
         <h3 class="mockup-section-heading"><span style="color:#F59E0B;">⭐</span> Official Flagship Outlets</h3>
@@ -272,32 +310,66 @@
       </div>
     </section>
 
-    <!-- ================= EXECUTIVE LEADERSHIP & BOARD OF DIRECTORS (MOCKUP 2) ================= -->
+    <!-- ================= EXECUTIVE LEADERSHIP & BOARD OF DIRECTORS (ALL 5 LEADERS) ================= -->
     <section class="mockup-leadership-section">
       <div class="container">
-        <h3 class="mockup-section-heading">Executive Leadership &amp; Board of Directors</h3>
         <div class="mockup-leadership-card">
-          <div class="mockup-leadership-avatars-row">
-            <div class="mockup-leader-col">
-              <div class="mockup-avatar-gold-circle">
+          <span class="mockup-leader-role" style="font-size:0.85rem; letter-spacing:1px; margin-bottom:8px; display:inline-block;">GOVERNANCE &amp; STEWARDSHIP</span>
+          <h3 style="font-size:1.45rem; font-weight:900; color:#FFFFFF; margin-bottom:6px;">Board of Directors &amp; Executive Leadership</h3>
+          <p class="mockup-leadership-tagline">Five Decades of Healthcare Excellence, Community Trust &amp; Visionary Governance</p>
+          
+          <div class="mockup-leadership-grid">
+            <!-- 1. Founding Chairman -->
+            <div class="mockup-leader-box">
+              <div class="mockup-leader-avatar">
                 <img src="assets/images/management/zafar-bakhtawari.png" alt="Mr. Zafar Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/zafar-bakhtawari.jpg';">
               </div>
               <span class="mockup-leader-role">Founding Chairman</span>
               <span class="mockup-leader-name">Mr. Zafar Bakhtawari</span>
+              <span class="mockup-leader-desc">Founder • Former President ICCI</span>
             </div>
-            <div class="mockup-leader-col">
-              <div class="mockup-directors-overlapping">
-                <div class="mockup-avatar-gold-circle small" title="Co-Chairman Zahid Bakhtawari">
-                  <img src="assets/images/management/zahid-bakhtawari.png" alt="Mr. Zahid Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/zahid-bakhtawari.jpg';">
-                </div>
-                <div class="mockup-avatar-gold-circle small" title="CEO Abid Bakhtawari">
-                  <img src="assets/images/management/abid-bakhtawari.png" alt="Mr. Abid Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/abid-bakhtawari.jpg';">
-                </div>
+
+            <!-- 2. Founding Co-Chairman -->
+            <div class="mockup-leader-box">
+              <div class="mockup-leader-avatar">
+                <img src="assets/images/management/zahid-bakhtawari.png" alt="Mr. Zahid Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/zahid-bakhtawari.jpg';">
               </div>
-              <span class="mockup-leader-role">Executive Directors</span>
+              <span class="mockup-leader-role">Founding Co-Chairman</span>
+              <span class="mockup-leader-name">Mr. Zahid Bakhtawari</span>
+              <span class="mockup-leader-desc">Co-Founder • Commercial Governance</span>
+            </div>
+
+            <!-- 3. Chief Executive Officer -->
+            <div class="mockup-leader-box">
+              <div class="mockup-leader-avatar">
+                <img src="assets/images/management/abid-bakhtawari.png" alt="Mr. Abid Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/abid-bakhtawari.jpg';">
+              </div>
+              <span class="mockup-leader-role">Chief Executive Officer</span>
+              <span class="mockup-leader-name">Mr. Abid Bakhtawari</span>
+              <span class="mockup-leader-desc">CEO • Clinical &amp; Cold-Chain</span>
+            </div>
+
+            <!-- 4. Executive Director -->
+            <div class="mockup-leader-box">
+              <div class="mockup-leader-avatar">
+                <img src="assets/images/management/haris-bakhtawari.png" alt="Mr. Haris Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/haris-bakhtawari.jpg';">
+              </div>
+              <span class="mockup-leader-role">Executive Director</span>
+              <span class="mockup-leader-name">Mr. Haris Bakhtawari</span>
+              <span class="mockup-leader-desc">Director • Retail &amp; Innovation</span>
+            </div>
+
+            <!-- 5. Executive Director -->
+            <div class="mockup-leader-box">
+              <div class="mockup-leader-avatar">
+                <img src="assets/images/management/salman-bakhtawari.png" alt="Mr. Salman Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/salman-bakhtawari.jpg';">
+              </div>
+              <span class="mockup-leader-role">Executive Director</span>
+              <span class="mockup-leader-name">Mr. Salman Bakhtawari</span>
+              <span class="mockup-leader-desc">Director • Supply Chain &amp; Expansion</span>
             </div>
           </div>
-          <p class="mockup-leadership-tagline">Five Decades of Healthcare Excellence &amp; Community Trust</p>
+
           <a href="journey.html" class="mockup-leadership-gold-btn">
             Explore Full Leadership &amp; 1978 Legacy &rarr;
           </a>
@@ -321,7 +393,7 @@
       <div class="footer-top-grid">
         <!-- Col 1: Brand Profile -->
         <div class="footer-brand">
-          <img src="assets/images/logo-emblem.png" alt="D. Watson Chemist &amp; Superstore" class="footer-emblem-logo">
+          <img src="assets/images/logo-white.svg" alt="D. Watson Chemist &amp; Superstore" class="footer-emblem-logo" onerror="this.onerror=null; this.src='assets/images/logo-white.png';">
           <p class="footer-tagline" id="footerAboutText">
             Pakistan's premier trusted retail pharmacy and superstore chain since 1978. Offering genuine pharmaceuticals, international cosmetics, optics, surgical supplies, and gourmet groceries.
           </p>
@@ -518,10 +590,10 @@
     </div>
   </div>
 
-  <!-- Scripts (v7.0) -->
+  <!-- Scripts (v8.0) -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="js/config.js?v=1.1"></script>
-  <script src="js/data.js?v=7.0"></script>
-  <script src="js/main.js?v=7.0"></script>
+  <script src="js/data.js?v=8.0"></script>
+  <script src="js/main.js?v=8.0"></script>
 </body>
 </html>

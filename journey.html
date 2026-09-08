@@ -43,8 +43,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=5.9">
-  <link rel="stylesheet" href="css/responsive.css?v=5.9">
+  <link rel="stylesheet" href="css/style.css?v=8.0">
+  <link rel="stylesheet" href="css/responsive.css?v=8.0">
 
   <!-- Structured Data: Organization & Breadcrumb -->
   <script type="application/ld+json">
@@ -70,22 +70,6 @@
 </head>
 <body>
 
-  <!-- PWA Native App Launch Splash Screen -->
-  <div class="pwa-app-splash" id="pwaAppSplash" aria-hidden="true">
-    <div class="splash-inner">
-      <div class="splash-emblem-wrap">
-        <div class="splash-emblem-halo"></div>
-        <img src="assets/images/pwa-icon-192.png" alt="D. Watson Emblem" class="splash-logo-img">
-      </div>
-      <div class="splash-brand-title">D. WATSON</div>
-      <div class="splash-brand-subtitle">CHEMIST &amp; SUPERSTORE</div>
-      <div class="splash-tagline">Since 1978 • 100% Genuine Healthcare</div>
-      <div class="splash-loader-bar">
-        <div class="splash-loader-progress"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- Sticky Header Wrapper (top bar + navbar stay visible on scroll) -->
   <div class="sticky-header-wrap">
 
@@ -107,9 +91,9 @@
     <header class="site-header" id="siteHeader">
       <div class="container">
         <nav class="navbar">
-          <!-- Official Logo Emblem -->
+          <!-- Official Horizontal Brand Logo -->
           <a href="index.html" class="brand-logo" title="D. Watson Chemist &amp; Superstore">
-            <img src="assets/images/logo-emblem.png" alt="D. Watson Emblem Logo">
+            <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
           </a>
 
           <!-- Desktop Navigation Links -->
@@ -542,7 +526,7 @@
       <div class="footer-top-grid">
         <!-- Col 1: Brand Profile -->
         <div class="footer-brand">
-          <img src="assets/images/logo-emblem.png" alt="D. Watson Chemist &amp; Superstore" class="footer-emblem-logo">
+          <img src="assets/images/logo-white.svg" alt="D. Watson Chemist &amp; Superstore" class="footer-emblem-logo" onerror="this.onerror=null; this.src='assets/images/logo-white.png';">
           <p class="footer-tagline" id="footerAboutText">
             Pakistan's premier trusted retail pharmacy and superstore chain since 1978. Offering genuine pharmaceuticals, international cosmetics, optics, surgical supplies, and gourmet groceries.
           </p>
@@ -719,7 +703,7 @@
 
   <!-- Scripts -->
   <script src="js/config.js?v=1.1"></script>
-  <script src="js/data.js?v=5.9"></script>
-  <script src="js/main.js?v=5.9"></script>
+  <script src="js/data.js?v=8.0"></script>
+  <script src="js/main.js?v=8.0"></script>
 </body>
 </html>

@@ -377,20 +377,21 @@ const DEPT_CATEGORY_MAP = {
 };
 
 /**
- * Render Mockup 1 Homepage Featured Departments (Compact Horizontal Swipe Track)
+ * Render Homepage Featured Departments (Generous Visual Cards matching dwatson.pk)
  */
 function renderHomeDepartments(departments) {
   const container = document.getElementById("homeDeptCarousel");
   if (!container || !departments || !departments.length) return;
 
-  // Render clean compact visual tiles matching Mockup 1
   container.innerHTML = departments.map((dept) => {
     const displayName = (dept.name || "").split("&")[0].trim();
     return `
       <a href="departments.html#dept-${dept.id}" class="home-dept-card" title="Explore ${escapeHtml(dept.name)}">
         <img src="${encodeURI(dept.image)}" alt="${escapeHtml(dept.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
         <div class="home-dept-card-overlay">
+          <span class="home-dept-card-badge">${escapeHtml(dept.badge || "Featured")}</span>
           <span class="home-dept-card-name">${escapeHtml(displayName)}</span>
+          <span class="home-dept-card-sub">${escapeHtml(dept.tagline || "View Department")}</span>
         </div>
       </a>
     `;
@@ -398,7 +399,7 @@ function renderHomeDepartments(departments) {
 }
 
 /**
- * Render Mockup 1 Homepage Trending Products (Horizontal Swipe Track with WhatsApp Buy Buttons)
+ * Render Homepage Trending Products (Generous Cards with Brand, Price & WhatsApp Buy)
  */
 function renderHomeProducts(products, defaultWhatsApp) {
   const container = document.getElementById("homeProductsCarousel");
@@ -416,15 +417,19 @@ function renderHomeProducts(products, defaultWhatsApp) {
           <img src="${encodeURI(p.image || 'assets/images/pharmacy.jpg')}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
         </div>
         <div class="home-product-info">
-          <div class="home-product-price">${escapeHtml(p.price || 'Inquire')}</div>
+          <span class="home-product-brand">${escapeHtml(p.brand || 'D. Watson')}</span>
           <h4 class="home-product-title" onclick="openProductZoomModal('${p.id}')" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h4>
+          <div class="home-product-price">${escapeHtml(p.price || 'Inquire')}</div>
           <a href="${waUrl}" target="_blank" class="home-product-buy-btn" title="Order ${escapeHtml(p.name)} via WhatsApp">
-            <i class="fa-brands fa-whatsapp"></i> Order via WhatsApp
+            <i class="fa-brands fa-whatsapp"></i> Buy on WhatsApp
           </a>
         </div>
       </div>
     `;
   }).join("");
+
+  // Start auto-slider
+  initProductAutoSlider();
 }
 
 /**
@@ -436,6 +441,42 @@ window.scrollCarouselTrack = function(trackId, direction) {
   const scrollAmount = (track.clientWidth * 0.75) * direction;
   track.scrollBy({ left: scrollAmount, behavior: "smooth" });
 };
+
+/**
+ * Auto-Slide Controller for Homepage Trending Products
+ */
+function initProductAutoSlider() {
+  const track = document.getElementById("homeProductsCarousel");
+  if (!track) return;
+
+  if (productAutoSlideTimer) {
+    clearInterval(productAutoSlideTimer);
+    productAutoSlideTimer = null;
+  }
+
+  if (!isProductCarouselControlsInit) {
+    track.addEventListener("mouseenter", () => { isProductCarouselHovered = true; });
+    track.addEventListener("mouseleave", () => { isProductCarouselHovered = false; });
+    track.addEventListener("touchstart", () => { isProductCarouselHovered = true; }, { passive: true });
+    track.addEventListener("touchend", () => {
+      setTimeout(() => { isProductCarouselHovered = false; }, 2000);
+    }, { passive: true });
+    isProductCarouselControlsInit = true;
+  }
+
+  productAutoSlideTimer = setInterval(() => {
+    if (isProductCarouselHovered) return;
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    if (maxScroll <= 10) return;
+
+    if (track.scrollLeft >= maxScroll - 15) {
+      track.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      const scrollStep = Math.max(260, Math.floor(track.clientWidth * 0.7));
+      track.scrollBy({ left: scrollStep, behavior: "smooth" });
+    }
+  }, 3500);
+}
 
 function renderDepartments(departments, defaultWhatsApp) {
   const container = document.getElementById("departmentsGrid");
@@ -2542,32 +2583,10 @@ function initPWAInstall() {
 }
 
 /**
- * ==========================================================================
- * PWA Native App Launch Splash Screen Controller
- * ==========================================================================
+ * PWA Native App Launch Splash Screen Controller (Disabled: Instant Load Active)
  */
 function initAppSplashScreen() {
-  const splash = document.getElementById("pwaAppSplash");
-  if (!splash) return;
-
-  const hideSplash = () => {
-    if (splash.classList.contains("splash-hidden")) return;
-    splash.classList.add("splash-hidden");
-    setTimeout(() => {
-      splash.style.display = "none";
-    }, 450);
-  };
-
-  // Auto hide after 950ms or when page fully settles
-  setTimeout(hideSplash, 950);
-  window.addEventListener("load", hideSplash, { once: true });
-}
-
-// Call on early DOM load
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initAppSplashScreen);
-} else {
-  initAppSplashScreen();
+  // Disabled: zero-delay instant load active
 }
 
 /**
