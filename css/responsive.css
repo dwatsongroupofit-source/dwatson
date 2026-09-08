@@ -199,12 +199,12 @@ section, header, footer, nav, main, .container {
     opacity: 1 !important;
   }
 
-  /* Homepage Mobile App Header (Mockup 1) */
-  body.page-home .mobile-app-header {
+  /* Universal Mobile App Header (All Pages) */
+  .mobile-app-header {
     display: flex !important;
   }
 
-  body.page-home .sticky-header-wrap {
+  .sticky-header-wrap {
     display: none !important;
   }
 

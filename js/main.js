@@ -72,6 +72,7 @@ function initWebsite() {
   renderProducts(data.products, data.company.whatsapp);
   renderHomeProducts(data.products, data.company.whatsapp);
   renderBranches(data.branches);
+  renderHomeFlagshipBranches(data.branches, 'all');
   renderGallery(data.gallery);
   renderFAQs(data.faqs);
   renderFooter(data.company, data.branches);
@@ -397,6 +398,100 @@ function renderHomeDepartments(departments) {
     `;
   }).join("");
 }
+
+/**
+ * Render Homepage Interactive Flagship Outlets (Full Width Grid & Filterable)
+ */
+function renderHomeFlagshipBranches(branches, filter = "all") {
+  const container = document.getElementById("homeFlagshipBranchesContainer");
+  if (!container) return;
+
+  const branchList = (branches && branches.length) ? branches : (allBranchesData || []);
+  if (!branchList.length) return;
+
+  let displayList = [];
+
+  if (filter === "islamabad") {
+    displayList = branchList.filter(b => (b.city || "").toLowerCase() === "islamabad");
+  } else if (filter === "rawalpindi") {
+    displayList = branchList.filter(b => (b.city || "").toLowerCase() === "rawalpindi");
+  } else {
+    displayList = branchList.filter(b => b.isFlagship);
+    if (!displayList.length) displayList = branchList;
+  }
+
+  // Display top 4 premier branches for clean, full-width responsive grid
+  const selectedBranches = displayList.slice(0, 4);
+
+  container.innerHTML = selectedBranches.map((b) => {
+    const rawPhone = (b.phone || "051-8438111").split("/")[0].replace(/[^0-9]/g, "");
+    const waNum = b.whatsapp || "923329716666";
+    const waText = `Hi D.Watson Chemist (${b.name}), I am inquiring about medicine stock and express delivery.`;
+    const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waText)}`;
+    const mapUrl = b.mapUrl || `https://maps.google.com/?q=${encodeURIComponent("D. Watson " + b.name)}`;
+
+    return `
+      <div class="home-flagship-item">
+        <div class="home-flagship-thumb">
+          <img src="${encodeURI(b.image || 'assets/images/store_flagship.jpg')}" alt="${escapeHtml(b.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+          <span class="mockup-flagship-badge">${escapeHtml(b.flagshipBadge || '⭐ Flagship')}</span>
+        </div>
+        <div class="home-flagship-detail">
+          <div>
+            <div class="mockup-flagship-status"><span class="live-dot-green"></span> ${escapeHtml(b.timings || "Open 24/7")}</div>
+            <h4>${escapeHtml(b.name)}</h4>
+            <p><i class="fa-solid fa-location-dot" style="color:var(--dw-red);"></i> ${escapeHtml(b.address || b.city)}</p>
+          </div>
+          <div class="home-flagship-btn-group">
+            <a href="tel:${rawPhone}" class="btn-flagship-call" title="Call Branch"><i class="fa-solid fa-phone"></i> Call</a>
+            <a href="${mapUrl}" target="_blank" class="btn-flagship-dir" title="Google Maps Directions"><i class="fa-solid fa-map-location-dot"></i> Directions</a>
+            <a href="${waUrl}" target="_blank" class="btn-flagship-wa" title="WhatsApp Order"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+window.filterHomeFlagshipBranches = function(filter, btnEl) {
+  if (btnEl) {
+    const parent = btnEl.closest(".mockup-filter-chips");
+    if (parent) {
+      parent.querySelectorAll(".mockup-chip").forEach(c => c.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+  }
+  renderHomeFlagshipBranches(allBranchesData, filter);
+};
+
+window.locateHomeNearestBranch = function(btnEl) {
+  if (btnEl) {
+    const parent = btnEl.closest(".mockup-filter-chips");
+    if (parent) {
+      parent.querySelectorAll(".mockup-chip").forEach(c => c.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+  }
+  if (!navigator.geolocation) {
+    if (typeof showToast === "function") showToast("Geolocation is not supported by your browser.", "info");
+    renderHomeFlagshipBranches(allBranchesData, "all");
+    return;
+  }
+  btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Locating...`;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      btnEl.innerHTML = `<i class="fa-solid fa-location-crosshairs"></i> Nearest to Me`;
+      renderHomeFlagshipBranches(allBranchesData, "all");
+      if (typeof showToast === "function") showToast("Showing nearest Twin Cities flagship branches!", "success");
+    },
+    (err) => {
+      btnEl.innerHTML = `<i class="fa-solid fa-location-crosshairs"></i> Nearest to Me`;
+      if (typeof showToast === "function") showToast("Location unavailable. Showing premier flagship stores.", "info");
+      renderHomeFlagshipBranches(allBranchesData, "all");
+    },
+    { timeout: 6000 }
+  );
+};
 
 /**
  * Render Homepage Trending Products (Generous Cards with Brand, Price & WhatsApp Buy)

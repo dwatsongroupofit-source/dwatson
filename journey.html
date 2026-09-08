@@ -71,6 +71,21 @@
 </head>
 <body>
 
+  <!-- Mobile App Header (Consistent with Home & All Pages) -->
+  <div class="mobile-app-header" id="mobileAppHeader">
+    <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
+      <img src="assets/images/logo-white.svg" alt="D. Watson Official Logo" class="mobile-app-emblem" onerror="this.onerror=null; this.src='assets/images/logo-white.png';">
+    </a>
+    <div class="mobile-app-search-wrap" onclick="openGlobalSearch()" role="button" aria-label="Open search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Search medicines, skincare, brands..." readonly>
+    </div>
+    <div class="mobile-app-live-status">
+      <span class="live-branch-label">50-Year Legacy</span>
+      <span class="live-branch-val"><i class="fa-solid fa-medal"></i> Since 1978</span>
+    </div>
+  </div>
+
   <!-- Sticky Header Wrapper (top bar + navbar stay visible on scroll) -->
   <div class="sticky-header-wrap">
 
@@ -114,11 +129,11 @@
               <span class="search-btn-label">Search</span>
               <span class="search-kbd-shortcut">/</span>
             </button>
-            <a href="index.html#prescription-box" class="btn btn-primary btn-sm">
+            <a href="prescription.html" class="btn btn-primary btn-sm">
               <i class="fa-solid fa-file-prescription"></i> Upload Prescription
             </a>
             <button class="mobile-toggle" aria-label="Toggle navigation menu">
-              <i class="fa-solid fa-bars"></i>
+              <span></span><span></span><span></span>
             </button>
           </div>
         </nav>

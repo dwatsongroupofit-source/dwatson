@@ -43,7 +43,22 @@
 </head>
 <body class="page-prescription">
 
-  <!-- Sticky Header Wrapper -->
+  <!-- Mobile App Header (Consistent with Home & All Pages) -->
+  <div class="mobile-app-header" id="mobileAppHeader">
+    <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
+      <img src="assets/images/logo-white.svg" alt="D. Watson Official Logo" class="mobile-app-emblem" onerror="this.onerror=null; this.src='assets/images/logo-white.png';">
+    </a>
+    <div class="mobile-app-search-wrap" onclick="openGlobalSearch()" role="button" aria-label="Open search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Search medicines, skincare, brands..." readonly>
+    </div>
+    <div class="mobile-app-live-status">
+      <span class="live-branch-label">Online Rx</span>
+      <span class="live-branch-val"><i class="fa-solid fa-file-prescription"></i> 24/7 Dispense</span>
+    </div>
+  </div>
+
+  <!-- Sticky Header Wrapper (Desktop View) -->
   <div class="sticky-header-wrap">
     <!-- Top Bar -->
     <div class="top-bar">
@@ -60,44 +75,41 @@
     </div>
 
     <!-- Main Navigation Bar -->
-    <header class="navbar">
-      <div class="container nav-inner">
-        <!-- Logo -->
-        <a href="index.html" class="logo" aria-label="D. Watson Chemist &amp; Superstore Home">
-          <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore Logo" class="logo-img" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
-        </a>
+    <header class="site-header" id="siteHeader">
+      <div class="container">
+        <nav class="navbar">
+          <!-- Official Horizontal Brand Logo -->
+          <a href="index.html" class="brand-logo" title="D. Watson Chemist &amp; Superstore Home">
+            <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
+          </a>
 
-        <!-- Desktop Search Trigger Bar -->
-        <div class="header-search-bar" onclick="openGlobalSearch()" role="button" tabindex="0" aria-label="Search medicines, cosmetics, brands">
-          <i class="fa-solid fa-magnifying-glass header-search-icon"></i>
-          <span class="header-search-placeholder">Search 15,000+ medicines, skincare, perfumes...</span>
-          <span class="header-search-shortcut"><kbd>/</kbd></span>
-        </div>
+          <!-- Desktop Search Trigger Bar -->
+          <div class="header-search-bar" onclick="openGlobalSearch()" role="button" tabindex="0" aria-label="Search medicines, cosmetics, brands">
+            <i class="fa-solid fa-magnifying-glass header-search-icon"></i>
+            <span class="header-search-placeholder">Search 15,000+ medicines, skincare, perfumes...</span>
+            <span class="header-search-shortcut"><kbd>/</kbd></span>
+          </div>
 
-        <!-- Navigation Links -->
-        <nav>
+          <!-- Navigation Links -->
           <ul class="nav-menu" id="navMenu">
             <li><a href="index.html" class="nav-link">Home</a></li>
             <li><a href="departments.html" class="nav-link">13 Departments</a></li>
             <li><a href="branches.html" class="nav-link">⭐ Flagship Branches</a></li>
-            <li><a href="journey.html" class="nav-link">The Journey</a></li>
+            <li><a href="journey.html" class="nav-link">The Journey &amp; Board</a></li>
             <li><a href="prescription.html" class="nav-link active">Prescription</a></li>
             <li><a href="contact.html" class="nav-link">Contact</a></li>
           </ul>
-        </nav>
 
-        <!-- Right Actions -->
-        <div class="nav-actions">
-          <button class="search-toggle-btn mobile-only-search" onclick="openGlobalSearch()" aria-label="Open Search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button>
-          <a href="prescription.html" class="btn btn-primary btn-sm btn-pulse" id="navOrderBtn">
-            <i class="fa-solid fa-file-medical"></i> Upload Rx
-          </a>
-          <button class="mobile-toggle" id="mobileToggle" aria-label="Open mobile navigation menu" aria-expanded="false">
-            <i class="fa-solid fa-bars"></i>
-          </button>
-        </div>
+          <!-- Right Actions -->
+          <div class="nav-actions">
+            <a href="prescription.html" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-file-prescription"></i> Upload Rx
+            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation menu">
+              <span></span><span></span><span></span>
+            </button>
+          </div>
+        </nav>
       </div>
     </header>
   </div>

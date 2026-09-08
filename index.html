@@ -289,42 +289,30 @@
       </div>
     </section>
 
-    <!-- ================= OFFICIAL FLAGSHIP OUTLETS ================= -->
-    <section class="mockup-flagship-section">
-      <div class="container">
+    <!-- ================= OFFICIAL FLAGSHIP OUTLETS (INTERACTIVE & FULL WIDTH) ================= -->
+    <section class="mockup-flagship-section" id="homeFlagshipSection">
+      <div class="container" style="max-width: 100%; padding: 0 24px;">
         <h3 class="mockup-section-heading"><span style="color:#F59E0B;">⭐</span> Official Flagship Outlets</h3>
         
-        <div class="mockup-filter-chips">
-          <a href="branches.html" class="mockup-chip active"><i class="fa-solid fa-star"></i> Flagship Outlets</a>
-          <a href="branches.html?city=islamabad" class="mockup-chip">Islamabad</a>
-          <a href="branches.html?city=rawalpindi" class="mockup-chip">Rawalpindi</a>
-          <a href="branches.html?locate=true" class="mockup-chip" style="color:var(--dw-red);"><i class="fa-solid fa-location-dot"></i> Nearest to Me</a>
+        <div class="mockup-filter-chips" id="homeBranchFilterChips">
+          <button type="button" class="mockup-chip active" onclick="filterHomeFlagshipBranches('all', this)"><i class="fa-solid fa-star"></i> Flagship Outlets</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeFlagshipBranches('islamabad', this)"><i class="fa-solid fa-city"></i> Islamabad</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeFlagshipBranches('rawalpindi', this)"><i class="fa-solid fa-building"></i> Rawalpindi</button>
+          <button type="button" class="mockup-chip" onclick="locateHomeNearestBranch(this)" style="color:var(--dw-red);"><i class="fa-solid fa-location-crosshairs"></i> Nearest to Me</button>
         </div>
 
         <div class="mockup-flagship-card">
-          <div class="mockup-flagship-upper">
-            <div class="mockup-flagship-img-wrap">
-              <img src="assets/images/store_flagship.jpg" alt="D. Watson F-6 Super Market Flagship" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
-              <span class="mockup-flagship-badge"><i class="fa-solid fa-star"></i> Flagship Branch</span>
-            </div>
-            <div class="mockup-flagship-body">
-              <div class="mockup-flagship-status"><span class="live-dot-green"></span> Open 24/7</div>
-              <h4 class="mockup-flagship-title">D. Watson F-6 Super Market (Flagship #1)</h4>
-              <p class="mockup-flagship-address">Dr. Watson Chemist, Super Market, Super Market Islamabad</p>
-              <div class="mockup-flagship-actions">
-                <a href="tel:0518438111" class="btn-flagship-call"><i class="fa-solid fa-phone"></i> Call Branch</a>
-                <a href="https://maps.google.com/?q=D.+Watson+Chemist+Super+Market+F-6+Islamabad" target="_blank" class="btn-flagship-dir"><i class="fa-solid fa-map-location-dot"></i> Directions</a>
-              </div>
-            </div>
+          <div class="home-flagship-grid" id="homeFlagshipBranchesContainer">
+            <!-- Dynamically populated via renderHomeFlagshipBranches() in main.js -->
           </div>
-          <a href="branches.html" class="mockup-view-all-branches">View All 25+ Branches <i class="fa-solid fa-chevron-right"></i></a>
+          <a href="branches.html" class="mockup-view-all-branches">View All 25+ Branches, Full Timings &amp; Live Twin Cities GPS Map <i class="fa-solid fa-chevron-right"></i></a>
         </div>
       </div>
     </section>
 
-    <!-- ================= EXECUTIVE LEADERSHIP & BOARD OF DIRECTORS (ALL 5 LEADERS) ================= -->
+    <!-- ================= EXECUTIVE LEADERSHIP & BOARD OF DIRECTORS (ALL 5 LEADERS - FULL WIDTH) ================= -->
     <section class="mockup-leadership-section">
-      <div class="container">
+      <div class="container" style="max-width: 100%; padding: 0 24px;">
         <div class="mockup-leadership-card">
           <span class="mockup-leader-role" style="font-size:0.85rem; letter-spacing:1px; margin-bottom:8px; display:inline-block;">GOVERNANCE &amp; STEWARDSHIP</span>
           <h3 style="font-size:1.45rem; font-weight:900; color:#FFFFFF; margin-bottom:6px;">Board of Directors &amp; Executive Leadership</h3>
