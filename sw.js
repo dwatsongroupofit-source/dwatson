@@ -3,7 +3,7 @@
  * Ultra-fast caching, zero unhandled promise rejections & robust offline resilience
  */
 
-const CACHE_NAME = "dwatson-cache-v8";
+const CACHE_NAME = "dwatson-cache-v8.1";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -12,8 +12,8 @@ const STATIC_ASSETS = [
   "./prescription.html",
   "./journey.html",
   "./contact.html",
-  "./css/style.css?v=8.0",
-  "./css/responsive.css?v=8.0",
+  "./css/style.css?v=8.1",
+  "./css/responsive.css?v=8.1",
   "./js/config.js?v=1.1",
   "./js/data.js?v=8.0",
   "./js/main.js?v=8.0",
