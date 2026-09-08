@@ -39,6 +39,17 @@
   <meta name="apple-mobile-web-app-title" content="D. Watson">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon-180.png">
 
+  <!-- Cleanly unregister any stale service workers on localhost -->
+  <script>
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          for (var r of regs) r.unregister();
+        });
+      }
+    }
+  </script>
+
   <!-- Stylesheets (v8.0 - DWatson.pk Full Design Match) -->
   <link rel="stylesheet" href="css/style.css?v=8.0">
   <link rel="stylesheet" href="css/responsive.css?v=8.0">

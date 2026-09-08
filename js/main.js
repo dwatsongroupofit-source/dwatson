@@ -2535,10 +2535,30 @@ let deferredPwaPrompt = null;
 
 function initPWAInstall() {
   if ("serviceWorker" in navigator) {
+    // If testing on localhost, unregister any stale service workers immediately so browser loads fresh assets
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+      if (window.caches) {
+        caches.keys().then((keys) => {
+          for (let key of keys) caches.delete(key);
+        });
+      }
+      return;
+    }
+
     window.addEventListener("load", () => {
       navigator.serviceWorker.register("./sw.js")
-        .then(reg => console.log("🟢 D. Watson PWA Service Worker Registered", reg.scope))
-        .catch(err => console.warn("PWA Service Worker Registration failed", err));
+        .then((reg) => {
+          console.log("🟢 D. Watson PWA Service Worker Registered", reg.scope);
+          if (reg.update) reg.update();
+        })
+        .catch((err) => {
+          console.warn("PWA Service Worker Registration notice:", err);
+        });
     });
   }
 

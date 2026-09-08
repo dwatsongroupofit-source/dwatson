@@ -57,6 +57,11 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // On localhost, never intercept requests so development server is accessed directly
+  if (self.location.hostname === "localhost" || self.location.hostname === "127.0.0.1") {
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
