@@ -68,7 +68,9 @@ function initWebsite() {
   renderAboutAndTimeline(data.company);
   renderLeadership(data.management);
   renderDepartments(data.departments, data.company.whatsapp);
+  renderHomeDepartments(data.departments);
   renderProducts(data.products, data.company.whatsapp);
+  renderHomeProducts(data.products, data.company.whatsapp);
   renderBranches(data.branches);
   renderGallery(data.gallery);
   renderFAQs(data.faqs);
@@ -142,12 +144,12 @@ function renderHeroSlider(slides) {
           </div>
           <h1 class="slide-title">${escapeHtml(slide.title)}</h1>
           <p class="slide-subtitle">${escapeHtml(slide.subtitle)}</p>
-          <div class="slide-actions">
-            <a href="${slide.ctaPrimaryLink || '#prescription-box'}" class="btn btn-primary">
-              <i class="fa-brands fa-whatsapp"></i> ${escapeHtml(slide.ctaPrimaryText || 'Order on WhatsApp')}
+          <div class="slide-actions hero-cta-group-mockup">
+            <a href="prescription.html" class="btn-hero-gold">
+              <i class="fa-solid fa-arrow-up-from-bracket"></i> Upload Prescription
             </a>
-            <a href="${slide.ctaSecondaryLink || '#branches'}" class="btn btn-outline-white">
-              ${escapeHtml(slide.ctaSecondaryText || 'Find Nearest Branch')} <i class="fa-solid fa-arrow-right"></i>
+            <a href="departments.html" class="btn-hero-teal">
+              <i class="fa-solid fa-store"></i> Explore Store
             </a>
           </div>
         </div>
@@ -372,6 +374,67 @@ const DEPT_CATEGORY_MAP = {
   superstore: "superstore",
   crockery: "superstore",
   garments: "superstore"
+};
+
+/**
+ * Render Mockup 1 Homepage Featured Departments (Compact Horizontal Swipe Track)
+ */
+function renderHomeDepartments(departments) {
+  const container = document.getElementById("homeDeptCarousel");
+  if (!container || !departments || !departments.length) return;
+
+  // Render clean compact visual tiles matching Mockup 1
+  container.innerHTML = departments.map((dept) => {
+    const displayName = (dept.name || "").split("&")[0].trim();
+    return `
+      <a href="departments.html#dept-${dept.id}" class="home-dept-card" title="Explore ${escapeHtml(dept.name)}">
+        <img src="${encodeURI(dept.image)}" alt="${escapeHtml(dept.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+        <div class="home-dept-card-overlay">
+          <span class="home-dept-card-name">${escapeHtml(displayName)}</span>
+        </div>
+      </a>
+    `;
+  }).join("");
+}
+
+/**
+ * Render Mockup 1 Homepage Trending Products (Horizontal Swipe Track with WhatsApp Buy Buttons)
+ */
+function renderHomeProducts(products, defaultWhatsApp) {
+  const container = document.getElementById("homeProductsCarousel");
+  if (!container || !products || !products.length) return;
+
+  const waNum = defaultWhatsApp || "923329716666";
+
+  container.innerHTML = products.map((p) => {
+    const waText = `*--- D. WATSON QUICK ORDER ---*\n🛍️ *Product:* ${p.name}\n💰 *Price:* ${p.price || 'Inquire'}\n🏷️ *Brand:* ${p.brand || 'D. Watson'}\n\nHi D.Watson Chemist, please confirm stock availability and express delivery.`;
+    const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waText)}`;
+
+    return `
+      <div class="home-product-card" data-product-id="${p.id}">
+        <div class="home-product-img-wrap" onclick="openProductZoomModal('${p.id}')" title="Inspect ${escapeHtml(p.name)}">
+          <img src="${encodeURI(p.image || 'assets/images/pharmacy.jpg')}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+        </div>
+        <div class="home-product-info">
+          <div class="home-product-price">${escapeHtml(p.price || 'Inquire')}</div>
+          <h4 class="home-product-title" onclick="openProductZoomModal('${p.id}')" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h4>
+          <a href="${waUrl}" target="_blank" class="home-product-buy-btn" title="Order ${escapeHtml(p.name)} via WhatsApp">
+            <i class="fa-brands fa-whatsapp"></i> Order via WhatsApp
+          </a>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+/**
+ * Carousel Horizontal Scrolling Controller
+ */
+window.scrollCarouselTrack = function(trackId, direction) {
+  const track = document.getElementById(trackId);
+  if (!track) return;
+  const scrollAmount = (track.clientWidth * 0.75) * direction;
+  track.scrollBy({ left: scrollAmount, behavior: "smooth" });
 };
 
 function renderDepartments(departments, defaultWhatsApp) {

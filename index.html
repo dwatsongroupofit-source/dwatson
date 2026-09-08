@@ -38,9 +38,9 @@
   <meta name="apple-mobile-web-app-title" content="D. Watson">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon-180.png">
 
-  <!-- Stylesheets (v6.0 - Mobile First Multi-Page & Zero-Blur PWA) -->
-  <link rel="stylesheet" href="css/style.css?v=6.0">
-  <link rel="stylesheet" href="css/responsive.css?v=6.0">
+  <!-- Stylesheets (v7.0 - Mockup 1 & 2 Exact Match) -->
+  <link rel="stylesheet" href="css/style.css?v=7.0">
+  <link rel="stylesheet" href="css/responsive.css?v=7.0">
 </head>
 <body class="page-home">
 
@@ -60,7 +60,22 @@
     </div>
   </div>
 
-  <!-- Sticky Header Wrapper -->
+  <!-- Mobile App Top Bar (Mockup 1 - Active on Mobile) -->
+  <div class="mobile-app-header" id="mobileAppHeader">
+    <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
+      <img src="assets/images/logo-emblem.png" alt="D. Watson Emblem Logo" class="mobile-app-emblem">
+    </a>
+    <div class="mobile-app-search-wrap" onclick="openGlobalSearch()" role="button" aria-label="Open search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Search medicines, skincare, brands..." readonly>
+    </div>
+    <div class="mobile-app-live-status">
+      <span class="live-branch-label">Live Branch</span>
+      <span class="live-branch-val"><i class="fa-solid fa-location-dot"></i> Islamabad • Open 24/7</span>
+    </div>
+  </div>
+
+  <!-- Sticky Header Wrapper (Desktop View) -->
   <div class="sticky-header-wrap">
     <!-- Top Announcement & Quick Contact Bar -->
     <div class="top-bar">
@@ -115,7 +130,7 @@
   </div>
 
   <main>
-    <!-- ================= HERO SLIDER SECTION ================= -->
+    <!-- ================= HERO SLIDER SECTION (MOCKUP 1) ================= -->
     <section class="hero-section" id="home">
       <div class="hero-slider-wrapper" id="heroSliderWrapper">
         <!-- Slides are dynamically loaded from data.js -->
@@ -136,232 +151,157 @@
       <div class="slider-progress" id="sliderProgressBar"></div>
     </section>
 
-    <!-- ================= QUICK ACTION APP DOCK (MOBILE FIRST) ================= -->
-    <section class="app-quick-dock-section">
+    <!-- ================= QUICK ACTION APP DOCK (MOCKUP 1) ================= -->
+    <section class="mockup-app-dock-section">
       <div class="container">
-        <div class="app-quick-dock">
-          <a href="prescription.html" class="app-dock-item">
-            <div class="app-dock-icon dock-icon-rx">
-              <i class="fa-solid fa-file-medical"></i>
+        <h3 class="mockup-section-heading">Quick Action App Dock</h3>
+        <div class="mockup-app-dock-card">
+          <a href="prescription.html" class="mockup-dock-item">
+            <div class="mockup-dock-bubble bubble-mint">
+              <i class="fa-solid fa-capsules"></i>
             </div>
-            <span class="app-dock-label">Upload Rx</span>
+            <span class="mockup-dock-text">Upload Rx</span>
           </a>
-
-          <a href="departments.html" class="app-dock-item">
-            <div class="app-dock-icon dock-icon-depts">
-              <i class="fa-solid fa-table-cells-large"></i>
+          <a href="departments.html" class="mockup-dock-item">
+            <div class="mockup-dock-bubble bubble-lavender">
+              <i class="fa-solid fa-store"></i>
             </div>
-            <span class="app-dock-label">13 Depts</span>
+            <span class="mockup-dock-text">13 Departments</span>
           </a>
-
-          <a href="branches.html" class="app-dock-item">
-            <div class="app-dock-icon dock-icon-branches">
+          <a href="branches.html" class="mockup-dock-item">
+            <div class="mockup-dock-bubble bubble-cyan">
               <i class="fa-solid fa-location-dot"></i>
             </div>
-            <span class="app-dock-label">Store Locator</span>
+            <span class="mockup-dock-text">Store Locator</span>
           </a>
-
-          <a href="departments.html#dept-cosmetics" class="app-dock-item">
-            <div class="app-dock-icon dock-icon-beauty">
+          <a href="departments.html#dept-cosmetics" class="mockup-dock-item">
+            <div class="mockup-dock-bubble bubble-gold">
               <i class="fa-solid fa-wand-magic-sparkles"></i>
             </div>
-            <span class="app-dock-label">Luxury Beauty</span>
+            <span class="mockup-dock-text">Luxury Beauty</span>
           </a>
-
-          <a href="departments.html#dept-baby_care" class="app-dock-item">
-            <div class="app-dock-icon dock-icon-baby">
+          <a href="departments.html#dept-babycare" class="mockup-dock-item">
+            <div class="mockup-dock-bubble bubble-pink">
               <i class="fa-solid fa-baby-carriage"></i>
             </div>
-            <span class="app-dock-label">Baby Care</span>
+            <span class="mockup-dock-text">Baby Care</span>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- ================= 1-TAP QUICK PRESCRIPTION CAMERA STRIP ================= -->
-    <section class="quick-rx-strip">
+    <!-- ================= 1-TAP QUICK PRESCRIPTION CAMERA CARD (MOCKUP 1) ================= -->
+    <section class="mockup-quick-rx-section">
       <div class="container">
-        <a href="prescription.html" class="quick-rx-card">
-          <div class="quick-rx-left">
-            <div class="quick-rx-icon-box">
-              <i class="fa-solid fa-camera"></i>
-            </div>
-            <div>
-              <div class="quick-rx-title">1-Tap Quick Prescription Order</div>
-              <div class="quick-rx-sub">Snap photo of prescription &amp; send directly on WhatsApp for 60-min express delivery</div>
-            </div>
+        <a href="prescription.html" class="mockup-quick-rx-card">
+          <div class="mockup-rx-camera-box">
+            <i class="fa-solid fa-camera"></i>
           </div>
-          <span class="quick-rx-btn">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Snap Photo &amp; Order
-          </span>
+          <div class="mockup-rx-content">
+            <div class="mockup-rx-card-title">1-Tap Quick Prescription Camera Card</div>
+            <span class="mockup-rx-snap-btn">
+              <i class="fa-solid fa-camera"></i> Snap Photo &amp; Order
+            </span>
+          </div>
         </a>
       </div>
     </section>
 
-    <!-- ================= CURATED FEATURED DEPARTMENTS SHOWCASE ================= -->
-    <section class="departments-section" id="departments" style="padding: 40px 0;">
+    <!-- ================= FEATURED DEPARTMENTS (MOCKUP 1 - HORIZONTAL CAROUSEL) ================= -->
+    <section class="mockup-carousel-section" id="featuredDepartments">
       <div class="container">
-        <div class="section-header">
-          <span class="section-tag blue-tag"><i class="fa-solid fa-boxes-stacked"></i> Curated Showcase</span>
-          <h2 class="section-title">Shop by <span class="highlight-red">Featured</span> Departments</h2>
-          <p class="section-subtitle">
-            From licensed cold-chain pharmacy medications to luxury French skincare and baby nutrition.
-          </p>
+        <div class="mockup-carousel-header">
+          <h3 class="mockup-section-heading" style="margin-bottom:0;">Featured Departments</h3>
+          <div class="mockup-carousel-controls">
+            <button class="mockup-arrow-btn" onclick="scrollCarouselTrack('homeDeptCarousel', -1)" aria-label="Previous Departments"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="mockup-arrow-btn" onclick="scrollCarouselTrack('homeDeptCarousel', 1)" aria-label="Next Departments"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
         </div>
-
-        <!-- Category Quick-Filter Bar -->
-        <div class="dept-filter-bar" id="deptFilterBar">
-          <button class="dept-pill-btn active" onclick="filterDepartments('all', this)">
-            <i class="fa-solid fa-border-all"></i> All Departments <span class="dept-pill-count">13</span>
-          </button>
-          <button class="dept-pill-btn" onclick="filterDepartments('healthcare', this)">
-            <i class="fa-solid fa-heart-pulse"></i> Healthcare &amp; Pharmacy
-          </button>
-          <button class="dept-pill-btn" onclick="filterDepartments('beauty', this)">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Beauty &amp; Perfumes
-          </button>
-          <button class="dept-pill-btn" onclick="filterDepartments('motherbaby', this)">
-            <i class="fa-solid fa-baby-carriage"></i> Baby &amp; Mother
-          </button>
-          <button class="dept-pill-btn" onclick="filterDepartments('superstore', this)">
-            <i class="fa-solid fa-cart-shopping"></i> Superstore
-          </button>
-        </div>
-
-        <!-- Rendered dynamically from data.js -->
-        <div class="departments-grid" id="departmentsGrid"></div>
-
-        <!-- Link to Full Catalog -->
-        <div style="text-align: center; margin-top: 30px;">
-          <a href="departments.html" class="btn btn-outline btn-lg" style="color:var(--dw-navy); border-color:var(--border-strong);">
-            <i class="fa-solid fa-table-cells-large"></i> Explore All 13 Specialized Departments &rarr;
-          </a>
+        <div class="mockup-horizontal-track" id="homeDeptCarousel">
+          <!-- Populated by renderHomeDepartments() in main.js -->
         </div>
       </div>
     </section>
 
-    <!-- ================= FEATURED PRODUCTS SLIDER SECTION ================= -->
-    <section class="products-section" id="products">
+    <!-- ================= TRENDING PRODUCTS (MOCKUP 1 - BUY ON WHATSAPP) ================= -->
+    <section class="mockup-carousel-section" id="trendingProducts">
       <div class="container">
-        <div class="section-header">
-          <span class="section-tag">Curated Brand Showcase</span>
-          <h2 class="section-title">Trending <span class="highlight-blue">Products &amp; Essentials</span></h2>
-          <p class="section-subtitle">
-            Directly sourced from official global manufacturers with 100% authenticity guaranteed. Swipe or use arrows to discover viral K-Beauty, hair therapy, diagnostics, and baby care.
-          </p>
+        <div class="mockup-carousel-header">
+          <h3 class="mockup-section-heading" style="margin-bottom:0;">Trending Products</h3>
+          <div class="mockup-carousel-controls">
+            <button class="mockup-arrow-btn" onclick="scrollCarouselTrack('homeProductsCarousel', -1)" aria-label="Previous Products"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="mockup-arrow-btn" onclick="scrollCarouselTrack('homeProductsCarousel', 1)" aria-label="Next Products"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
         </div>
-
-        <!-- Product Category Filters -->
-        <div class="product-filter-bar" id="productFilters"></div>
-
-        <!-- Interactive Multi-Card Product Carousel -->
-        <div class="products-carousel-container">
-          <button class="prod-carousel-btn prev" id="prodPrevBtn" onclick="slideProducts(-1)" aria-label="Previous Products">
-            <i class="fa-solid fa-chevron-left"></i>
-          </button>
-
-          <div class="products-carousel-track" id="productsGrid"></div>
-
-          <button class="prod-carousel-btn next" id="prodNextBtn" onclick="slideProducts(1)" aria-label="Next Products">
-            <i class="fa-solid fa-chevron-right"></i>
-          </button>
-        </div>
-
-        <div class="prod-carousel-dots" id="productCarouselDots"></div>
-
-        <div style="text-align: center; margin-top: 28px;">
-          <a href="departments.html" class="btn btn-outline" style="margin-right: 12px;">
-            <i class="fa-solid fa-bag-shopping"></i> Browse Full Product Catalog &rarr;
-          </a>
-          <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20am%20looking%20for%20a%20specific%20product%20availability." target="_blank" class="btn btn-whatsapp">
-            <i class="fa-brands fa-whatsapp"></i> Inquire Any Medicine on WhatsApp
-          </a>
+        <div class="mockup-horizontal-track" id="homeProductsCarousel">
+          <!-- Populated by renderHomeProducts() in main.js -->
         </div>
       </div>
     </section>
 
-    <!-- ================= SPOTLIGHT SECTION (FLAGSHIP OUTLETS & BOARD OF DIRECTORS) ================= -->
-    <section class="spotlight-section">
+    <!-- ================= OFFICIAL FLAGSHIP OUTLETS (MOCKUP 2) ================= -->
+    <section class="mockup-flagship-section">
       <div class="container">
+        <h3 class="mockup-section-heading"><span style="color:#F59E0B;">⭐</span> Official Flagship Outlets</h3>
         
-        <!-- Spotlight 1: Official Flagship Outlets -->
-        <div class="flagship-spotlight-card">
-          <div class="flagship-spotlight-header">
-            <div class="spotlight-title-row">
-              <span class="badge-live" style="background:#FEF3C7; color:#92400E; border:1px solid #FCD34D;">
-                <i class="fa-solid fa-star"></i> Featured Outlet
-              </span>
-              <h3>⭐ Official Flagship Outlets</h3>
-            </div>
-            <a href="branches.html" style="font-size:0.88rem; font-weight:700; color:var(--dw-red); text-decoration:none;">
-              View All 25+ Branches <i class="fa-solid fa-arrow-right"></i>
-            </a>
-          </div>
+        <div class="mockup-filter-chips">
+          <a href="branches.html" class="mockup-chip active"><i class="fa-solid fa-star"></i> Flagship Outlets</a>
+          <a href="branches.html?city=islamabad" class="mockup-chip">Islamabad</a>
+          <a href="branches.html?city=rawalpindi" class="mockup-chip">Rawalpindi</a>
+          <a href="branches.html?locate=true" class="mockup-chip" style="color:var(--dw-red);"><i class="fa-solid fa-location-dot"></i> Nearest to Me</a>
+        </div>
 
-          <div class="flagship-spotlight-body">
-            <div class="spotlight-img-wrap">
+        <div class="mockup-flagship-card">
+          <div class="mockup-flagship-upper">
+            <div class="mockup-flagship-img-wrap">
               <img src="assets/images/store_flagship.jpg" alt="D. Watson F-6 Super Market Flagship" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+              <span class="mockup-flagship-badge"><i class="fa-solid fa-star"></i> Flagship Branch</span>
             </div>
-            <div class="spotlight-info">
-              <div style="margin-bottom: 6px;">
-                <span style="background:#DC2626; color:white; font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:4px;">BRANCH #1</span>
-                <span style="background:#ECFDF5; color:#059669; font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:4px; margin-left:6px;"><i class="fa-solid fa-clock"></i> Open 24/7</span>
-              </div>
-              <h4>D. Watson F-6 Super Market (Flagship #1)</h4>
-              <div class="spotlight-address">
-                <i class="fa-solid fa-location-dot" style="color:var(--dw-red);"></i>
-                School Road, Super Market, F-6 Markaz, Islamabad
-              </div>
-              <div class="spotlight-actions">
-                <a href="tel:0518438111" class="btn btn-primary btn-sm">
-                  <i class="fa-solid fa-phone"></i> Call Branch
-                </a>
-                <a href="https://maps.google.com/?q=D.+Watson+Chemist+Super+Market+F-6+Islamabad" target="_blank" class="btn btn-outline btn-sm">
-                  <i class="fa-solid fa-diamond-turn-right"></i> GPS Directions
-                </a>
-                <a href="branches.html" class="btn btn-outline btn-sm" style="border-color:#CBD5E1;">
-                  <i class="fa-solid fa-map-location-dot"></i> Network Map
-                </a>
+            <div class="mockup-flagship-body">
+              <div class="mockup-flagship-status"><span class="live-dot-green"></span> Open 24/7</div>
+              <h4 class="mockup-flagship-title">D. Watson F-6 Super Market (Flagship #1)</h4>
+              <p class="mockup-flagship-address">Dr. Watson Chemist, Super Market, Super Market Islamabad</p>
+              <div class="mockup-flagship-actions">
+                <a href="tel:0518438111" class="btn-flagship-call"><i class="fa-solid fa-phone"></i> Call Branch</a>
+                <a href="https://maps.google.com/?q=D.+Watson+Chemist+Super+Market+F-6+Islamabad" target="_blank" class="btn-flagship-dir"><i class="fa-solid fa-map-location-dot"></i> Directions</a>
               </div>
             </div>
           </div>
+          <a href="branches.html" class="mockup-view-all-branches">View All 25+ Branches <i class="fa-solid fa-chevron-right"></i></a>
         </div>
+      </div>
+    </section>
 
-        <!-- Spotlight 2: Executive Leadership & Board of Directors -->
-        <div class="leadership-spotlight-card">
-          <div class="leadership-spotlight-inner">
-            <div class="leadership-spotlight-left">
-              <span class="leadership-spotlight-tag">
-                <i class="fa-solid fa-crown"></i> 5 Decades of Governance
-              </span>
-              <h3 class="leadership-spotlight-title">Executive Leadership &amp; Board of Directors</h3>
-              <p class="leadership-spotlight-desc">
-                Founded in 1978 by Chairman Zafar Iqbal Bakhtawari, Co-Chairman Zahid Bakhtawari, and CEO Abid Bakhtawari — alongside second-generation directors Ahsan Zafar Bakhtawari, Bilal Zahid Bakhtawari, and Haris &amp; Salman Bakhtawari — operating 25+ premier branches with uncompromised medicine genuineness.
-              </p>
-              <div class="leadership-avatars-row">
-                <div class="leader-thumb-circle" title="Chairman Mr. Zafar Bakhtawari">
-                  <img src="assets/images/management/zafar-bakhtawari.png" alt="Chairman Zafar Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/zafar-bakhtawari.jpg';">
+    <!-- ================= EXECUTIVE LEADERSHIP & BOARD OF DIRECTORS (MOCKUP 2) ================= -->
+    <section class="mockup-leadership-section">
+      <div class="container">
+        <h3 class="mockup-section-heading">Executive Leadership &amp; Board of Directors</h3>
+        <div class="mockup-leadership-card">
+          <div class="mockup-leadership-avatars-row">
+            <div class="mockup-leader-col">
+              <div class="mockup-avatar-gold-circle">
+                <img src="assets/images/management/zafar-bakhtawari.png" alt="Mr. Zafar Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/zafar-bakhtawari.jpg';">
+              </div>
+              <span class="mockup-leader-role">Founding Chairman</span>
+              <span class="mockup-leader-name">Mr. Zafar Bakhtawari</span>
+            </div>
+            <div class="mockup-leader-col">
+              <div class="mockup-directors-overlapping">
+                <div class="mockup-avatar-gold-circle small" title="Co-Chairman Zahid Bakhtawari">
+                  <img src="assets/images/management/zahid-bakhtawari.png" alt="Mr. Zahid Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/zahid-bakhtawari.jpg';">
                 </div>
-                <div class="leader-thumb-circle" title="Co-Chairman Mr. Zahid Bakhtawari">
-                  <img src="assets/images/management/zahid-bakhtawari.png" alt="Co-Chairman Zahid Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/zahid-bakhtawari.jpg';">
-                </div>
-                <div class="leader-thumb-circle" title="CEO Mr. Abid Bakhtawari">
-                  <img src="assets/images/management/abid-bakhtawari.png" alt="CEO Abid Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/abid-bakhtawari.jpg';">
-                </div>
-                <div class="leader-thumb-circle" title="Executive Directors">
-                  <img src="assets/images/management/haris-bakhtawari.png" alt="Director Haris Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/haris-bakhtawari.jpg';">
+                <div class="mockup-avatar-gold-circle small" title="CEO Abid Bakhtawari">
+                  <img src="assets/images/management/abid-bakhtawari.png" alt="Mr. Abid Bakhtawari" onerror="this.onerror=null; this.src='assets/images/management/abid-bakhtawari.jpg';">
                 </div>
               </div>
-            </div>
-
-            <div class="leadership-spotlight-right">
-              <a href="journey.html" class="btn btn-primary btn-lg" style="background:#F59E0B; border-color:#F59E0B; color:#0F172A; font-weight:800;">
-                <i class="fa-solid fa-award"></i> Explore Full Leadership &amp; 1978 Legacy &rarr;
-              </a>
+              <span class="mockup-leader-role">Executive Directors</span>
             </div>
           </div>
+          <p class="mockup-leadership-tagline">Five Decades of Healthcare Excellence &amp; Community Trust</p>
+          <a href="journey.html" class="mockup-leadership-gold-btn">
+            Explore Full Leadership &amp; 1978 Legacy &rarr;
+          </a>
         </div>
-
       </div>
     </section>
 
@@ -489,9 +429,9 @@
       <i class="fa-solid fa-table-cells-large"></i>
       <span>Departments</span>
     </a>
-    <a href="prescription.html" class="mobile-nav-tab highlight-rx" id="mobTabRx">
-      <div class="mobile-rx-icon-bubble">
-        <i class="fa-solid fa-camera"></i>
+    <a href="prescription.html" class="mobile-nav-tab highlight-rx-mockup" id="mobTabRx">
+      <div class="mockup-gold-center-bubble">
+        <i class="fa-solid fa-plus"></i>
       </div>
       <span>Upload Rx</span>
     </a>
@@ -501,7 +441,7 @@
     </a>
     <a href="https://wa.me/923329716666?text=Hi%20D.Watson%20Chemist,%20I%20need%20assistance." target="_blank" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa">
       <i class="fa-brands fa-whatsapp"></i>
-      <span>WhatsApp</span>
+      <span>WhatsApp Chat</span>
     </a>
   </nav>
 
@@ -578,10 +518,10 @@
     </div>
   </div>
 
-  <!-- Scripts (v6.0) -->
+  <!-- Scripts (v7.0) -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="js/config.js?v=1.1"></script>
-  <script src="js/data.js?v=6.0"></script>
-  <script src="js/main.js?v=6.0"></script>
+  <script src="js/data.js?v=7.0"></script>
+  <script src="js/main.js?v=7.0"></script>
 </body>
 </html>

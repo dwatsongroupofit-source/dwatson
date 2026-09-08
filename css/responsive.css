@@ -199,7 +199,16 @@ section, header, footer, nav, main, .container {
     opacity: 1 !important;
   }
 
-  /* Header adjustments */
+  /* Homepage Mobile App Header (Mockup 1) */
+  body.page-home .mobile-app-header {
+    display: flex !important;
+  }
+
+  body.page-home .sticky-header-wrap {
+    display: none !important;
+  }
+
+  /* Header adjustments for subpages */
   .top-bar {
     display: none; /* Hide topbar to maximize mobile screen real estate */
   }
@@ -248,11 +257,9 @@ section, header, footer, nav, main, .container {
     transform: translateY(-150%);
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 999;
-    max-height: calc(100vh - 140px);
-    overflow-y: auto;
   }
 
-  .nav-menu.open {
+  .nav-menu.active {
     transform: translateY(0);
   }
 
@@ -277,24 +284,32 @@ section, header, footer, nav, main, .container {
     display: none; /* Relocated to mobile bottom bar */
   }
 
-  /* ================= HERO SLIDER MOBILE (VIBRANT & HIGH-CONTRAST) ================= */
+  /* ================= HERO SLIDER MOBILE (MOCKUP 1 EXACT COMPACT BANNER) ================= */
+  .hero-section {
+    min-height: 250px !important;
+    height: 250px !important;
+  }
+
   .hero-slider-wrapper {
-    height: 520px;
-    border-radius: 0 0 24px 24px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    height: 250px !important;
+    min-height: 250px !important;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   }
 
   .hero-slide {
     background-position: center center;
     background-size: cover;
+    height: 250px !important;
+    min-height: 250px !important;
   }
 
   .hero-slide-overlay {
-    background: linear-gradient(180deg, rgba(11, 19, 43, 0.42) 0%, rgba(11, 19, 43, 0.72) 55%, rgba(6, 10, 24, 0.94) 100%) !important;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.75) 55%, rgba(15, 23, 42, 0.95) 100%) !important;
   }
 
   .hero-content {
-    padding: 0 16px 24px;
+    padding: 20px 14px 12px !important;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -302,46 +317,36 @@ section, header, footer, nav, main, .container {
   }
 
   .slide-tag {
-    display: inline-flex !important;
-    align-items: center;
-    gap: 6px;
-    margin: 0 auto 12px;
-    font-size: 0.75rem !important;
-    font-weight: 800 !important;
-    padding: 6px 14px !important;
-    border-radius: 9999px !important;
-    background: rgba(220, 38, 38, 0.28) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    border: 1px solid rgba(220, 38, 38, 0.55) !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3) !important;
+    display: none !important; /* Keep ultra-clean like Mockup 1 */
   }
 
   .slide-title {
-    font-size: 1.95rem !important;
+    font-size: 1.18rem !important;
     font-weight: 800 !important;
-    line-height: 1.2 !important;
-    margin-bottom: 10px !important;
+    line-height: 1.25 !important;
+    margin-bottom: 6px !important;
     color: #FFFFFF !important;
-    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.8) !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+    max-width: 96% !important;
   }
 
   .slide-subtitle {
-    font-size: 0.88rem !important;
-    line-height: 1.45 !important;
-    margin-bottom: 20px !important;
-    color: #CBD5E1 !important;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7) !important;
-    max-width: 95% !important;
+    display: none !important; /* Hide long desktop subtitle to match Mockup 1 */
   }
 
-  .slide-actions {
-    display: grid !important;
-    grid-template-columns: 1.15fr 0.85fr !important;
+  .hero-cta-group-mockup {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
     gap: 8px !important;
+    margin-top: 6px !important;
     width: 100% !important;
-    max-width: 360px !important;
+  }
+
+  .btn-hero-gold, .btn-hero-teal {
+    padding: 7px 14px !important;
+    font-size: 0.75rem !important;
   }
 
   .slide-actions .btn {
@@ -1891,6 +1896,72 @@ section, header, footer, nav, main, .container {
   }
   .app-dock-label {
     font-size: 0.65rem !important;
+  }
+}
+
+/* ==========================================================================
+   Mockup 1 & 2 Mobile Refinements (< 576px)
+   ========================================================================== */
+@media (max-width: 576px) {
+  .mockup-app-dock-card {
+    padding: 12px 6px !important;
+  }
+  .mockup-dock-bubble {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.15rem !important;
+    margin-bottom: 4px !important;
+  }
+  .mockup-dock-text {
+    font-size: 0.65rem !important;
+  }
+  .mockup-rx-camera-box {
+    width: 46px !important;
+    height: 46px !important;
+    font-size: 1.35rem !important;
+  }
+  .mockup-rx-card-title {
+    font-size: 0.88rem !important;
+  }
+  .mockup-rx-snap-btn {
+    padding: 6px 12px !important;
+    font-size: 0.78rem !important;
+  }
+  .home-dept-card {
+    flex: 0 0 125px !important;
+    width: 125px !important;
+    height: 155px !important;
+  }
+  .home-product-card {
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    padding: 8px 10px !important;
+  }
+  .home-product-img-wrap {
+    width: 54px !important;
+    height: 54px !important;
+  }
+  .home-product-price {
+    font-size: 0.9rem !important;
+  }
+  .home-product-title {
+    font-size: 0.72rem !important;
+  }
+  .mockup-flagship-img-wrap {
+    width: 95px !important;
+    height: 85px !important;
+  }
+  .mockup-flagship-title {
+    font-size: 0.85rem !important;
+  }
+  .mockup-flagship-actions {
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+  .btn-flagship-call, .btn-flagship-dir {
+    justify-content: center !important;
+    padding: 6px 10px !important;
+    font-size: 0.72rem !important;
   }
 }
 

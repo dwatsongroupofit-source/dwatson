@@ -5795,3 +5795,755 @@ textarea.form-control {
   line-height: 1.5;
   margin: 0;
 }
+
+/* ==========================================================================
+   MOCKUP 1 & 2 MOBILE-FIRST APP COMPONENTS (Exact Visual Replica)
+   ========================================================================== */
+
+/* 1. Mobile App Top Bar */
+.mobile-app-header {
+  display: none;
+  background: #0F172A;
+  padding: 10px 14px;
+  align-items: center;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+.mobile-app-emblem {
+  height: 38px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.mobile-app-search-wrap {
+  flex: 1;
+  position: relative;
+  cursor: pointer;
+}
+
+.mobile-app-search-wrap i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+  font-size: 0.85rem;
+}
+
+.mobile-app-search-wrap input {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  border-radius: 9999px;
+  border: 1px solid #334155;
+  background: #1E293B;
+  color: #FFFFFF;
+  font-size: 0.78rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.mobile-app-search-wrap input::placeholder {
+  color: #94A3B8;
+}
+
+.mobile-app-live-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.live-branch-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.live-branch-val {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2DD4BF;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 2. Hero Action Buttons (Side-by-Side Gold & Teal) */
+.hero-cta-group-mockup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-hero-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #EAB308;
+  color: #0F172A;
+  font-weight: 800;
+  font-size: 0.82rem;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.35);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-hero-gold:hover {
+  background: #CA8A04;
+  transform: translateY(-1px);
+}
+
+.btn-hero-teal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0D9488;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-hero-teal:hover {
+  background: #0F766E;
+  transform: translateY(-1px);
+}
+
+/* 3. Quick Action App Dock (Mockup 1) */
+.mockup-app-dock-section {
+  padding: 16px 0 10px;
+}
+
+.mockup-section-heading {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--dw-navy);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mockup-app-dock-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  padding: 14px 8px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.mockup-dock-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-dark);
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.mockup-dock-item:active {
+  transform: scale(0.92);
+}
+
+.mockup-dock-bubble {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  margin-bottom: 6px;
+  transition: transform 0.2s ease;
+}
+
+.bubble-mint {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+.bubble-lavender {
+  background: #F3E8FF;
+  color: #9333EA;
+}
+
+.bubble-cyan {
+  background: #E0F2FE;
+  color: #0284C7;
+}
+
+.bubble-gold {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.bubble-pink {
+  background: #FCE7F3;
+  color: #DB2777;
+}
+
+.mockup-dock-text {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #334155;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+/* 4. 1-Tap Quick Prescription Camera Card (Mockup 1) */
+.mockup-quick-rx-section {
+  padding: 4px 0 16px;
+}
+
+.mockup-quick-rx-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.mockup-rx-camera-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: #1E293B;
+  flex-shrink: 0;
+}
+
+.mockup-rx-content {
+  flex: 1;
+}
+
+.mockup-rx-card-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--dw-navy);
+  margin-bottom: 6px;
+}
+
+.mockup-rx-snap-btn {
+  display: block;
+  width: 100%;
+  padding: 7px 14px;
+  border-radius: 9999px;
+  border: 1.5px solid #0F172A;
+  background: #FFFFFF;
+  color: #0F172A;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.mockup-rx-snap-btn:hover {
+  background: #0F172A;
+  color: #FFFFFF;
+}
+
+/* 5. Horizontal Carousels (Featured Departments & Trending Products) */
+.mockup-carousel-section {
+  padding: 10px 0 18px;
+}
+
+.mockup-carousel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mockup-carousel-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mockup-arrow-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mockup-arrow-btn:hover {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+.mockup-horizontal-track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.mockup-horizontal-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Department Cards in Horizontal Track */
+.home-dept-card {
+  flex: 0 0 135px;
+  width: 135px;
+  height: 165px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  scroll-snap-align: start;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  background: #0F172A;
+  display: block;
+}
+
+.home-dept-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.home-dept-card:hover img {
+  transform: scale(1.05);
+}
+
+.home-dept-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.4) 60%, transparent 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 10px 8px;
+}
+
+.home-dept-card-name {
+  color: #FFFFFF;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Trending Products in Horizontal Track */
+.home-product-card {
+  flex: 0 0 240px;
+  width: 240px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  scroll-snap-align: start;
+}
+
+.home-product-img-wrap {
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.home-product-img-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.home-product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.home-product-price {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--dw-navy);
+  line-height: 1.1;
+}
+
+.home-product-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #475569;
+  margin: 3px 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.home-product-buy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #0D9488;
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 5px 10px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.home-product-buy-btn:hover {
+  background: #0F766E;
+}
+
+/* 6. Official Flagship Outlets (Mockup 2) */
+.mockup-flagship-section {
+  padding: 12px 0 18px;
+}
+
+.mockup-filter-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+  max-width: 880px;
+  margin: 0 auto 10px;
+}
+
+.mockup-filter-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.mockup-chip {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  background: #F1F5F9;
+  color: #334155;
+  transition: all 0.2s ease;
+}
+
+.mockup-chip.active {
+  background: #0F172A;
+  color: #FFFFFF;
+}
+
+.mockup-flagship-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  padding: 14px;
+  overflow: hidden;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.mockup-flagship-upper {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.mockup-flagship-img-wrap {
+  width: 110px;
+  height: 95px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mockup-flagship-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mockup-flagship-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(245, 158, 11, 0.95);
+  color: #0F172A;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.mockup-flagship-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.mockup-flagship-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ECFDF5;
+  color: #059669;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  margin-bottom: 4px;
+}
+
+.live-dot-green {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  display: inline-block;
+}
+
+.mockup-flagship-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--dw-navy);
+  line-height: 1.25;
+  margin-bottom: 3px;
+}
+
+.mockup-flagship-address {
+  font-size: 0.72rem;
+  color: #64748B;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+
+.mockup-flagship-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-flagship-call {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #0F172A;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.btn-flagship-dir {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  color: #0F172A;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.mockup-view-all-branches {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #F1F5F9;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--dw-navy);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.mockup-view-all-branches:hover {
+  color: var(--dw-red);
+}
+
+/* 7. Executive Leadership & Board of Directors (Mockup 2) */
+.mockup-leadership-section {
+  padding: 10px 0 24px;
+}
+
+.mockup-leadership-card {
+  background: linear-gradient(135deg, #0B132B 0%, #151E3F 100%);
+  border-radius: 20px;
+  padding: 22px 18px;
+  color: #FFFFFF;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 8px 24px rgba(11, 19, 43, 0.25);
+  text-align: center;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.mockup-leadership-avatars-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.mockup-leader-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mockup-avatar-gold-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2.5px solid #F59E0B;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+  margin-bottom: 6px;
+  background: #0F172A;
+}
+
+.mockup-avatar-gold-circle.small {
+  width: 52px;
+  height: 52px;
+}
+
+.mockup-avatar-gold-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mockup-directors-overlapping {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.mockup-directors-overlapping .mockup-avatar-gold-circle:nth-child(2) {
+  margin-left: -16px;
+}
+
+.mockup-leader-role {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  font-weight: 600;
+}
+
+.mockup-leader-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.mockup-leadership-tagline {
+  font-size: 0.82rem;
+  color: #CBD5E1;
+  margin: 8px 0 16px;
+}
+
+.mockup-leadership-gold-btn {
+  display: block;
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #0F172A;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+  transition: transform 0.2s ease;
+}
+
+.mockup-leadership-gold-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* 8. Raised Floating Golden Center Button in Bottom Nav */
+.mockup-gold-center-bubble {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -20px;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.5), 0 0 0 4px #0F172A;
+  transition: transform 0.2s ease;
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
+.mobile-nav-tab.highlight-rx-mockup {
+  position: relative;
+  color: #FFFFFF;
+}
+
+.mobile-nav-tab.highlight-rx-mockup:active .mockup-gold-center-bubble {
+  transform: scale(0.92);
+}
