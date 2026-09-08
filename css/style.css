@@ -2762,14 +2762,16 @@ textarea.form-control {
 }
 
 .footer-copyright-link {
-  color: #94A3B8; /* Hidden: looks identical to standard copyright text */
+  color: inherit;
   text-decoration: none;
-  transition: color 0.25s ease;
+  font-weight: 700;
+  transition: color 0.25s ease, text-shadow 0.25s ease;
   cursor: pointer;
 }
 
 .footer-copyright-link:hover {
-  color: #EF4444; /* Reveals on hover: glows in brand red */
+  color: #FDE047 !important; /* Elegant warm golden highlight on hover */
+  text-shadow: 0 0 8px rgba(253, 224, 71, 0.4);
 }
 
 /* ==========================================================================
