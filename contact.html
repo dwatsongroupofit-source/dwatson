@@ -452,14 +452,16 @@
         <li><a href="admin.html" id="drawerLinkAdmin"><i class="fa-solid fa-lock"></i> Admin Portal</a></li>
       </ul>
       <div class="mobile-drawer-footer">
-        <a href="tel:0518438111" class="drawer-contact-btn btn-call">
-          <i class="fa-solid fa-phone"></i> Helpline: 051-8438111
-        </a>
+        <button type="button" class="drawer-contact-btn btn-call" onclick="closeMobileMenu(); openFlagshipCallModal();" style="border:none; cursor:pointer; width:100%; text-align:center;">
+          <i class="fa-solid fa-phone-volume"></i> Call Flagship Branches
+        </button>
         <a href="https://wa.me/923329716666?text=Hello%20D.Watson,%20I%20need%20assistance." target="_blank" class="drawer-contact-btn btn-wa">
           <i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666
         </a>
       </div>
     </div>
+  </div>
+
   <!-- Flagship Call Modal -->
   <div class="flagship-call-modal" id="flagshipCallModal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="flagship-call-backdrop" onclick="closeFlagshipCallModal()"></div>

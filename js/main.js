@@ -109,7 +109,15 @@ function renderHeaderAndCompanyInfo(company) {
   // Mobile bottom bar links
   const mobCall = document.getElementById("mobTabCall");
   if (mobCall) {
-    mobCall.href = `tel:${company.helpline.replace(/[^0-9]/g, '')}`;
+    mobCall.onclick = function(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (typeof openFlagshipCallModal === "function") {
+        openFlagshipCallModal();
+      }
+    };
   }
   const mobWa = document.getElementById("mobTabWa");
   if (mobWa) {
@@ -3050,29 +3058,25 @@ function initPrescriptionBranchSelector() {
   const data = typeof getSiteData === "function" ? getSiteData() : null;
   if (!data || !data.branches || !data.branches.length) return;
 
-  const flagships = data.branches.filter(b => b.isFlagship || b.expressDelivery);
-  const regionals = data.branches.filter(b => !b.isFlagship && !b.expressDelivery);
+  // Show ONLY the official flagship (flashtag) branches for both home delivery & branch pickup
+  const flagships = data.branches.filter(b => b.isFlagship);
+  const displayList = flagships.length ? flagships : data.branches.slice(0, 7);
 
-  let html = "";
-  if (flagships.length) {
-    html += `<optgroup label="⭐ Flagship Outlets (Express Home Delivery Hubs)">`;
-    html += flagships.map((b, i) => `
-      <option value="${escapeHtml(b.id || b.name)}" data-express="${b.expressDelivery !== false ? '1' : '0'}" data-fee="${b.deliveryFee || 200}" data-min="${b.minOrderAmount || 1000}" ${i === 0 ? 'selected' : ''}>
-        ${escapeHtml(b.name)} [⚡ Express Delivery Hub]
-      </option>
-    `).join("");
-    html += `</optgroup>`;
-  }
+  const prevSelected = branchSelect.value;
+  const isPickup = rxFulfillmentMode === "pickup";
+  const groupLabel = isPickup ? "⭐ Official Flagship Branches (Free Branch Pickup Points)" : "⭐ Official Flagship Outlets (Express Home Delivery Hubs)";
+  const tagText = isPickup ? "[🏬 Free Branch Pickup]" : "[⚡ Express Delivery Hub]";
 
-  if (regionals.length) {
-    html += `<optgroup label="🏬 Regional Branches (In-Store Pickup Only)">`;
-    html += regionals.map(b => `
-      <option value="${escapeHtml(b.id || b.name)}" data-express="0" data-fee="${b.deliveryFee || 200}" data-min="${b.minOrderAmount || 1000}">
-        ${escapeHtml(b.name)} [🏬 In-Store Pickup]
+  let html = `<optgroup label="${groupLabel}">`;
+  html += displayList.map((b, i) => {
+    const isSelected = prevSelected ? (b.id === prevSelected || b.name === prevSelected) : (i === 0);
+    return `
+      <option value="${escapeHtml(b.id || b.name)}" data-express="${b.expressDelivery !== false ? '1' : '0'}" data-fee="${b.deliveryFee || 200}" data-min="${b.minOrderAmount || 1000}" ${isSelected ? 'selected' : ''}>
+        ${escapeHtml(b.name)} ${tagText}
       </option>
-    `).join("");
-    html += `</optgroup>`;
-  }
+    `;
+  }).join("");
+  html += `</optgroup>`;
 
   branchSelect.innerHTML = html;
   updateBranchDeliveryStatus();
@@ -3244,8 +3248,112 @@ function setFulfillmentMode(mode) {
     if (addrGroup) addrGroup.style.display = "none";
   }
 
+  // Refresh branch dropdown labels for chosen fulfillment mode
+  initPrescriptionBranchSelector();
   updateBranchDeliveryStatus();
   handleOrderAmountInput();
+}
+
+/**
+ * Format Short Filename for responsive mobile displays
+ */
+function formatShortFileName(name, maxLen = 18) {
+  if (!name) return "";
+  if (name.length <= maxLen) return name;
+  const dotIdx = name.lastIndexOf(".");
+  const ext = dotIdx !== -1 ? name.slice(dotIdx) : "";
+  const base = dotIdx !== -1 ? name.slice(0, dotIdx) : name;
+  const keep = Math.max(4, maxLen - ext.length - 3);
+  return base.slice(0, keep) + "..." + ext;
+}
+
+/**
+ * Canvas Image Compressor for Prescription Uploads
+ */
+function compressRxImageFile(file, maxDim = 1200, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        let width = img.naturalWidth || img.width;
+        let height = img.naturalHeight || img.height;
+
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        canvas.toBlob((blob) => {
+          resolve({ dataUrl, blob, width, height });
+        }, "image/jpeg", quality);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Upload Prescription Image to Direct Cloud CDN (with Base64 fallback)
+ */
+async function uploadPrescriptionImage(file) {
+  if (!file) return "";
+  if (!file.type.startsWith("image/")) {
+    return "Document: " + file.name;
+  }
+
+  try {
+    const { dataUrl, blob } = await compressRxImageFile(file, 1200, 0.82);
+
+    try {
+      const formData = new FormData();
+      formData.append("key", "6d207e02198a847aa98d0a2a901485a5");
+      formData.append("action", "upload");
+      formData.append("source", blob, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
+      formData.append("format", "json");
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+      const res = await fetch("https://freeimage.host/api/1/upload", {
+        method: "POST",
+        body: formData,
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.image && json.image.url) {
+          return json.image.url;
+        }
+      }
+    } catch (cdnErr) {
+      console.warn("Cloud CDN prescription upload fallback notice:", cdnErr);
+    }
+
+    return dataUrl;
+  } catch (err) {
+    console.warn("Prescription compression notice:", err);
+    return "";
+  }
 }
 
 function handleRxFileSelect(input) {
@@ -3258,7 +3366,10 @@ function handleRxFileSelect(input) {
   const previewImg = document.getElementById("rxPreviewImg");
   const fileNameEl = document.getElementById("rxFileName");
 
-  if (fileNameEl) fileNameEl.textContent = file.name;
+  if (fileNameEl) {
+    fileNameEl.textContent = formatShortFileName(file.name, 18);
+    fileNameEl.title = file.name; // Full filename visible on hover
+  }
 
   if (file.type.startsWith("image/")) {
     const reader = new FileReader();
@@ -3269,7 +3380,7 @@ function handleRxFileSelect(input) {
     };
     reader.readAsDataURL(file);
   } else {
-    if (previewImg) previewImg.src = "assets/images/logo-emblem.png";
+    if (previewImg) previewImg.src = "assets/images/logo-official.png";
     if (previewWrap) previewWrap.style.display = "flex";
     if (defaultWrap) defaultWrap.style.display = "none";
   }
@@ -3286,7 +3397,7 @@ function removeRxFile(event) {
   if (defaultWrap) defaultWrap.style.display = "block";
 }
 
-function dispatchRxWhatsApp() {
+function dispatchRxWhatsApp(prescriptionPhotoUrl = "") {
   const name = (document.getElementById("rxPatientName")?.value || "").trim() || "Valued Patient";
   const phone = (document.getElementById("rxPatientPhone")?.value || "").trim();
   const address = (document.getElementById("rxPatientAddress")?.value || "").trim();
@@ -3330,7 +3441,12 @@ function dispatchRxWhatsApp() {
   if (notes) {
     msg += `📝 *Notes:* ${notes}\n`;
   }
-  msg += `\n📸 _Attaching prescription photo now for verification._`;
+
+  if (prescriptionPhotoUrl && prescriptionPhotoUrl.startsWith("http")) {
+    msg += `\n📸 *Prescription Photo Link:* ${prescriptionPhotoUrl}\n`;
+  } else {
+    msg += `\n📸 _Attaching prescription photo now for verification._`;
+  }
 
   const waNumber = (branch && branch.whatsapp) ? branch.whatsapp : "923329716666";
   const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
@@ -3356,7 +3472,24 @@ async function handlePrescriptionSubmit(e) {
     if (!proceed) return;
   }
 
-  // Record into Admin Orders & Inquiries Desk
+  const submitBtn = document.querySelector(".btn-submit-rx") || document.querySelector("button[type='submit']");
+  const origBtnText = submitBtn ? submitBtn.innerHTML : "";
+
+  // 1. Upload prescription image to generate direct live link
+  let prescriptionImageUrl = "";
+  if (rxSelectedFile) {
+    try {
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading Prescription Image...`;
+      }
+      prescriptionImageUrl = await uploadPrescriptionImage(rxSelectedFile);
+    } catch (err) {
+      console.warn("Prescription photo upload notice:", err);
+    }
+  }
+
+  // 2. Record into Admin Orders & Inquiries Desk with photo preview
   if (typeof saveCustomerInquiry === "function") {
     try {
       await saveCustomerInquiry({
@@ -3370,6 +3503,10 @@ async function handlePrescriptionSubmit(e) {
         deliveryFee: rxFulfillmentMode === "delivery" ? (orderAmount >= 3000 ? 0 : branchFee) : 0,
         minOrderAmount: minOrder,
         estimatedAmount: orderAmount,
+        prescription_image: prescriptionImageUrl,
+        image: prescriptionImageUrl,
+        photoUrl: prescriptionImageUrl,
+        imageBase64: prescriptionImageUrl,
         notes: notes,
         date: new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" }),
         status: "New Prescription Order"
@@ -3379,10 +3516,19 @@ async function handlePrescriptionSubmit(e) {
     }
   }
 
-  // Attempt EmailJS transmission if configured
+  // 3. EmailJS transmission with explicit image parameters & link in notes
   if (window.emailjs && window.DW_CONFIG && window.DW_CONFIG.EMAILJS_PUBLIC_KEY && window.DW_CONFIG.EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
     try {
+      if (submitBtn) {
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sending Confirmation Email...`;
+      }
       emailjs.init(window.DW_CONFIG.EMAILJS_PUBLIC_KEY);
+
+      const formattedNotes = [
+        notes || "",
+        prescriptionImageUrl ? `📷 Prescription Photo Link: ${prescriptionImageUrl}` : ""
+      ].filter(Boolean).join("\n\n") || "None";
+
       const templateParams = {
         ref_id: refId,
         name: name,
@@ -3393,7 +3539,12 @@ async function handlePrescriptionSubmit(e) {
         delivery_fee: `PKR ${branchFee}`,
         order_amount: orderAmount > 0 ? `PKR ${orderAmount}` : "Pending Verification",
         address: address || "In-Store Pickup",
-        notes: notes || "None",
+        notes: formattedNotes,
+        prescription_image: prescriptionImageUrl || "None",
+        image_url: prescriptionImageUrl || "None",
+        photo_url: prescriptionImageUrl || "None",
+        prescription_url: prescriptionImageUrl || "None",
+        attachment: prescriptionImageUrl || "None",
         date: new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" })
       };
       await emailjs.send(window.DW_CONFIG.EMAILJS_SERVICE_ID, window.DW_CONFIG.EMAILJS_TEMPLATE_ADMIN, templateParams).catch(err => console.warn("EmailJS admin send notice:", err));
@@ -3402,8 +3553,13 @@ async function handlePrescriptionSubmit(e) {
     }
   }
 
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = origBtnText;
+  }
+
   alert(`Prescription order (${refId}) submitted successfully! Our certified clinical pharmacist from ${branchName} is reviewing your details now. Connecting you to WhatsApp to send prescription photo...`);
-  dispatchRxWhatsApp();
+  dispatchRxWhatsApp(prescriptionImageUrl);
 }
 
 /**

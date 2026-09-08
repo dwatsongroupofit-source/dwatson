@@ -1769,7 +1769,7 @@ function renderPrescriptionsList() {
     const badgeColor = isProduct ? "#1D4ED8" : "#DC2626";
     const badgeIcon = isProduct ? "fa-box-open" : "fa-file-prescription";
     const badgeLabel = isProduct ? "PRODUCT ORDER" : "PRESCRIPTION";
-    const photoSrc = item.imageBase64 || item.photoUrl || item.image || "assets/images/pharmacy.jpg";
+    const photoSrc = item.prescription_image || item.photoUrl || item.imageBase64 || item.image || "assets/images/pharmacy.jpg";
 
     return `
       <div class="editable-item-card" style="align-items: flex-start; padding: 18px;">
@@ -1827,7 +1827,7 @@ window.viewInquiryPhoto = function(id) {
     return;
   }
 
-  const photoSrc = item.imageBase64 || item.photoUrl || item.image || "assets/images/pharmacy.jpg";
+  const photoSrc = item.prescription_image || item.photoUrl || item.imageBase64 || item.image || "assets/images/pharmacy.jpg";
 
   const modal = document.getElementById("adminEditModal");
   const modalTitle = document.getElementById("adminModalTitle");

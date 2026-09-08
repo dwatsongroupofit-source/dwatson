@@ -215,25 +215,14 @@
                 <label for="rxSelectedBranch"><i class="fa-solid fa-store"></i> Select D. Watson Branch *</label>
                 <select id="rxSelectedBranch" class="form-control" onchange="handleBranchDeliveryChange()">
                   <!-- Dynamically populated from getSiteData().branches -->
-                  <optgroup label="⭐ Flagship Outlets (Express Home Delivery Hubs)">
-                    <option value="b_f6" selected>D. Watson F-6 Super Market (Flagship #1) — 24/7 Open [Express Delivery Hub]</option>
-                    <option value="b_bluearea">D. Watson Blue Area Flagship Mega Store — Jinnah Ave [Express Delivery Hub]</option>
-                    <option value="b_saddar">D. Watson Saddar Flagship, Rawalpindi — Bank Road [Express Delivery Hub]</option>
-                    <option value="b_pwd">D. Watson PWD Main Boulevard — Rawalpindi [Express Delivery Hub]</option>
-                    <option value="b_f10">D. Watson F-10 Markaz Mega Branch — Islamabad [Express Delivery Hub]</option>
-                    <option value="b_g11">D. Watson G-11 Markaz Branch — Islamabad [Express Delivery Hub]</option>
-                    <option value="b_bahria">D. Watson Bahria Town Phase 7 — Rawalpindi [Express Delivery Hub]</option>
-                  </optgroup>
-                  <optgroup label="🏬 Regional Branches (In-Store Pickup)">
-                    <option value="b_g9">D. Watson G-9 Markaz (Karachi Company)</option>
-                    <option value="b_i8">D. Watson I-8 Markaz</option>
-                    <option value="b_dha2">D. Watson DHA Phase 2 Gate 1</option>
-                    <option value="b_chandni">D. Watson Chandni Chowk, Murree Road</option>
-                    <option value="b_commercial">D. Watson Commercial Market, Satellite Town</option>
-                    <option value="b_peshawar">D. Watson Peshawar Road, Rawalpindi</option>
-                    <option value="b_gulberg">D. Watson Gulberg Main Boulevard, Lahore</option>
-                    <option value="b_dha_lhr">D. Watson DHA Phase 5, Lahore</option>
-                    <option value="b_abbottabad">D. Watson Jinnah Jamiat Chowk, Abbottabad</option>
+                  <optgroup label="⭐ Official Flagship Outlets (Express Delivery Hubs &amp; Pickup Points)">
+                    <option value="b_f6" selected>D. Watson Super Market, F-6 Markaz, Islamabad (Flagship #1)</option>
+                    <option value="b_pwd">D. Watson PWD Main Boulevard, Islamabad</option>
+                    <option value="b_ghauri">D. Watson Ghouri Town Phase 4-A, Islamabad</option>
+                    <option value="b_chandni">D. Watson Chandni Chowk, Murree Road, Rawalpindi</option>
+                    <option value="b_gujar_khan">D. Watson Main G.T. Road, Gujar Khan</option>
+                    <option value="b_g15">D. Watson G-15 Markaz, Islamabad</option>
+                    <option value="b_attock">D. Watson Pleader Lane, Kacheri Road, Attock</option>
                   </optgroup>
                 </select>
                 <small style="color: #64748B; font-size: 0.8rem; margin-top: 4px; display: block;">
@@ -488,14 +477,16 @@
         <li><a href="admin.html" id="drawerLinkAdmin"><i class="fa-solid fa-lock"></i> Admin Portal</a></li>
       </ul>
       <div class="mobile-drawer-footer">
-        <a href="tel:0518438111" class="drawer-contact-btn btn-call">
-          <i class="fa-solid fa-phone"></i> Helpline: 051-8438111
-        </a>
+        <button type="button" class="drawer-contact-btn btn-call" onclick="closeMobileMenu(); openFlagshipCallModal();" style="border:none; cursor:pointer; width:100%; text-align:center;">
+          <i class="fa-solid fa-phone-volume"></i> Call Flagship Branches
+        </button>
         <a href="https://wa.me/923329716666?text=Hello%20D.Watson,%20I%20need%20assistance." target="_blank" class="drawer-contact-btn btn-wa">
           <i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666
         </a>
       </div>
     </div>
+  </div>
+
   <!-- Flagship Call Modal -->
   <div class="flagship-call-modal" id="flagshipCallModal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="flagship-call-backdrop" onclick="closeFlagshipCallModal()"></div>

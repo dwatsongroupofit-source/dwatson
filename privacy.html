@@ -238,7 +238,9 @@
         <!-- Col 1: About & Legacy -->
         <div class="footer-col footer-col-about">
           <div class="footer-brand">
-            <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" class="footer-logo" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
+            <div class="footer-logo-white-badge">
+              <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" class="footer-emblem-logo" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
+            </div>
             <span class="footer-tagline">Pakistan's Premier Pharmacy &amp; Superstore Legacy</span>
           </div>
           <p class="footer-about" id="footerAboutText">
@@ -340,6 +342,38 @@
       <span>Chat</span>
     </a>
   </nav>
+
+  <!-- Slide-Out Mobile Navigation Drawer -->
+  <div class="mobile-nav-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mobile-drawer-backdrop" onclick="closeMobileMenu()"></div>
+    <div class="mobile-drawer-panel">
+      <div class="mobile-drawer-header">
+        <a href="index.html" class="mobile-drawer-logo">
+          <img src="assets/images/logo.svg" alt="D. Watson" style="height:36px; width:auto;" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
+        </a>
+        <button type="button" class="mobile-drawer-close" onclick="closeMobileMenu()" aria-label="Close menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <ul class="mobile-drawer-links">
+        <li><a href="index.html" id="drawerLinkHome"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="departments.html" id="drawerLinkDepts"><i class="fa-solid fa-table-cells-large"></i> 13 Departments</a></li>
+        <li><a href="branches.html" id="drawerLinkBranches"><i class="fa-solid fa-location-dot"></i> Flagship Branches</a></li>
+        <li><a href="journey.html" id="drawerLinkJourney"><i class="fa-solid fa-landmark"></i> The Journey &amp; Board</a></li>
+        <li><a href="prescription.html" id="drawerLinkRx"><i class="fa-solid fa-file-prescription"></i> Upload Prescription</a></li>
+        <li><a href="contact.html" id="drawerLinkContact"><i class="fa-solid fa-headset"></i> Contact &amp; Support</a></li>
+        <li><a href="admin.html" id="drawerLinkAdmin"><i class="fa-solid fa-lock"></i> Admin Portal</a></li>
+      </ul>
+      <div class="mobile-drawer-footer">
+        <button type="button" class="drawer-contact-btn btn-call" onclick="closeMobileMenu(); openFlagshipCallModal();" style="border:none; cursor:pointer; width:100%; text-align:center;">
+          <i class="fa-solid fa-phone-volume"></i> Call Flagship Branches
+        </button>
+        <a href="https://wa.me/923329716666?text=Hello%20D.Watson,%20I%20need%20assistance." target="_blank" class="drawer-contact-btn btn-wa">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666
+        </a>
+      </div>
+    </div>
+  </div>
 
   <!-- Flagship Call Modal -->
   <div class="flagship-call-modal" id="flagshipCallModal" role="dialog" aria-modal="true" aria-hidden="true">
