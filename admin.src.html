@@ -99,8 +99,17 @@
       <div class="admin-nav-item active" data-tab="tabSlides">
         <i class="fa-solid fa-images"></i> Hero Slider
       </div>
+      <div class="admin-nav-item" data-tab="tabDepartments">
+        <i class="fa-solid fa-table-cells-large"></i> 13 Departments
+      </div>
+      <div class="admin-nav-item" data-tab="tabCategories">
+        <i class="fa-solid fa-shapes"></i> Popular Categories
+      </div>
+      <div class="admin-nav-item" data-tab="tabBrands">
+        <i class="fa-solid fa-handshake"></i> Trusted Partner Brands
+      </div>
       <div class="admin-nav-item" data-tab="tabBranches">
-        <i class="fa-solid fa-location-dot"></i> Branches Locator
+        <i class="fa-solid fa-location-dot"></i> Branches &amp; Delivery Hubs
       </div>
       <div class="admin-nav-item" data-tab="tabProducts">
         <i class="fa-solid fa-box-open"></i> Featured Products
@@ -184,7 +193,64 @@
         </div>
       </section>
 
-      <!-- ================= 2. BRANCHES TAB ================= -->
+      <!-- ================= 2. DEPARTMENTS TAB ================= -->
+      <section class="admin-tab-pane" id="tabDepartments">
+        <div class="admin-card">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">13 Specialized Store Departments</h2>
+              <p style="font-size:0.85rem; color:#64748B;">Manage department titles, photography, badges, key features, and instant WhatsApp inquiry messages.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openDepartmentModal(-1)">
+              <i class="fa-solid fa-plus"></i> Add New Department
+            </button>
+          </div>
+
+          <div class="items-list-grid" id="adminDepartmentsList">
+            <!-- Populated via admin.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. POPULAR CATEGORIES TAB ================= -->
+      <section class="admin-tab-pane" id="tabCategories">
+        <div class="admin-card">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Homepage Popular Categories Grid</h2>
+              <p style="font-size:0.85rem; color:#64748B;">Manage circle category cards, icon badges, styling classes, and destination links.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openCategoryModal(-1)">
+              <i class="fa-solid fa-plus"></i> Add New Category
+            </button>
+          </div>
+
+          <div class="items-list-grid" id="adminCategoriesList">
+            <!-- Populated via admin.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. TRUSTED PARTNER BRANDS TAB ================= -->
+      <section class="admin-tab-pane" id="tabBrands">
+        <div class="admin-card">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Trusted Partner Brands (Continuous Marquee)</h2>
+              <p style="font-size:0.85rem; color:#64748B;">Manage corporate pharmaceutical &amp; skincare brand partners that continuously slide on the homepage.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openBrandModal(-1)">
+              <i class="fa-solid fa-plus"></i> Add Partner Brand
+            </button>
+          </div>
+
+          <div class="items-list-grid" id="adminBrandsList">
+            <!-- Populated via admin.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. BRANCHES TAB ================= -->
       <section class="admin-tab-pane" id="tabBranches">
         <div class="admin-card">
           <div class="card-header-flex">
@@ -310,6 +376,30 @@
           </div>
 
           <form id="companySettingsForm" onsubmit="saveCompanySettings(event)">
+            <!-- Global Express Delivery Policies -->
+            <div style="background:#FEF2F2; border:1px solid #FECACA; padding:16px; border-radius:12px; margin-bottom:20px;">
+              <h4 style="margin:0 0 8px; color:#991B1B; font-size:0.95rem; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-truck-fast"></i> Global Express Delivery &amp; Purchase Policies
+              </h4>
+              <p style="font-size:0.8rem; color:#7F1D1D; margin-bottom:14px;">
+                Configure delivery rates, minimum purchase amounts, and free delivery thresholds for website orders, WhatsApp, and EmailJS.
+              </p>
+              <div class="form-grid-3">
+                <div class="admin-form-group" style="margin-bottom:0;">
+                  <label>Default Delivery Fee (PKR)</label>
+                  <input type="number" class="admin-form-input" id="setDeliveryFee" min="0" required>
+                </div>
+                <div class="admin-form-group" style="margin-bottom:0;">
+                  <label>Minimum Purchase Amount (PKR)</label>
+                  <input type="number" class="admin-form-input" id="setDeliveryMinOrder" min="0" required>
+                </div>
+                <div class="admin-form-group" style="margin-bottom:0;">
+                  <label>Free Delivery Threshold (PKR)</label>
+                  <input type="number" class="admin-form-input" id="setDeliveryFreeThreshold" min="0" required>
+                </div>
+              </div>
+            </div>
+
             <div class="form-grid-2">
               <div class="admin-form-group">
                 <label>Company Brand Name</label>

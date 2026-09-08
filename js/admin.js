@@ -250,6 +250,9 @@ window.closeAdminDrawer = function() {
 function renderAllSections() {
   loadAdminState();
   renderSlidesList();
+  renderDepartmentsList();
+  renderCategoriesList();
+  renderBrandsList();
   renderBranchesList();
   renderProductsList();
   renderGalleryList();
@@ -399,7 +402,464 @@ window.deleteSlide = function(idx) {
 };
 
 /* ==========================================================================
-   2. BRANCHES LOCATOR MANAGER
+   1b. 13 SPECIALIZED DEPARTMENTS MANAGER
+   ========================================================================== */
+function renderDepartmentsList() {
+  const container = document.getElementById("adminDepartmentsList");
+  if (!container) return;
+
+  if (!adminData.departments || !adminData.departments.length) {
+    container.innerHTML = `<p style="color: #64748B;">No departments configured. Click "+ Add New Department".</p>`;
+    return;
+  }
+
+  container.innerHTML = adminData.departments.map((dept, idx) => `
+    <div class="editable-item-card">
+      <img src="${dept.image || 'assets/images/Shop Inside/Medicine.jpeg'}" class="item-thumbnail" alt="${escapeAdminHtml(dept.name)}" onerror="this.onerror=null; this.src='assets/images/Shop Inside/Medicine.jpeg';">
+      <div class="item-info">
+        <div class="item-title">
+          ${escapeAdminHtml(dept.name)}
+          <span style="color:#A50505; font-size:0.75rem; font-weight:800; margin-left:6px; background:#FEE2E2; padding:2px 8px; border-radius:10px;">${escapeAdminHtml(dept.badge || 'Department')}</span>
+        </div>
+        <div class="item-sub">
+          <strong>Tagline:</strong> ${escapeAdminHtml(dept.tagline || 'Specialized Care')} • 
+          <strong>Icon:</strong> <i class="${escapeAdminHtml(dept.icon || 'fa-solid fa-store')}"></i> (${escapeAdminHtml(dept.icon || 'icon')})
+        </div>
+        <div style="font-size:0.78rem; color:#64748B; margin-top:2px;">
+          ${escapeAdminHtml((dept.description || '').substring(0, 110))}...
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-outline btn-sm" onclick="openDepartmentModal(${idx})">
+          <i class="fa-solid fa-pen-to-square"></i> Edit
+        </button>
+        <button class="btn btn-sm" style="background:#FEE2E2; color:#DC2626;" onclick="deleteDepartment(${idx})">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  `).join("");
+}
+
+window.openDepartmentModal = function(index = -1) {
+  editItemIndex = index;
+  activeModalType = "department";
+  const modal = document.getElementById("adminEditModal");
+  const modalTitle = document.getElementById("adminModalTitle");
+  const modalBody = document.getElementById("adminModalBody");
+
+  if (!modal || !modalTitle || !modalBody) return;
+
+  const isNew = index === -1;
+  const dept = isNew ? {
+    id: `dept_${Date.now()}`,
+    name: "New Department Name",
+    badge: "Specialty Service",
+    tagline: "Department Tagline or Promise",
+    image: "assets/images/Shop Inside/Medicine.jpeg",
+    icon: "fa-solid fa-prescription-bottle-medical",
+    description: "Full description of services, authentic sourcing, and product availability for this department.",
+    features: [
+      "100% Genuine & Authentic Products Guaranteed",
+      "Specialized Store Shelves & Display Counters",
+      "Certified Department Advisors Available",
+      "Fast WhatsApp Ordering & In-Store Availability"
+    ],
+    whatsappMsg: "Hi D.Watson, I would like to inquire about this department."
+  } : adminData.departments[index];
+
+  const featuresText = Array.isArray(dept.features) ? dept.features.join("\n") : (dept.features || "");
+
+  modalTitle.textContent = isNew ? "Add New Department" : `Edit: ${dept.name}`;
+  modalBody.innerHTML = `
+    <form id="departmentEditForm" onsubmit="saveDepartmentModal(event)">
+      <div class="form-grid-2">
+        <div class="admin-form-group">
+          <label>Department Name</label>
+          <input type="text" class="admin-form-input" id="deptName" value="${escapeAdminHtml(dept.name)}" required>
+        </div>
+        <div class="admin-form-group">
+          <label>Badge Ribbon Text (e.g. Core Specialty, Luxury Derma)</label>
+          <input type="text" class="admin-form-input" id="deptBadge" value="${escapeAdminHtml(dept.badge || '')}" required>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="admin-form-group">
+          <label>Headline Tagline</label>
+          <input type="text" class="admin-form-input" id="deptTagline" value="${escapeAdminHtml(dept.tagline || '')}" required>
+        </div>
+        <div class="admin-form-group">
+          <label>FontAwesome Icon Class (e.g. fa-solid fa-wand-magic-sparkles)</label>
+          <input type="text" class="admin-form-input" id="deptIcon" value="${escapeAdminHtml(dept.icon || 'fa-solid fa-store')}" required>
+        </div>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Department Photo (Upload Photo or Enter Path/URL)</label>
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+          <input type="text" class="admin-form-input" id="deptImage" value="${escapeAdminHtml(dept.image || '')}" style="flex:1;" oninput="document.getElementById('deptImgPreview').src=this.value;">
+          <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+            <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'deptImage', 'deptImgPreview')">
+          </label>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <img id="deptImgPreview" src="${dept.image || 'assets/images/Shop Inside/Medicine.jpeg'}" alt="Preview" style="width:90px; height:56px; object-fit:cover; border-radius:6px; border:1px solid #CBD5E1;" onerror="this.onerror=null; this.src='assets/images/Shop Inside/Medicine.jpeg';">
+          <small style="color:#64748B; font-size:0.78rem;">Department photo for card and detail page.</small>
+        </div>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Full Overview &amp; Description</label>
+        <textarea class="admin-form-input" id="deptDescription" rows="3" required>${escapeAdminHtml(dept.description || '')}</textarea>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Key Bullet Features (One per line)</label>
+        <textarea class="admin-form-input" id="deptFeatures" rows="4" placeholder="Feature 1&#10;Feature 2&#10;Feature 3">${escapeAdminHtml(featuresText)}</textarea>
+        <small style="color:#64748B; font-size:0.78rem;">Enter each highlight bullet on a new line.</small>
+      </div>
+
+      <div class="admin-form-group">
+        <label>WhatsApp Quick-Inquiry Pre-fill Message</label>
+        <input type="text" class="admin-form-input" id="deptWhatsappMsg" value="${escapeAdminHtml(dept.whatsappMsg || 'Hi D.Watson, I would like to inquire about this department.')}" required>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeAdminModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Save Department</button>
+      </div>
+    </form>
+  `;
+
+  modal.classList.add("active");
+};
+
+window.saveDepartmentModal = function(e) {
+  e.preventDefault();
+  const rawFeatures = document.getElementById("deptFeatures").value;
+  const parsedFeatures = rawFeatures.split("\n").map(f => f.trim()).filter(Boolean);
+
+  const existingDept = editItemIndex !== -1 ? adminData.departments[editItemIndex] : null;
+  const nameVal = document.getElementById("deptName").value.trim();
+  const idVal = existingDept?.id || nameVal.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+
+  const newDept = {
+    id: idVal,
+    name: nameVal,
+    badge: document.getElementById("deptBadge").value.trim() || "Specialty",
+    tagline: document.getElementById("deptTagline").value.trim(),
+    image: document.getElementById("deptImage").value.trim() || "assets/images/Shop Inside/Medicine.jpeg",
+    icon: document.getElementById("deptIcon").value.trim() || "fa-solid fa-store",
+    description: document.getElementById("deptDescription").value.trim(),
+    features: parsedFeatures.length ? parsedFeatures : ["100% Genuine Guaranteed", "Certified Advisors on Duty"],
+    whatsappMsg: document.getElementById("deptWhatsappMsg").value.trim() || `Hi D.Watson, I am inquiring about ${nameVal}.`
+  };
+
+  if (editItemIndex === -1) {
+    adminData.departments.push(newDept);
+  } else {
+    adminData.departments[editItemIndex] = newDept;
+  }
+
+  saveSiteData(adminData);
+  closeAdminModal();
+  renderDepartmentsList();
+  showToast("Department saved and published live!");
+};
+
+window.deleteDepartment = function(idx) {
+  const dept = adminData.departments[idx];
+  if (confirm(`Are you sure you want to delete "${dept?.name || 'this department'}"?`)) {
+    adminData.departments.splice(idx, 1);
+    saveSiteData(adminData);
+    renderDepartmentsList();
+    showToast("Department removed.");
+  }
+};
+
+/* ==========================================================================
+   1c. POPULAR CATEGORIES MANAGER
+   ========================================================================== */
+function renderCategoriesList() {
+  const container = document.getElementById("adminCategoriesList");
+  if (!container) return;
+
+  if (!adminData.categories || !adminData.categories.length) {
+    container.innerHTML = `<p style="color: #64748B;">No popular categories configured. Click "+ Add New Category".</p>`;
+    return;
+  }
+
+  container.innerHTML = adminData.categories.map((cat, idx) => `
+    <div class="editable-item-card">
+      <div style="width:48px; height:48px; border-radius:50%; background:#F1F5F9; display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:#A50505; flex-shrink:0;">
+        <i class="${escapeAdminHtml(cat.icon || 'fa-solid fa-shapes')}"></i>
+      </div>
+      <div class="item-info">
+        <div class="item-title">
+          ${escapeAdminHtml(cat.name)}
+          <span style="font-size:0.75rem; color:#2563EB; font-weight:700; margin-left:6px;">[${escapeAdminHtml(cat.colorClass || 'default')}]</span>
+        </div>
+        <div class="item-sub">
+          <strong>Icon:</strong> ${escapeAdminHtml(cat.icon)} • 
+          <strong>Dept Link:</strong> <code>${escapeAdminHtml(cat.link || '')}</code>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-outline btn-sm" onclick="openCategoryModal(${idx})">
+          <i class="fa-solid fa-pen-to-square"></i> Edit
+        </button>
+        <button class="btn btn-sm" style="background:#FEE2E2; color:#DC2626;" onclick="deleteCategory(${idx})">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  `).join("");
+}
+
+window.openCategoryModal = function(index = -1) {
+  editItemIndex = index;
+  activeModalType = "category";
+  const modal = document.getElementById("adminEditModal");
+  const modalTitle = document.getElementById("adminModalTitle");
+  const modalBody = document.getElementById("adminModalBody");
+
+  if (!modal || !modalTitle || !modalBody) return;
+
+  const isNew = index === -1;
+  const cat = isNew ? {
+    id: `cat_${Date.now()}`,
+    name: "New Category",
+    icon: "fa-solid fa-pills",
+    colorClass: "cat-medicines",
+    link: "departments.html?dept=pharmacy",
+    deptId: "pharmacy"
+  } : adminData.categories[index];
+
+  modalTitle.textContent = isNew ? "Add Popular Category" : `Edit: ${cat.name}`;
+  modalBody.innerHTML = `
+    <form id="categoryEditForm" onsubmit="saveCategoryModal(event)">
+      <div class="form-grid-2">
+        <div class="admin-form-group">
+          <label>Category Display Name</label>
+          <input type="text" class="admin-form-input" id="catName" value="${escapeAdminHtml(cat.name)}" required>
+        </div>
+        <div class="admin-form-group">
+          <label>FontAwesome Icon Class</label>
+          <input type="text" class="admin-form-input" id="catIcon" value="${escapeAdminHtml(cat.icon || 'fa-solid fa-shapes')}" required>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="admin-form-group">
+          <label>Color Theme Class</label>
+          <select class="admin-form-input" id="catColorClass">
+            <option value="cat-medicines" ${cat.colorClass === 'cat-medicines' ? 'selected' : ''}>Red / Medicines (cat-medicines)</option>
+            <option value="cat-supplements" ${cat.colorClass === 'cat-supplements' ? 'selected' : ''}>Orange / Vitamins (cat-supplements)</option>
+            <option value="cat-baby" ${cat.colorClass === 'cat-baby' ? 'selected' : ''}>Pink / Baby Care (cat-baby)</option>
+            <option value="cat-skincare" ${cat.colorClass === 'cat-skincare' ? 'selected' : ''}>Teal / Skincare (cat-skincare)</option>
+            <option value="cat-devices" ${cat.colorClass === 'cat-devices' ? 'selected' : ''}>Blue / Optics & Devices (cat-devices)</option>
+            <option value="cat-personal" ${cat.colorClass === 'cat-personal' ? 'selected' : ''}>Purple / Surgical & Hospital (cat-personal)</option>
+            <option value="cat-fragrances" ${cat.colorClass === 'cat-fragrances' ? 'selected' : ''}>Gold / Fragrances (cat-fragrances)</option>
+            <option value="cat-superstore" ${cat.colorClass === 'cat-superstore' ? 'selected' : ''}>Green / Superstore (cat-superstore)</option>
+          </select>
+        </div>
+        <div class="admin-form-group">
+          <label>Linked Department</label>
+          <select class="admin-form-input" id="catDeptId" onchange="document.getElementById('catLink').value='departments.html?dept='+this.value">
+            ${(adminData.departments || []).map(d => `<option value="${escapeAdminHtml(d.id)}" ${cat.deptId === d.id ? 'selected' : ''}>${escapeAdminHtml(d.name)}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Destination Target Link</label>
+        <input type="text" class="admin-form-input" id="catLink" value="${escapeAdminHtml(cat.link || 'departments.html')}" required>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeAdminModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Save Category</button>
+      </div>
+    </form>
+  `;
+
+  modal.classList.add("active");
+};
+
+window.saveCategoryModal = function(e) {
+  e.preventDefault();
+  const nameVal = document.getElementById("catName").value.trim();
+  const deptIdVal = document.getElementById("catDeptId").value;
+  const linkVal = document.getElementById("catLink").value.trim() || `departments.html?dept=${deptIdVal}`;
+
+  const existingCat = editItemIndex !== -1 ? adminData.categories[editItemIndex] : null;
+  const idVal = existingCat?.id || `cat_${nameVal.toLowerCase().replace(/[^a-z0-9]+/g, "_")}`;
+
+  const newCat = {
+    id: idVal,
+    name: nameVal,
+    icon: document.getElementById("catIcon").value.trim() || "fa-solid fa-shapes",
+    colorClass: document.getElementById("catColorClass").value,
+    link: linkVal,
+    deptId: deptIdVal
+  };
+
+  if (editItemIndex === -1) {
+    adminData.categories.push(newCat);
+  } else {
+    adminData.categories[editItemIndex] = newCat;
+  }
+
+  saveSiteData(adminData);
+  closeAdminModal();
+  renderCategoriesList();
+  showToast("Category saved!");
+};
+
+window.deleteCategory = function(idx) {
+  const cat = adminData.categories[idx];
+  if (confirm(`Delete "${cat?.name || 'this category'}"?`)) {
+    adminData.categories.splice(idx, 1);
+    saveSiteData(adminData);
+    renderCategoriesList();
+    showToast("Category removed.");
+  }
+};
+
+/* ==========================================================================
+   1d. TRUSTED PARTNER BRANDS MANAGER
+   ========================================================================== */
+function renderBrandsList() {
+  const container = document.getElementById("adminBrandsList");
+  if (!container) return;
+
+  if (!adminData.trustedBrands || !adminData.trustedBrands.length) {
+    container.innerHTML = `<p style="color: #64748B;">No partner brands configured. Click "+ Add Partner Brand".</p>`;
+    return;
+  }
+
+  container.innerHTML = adminData.trustedBrands.map((brand, idx) => `
+    <div class="editable-item-card">
+      <div style="width:48px; height:48px; border-radius:8px; background:#F8FAFC; border:1px solid #E2E8F0; display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:#A50505; flex-shrink:0;">
+        <i class="${escapeAdminHtml(brand.icon || 'fa-solid fa-capsules')}"></i>
+      </div>
+      <div class="item-info">
+        <div class="item-title">
+          ${escapeAdminHtml(brand.name)}
+          ${brand.isVerified ? '<span style="color:#16A34A; font-size:0.75rem; font-weight:800; margin-left:6px;"><i class="fa-solid fa-circle-check"></i> VERIFIED PARTNER</span>' : ''}
+        </div>
+        <div class="item-sub">
+          <strong>Category:</strong> ${escapeAdminHtml(brand.category || 'Pharmaceutical')} • 
+          <strong>Icon:</strong> ${escapeAdminHtml(brand.icon || 'fa-solid fa-capsules')}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-outline btn-sm" onclick="openBrandModal(${idx})">
+          <i class="fa-solid fa-pen-to-square"></i> Edit
+        </button>
+        <button class="btn btn-sm" style="background:#FEE2E2; color:#DC2626;" onclick="deleteBrand(${idx})">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  `).join("");
+}
+
+window.openBrandModal = function(index = -1) {
+  editItemIndex = index;
+  activeModalType = "brand";
+  const modal = document.getElementById("adminEditModal");
+  const modalTitle = document.getElementById("adminModalTitle");
+  const modalBody = document.getElementById("adminModalBody");
+
+  if (!modal || !modalTitle || !modalBody) return;
+
+  const isNew = index === -1;
+  const brand = isNew ? {
+    id: `tb_${Date.now()}`,
+    name: "New Partner Brand",
+    category: "Pharmaceutical & Wellness",
+    icon: "fa-solid fa-capsules",
+    isVerified: true
+  } : adminData.trustedBrands[index];
+
+  modalTitle.textContent = isNew ? "Add Trusted Partner Brand" : `Edit: ${brand.name}`;
+  modalBody.innerHTML = `
+    <form id="brandEditForm" onsubmit="saveBrandModal(event)">
+      <div class="form-grid-2">
+        <div class="admin-form-group">
+          <label>Brand Name</label>
+          <input type="text" class="admin-form-input" id="brandName" value="${escapeAdminHtml(brand.name)}" required>
+        </div>
+        <div class="admin-form-group">
+          <label>Specialty Category (e.g. Clinical Skincare, Global Pharma)</label>
+          <input type="text" class="admin-form-input" id="brandCategory" value="${escapeAdminHtml(brand.category || '')}" required>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="admin-form-group">
+          <label>FontAwesome Icon Class</label>
+          <input type="text" class="admin-form-input" id="brandIcon" value="${escapeAdminHtml(brand.icon || 'fa-solid fa-capsules')}" required>
+        </div>
+        <div class="admin-form-group" style="display:flex; flex-direction:column; justify-content:center;">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:15px; font-weight:700;">
+            <input type="checkbox" id="brandVerified" ${brand.isVerified ? 'checked' : ''}>
+            <span>Mark as Official Verified Partner</span>
+          </label>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeAdminModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Save Brand</button>
+      </div>
+    </form>
+  `;
+
+  modal.classList.add("active");
+};
+
+window.saveBrandModal = function(e) {
+  e.preventDefault();
+  const nameVal = document.getElementById("brandName").value.trim();
+  const existingBrand = editItemIndex !== -1 ? adminData.trustedBrands[editItemIndex] : null;
+  const idVal = existingBrand?.id || `tb_${nameVal.toLowerCase().replace(/[^a-z0-9]+/g, "_")}`;
+
+  const newBrand = {
+    id: idVal,
+    name: nameVal,
+    category: document.getElementById("brandCategory").value.trim() || "Healthcare Partner",
+    icon: document.getElementById("brandIcon").value.trim() || "fa-solid fa-capsules",
+    isVerified: document.getElementById("brandVerified").checked
+  };
+
+  if (editItemIndex === -1) {
+    adminData.trustedBrands.push(newBrand);
+  } else {
+    adminData.trustedBrands[editItemIndex] = newBrand;
+  }
+
+  saveSiteData(adminData);
+  closeAdminModal();
+  renderBrandsList();
+  showToast("Partner brand saved and updated in homepage marquee!");
+};
+
+window.deleteBrand = function(idx) {
+  const b = adminData.trustedBrands[idx];
+  if (confirm(`Delete "${b?.name || 'this brand'}" from trusted partners?`)) {
+    adminData.trustedBrands.splice(idx, 1);
+    saveSiteData(adminData);
+    renderBrandsList();
+    showToast("Partner brand removed.");
+  }
+};
+
+/* ==========================================================================
+   2. BRANCHES LOCATOR & DELIVERY HUBS MANAGER
    ========================================================================== */
 function renderBranchesList() {
   const container = document.getElementById("adminBranchesList");
@@ -418,6 +878,7 @@ function renderBranchesList() {
           ${escapeAdminHtml(branch.name)} 
           ${branch.is24Hours ? '<span style="color:#DC2626; font-size:0.75rem; font-weight:800; margin-left:5px;">[24/7 OPEN]</span>' : ''}
           ${branch.isFlagship ? '<span style="color:#2563EB; font-size:0.75rem; font-weight:800; margin-left:5px;">[⭐ FLAGSHIP]</span>' : ''}
+          ${branch.expressDelivery ? `<span style="color:#16A34A; font-size:0.75rem; font-weight:800; margin-left:5px;"><i class="fa-solid fa-truck-fast"></i> EXPRESS (Rs. ${branch.deliveryFee || 200}, Min Rs. ${branch.minOrderAmount || 1000})</span>` : `<span style="color:#94A3B8; font-size:0.75rem; font-weight:700; margin-left:5px;"><i class="fa-solid fa-store"></i> IN-STORE PICKUP ONLY</span>`}
         </div>
         <div class="item-sub">
           <strong>City:</strong> ${escapeAdminHtml(branch.city)} • 
@@ -456,6 +917,10 @@ window.openBranchModal = function(index = -1) {
     phone: "051-8438111",
     timings: "08:00 AM - 12:00 AM Daily",
     is24Hours: false,
+    isFlagship: false,
+    expressDelivery: true,
+    deliveryFee: 200,
+    minOrderAmount: 1000,
     image: "assets/images/store_flagship.jpg",
     services: ["24/7 Pharmacy", "Cosmetics", "Superstore", "Optics"],
     mapUrl: "https://maps.google.com/?q=D.+Watson",
@@ -501,7 +966,7 @@ window.openBranchModal = function(index = -1) {
         <div class="admin-form-group">
           <label>Branch Image (Upload Photo or Enter Path/URL)</label>
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-            <input type="text" class="admin-form-input" id="branchImage" value="${escapeAdminHtml(branch.image)}" placeholder="assets/images/branches/f6-supermarket.jpg" style="flex:1;" oninput="document.getElementById('branchImgPreview').src=this.value;">
+            <input type="text" class="admin-form-input" id="branchImage" value="${escapeAdminHtml(branch.image || '')}" placeholder="assets/images/branches/f6-supermarket.jpg" style="flex:1;" oninput="document.getElementById('branchImgPreview').src=this.value;">
             <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
               <i class="fa-solid fa-cloud-arrow-up"></i> Upload
               <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'branchImage', 'branchImgPreview')">
@@ -528,8 +993,34 @@ window.openBranchModal = function(index = -1) {
         <div class="admin-form-group" style="display:flex; flex-direction:column; justify-content:center;">
           <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:15px;">
             <input type="checkbox" id="branchFlagship" ${branch.isFlagship ? 'checked' : ''}>
-            <strong>Mark as Flagship Outlet (Shows in Prescription Dropdown)</strong>
+            <strong>Mark as Flagship Outlet (Shows in Priority Dropdowns)</strong>
           </label>
+        </div>
+      </div>
+
+      <!-- Express Home Delivery & Purchase Rules -->
+      <div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:14px 16px; border-radius:8px; margin: 15px 0;">
+        <div style="font-weight:700; color:#0F172A; font-size:0.9rem; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-truck-fast" style="color:#A50505;"></i> Express Home Delivery &amp; Purchase Rules
+        </div>
+        <div class="admin-form-group" style="margin-bottom:10px;">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; color:#0F172A;">
+            <input type="checkbox" id="branchExpressDelivery" ${branch.expressDelivery !== false ? 'checked' : ''}>
+            <span>Enable Express Home Delivery for this Branch</span>
+          </label>
+          <small style="color:#64748B; font-size:0.78rem;">If checked, customers can order prescription delivery from this outlet. If unchecked, marked as "In-Store Pickup Only".</small>
+        </div>
+        <div class="form-grid-2">
+          <div class="admin-form-group" style="margin-bottom:0;">
+            <label>Delivery Fee (PKR)</label>
+            <input type="number" class="admin-form-input" id="branchDeliveryFee" value="${branch.deliveryFee !== undefined ? branch.deliveryFee : 200}" min="0" step="50" required>
+            <small style="color:#64748B; font-size:0.75rem;">Standard dispatch fee (e.g. 200 PKR).</small>
+          </div>
+          <div class="admin-form-group" style="margin-bottom:0;">
+            <label>Minimum Purchase Amount (PKR)</label>
+            <input type="number" class="admin-form-input" id="branchMinOrder" value="${branch.minOrderAmount !== undefined ? branch.minOrderAmount : 1000}" min="0" step="100" required>
+            <small style="color:#64748B; font-size:0.75rem;">Minimum order required for dispatch (e.g. 1000 PKR).</small>
+          </div>
         </div>
       </div>
 
@@ -562,6 +1053,9 @@ window.saveBranchModal = function(e) {
     timings: document.getElementById("branchTimings").value.trim(),
     is24Hours: document.getElementById("branch24").checked,
     isFlagship: document.getElementById("branchFlagship").checked,
+    expressDelivery: document.getElementById("branchExpressDelivery") ? document.getElementById("branchExpressDelivery").checked : true,
+    deliveryFee: parseInt(document.getElementById("branchDeliveryFee")?.value, 10) || 200,
+    minOrderAmount: parseInt(document.getElementById("branchMinOrder")?.value, 10) || 1000,
     image: document.getElementById("branchImage").value.trim() || "assets/images/store_flagship.jpg",
     services: ["Pharmacy", "Superstore", "Cosmetics", "Optics"],
     mapUrl: document.getElementById("branchMap").value.trim() || `https://maps.google.com/?q=${encodeURIComponent(document.getElementById("branchName").value)}`,
@@ -1054,7 +1548,7 @@ function populateCompanySettingsForm() {
 
   const setVal = (id, val) => {
     const el = document.getElementById(id);
-    if (el) el.value = val || "";
+    if (el) el.value = val !== undefined ? val : "";
   };
 
   setVal("setCompanyName", c.name);
@@ -1066,6 +1560,9 @@ function populateCompanySettingsForm() {
   setVal("setAnnouncement", c.announcement);
   setVal("setAboutShort", c.aboutShort);
   setVal("setAboutHistory", c.aboutHistory);
+  setVal("setDeliveryFee", c.deliveryDefaultFee !== undefined ? c.deliveryDefaultFee : 200);
+  setVal("setDeliveryMinOrder", c.deliveryMinOrder !== undefined ? c.deliveryMinOrder : 1000);
+  setVal("setDeliveryFreeThreshold", c.deliveryFreeThreshold !== undefined ? c.deliveryFreeThreshold : 3000);
 }
 
 window.saveCompanySettings = function(e) {
@@ -1082,8 +1579,16 @@ window.saveCompanySettings = function(e) {
   adminData.company.aboutShort = document.getElementById("setAboutShort").value.trim();
   adminData.company.aboutHistory = document.getElementById("setAboutHistory").value.trim();
 
+  const delFeeEl = document.getElementById("setDeliveryFee");
+  const minOrderEl = document.getElementById("setDeliveryMinOrder");
+  const freeThreshEl = document.getElementById("setDeliveryFreeThreshold");
+
+  if (delFeeEl) adminData.company.deliveryDefaultFee = parseInt(delFeeEl.value, 10) || 200;
+  if (minOrderEl) adminData.company.deliveryMinOrder = parseInt(minOrderEl.value, 10) || 1000;
+  if (freeThreshEl) adminData.company.deliveryFreeThreshold = parseInt(freeThreshEl.value, 10) || 3000;
+
   saveSiteData(adminData);
-  showToast("Company settings & heritage published live!");
+  showToast("Company settings, delivery policies & heritage published live!");
 };
 
 /* ==========================================================================

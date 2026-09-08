@@ -169,73 +169,107 @@
             </div>
           </div>
 
-          <!-- Step 2: Patient & Delivery Details -->
-          <div class="rx-step-block">
-            <div class="rx-step-title">
-              <span class="rx-step-number">2</span>
-              <h4>Patient &amp; Delivery Information</h4>
-            </div>
-
-            <!-- Fulfillment Mode Toggle -->
-            <div class="rx-fulfillment-toggle">
-              <button type="button" class="fulfillment-btn active" id="btnHomeDelivery" onclick="setFulfillmentMode('delivery')">
-                <i class="fa-solid fa-house-chimney-medical"></i>
-                <span>🏠 Express Home Delivery</span>
-              </button>
-              <button type="button" class="fulfillment-btn" id="btnStorePickup" onclick="setFulfillmentMode('pickup')">
-                <i class="fa-solid fa-store"></i>
-                <span>🏬 Branch Pickup</span>
-              </button>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="rxPatientName"><i class="fa-solid fa-user"></i> Patient Full Name *</label>
-                <input type="text" id="rxPatientName" class="form-control" placeholder="e.g. Muhammad Ali" required>
+            <!-- Step 2: Patient & Branch Selection -->
+            <div class="rx-step-block">
+              <div class="rx-step-title">
+                <span class="rx-step-number">2</span>
+                <h4>Patient &amp; Branch Selection</h4>
               </div>
-              <div class="form-group">
-                <label for="rxPatientPhone"><i class="fa-solid fa-phone"></i> Mobile / WhatsApp Number *</label>
-                <input type="tel" id="rxPatientPhone" class="form-control" placeholder="03XXXXXXXXX" required>
+
+              <!-- Fulfillment Mode Toggle -->
+              <div class="rx-fulfillment-toggle">
+                <button type="button" class="fulfillment-btn active" id="btnHomeDelivery" onclick="setFulfillmentMode('delivery')">
+                  <i class="fa-solid fa-house-chimney-medical"></i>
+                  <span>🏠 Express Home Delivery</span>
+                </button>
+                <button type="button" class="fulfillment-btn" id="btnStorePickup" onclick="setFulfillmentMode('pickup')">
+                  <i class="fa-solid fa-store"></i>
+                  <span>🏬 Branch Pickup</span>
+                </button>
               </div>
-            </div>
 
-            <div class="form-group" id="rxAddressGroup">
-              <label for="rxPatientAddress"><i class="fa-solid fa-location-dot"></i> Complete Delivery Address (Islamabad / Rawalpindi) *</label>
-              <input type="text" id="rxPatientAddress" class="form-control" placeholder="House #, Street #, Sector / Area, City">
-            </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="rxPatientName"><i class="fa-solid fa-user"></i> Patient Full Name *</label>
+                  <input type="text" id="rxPatientName" class="form-control" placeholder="e.g. Muhammad Ali" required>
+                </div>
+                <div class="form-group">
+                  <label for="rxPatientPhone"><i class="fa-solid fa-phone"></i> Mobile / WhatsApp Number *</label>
+                  <input type="tel" id="rxPatientPhone" class="form-control" placeholder="03XXXXXXXXX" required>
+                </div>
+              </div>
 
-            <div class="form-group" id="rxBranchGroup" style="display: none;">
-              <label for="rxPickupBranch"><i class="fa-solid fa-store"></i> Select Preferred D. Watson Branch for Pickup *</label>
-              <select id="rxPickupBranch" class="form-control">
-                <option value="F-6 Super Market (Flagship #1)">D. Watson F-6 Super Market (Flagship #1) - 24/7</option>
-                <option value="Blue Area Flagship Mega Store">D. Watson Blue Area Flagship Mega Store</option>
-                <option value="Saddar Flagship, Rawalpindi">D. Watson Saddar Flagship, Rawalpindi</option>
-                <option value="PWD Main Boulevard">D. Watson PWD Main Boulevard</option>
-                <option value="Chandni Chowk Branch">D. Watson Chandni Chowk Branch</option>
-                <option value="Ghouri Town Branch">D. Watson Ghouri Town Branch</option>
-                <option value="Bahria Town Phase 7">D. Watson Bahria Town Phase 7</option>
-              </select>
-            </div>
+              <!-- Branch Selector (Always accessible so customer chooses their nearest branch or flagship hub) -->
+              <div class="form-group" id="rxBranchSelectGroup">
+                <label for="rxSelectedBranch"><i class="fa-solid fa-store"></i> Select D. Watson Branch *</label>
+                <select id="rxSelectedBranch" class="form-control" onchange="handleBranchDeliveryChange()">
+                  <!-- Dynamically populated from getSiteData().branches -->
+                  <optgroup label="⭐ Flagship Outlets (Express Home Delivery Hubs)">
+                    <option value="b_f6" selected>D. Watson F-6 Super Market (Flagship #1) — 24/7 Open [Express Delivery Hub]</option>
+                    <option value="b_bluearea">D. Watson Blue Area Flagship Mega Store — Jinnah Ave [Express Delivery Hub]</option>
+                    <option value="b_saddar">D. Watson Saddar Flagship, Rawalpindi — Bank Road [Express Delivery Hub]</option>
+                    <option value="b_pwd">D. Watson PWD Main Boulevard — Rawalpindi [Express Delivery Hub]</option>
+                    <option value="b_f10">D. Watson F-10 Markaz Mega Branch — Islamabad [Express Delivery Hub]</option>
+                    <option value="b_g11">D. Watson G-11 Markaz Branch — Islamabad [Express Delivery Hub]</option>
+                    <option value="b_bahria">D. Watson Bahria Town Phase 7 — Rawalpindi [Express Delivery Hub]</option>
+                  </optgroup>
+                  <optgroup label="🏬 Regional Branches (In-Store Pickup)">
+                    <option value="b_g9">D. Watson G-9 Markaz (Karachi Company)</option>
+                    <option value="b_i8">D. Watson I-8 Markaz</option>
+                    <option value="b_dha2">D. Watson DHA Phase 2 Gate 1</option>
+                    <option value="b_chandni">D. Watson Chandni Chowk, Murree Road</option>
+                    <option value="b_commercial">D. Watson Commercial Market, Satellite Town</option>
+                    <option value="b_peshawar">D. Watson Peshawar Road, Rawalpindi</option>
+                    <option value="b_gulberg">D. Watson Gulberg Main Boulevard, Lahore</option>
+                    <option value="b_dha_lhr">D. Watson DHA Phase 5, Lahore</option>
+                    <option value="b_abbottabad">D. Watson Jinnah Jamiat Chowk, Abbottabad</option>
+                  </optgroup>
+                </select>
+                <small style="color: #64748B; font-size: 0.8rem; margin-top: 4px; display: block;">
+                  <i class="fa-solid fa-circle-info"></i> Flagship outlets feature dedicated thermal cold-chain couriers for rapid 60-minute delivery.
+                </small>
+              </div>
 
-            <div class="form-group">
-              <label for="rxNotes"><i class="fa-solid fa-pen-to-square"></i> Special Pharmacist Instructions / Medicine Quantity (Optional)</label>
-              <textarea id="rxNotes" class="form-control" rows="3" placeholder="e.g. Please supply 1 full month dosage, check for tablet vs syrup, or call before dispatch."></textarea>
-            </div>
+              <!-- Real-Time Delivery Status & Charges Card -->
+              <div id="rxDeliveryStatusCard" class="rx-delivery-status-card">
+                <!-- Rendered dynamically by updateBranchDeliveryStatus() -->
+              </div>
 
-            <!-- Action Buttons -->
-            <div class="rx-action-buttons">
-              <button type="button" class="btn btn-whatsapp btn-lg" onclick="dispatchRxWhatsApp()">
-                <i class="fa-brands fa-whatsapp"></i> Instant Dispatch on WhatsApp
-              </button>
-              <button type="submit" class="btn btn-primary btn-lg">
-                <i class="fa-solid fa-paper-plane"></i> Submit to Pharmacist Desk
-              </button>
-            </div>
+              <!-- Delivery Address (Required for Home Delivery) -->
+              <div class="form-group" id="rxAddressGroup">
+                <label for="rxPatientAddress"><i class="fa-solid fa-location-dot"></i> Complete Delivery Address (Islamabad / Rawalpindi) *</label>
+                <input type="text" id="rxPatientAddress" class="form-control" placeholder="House #, Street #, Sector / Area, City">
+              </div>
 
-            <p class="rx-disclaimer">
-              <i class="fa-solid fa-shield-halved"></i> All prescriptions are handled confidentially under strict patient privacy standards in accordance with Drug Regulatory Authority of Pakistan (DRAP) regulations.
-            </p>
-          </div>
+              <!-- Estimated Order Amount Input & Fee Calculator -->
+              <div class="form-group" id="rxOrderAmountGroup">
+                <label for="rxOrderAmount"><i class="fa-solid fa-calculator"></i> Estimated Medicine / Order Bill Amount (PKR - Optional)</label>
+                <div class="order-amount-input-wrap">
+                  <span class="currency-prefix">PKR</span>
+                  <input type="number" id="rxOrderAmount" class="form-control" placeholder="e.g. 1500" min="0" step="50" oninput="handleOrderAmountInput()">
+                </div>
+                <div id="rxOrderAmountFeedback" class="rx-amount-feedback"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="rxNotes"><i class="fa-solid fa-pen-to-square"></i> Special Pharmacist Instructions / Medicine Quantity (Optional)</label>
+                <textarea id="rxNotes" class="form-control" rows="3" placeholder="e.g. Please supply 1 full month dosage, check for tablet vs syrup, or call before dispatch."></textarea>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="rx-action-buttons">
+                <button type="button" class="btn btn-whatsapp btn-lg" onclick="dispatchRxWhatsApp()">
+                  <i class="fa-brands fa-whatsapp"></i> Instant Dispatch on WhatsApp
+                </button>
+                <button type="submit" class="btn btn-primary btn-lg" id="rxSubmitBtn">
+                  <i class="fa-solid fa-paper-plane"></i> Submit to Pharmacist Desk
+                </button>
+              </div>
+
+              <p class="rx-disclaimer">
+                <i class="fa-solid fa-shield-halved"></i> All prescriptions are handled confidentially under strict patient privacy standards in accordance with Drug Regulatory Authority of Pakistan (DRAP) regulations.
+              </p>
+            </div>
 
         </form>
       </div>
@@ -454,6 +488,8 @@
   </div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="js/config.js?v=1.1"></script>
   <script src="js/data.js?v=8.0"></script>
   <script src="js/main.js?v=8.0"></script>
 </body>

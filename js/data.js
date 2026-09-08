@@ -72,6 +72,11 @@ const DEFAULT_SITE_DATA = {
       messenger: "https://m.me/DWatsonChemist"
     },
 
+    // Express Home Delivery Rules & Policies
+    deliveryDefaultFee: 200,
+    deliveryMinOrder: 1000,
+    deliveryFreeThreshold: 3000,
+
     // Admin Security Credentials (Protected AES Gate)
     adminAuth: {
       username: "admin",
@@ -632,6 +637,9 @@ const DEFAULT_SITE_DATA = {
       timings: "08:00 AM - 01:00 AM Daily",
       is24Hours: false,
       isFlagship: true,
+      expressDelivery: true,
+      deliveryFee: 200,
+      minOrderAmount: 1000,
       flagshipBadge: "⭐ Flagship Branch #1",
       image: "assets/images/branches/D-Watson_f6.jpg",
       services: ["Pharmacy", "Luxury Cosmetics", "Grocery Essentials", "Optics", "Undergarments", "Surgical"],
@@ -648,6 +656,9 @@ const DEFAULT_SITE_DATA = {
       timings: "08:00 AM - 01:00 AM Daily",
       is24Hours: false,
       isFlagship: true,
+      expressDelivery: true,
+      deliveryFee: 200,
+      minOrderAmount: 1000,
       flagshipBadge: "⭐ Flagship Branch",
       image: "assets/images/branches/pwd.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care", "Surgical Supplies"],
@@ -664,6 +675,9 @@ const DEFAULT_SITE_DATA = {
       timings: "08:00 AM - 12:00 AM Daily",
       is24Hours: false,
       isFlagship: true,
+      expressDelivery: true,
+      deliveryFee: 200,
+      minOrderAmount: 1000,
       flagshipBadge: "⭐ Flagship Branch",
       image: "assets/images/branches/ghauri-town.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Personal Care"],
@@ -680,6 +694,9 @@ const DEFAULT_SITE_DATA = {
       timings: "08:00 AM - 01:00 AM Daily",
       is24Hours: false,
       isFlagship: true,
+      expressDelivery: true,
+      deliveryFee: 200,
+      minOrderAmount: 1000,
       flagshipBadge: "⭐ Flagship Branch",
       image: "assets/images/branches/chandni-chowk.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Surgical Supplies", "Optics"],
@@ -696,6 +713,9 @@ const DEFAULT_SITE_DATA = {
       timings: "08:00 AM - 11:00 PM Daily",
       is24Hours: false,
       isFlagship: true,
+      expressDelivery: true,
+      deliveryFee: 200,
+      minOrderAmount: 1000,
       flagshipBadge: "⭐ Flagship Branch",
       image: "assets/images/branches/gujar-khan.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care", "Surgical"],
@@ -712,6 +732,9 @@ const DEFAULT_SITE_DATA = {
       timings: "08:00 AM - 11:00 PM Daily",
       is24Hours: false,
       isFlagship: true,
+      expressDelivery: true,
+      deliveryFee: 200,
+      minOrderAmount: 1000,
       flagshipBadge: "⭐ Flagship Branch",
       image: "assets/images/branches/g15-markaz.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care"],
@@ -728,6 +751,9 @@ const DEFAULT_SITE_DATA = {
       timings: "08:00 AM - 11:00 PM Daily",
       is24Hours: false,
       isFlagship: true,
+      expressDelivery: true,
+      deliveryFee: 200,
+      minOrderAmount: 1000,
       flagshipBadge: "⭐ Flagship Branch",
       image: "assets/images/branches/attock.jpg",
       services: ["Pharmacy", "Surgical Supplies", "Cosmetics", "Grocery"],
@@ -745,6 +771,11 @@ const DEFAULT_SITE_DATA = {
       phone: "051-8438111 / 051-2822222",
       timings: "08:00 AM - 01:00 AM Daily",
       is24Hours: false,
+      isFlagship: true,
+      expressDelivery: true,
+      deliveryFee: 200,
+      minOrderAmount: 1000,
+      flagshipBadge: "⭐ Flagship Mega Store",
       image: "assets/images/branches/blue-area.jpg",
       services: ["Pharmacy", "Cosmetics Studio", "Mega Superstore", "Optics Clinic", "Surgical Supplies", "Undergarments"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Blue+Area+Islamabad",
@@ -1217,6 +1248,148 @@ const DEFAULT_SITE_DATA = {
     }
   ],
 
+  // 8 Official Popular Categories
+  categories: [
+    {
+      id: "cat_medicines",
+      name: "Medicines & Pharmacy",
+      icon: "fa-solid fa-pills",
+      colorClass: "cat-medicines",
+      link: "departments.html?dept=pharmacy",
+      deptId: "pharmacy"
+    },
+    {
+      id: "cat_vitamins",
+      name: "Vitamins & Nutrition",
+      icon: "fa-solid fa-bottle-droplet",
+      colorClass: "cat-supplements",
+      link: "departments.html?dept=supplements",
+      deptId: "supplements"
+    },
+    {
+      id: "cat_babycare",
+      name: "Baby & Mother Care",
+      icon: "fa-solid fa-baby",
+      colorClass: "cat-baby",
+      link: "departments.html?dept=babycare",
+      deptId: "babycare"
+    },
+    {
+      id: "cat_skincare",
+      name: "Cosmetics & Skincare",
+      icon: "fa-solid fa-wand-magic-sparkles",
+      colorClass: "cat-skincare",
+      link: "departments.html?dept=cosmetics",
+      deptId: "cosmetics"
+    },
+    {
+      id: "cat_optics",
+      name: "Optics & Eyewear",
+      icon: "fa-solid fa-glasses",
+      colorClass: "cat-devices",
+      link: "departments.html?dept=optics",
+      deptId: "optics"
+    },
+    {
+      id: "cat_surgical",
+      name: "Hospital & Surgical",
+      icon: "fa-solid fa-stethoscope",
+      colorClass: "cat-personal",
+      link: "departments.html?dept=surgical",
+      deptId: "surgical"
+    },
+    {
+      id: "cat_perfumes",
+      name: "Luxury Fragrances",
+      icon: "fa-solid fa-spray-can-sparkles",
+      colorClass: "cat-fragrances",
+      link: "departments.html?dept=perfumes",
+      deptId: "perfumes"
+    },
+    {
+      id: "cat_superstore",
+      name: "Gourmet Superstore",
+      icon: "fa-solid fa-basket-shopping",
+      colorClass: "cat-superstore",
+      link: "departments.html?dept=grocery",
+      deptId: "grocery"
+    }
+  ],
+
+  // Official Trusted Partner Brands
+  trustedBrands: [
+    {
+      id: "tb_abbott",
+      name: "Abbott",
+      category: "Nutrition & Pharma",
+      icon: "fa-solid fa-capsules",
+      isVerified: true
+    },
+    {
+      id: "tb_gsk",
+      name: "GSK",
+      category: "Global Healthcare",
+      icon: "fa-solid fa-shield-virus",
+      isVerified: true
+    },
+    {
+      id: "tb_cerave",
+      name: "CeraVe",
+      category: "Dermatological Care",
+      icon: "fa-solid fa-spa",
+      isVerified: true
+    },
+    {
+      id: "tb_getz",
+      name: "Getz Pharma",
+      category: "Generic & Branded Rx",
+      icon: "fa-solid fa-tablets",
+      isVerified: true
+    },
+    {
+      id: "tb_cetaphil",
+      name: "Cetaphil",
+      category: "Sensitive Skincare",
+      icon: "fa-solid fa-droplet",
+      isVerified: true
+    },
+    {
+      id: "tb_ordinary",
+      name: "The Ordinary",
+      category: "Clinical Formulations",
+      icon: "fa-solid fa-vial",
+      isVerified: true
+    },
+    {
+      id: "tb_hilton",
+      name: "Hilton Pharma",
+      category: "Therapeutic Medicines",
+      icon: "fa-solid fa-prescription-bottle-medical",
+      isVerified: true
+    },
+    {
+      id: "tb_aveeno",
+      name: "Aveeno",
+      category: "Active Naturals Care",
+      icon: "fa-solid fa-seedling",
+      isVerified: true
+    },
+    {
+      id: "tb_beurer",
+      name: "Beurer",
+      category: "German Health Devices",
+      icon: "fa-solid fa-heart-pulse",
+      isVerified: true
+    },
+    {
+      id: "tb_nutraxin",
+      name: "Nutraxin",
+      category: "Vitamins & Wellness",
+      icon: "fa-solid fa-apple-whole",
+      isVerified: true
+    }
+  ],
+
   faqs: [
     {
       q: "How can I verify medicine availability or send my prescription?",
@@ -1246,8 +1419,8 @@ const DEFAULT_SITE_DATA = {
   ]
 };
 
-// LocalStorage Storage Key (v18 - Accurate Daily Store Timings 08:00 AM - 01:00 AM)
-const STORAGE_KEY = "dwatson_site_data_v18";
+// LocalStorage Storage Key (v19 - Express Delivery & Dynamic Categories / Brands)
+const STORAGE_KEY = "dwatson_site_data_v19";
 
 /**
  * Get current site data (from LocalStorage or fallback to default)
@@ -1268,6 +1441,9 @@ function getSiteData() {
         company: { 
           ...DEFAULT_SITE_DATA.company, 
           ...(parsed.company || {}),
+          deliveryDefaultFee: (parsed.company && parsed.company.deliveryDefaultFee !== undefined) ? parsed.company.deliveryDefaultFee : DEFAULT_SITE_DATA.company.deliveryDefaultFee,
+          deliveryMinOrder: (parsed.company && parsed.company.deliveryMinOrder !== undefined) ? parsed.company.deliveryMinOrder : DEFAULT_SITE_DATA.company.deliveryMinOrder,
+          deliveryFreeThreshold: (parsed.company && parsed.company.deliveryFreeThreshold !== undefined) ? parsed.company.deliveryFreeThreshold : DEFAULT_SITE_DATA.company.deliveryFreeThreshold,
           historyTimeline: Array.isArray(parsed.company && parsed.company.historyTimeline) && parsed.company.historyTimeline.length ? parsed.company.historyTimeline : DEFAULT_SITE_DATA.company.historyTimeline,
           adminAuth: {
             ...DEFAULT_SITE_DATA.company.adminAuth,
@@ -1289,11 +1465,22 @@ function getSiteData() {
           }
           return d;
         }) : DEFAULT_SITE_DATA.departments,
+        categories: (Array.isArray(parsed.categories) && parsed.categories.length) ? parsed.categories : DEFAULT_SITE_DATA.categories,
+        trustedBrands: (Array.isArray(parsed.trustedBrands) && parsed.trustedBrands.length) ? parsed.trustedBrands : DEFAULT_SITE_DATA.trustedBrands,
         products: (Array.isArray(parsed.products) && parsed.products.length >= 15 && parsed.products[0].image && parsed.products[0].image.includes('Shop Inside/')) ? parsed.products : DEFAULT_SITE_DATA.products,
         branches: Array.isArray(parsed.branches) && parsed.branches.length ? parsed.branches.map(b => {
           const def = DEFAULT_SITE_DATA.branches.find(db => db.id === b.id);
           if (def && (!b.image || b.image === 'assets/images/store_flagship.jpg' || b.image === 'assets/images/pharmacy.jpg' || b.image === 'assets/images/grocery.jpg' || b.image === 'assets/images/surgical.jpg' || b.image === 'assets/images/optics.jpg' || b.image === 'assets/images/cosmetics.jpg')) {
             b.image = def.image;
+          }
+          if (b.expressDelivery === undefined) {
+            b.expressDelivery = def ? def.expressDelivery : Boolean(b.isFlagship);
+          }
+          if (b.deliveryFee === undefined) {
+            b.deliveryFee = def?.deliveryFee || 200;
+          }
+          if (b.minOrderAmount === undefined) {
+            b.minOrderAmount = def?.minOrderAmount || 1000;
           }
           return b;
         }) : DEFAULT_SITE_DATA.branches,

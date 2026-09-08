@@ -76,6 +76,8 @@ function initWebsite() {
   renderGallery(data.gallery);
   renderFAQs(data.faqs);
   renderFooter(data.company, data.branches);
+  renderBrandsMarquee();
+  initPrescriptionBranchSelector();
   initPrescriptionUploader(data.company.whatsapp);
   initProductZoomEvents();
   initHeaderScroll();
@@ -2944,24 +2946,209 @@ function initAppSplashScreen() {
 let rxSelectedFile = null;
 let rxFulfillmentMode = "delivery";
 
+function initPrescriptionBranchSelector() {
+  const branchSelect = document.getElementById("rxSelectedBranch");
+  if (!branchSelect) return;
+
+  const data = typeof getSiteData === "function" ? getSiteData() : null;
+  if (!data || !data.branches || !data.branches.length) return;
+
+  const flagships = data.branches.filter(b => b.isFlagship || b.expressDelivery);
+  const regionals = data.branches.filter(b => !b.isFlagship && !b.expressDelivery);
+
+  let html = "";
+  if (flagships.length) {
+    html += `<optgroup label="⭐ Flagship Outlets (Express Home Delivery Hubs)">`;
+    html += flagships.map((b, i) => `
+      <option value="${escapeHtml(b.id || b.name)}" data-express="${b.expressDelivery !== false ? '1' : '0'}" data-fee="${b.deliveryFee || 200}" data-min="${b.minOrderAmount || 1000}" ${i === 0 ? 'selected' : ''}>
+        ${escapeHtml(b.name)} [⚡ Express Delivery Hub]
+      </option>
+    `).join("");
+    html += `</optgroup>`;
+  }
+
+  if (regionals.length) {
+    html += `<optgroup label="🏬 Regional Branches (In-Store Pickup Only)">`;
+    html += regionals.map(b => `
+      <option value="${escapeHtml(b.id || b.name)}" data-express="0" data-fee="${b.deliveryFee || 200}" data-min="${b.minOrderAmount || 1000}">
+        ${escapeHtml(b.name)} [🏬 In-Store Pickup]
+      </option>
+    `).join("");
+    html += `</optgroup>`;
+  }
+
+  branchSelect.innerHTML = html;
+  updateBranchDeliveryStatus();
+}
+
+function getSelectedPrescriptionBranch() {
+  const branchSelect = document.getElementById("rxSelectedBranch");
+  if (!branchSelect) return null;
+  const val = branchSelect.value;
+  const data = typeof getSiteData === "function" ? getSiteData() : null;
+  if (!data || !data.branches) return null;
+  return data.branches.find(b => (b.id === val || b.name === val)) || data.branches[0];
+}
+
+function handleBranchDeliveryChange() {
+  updateBranchDeliveryStatus();
+  handleOrderAmountInput();
+}
+
+function updateBranchDeliveryStatus() {
+  const card = document.getElementById("rxDeliveryStatusCard");
+  if (!card) return;
+
+  const branch = getSelectedPrescriptionBranch();
+  const data = typeof getSiteData === "function" ? getSiteData() : null;
+  const company = data?.company || {};
+  const defaultFee = company.deliveryDefaultFee !== undefined ? company.deliveryDefaultFee : 200;
+  const defaultMin = company.deliveryMinOrder !== undefined ? company.deliveryMinOrder : 1000;
+  const freeThreshold = company.deliveryFreeThreshold !== undefined ? company.deliveryFreeThreshold : 3000;
+
+  if (!branch) {
+    card.innerHTML = "";
+    return;
+  }
+
+  const isExpress = branch.expressDelivery !== false;
+  const fee = branch.deliveryFee !== undefined ? branch.deliveryFee : defaultFee;
+  const minOrder = branch.minOrderAmount !== undefined ? branch.minOrderAmount : defaultMin;
+
+  if (rxFulfillmentMode === "pickup") {
+    card.innerHTML = `
+      <div class="delivery-badge-card available">
+        <div class="delivery-badge-header">
+          <div class="delivery-badge-title">
+            <i class="fa-solid fa-store" style="color:#2563EB; font-size:1.2rem;"></i>
+            <span>In-Store Pickup: ${escapeHtml(branch.name)}</span>
+          </div>
+          <span class="delivery-badge-pill" style="background:#2563EB; color:#fff;">Free Pickup</span>
+        </div>
+        <div style="font-size:0.85rem; color:#475569; line-height:1.5;">
+          📍 <strong>Address:</strong> ${escapeHtml(branch.address)}<br>
+          📞 <strong>Contact:</strong> ${escapeHtml(branch.phone)} • ⏰ <strong>Hours:</strong> ${escapeHtml(branch.timings)}
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Home Delivery Mode
+  if (isExpress) {
+    card.innerHTML = `
+      <div class="delivery-badge-card available">
+        <div class="delivery-badge-header">
+          <div class="delivery-badge-title">
+            <i class="fa-solid fa-circle-check" style="color:#16A34A; font-size:1.25rem;"></i>
+            <span>Express Home Delivery Available from ${escapeHtml(branch.name)}</span>
+          </div>
+          <span class="delivery-badge-pill"><i class="fa-solid fa-bolt"></i> 60-Min Dispatch</span>
+        </div>
+        <div class="delivery-policy-grid">
+          <div class="policy-grid-item">
+            <span class="policy-label">Standard Delivery Fee</span>
+            <span class="policy-value">PKR ${fee}</span>
+          </div>
+          <div class="policy-grid-item">
+            <span class="policy-label">Minimum Purchase</span>
+            <span class="policy-value">PKR ${minOrder}</span>
+          </div>
+          <div class="policy-grid-item">
+            <span class="policy-label">Free Delivery Over</span>
+            <span class="policy-value">PKR ${freeThreshold}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    card.innerHTML = `
+      <div class="delivery-badge-card unavailable">
+        <div class="delivery-badge-header">
+          <div class="delivery-badge-title">
+            <i class="fa-solid fa-triangle-exclamation" style="color:#D97706; font-size:1.25rem;"></i>
+            <span>Express Home Delivery Not Available from this Branch</span>
+          </div>
+          <span class="delivery-badge-pill">In-Store Pickup Only</span>
+        </div>
+        <p style="font-size:0.85rem; margin:0; line-height:1.4;">
+          This regional location currently only supports <strong>In-Store Pickup</strong>. For rapid doorstep delivery, please select one of our <strong>⭐ Flagship Outlets</strong> (e.g. F-6 Super Market, Blue Area Mega Store, Saddar Rawalpindi, PWD) in the branch dropdown above.
+        </p>
+      </div>
+    `;
+  }
+}
+
+function handleOrderAmountInput() {
+  const input = document.getElementById("rxOrderAmount");
+  const feedback = document.getElementById("rxOrderAmountFeedback");
+  if (!input || !feedback) return;
+
+  const rawVal = input.value.trim();
+  if (!rawVal) {
+    feedback.style.display = "none";
+    feedback.className = "rx-amount-feedback";
+    feedback.textContent = "";
+    return;
+  }
+
+  const amount = parseFloat(rawVal) || 0;
+  const branch = getSelectedPrescriptionBranch();
+  const data = typeof getSiteData === "function" ? getSiteData() : null;
+  const company = data?.company || {};
+  const defaultFee = company.deliveryDefaultFee !== undefined ? company.deliveryDefaultFee : 200;
+  const minOrder = (branch && branch.minOrderAmount !== undefined) ? branch.minOrderAmount : (company.deliveryMinOrder || 1000);
+  const freeThreshold = company.deliveryFreeThreshold !== undefined ? company.deliveryFreeThreshold : 3000;
+  const fee = (branch && branch.deliveryFee !== undefined) ? branch.deliveryFee : defaultFee;
+
+  if (rxFulfillmentMode === "pickup") {
+    feedback.style.display = "block";
+    feedback.className = "rx-amount-feedback valid";
+    feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> Estimated Bill: PKR ${amount.toLocaleString()} (Free Branch Pickup).`;
+    return;
+  }
+
+  const isExpress = branch ? (branch.expressDelivery !== false) : true;
+  if (!isExpress) {
+    feedback.style.display = "block";
+    feedback.className = "rx-amount-feedback warning";
+    feedback.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Home Delivery unavailable for this branch. Please choose a Flagship Hub or In-Store Pickup.`;
+    return;
+  }
+
+  if (amount >= freeThreshold) {
+    feedback.style.display = "block";
+    feedback.className = "rx-amount-feedback valid";
+    feedback.innerHTML = `🎉 <strong>Free Express Delivery Applied!</strong> Delivery Fee: PKR 0 (Total: PKR ${amount.toLocaleString()}).`;
+  } else if (amount >= minOrder) {
+    feedback.style.display = "block";
+    feedback.className = "rx-amount-feedback valid";
+    feedback.innerHTML = `✓ Meets minimum order requirement (PKR ${minOrder}). Delivery Fee: PKR ${fee} (Total: PKR ${(amount + fee).toLocaleString()}).`;
+  } else {
+    feedback.style.display = "block";
+    feedback.className = "rx-amount-feedback warning";
+    feedback.innerHTML = `⚠️ Order is below minimum PKR ${minOrder} required for home delivery dispatch. Add essentials or choose In-Store Pickup.`;
+  }
+}
+
 function setFulfillmentMode(mode) {
   rxFulfillmentMode = mode;
   const btnHome = document.getElementById("btnHomeDelivery");
   const btnPickup = document.getElementById("btnStorePickup");
   const addrGroup = document.getElementById("rxAddressGroup");
-  const branchGroup = document.getElementById("rxBranchGroup");
 
   if (mode === "delivery") {
     if (btnHome) btnHome.classList.add("active");
     if (btnPickup) btnPickup.classList.remove("active");
     if (addrGroup) addrGroup.style.display = "block";
-    if (branchGroup) branchGroup.style.display = "none";
   } else {
     if (btnPickup) btnPickup.classList.add("active");
     if (btnHome) btnHome.classList.remove("active");
     if (addrGroup) addrGroup.style.display = "none";
-    if (branchGroup) branchGroup.style.display = "block";
   }
+
+  updateBranchDeliveryStatus();
+  handleOrderAmountInput();
 }
 
 function handleRxFileSelect(input) {
@@ -3006,7 +3193,13 @@ function dispatchRxWhatsApp() {
   const name = (document.getElementById("rxPatientName")?.value || "").trim() || "Valued Patient";
   const phone = (document.getElementById("rxPatientPhone")?.value || "").trim();
   const address = (document.getElementById("rxPatientAddress")?.value || "").trim();
-  const branch = document.getElementById("rxPickupBranch")?.value || "F-6 Super Market";
+  const branch = getSelectedPrescriptionBranch();
+  const branchName = branch ? branch.name : "D. Watson F-6 Super Market";
+  const isExpress = branch ? (branch.expressDelivery !== false) : true;
+  const branchFee = branch?.deliveryFee !== undefined ? branch.deliveryFee : 200;
+  const minOrder = branch?.minOrderAmount !== undefined ? branch.minOrderAmount : 1000;
+  const orderAmount = parseFloat(document.getElementById("rxOrderAmount")?.value || 0);
+
   const notes = (document.getElementById("rxNotes")?.value || "").trim();
   const refId = "DW-RX-" + Math.floor(100000 + Math.random() * 900000);
 
@@ -3014,23 +3207,131 @@ function dispatchRxWhatsApp() {
   msg += `📋 *Ref:* ${refId}\n`;
   msg += `👤 *Patient:* ${name}\n`;
   if (phone) msg += `📞 *Contact:* ${phone}\n`;
-  msg += `🚚 *Fulfillment:* ${rxFulfillmentMode === "delivery" ? "Express Home Delivery" : "Store Pickup (" + branch + ")"}\n`;
-  if (rxFulfillmentMode === "delivery" && address) {
-    msg += `📍 *Delivery Address:* ${address}\n`;
+  msg += `📍 *Selected Branch:* ${branchName}\n`;
+
+  if (rxFulfillmentMode === "delivery") {
+    msg += `🚚 *Fulfillment:* Express Home Delivery\n`;
+    msg += `⚡ *Branch Delivery Status:* ${isExpress ? "AVAILABLE" : "UNAVAILABLE (In-Store Pickup Only)"}\n`;
+    if (isExpress) {
+      const isFree = orderAmount >= 3000;
+      msg += `💵 *Delivery Charges:* PKR ${isFree ? "0 (Free Delivery Applied)" : branchFee}\n`;
+      msg += `📌 *Min Order Requirement:* PKR ${minOrder}\n`;
+    }
+    if (orderAmount > 0) {
+      msg += `💰 *Estimated Order Value:* PKR ${orderAmount.toLocaleString()}\n`;
+    }
+    if (address) {
+      msg += `🏠 *Delivery Address:* ${address}\n`;
+    }
+  } else {
+    msg += `🏬 *Fulfillment:* In-Store Branch Pickup (${branchName})\n`;
+    if (orderAmount > 0) {
+      msg += `💰 *Estimated Order Value:* PKR ${orderAmount.toLocaleString()}\n`;
+    }
   }
+
   if (notes) {
     msg += `📝 *Notes:* ${notes}\n`;
   }
   msg += `\n📸 _Attaching prescription photo now for verification._`;
 
-  const waUrl = `https://wa.me/923329716666?text=${encodeURIComponent(msg)}`;
+  const waNumber = (branch && branch.whatsapp) ? branch.whatsapp : "923329716666";
+  const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
   window.open(waUrl, "_blank");
 }
 
-function handlePrescriptionSubmit(e) {
-  e.preventDefault();
-  alert("Prescription received! A registered pharmacist is reviewing your details and will call / WhatsApp you within 5 minutes.");
+async function handlePrescriptionSubmit(e) {
+  if (e) e.preventDefault();
+  const name = (document.getElementById("rxPatientName")?.value || "").trim() || "Valued Patient";
+  const phone = (document.getElementById("rxPatientPhone")?.value || "").trim();
+  const address = (document.getElementById("rxPatientAddress")?.value || "").trim();
+  const branch = getSelectedPrescriptionBranch();
+  const branchName = branch ? branch.name : "D. Watson F-6 Super Market";
+  const isExpress = branch ? (branch.expressDelivery !== false) : true;
+  const branchFee = branch?.deliveryFee !== undefined ? branch.deliveryFee : 200;
+  const minOrder = branch?.minOrderAmount !== undefined ? branch.minOrderAmount : 1000;
+  const orderAmount = parseFloat(document.getElementById("rxOrderAmount")?.value || 0);
+  const notes = (document.getElementById("rxNotes")?.value || "").trim();
+  const refId = "DW-RX-" + Math.floor(100000 + Math.random() * 900000);
+
+  if (rxFulfillmentMode === "delivery" && !isExpress) {
+    const proceed = confirm(`Notice: Express Home Delivery is not available from ${branchName}. Would you like to submit this order for In-Store Pickup at this branch, or choose a Flagship Delivery Hub? Click OK for In-Store Pickup.`);
+    if (!proceed) return;
+  }
+
+  // Record into Admin Orders & Inquiries Desk
+  if (typeof saveCustomerInquiry === "function") {
+    try {
+      await saveCustomerInquiry({
+        id: refId,
+        type: "prescription",
+        name: name,
+        phone: phone,
+        branch: branchName,
+        fulfillment: rxFulfillmentMode,
+        address: address,
+        deliveryFee: rxFulfillmentMode === "delivery" ? (orderAmount >= 3000 ? 0 : branchFee) : 0,
+        minOrderAmount: minOrder,
+        estimatedAmount: orderAmount,
+        notes: notes,
+        date: new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" }),
+        status: "New Prescription Order"
+      });
+    } catch (err) {
+      console.warn("Could not save prescription inquiry locally:", err);
+    }
+  }
+
+  // Attempt EmailJS transmission if configured
+  if (window.emailjs && window.DW_CONFIG && window.DW_CONFIG.EMAILJS_PUBLIC_KEY && window.DW_CONFIG.EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+    try {
+      emailjs.init(window.DW_CONFIG.EMAILJS_PUBLIC_KEY);
+      const templateParams = {
+        ref_id: refId,
+        name: name,
+        phone: phone,
+        branch: branchName,
+        fulfillment: rxFulfillmentMode === "delivery" ? "Express Home Delivery" : "In-Store Pickup",
+        delivery_status: isExpress ? "Available" : "Pickup Only",
+        delivery_fee: `PKR ${branchFee}`,
+        order_amount: orderAmount > 0 ? `PKR ${orderAmount}` : "Pending Verification",
+        address: address || "In-Store Pickup",
+        notes: notes || "None",
+        date: new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" })
+      };
+      await emailjs.send(window.DW_CONFIG.EMAILJS_SERVICE_ID, window.DW_CONFIG.EMAILJS_TEMPLATE_ADMIN, templateParams).catch(err => console.warn("EmailJS admin send notice:", err));
+    } catch (e) {
+      console.warn("EmailJS dispatch warning:", e);
+    }
+  }
+
+  alert(`Prescription order (${refId}) submitted successfully! Our certified clinical pharmacist from ${branchName} is reviewing your details now. Connecting you to WhatsApp to send prescription photo...`);
   dispatchRxWhatsApp();
+}
+
+/**
+ * Continuous Marquee Slider for Trusted Partner Brands
+ */
+function renderBrandsMarquee() {
+  const track = document.getElementById("topBrandsMarqueeTrack") || document.querySelector(".top-brands-marquee-track");
+  if (!track) return;
+  const siteData = typeof getSiteData === "function" ? getSiteData() : null;
+  const brands = siteData?.trustedBrands || [];
+  if (!brands.length) return;
+
+  const renderCard = (b) => `
+    <div class="top-brand-slide-card">
+      <div class="top-brand-icon-wrap" style="color:#A50505;"><i class="${escapeHtml(b.icon || 'fa-solid fa-capsules')}"></i></div>
+      <div class="top-brand-info">
+        <span class="top-brand-name">${escapeHtml(b.name)}</span>
+        <span class="top-brand-tag">${escapeHtml(b.category || 'Pharmaceutical')}</span>
+        <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> ${b.isVerified ? '100% Authentic' : 'Official Partner'}</span>
+      </div>
+    </div>
+  `;
+
+  // Render Set 1 and Set 2 for seamless infinite marquee loop
+  track.innerHTML = brands.map(renderCard).join("") + brands.map(renderCard).join("");
 }
 
 function handleContactSubmit(e) {

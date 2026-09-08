@@ -5609,6 +5609,145 @@ textarea.form-control {
 }
 
 /* ==========================================================================
+   REAL-TIME BRANCH DELIVERY STATUS & POLICY CARD
+   ========================================================================== */
+.rx-delivery-status-card {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.delivery-badge-card {
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.delivery-badge-card.available {
+  background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+  border-color: #86EFAC;
+  color: #14532D;
+}
+
+.delivery-badge-card.unavailable {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border-color: #FCD34D;
+  color: #78350F;
+}
+
+.delivery-badge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.delivery-badge-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+}
+
+.delivery-badge-pill {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.delivery-badge-card.available .delivery-badge-pill {
+  background: #16A34A;
+  color: #FFFFFF;
+}
+
+.delivery-badge-card.unavailable .delivery-badge-pill {
+  background: #D97706;
+  color: #FFFFFF;
+}
+
+.delivery-policy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 640px) {
+  .delivery-policy-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.policy-grid-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.policy-grid-item .policy-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.8;
+  margin-bottom: 2px;
+}
+
+.policy-grid-item .policy-value {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.order-amount-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.order-amount-input-wrap .currency-prefix {
+  position: absolute;
+  left: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.order-amount-input-wrap .form-control {
+  padding-left: 55px;
+}
+
+.rx-amount-feedback {
+  font-size: 0.82rem;
+  margin-top: 6px;
+  display: none;
+}
+
+.rx-amount-feedback.valid {
+  display: block;
+  color: #16A34A;
+  font-weight: 700;
+}
+
+.rx-amount-feedback.warning {
+  display: block;
+  color: #D97706;
+  font-weight: 700;
+}
+
+/* ==========================================================================
    BRANCHES PAGE EXCLUSIVE STYLES
    ========================================================================== */
 .branch-hero-actions {
