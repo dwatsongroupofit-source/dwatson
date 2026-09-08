@@ -58,16 +58,19 @@
 
   <!-- Mobile App Top Bar (Sticky Header matching dwatson.pk) -->
   <div class="mobile-app-header" id="mobileAppHeader">
+    <button type="button" class="mobile-app-menu-btn" onclick="openMobileMenu()" aria-label="Open Navigation Menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
     <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
-      <img src="assets/images/logo-white.svg" alt="D. Watson Official Logo" class="mobile-app-emblem" onerror="this.onerror=null; this.src='assets/images/logo-white.png';">
+      <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" class="mobile-app-emblem" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
     </a>
     <div class="mobile-app-search-wrap" onclick="openGlobalSearch()" role="button" aria-label="Open search">
       <i class="fa-solid fa-magnifying-glass"></i>
       <input type="text" placeholder="Search medicines, skincare, brands..." readonly>
     </div>
     <div class="mobile-app-live-status">
-      <span class="live-branch-label">Live Branch</span>
-      <span class="live-branch-val"><i class="fa-solid fa-location-dot"></i> Islamabad • Open 24/7</span>
+      <span class="live-branch-label">Twin Cities</span>
+      <span class="live-branch-val"><i class="fa-solid fa-circle-check"></i> Open 24/7</span>
     </div>
   </div>
 
@@ -155,49 +158,49 @@
           <span class="dwatson-section-sub">Genuine Medicines &amp; Healthcare Essentials</span>
         </div>
         <div class="dwatson-categories-grid">
-          <a href="departments.html#dept-pharmacy" class="dwatson-cat-card" title="Medicines &amp; Pharmacy">
+          <a href="departments.html?dept=pharmacy" class="dwatson-cat-card" title="Medicines &amp; Pharmacy">
             <div class="dwatson-cat-circle cat-medicines">
               <i class="fa-solid fa-capsules"></i>
             </div>
             <span class="dwatson-cat-title">Medicines &amp; Pharmacy</span>
           </a>
-          <a href="departments.html#dept-supplements" class="dwatson-cat-card" title="Vitamins &amp; Nutrition">
+          <a href="departments.html?dept=supplements" class="dwatson-cat-card" title="Vitamins &amp; Nutrition">
             <div class="dwatson-cat-circle cat-supplements">
               <i class="fa-solid fa-pills"></i>
             </div>
             <span class="dwatson-cat-title">Vitamins &amp; Nutrition</span>
           </a>
-          <a href="departments.html#dept-babycare" class="dwatson-cat-card" title="Baby &amp; Mother Care">
+          <a href="departments.html?dept=babycare" class="dwatson-cat-card" title="Baby &amp; Mother Care">
             <div class="dwatson-cat-circle cat-baby">
               <i class="fa-solid fa-baby-carriage"></i>
             </div>
             <span class="dwatson-cat-title">Baby &amp; Mother Care</span>
           </a>
-          <a href="departments.html#dept-cosmetics" class="dwatson-cat-card" title="Cosmetics &amp; Skincare">
+          <a href="departments.html?dept=cosmetics" class="dwatson-cat-card" title="Cosmetics &amp; Skincare">
             <div class="dwatson-cat-circle cat-skincare">
               <i class="fa-solid fa-wand-magic-sparkles"></i>
             </div>
             <span class="dwatson-cat-title">Cosmetics &amp; Skincare</span>
           </a>
-          <a href="departments.html#dept-optics" class="dwatson-cat-card" title="Optics &amp; Eyewear">
+          <a href="departments.html?dept=optics" class="dwatson-cat-card" title="Optics &amp; Eyewear">
             <div class="dwatson-cat-circle cat-devices">
               <i class="fa-solid fa-glasses"></i>
             </div>
             <span class="dwatson-cat-title">Optics &amp; Eyewear</span>
           </a>
-          <a href="departments.html#dept-surgical" class="dwatson-cat-card" title="Hospital &amp; Surgical">
+          <a href="departments.html?dept=surgical" class="dwatson-cat-card" title="Hospital &amp; Surgical">
             <div class="dwatson-cat-circle cat-personal">
               <i class="fa-solid fa-heart-pulse"></i>
             </div>
             <span class="dwatson-cat-title">Hospital &amp; Surgical</span>
           </a>
-          <a href="departments.html#dept-perfumes" class="dwatson-cat-card" title="Luxury Fragrances">
+          <a href="departments.html?dept=perfumes" class="dwatson-cat-card" title="Luxury Fragrances">
             <div class="dwatson-cat-circle cat-fragrances">
               <i class="fa-solid fa-spray-can-sparkles"></i>
             </div>
             <span class="dwatson-cat-title">Luxury Fragrances</span>
           </a>
-          <a href="departments.html#dept-superstore" class="dwatson-cat-card" title="Gourmet Superstore">
+          <a href="departments.html?dept=grocery" class="dwatson-cat-card" title="Gourmet Superstore">
             <div class="dwatson-cat-circle cat-superstore">
               <i class="fa-solid fa-cart-shopping"></i>
             </div>
@@ -246,26 +249,181 @@
       </div>
     </section>
 
-    <!-- ================= TOP PHARMACEUTICAL & HEALTHCARE BRANDS ================= -->
+    <!-- ================= TOP PHARMACEUTICAL & HEALTHCARE BRANDS (CONTINUOUS MARQUEE SLIDER) ================= -->
     <section class="top-brands-section">
       <div class="container">
-        <div class="dwatson-carousel-header" style="margin-bottom:10px;">
+        <div class="dwatson-carousel-header" style="margin-bottom:12px;">
           <div>
             <h3 class="dwatson-section-title" style="font-size:1.15rem; margin-bottom:2px;">Trusted Partner Brands</h3>
-            <span class="dwatson-section-sub">Official direct distributor products</span>
+            <span class="dwatson-section-sub">100% authentic products directly from certified global distributors</span>
           </div>
         </div>
-        <div class="top-brands-strip">
-          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#2563EB;"></i> Abbott</span>
-          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#DC2626;"></i> GSK</span>
-          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#059669;"></i> Hilton Pharma</span>
-          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#0D9488;"></i> Getz Pharma</span>
-          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#9333EA;"></i> CeraVe</span>
-          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#2563EB;"></i> Cetaphil</span>
-          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#D97706;"></i> The Ordinary</span>
-          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#E11D48;"></i> Aveeno</span>
-          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#059669;"></i> Nutraxin</span>
-          <span class="top-brand-pill"><i class="fa-solid fa-shield-halved" style="color:#2563EB;"></i> Beurer</span>
+        <div class="top-brands-marquee-wrap">
+          <div class="top-brands-marquee-track">
+            <!-- Set 1 -->
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#2563EB;"><i class="fa-solid fa-shield-halved"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Abbott</span>
+                <span class="top-brand-tag">Nutrition &amp; Pharma</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#DC2626;"><i class="fa-solid fa-capsules"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">GSK</span>
+                <span class="top-brand-tag">Global Healthcare</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#9333EA;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">CeraVe</span>
+                <span class="top-brand-tag">Clinical Derma Care</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#059669;"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Getz Pharma</span>
+                <span class="top-brand-tag">Therapeutics</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#2563EB;"><i class="fa-solid fa-droplet"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Cetaphil</span>
+                <span class="top-brand-tag">Sensitive Skin</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#D97706;"><i class="fa-solid fa-flask"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">The Ordinary</span>
+                <span class="top-brand-tag">Active Formulations</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#0D9488;"><i class="fa-solid fa-dna"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Hilton Pharma</span>
+                <span class="top-brand-tag">Life Sciences</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#E11D48;"><i class="fa-solid fa-leaf"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Aveeno</span>
+                <span class="top-brand-tag">Oat Therapy</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#2563EB;"><i class="fa-solid fa-heart-pulse"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Beurer</span>
+                <span class="top-brand-tag">German Diagnostics</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#059669;"><i class="fa-solid fa-tablets"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Nutraxin</span>
+                <span class="top-brand-tag">Dietary Vitamins</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+
+            <!-- Set 2 (Duplicated for continuous infinite sliding without stopping) -->
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#2563EB;"><i class="fa-solid fa-shield-halved"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Abbott</span>
+                <span class="top-brand-tag">Nutrition &amp; Pharma</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#DC2626;"><i class="fa-solid fa-capsules"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">GSK</span>
+                <span class="top-brand-tag">Global Healthcare</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#9333EA;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">CeraVe</span>
+                <span class="top-brand-tag">Clinical Derma Care</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#059669;"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Getz Pharma</span>
+                <span class="top-brand-tag">Therapeutics</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#2563EB;"><i class="fa-solid fa-droplet"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Cetaphil</span>
+                <span class="top-brand-tag">Sensitive Skin</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#D97706;"><i class="fa-solid fa-flask"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">The Ordinary</span>
+                <span class="top-brand-tag">Active Formulations</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#0D9488;"><i class="fa-solid fa-dna"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Hilton Pharma</span>
+                <span class="top-brand-tag">Life Sciences</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#E11D48;"><i class="fa-solid fa-leaf"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Aveeno</span>
+                <span class="top-brand-tag">Oat Therapy</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#2563EB;"><i class="fa-solid fa-heart-pulse"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Beurer</span>
+                <span class="top-brand-tag">German Diagnostics</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+            <div class="top-brand-slide-card">
+              <div class="top-brand-icon-wrap" style="color:#059669;"><i class="fa-solid fa-tablets"></i></div>
+              <div class="top-brand-info">
+                <span class="top-brand-name">Nutraxin</span>
+                <span class="top-brand-tag">Dietary Vitamins</span>
+                <span class="top-brand-verified"><i class="fa-solid fa-circle-check"></i> 100% Authentic</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -393,7 +551,9 @@
       <div class="footer-top-grid">
         <!-- Col 1: Brand Profile -->
         <div class="footer-brand">
-          <img src="assets/images/logo-white.svg" alt="D. Watson Chemist &amp; Superstore" class="footer-emblem-logo" onerror="this.onerror=null; this.src='assets/images/logo-white.png';">
+          <div class="footer-logo-white-badge">
+            <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" class="footer-emblem-logo" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
+          </div>
           <p class="footer-tagline" id="footerAboutText">
             Pakistan's premier trusted retail pharmacy and superstore chain since 1978. Offering genuine pharmaceuticals, international cosmetics, optics, surgical supplies, and gourmet groceries.
           </p>
@@ -587,6 +747,38 @@
     <div class="pwa-banner-actions">
       <button class="btn-pwa-install" id="btnPwaInstall">Install</button>
       <button class="btn-pwa-dismiss" id="btnPwaDismiss" aria-label="Dismiss">&times;</button>
+    </div>
+  </div>
+
+  <!-- Slide-Out Mobile Navigation Drawer -->
+  <div class="mobile-nav-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mobile-drawer-backdrop" onclick="closeMobileMenu()"></div>
+    <div class="mobile-drawer-panel">
+      <div class="mobile-drawer-header">
+        <a href="index.html" class="mobile-drawer-logo">
+          <img src="assets/images/logo.svg" alt="D. Watson" style="height:36px; width:auto;" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
+        </a>
+        <button type="button" class="mobile-drawer-close" onclick="closeMobileMenu()" aria-label="Close menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <ul class="mobile-drawer-links">
+        <li><a href="index.html" class="active" id="drawerLinkHome"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="departments.html" id="drawerLinkDepts"><i class="fa-solid fa-table-cells-large"></i> 13 Departments</a></li>
+        <li><a href="branches.html" id="drawerLinkBranches"><i class="fa-solid fa-location-dot"></i> Flagship Branches</a></li>
+        <li><a href="journey.html" id="drawerLinkJourney"><i class="fa-solid fa-landmark"></i> The Journey &amp; Board</a></li>
+        <li><a href="prescription.html" id="drawerLinkRx"><i class="fa-solid fa-file-prescription"></i> Upload Prescription</a></li>
+        <li><a href="contact.html" id="drawerLinkContact"><i class="fa-solid fa-headset"></i> Contact &amp; Support</a></li>
+        <li><a href="admin.html" id="drawerLinkAdmin"><i class="fa-solid fa-lock"></i> Admin Portal</a></li>
+      </ul>
+      <div class="mobile-drawer-footer">
+        <a href="tel:0518438111" class="drawer-contact-btn btn-call">
+          <i class="fa-solid fa-phone"></i> Helpline: 051-8438111
+        </a>
+        <a href="https://wa.me/923329716666?text=Hello%20D.Watson,%20I%20need%20assistance." target="_blank" class="drawer-contact-btn btn-wa">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666
+        </a>
+      </div>
     </div>
   </div>
 

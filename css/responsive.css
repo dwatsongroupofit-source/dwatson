@@ -1983,13 +1983,17 @@ section, header, footer, nav, main, .container {
 
   /* Generous Mobile Department Cards */
   .home-dept-card {
-    flex: 0 0 180px !important;
-    width: 180px !important;
-    height: 155px !important;
-    border-radius: 14px !important;
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    height: auto !important;
+    border-radius: 16px !important;
   }
 
-  .home-dept-card-name {
+  .home-dept-img-wrap {
+    height: 130px !important;
+  }
+
+  .home-dept-name {
     font-size: 0.95rem !important;
   }
 
@@ -2053,9 +2057,13 @@ section, header, footer, nav, main, .container {
   }
 
   .home-dept-card {
-    flex: 0 0 165px !important;
-    width: 165px !important;
-    height: 145px !important;
+    flex: 0 0 200px !important;
+    width: 200px !important;
+    height: auto !important;
+  }
+
+  .home-dept-img-wrap {
+    height: 120px !important;
   }
 }
 

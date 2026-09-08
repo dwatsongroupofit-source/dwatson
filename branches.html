@@ -45,8 +45,11 @@
 
   <!-- Mobile App Header (Consistent with Home & All Pages) -->
   <div class="mobile-app-header" id="mobileAppHeader">
+    <button type="button" class="mobile-app-menu-btn" onclick="openMobileMenu()" aria-label="Open Navigation Menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
     <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
-      <img src="assets/images/logo-white.svg" alt="D. Watson Official Logo" class="mobile-app-emblem" onerror="this.onerror=null; this.src='assets/images/logo-white.png';">
+      <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" class="mobile-app-emblem" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
     </a>
     <div class="mobile-app-search-wrap" onclick="openGlobalSearch()" role="button" aria-label="Open search">
       <i class="fa-solid fa-magnifying-glass"></i>
@@ -186,60 +189,90 @@
     </div>
   </section>
 
-  <!-- Comprehensive Footer -->
-  <footer class="footer">
-    <div class="container footer-top-grid">
-      <div class="footer-col footer-col-brand">
-        <img src="assets/images/logo-white.svg" alt="D. Watson Chemist &amp; Superstore" class="footer-logo" onerror="this.onerror=null; this.src='assets/images/logo-white.png';">
-        <p class="footer-desc">
-          Pakistan's most trusted pharmacy &amp; departmental superstore since 1978. Serving millions of families across Islamabad, Rawalpindi, and nationwide with uncompromised medicine genuineness and 24/7 care.
-        </p>
-        <div class="social-links" id="footerSocial">
-          <a href="https://www.facebook.com/DWatsonChemist" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="https://www.instagram.com/dwatson_chemist/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-          <a href="https://wa.me/923329716666" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+  <!-- ================= FOOTER SECTION (UNIFIED WITH MAIN PAGE) ================= -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top-grid">
+        <!-- Col 1: Brand Profile -->
+        <div class="footer-brand">
+          <div class="footer-logo-white-badge">
+            <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" class="footer-emblem-logo" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
+          </div>
+          <p class="footer-tagline" id="footerAboutText">
+            Pakistan's premier trusted retail pharmacy and superstore chain since 1978. Offering genuine pharmaceuticals, international cosmetics, optics, surgical supplies, and gourmet groceries.
+          </p>
+          <div class="footer-social-links">
+            <a href="https://www.facebook.com/DWatsonChemist/" target="_blank" class="footer-social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/dwatson_chemist/" target="_blank" class="footer-social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://wa.me/923329716666" target="_blank" class="footer-social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="https://m.me/DWatsonChemist" target="_blank" class="footer-social-btn" aria-label="Messenger"><i class="fa-brands fa-facebook-messenger"></i></a>
+          </div>
+        </div>
+
+        <!-- Col 2: Quick Links -->
+        <div class="footer-card-box">
+          <h4 class="footer-heading"><i class="fa-solid fa-compass" style="color:var(--dw-red);"></i> Quick Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="index.html"><i class="fa-solid fa-angle-right"></i> Home Overview</a></li>
+            <li><a href="departments.html"><i class="fa-solid fa-angle-right"></i> 13 Departments</a></li>
+            <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> ⭐ Flagship Branches</a></li>
+            <li><a href="journey.html"><i class="fa-solid fa-angle-right"></i> The Journey of D. Watson</a></li>
+            <li><a href="prescription.html"><i class="fa-solid fa-angle-right"></i> Upload Prescription</a></li>
+            <li><a href="contact.html"><i class="fa-solid fa-angle-right"></i> Customer Care &amp; Support</a></li>
+            <li><a href="admin.html"><i class="fa-solid fa-angle-right"></i> Admin Portal</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Key Branches -->
+        <div class="footer-card-box">
+          <h4 class="footer-heading"><i class="fa-solid fa-store" style="color:var(--dw-red);"></i> Flagship Branches</h4>
+          <ul class="footer-links" id="footerBranchList">
+            <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> F-6 Super Market (Flagship #1)</a></li>
+            <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> Blue Area Flagship, Islamabad</a></li>
+            <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> Saddar Flagship, Rawalpindi</a></li>
+            <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> PWD Main Boulevard</a></li>
+            <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> Chandni Chowk, Rawalpindi</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Contact & Helpline -->
+        <div class="footer-card-box footer-contact-col">
+          <h4 class="footer-heading"><i class="fa-solid fa-headset" style="color:var(--dw-red);"></i> Customer Helpline</h4>
+          <a href="tel:0518438111" class="footer-contact-item" style="text-decoration:none;">
+            <i class="fa-solid fa-phone"></i>
+            <div>
+              <strong style="color:white; display:block;">Universal Helpline</strong>
+              <span id="footerHelpline" style="color:#60A5FA; font-weight:700;">051-8438111</span>
+            </div>
+          </a>
+          <a href="mailto:dwatsonconsultation@gmail.com" class="footer-contact-item" style="text-decoration:none;">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <strong style="color:white; display:block;">Customer Care Email</strong>
+              <span id="footerEmail">dwatsonconsultation@gmail.com</span>
+            </div>
+          </a>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <strong style="color:white; display:block;">Head Office (Super Market Branch)</strong>
+              <span id="footerAddress">School Road, Super Market, F-6 Markaz, Islamabad</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="footer-col">
-        <h4 class="footer-heading"><i class="fa-solid fa-link" style="color:var(--dw-red);"></i> Quick Links</h4>
-        <ul class="footer-links">
-          <li><a href="index.html"><i class="fa-solid fa-angle-right"></i> Home</a></li>
-          <li><a href="departments.html"><i class="fa-solid fa-angle-right"></i> 13 Departments</a></li>
-          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> ⭐ Flagship Branches</a></li>
-          <li><a href="journey.html"><i class="fa-solid fa-angle-right"></i> The Journey &amp; Board</a></li>
-          <li><a href="prescription.html"><i class="fa-solid fa-angle-right"></i> Upload Prescription</a></li>
-          <li><a href="contact.html"><i class="fa-solid fa-angle-right"></i> Contact &amp; Support</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4 class="footer-heading"><i class="fa-solid fa-store" style="color:var(--dw-red);"></i> Flagship Outlets</h4>
-        <ul class="footer-links">
-          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> F-6 Super Market (Flagship #1)</a></li>
-          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> Blue Area Flagship, Islamabad</a></li>
-          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> Saddar Flagship, Rawalpindi</a></li>
-          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> PWD Main Boulevard</a></li>
-          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> Chandni Chowk, Rawalpindi</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4 class="footer-heading"><i class="fa-solid fa-phone-volume" style="color:var(--dw-red);"></i> 24/7 Helpline</h4>
-        <p style="font-size:0.88rem; color:#94A3B8; margin-bottom:12px;">Universal Ordering &amp; Pharmacist Dispensing Helpline:</p>
-        <p><a href="tel:0518438111" style="color:#FFFFFF; font-weight:800; font-size:1.15rem;"><i class="fa-solid fa-phone"></i> 051-8438111</a></p>
-        <p style="margin-top:6px;"><a href="tel:051111392876" style="color:#CBD5E1; font-size:0.92rem;"><i class="fa-solid fa-phone"></i> UAN: 051-111-392-876</a></p>
-        <p style="margin-top:8px;"><a href="https://wa.me/923329716666" target="_blank" style="color:#25D366; font-weight:700;"><i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666</a></p>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <div class="container footer-bottom-inner">
-        <p class="copyright">&copy; 1978 &ndash; 2026 D. Watson Chemist &amp; Superstore. All Rights Reserved.</p>
-        <div class="footer-badges">
-          <span class="badge-mini"><i class="fa-solid fa-shield-halved"></i> 100% Genuine Medicines</span>
-          <span class="badge-mini"><i class="fa-solid fa-clock"></i> 24/7 Dispensing</span>
-          <span class="badge-mini"><i class="fa-solid fa-snowflake"></i> Cold-Chain Storage</span>
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="footer-copyright">
+          &copy; 1978 &ndash; 2026 <a href="https://bas.dwatson.online" target="_blank" class="footer-copyright-link"><strong>D. Watson Chemist &amp; Superstore</strong></a>. All Rights Reserved.
+        </div>
+        <div class="footer-bottom-links">
+          <a href="contact.html">Privacy Policy</a>
+          <span style="color:#475569;">•</span>
+          <a href="contact.html">Terms of Service</a>
+          <span style="color:#475569;">•</span>
+          <a href="admin.html" class="admin-portal-badge"><i class="fa-solid fa-lock"></i> Admin Portal</a>
         </div>
       </div>
     </div>
@@ -298,6 +331,38 @@
           <button type="button" class="search-tag-chip" onclick="searchByTag('Optics')">Optics</button>
         </div>
         <div class="search-results-list" id="searchResultsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide-Out Mobile Navigation Drawer -->
+  <div class="mobile-nav-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mobile-drawer-backdrop" onclick="closeMobileMenu()"></div>
+    <div class="mobile-drawer-panel">
+      <div class="mobile-drawer-header">
+        <a href="index.html" class="mobile-drawer-logo">
+          <img src="assets/images/logo.svg" alt="D. Watson" style="height:36px; width:auto;" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
+        </a>
+        <button type="button" class="mobile-drawer-close" onclick="closeMobileMenu()" aria-label="Close menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <ul class="mobile-drawer-links">
+        <li><a href="index.html" id="drawerLinkHome"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="departments.html" id="drawerLinkDepts"><i class="fa-solid fa-table-cells-large"></i> 13 Departments</a></li>
+        <li><a href="branches.html" class="active" id="drawerLinkBranches"><i class="fa-solid fa-location-dot"></i> Flagship Branches</a></li>
+        <li><a href="journey.html" id="drawerLinkJourney"><i class="fa-solid fa-landmark"></i> The Journey &amp; Board</a></li>
+        <li><a href="prescription.html" id="drawerLinkRx"><i class="fa-solid fa-file-prescription"></i> Upload Prescription</a></li>
+        <li><a href="contact.html" id="drawerLinkContact"><i class="fa-solid fa-headset"></i> Contact &amp; Support</a></li>
+        <li><a href="admin.html" id="drawerLinkAdmin"><i class="fa-solid fa-lock"></i> Admin Portal</a></li>
+      </ul>
+      <div class="mobile-drawer-footer">
+        <a href="tel:0518438111" class="drawer-contact-btn btn-call">
+          <i class="fa-solid fa-phone"></i> Helpline: 051-8438111
+        </a>
+        <a href="https://wa.me/923329716666?text=Hello%20D.Watson,%20I%20need%20assistance." target="_blank" class="drawer-contact-btn btn-wa">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666
+        </a>
       </div>
     </div>
   </div>

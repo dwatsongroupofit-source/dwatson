@@ -378,25 +378,69 @@ const DEPT_CATEGORY_MAP = {
 };
 
 /**
- * Render Homepage Featured Departments (Generous Visual Cards matching dwatson.pk)
+ * Render Homepage Featured Departments (Generous Visual Cards with Auto-Slider)
  */
+let deptAutoSlideTimer = null;
+let isDeptCarouselHovered = false;
+let isDeptCarouselControlsInit = false;
+
 function renderHomeDepartments(departments) {
   const container = document.getElementById("homeDeptCarousel");
   if (!container || !departments || !departments.length) return;
 
   container.innerHTML = departments.map((dept) => {
-    const displayName = (dept.name || "").split("&")[0].trim();
     return `
-      <a href="departments.html#dept-${dept.id}" class="home-dept-card" title="Explore ${escapeHtml(dept.name)}">
-        <img src="${encodeURI(dept.image)}" alt="${escapeHtml(dept.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
-        <div class="home-dept-card-overlay">
-          <span class="home-dept-card-badge">${escapeHtml(dept.badge || "Featured")}</span>
-          <span class="home-dept-card-name">${escapeHtml(displayName)}</span>
-          <span class="home-dept-card-sub">${escapeHtml(dept.tagline || "View Department")}</span>
+      <a href="departments.html?dept=${dept.id}" class="home-dept-card" title="Explore ${escapeHtml(dept.name)}">
+        <div class="home-dept-img-wrap">
+          <img src="${encodeURI(dept.image)}" alt="${escapeHtml(dept.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+          <span class="home-dept-badge">${escapeHtml(dept.badge || "Featured")}</span>
+        </div>
+        <div class="home-dept-body">
+          <h4 class="home-dept-name">${escapeHtml(dept.name)}</h4>
+          <p class="home-dept-sub">${escapeHtml(dept.tagline || "Official D. Watson Healthcare & Retail")}</p>
+          <span class="home-dept-link">Explore Department <i class="fa-solid fa-arrow-right"></i></span>
         </div>
       </a>
     `;
   }).join("");
+
+  initDepartmentAutoSlider();
+}
+
+/**
+ * Auto-Slide Controller for Homepage Featured Departments
+ */
+function initDepartmentAutoSlider() {
+  const track = document.getElementById("homeDeptCarousel");
+  if (!track) return;
+
+  if (deptAutoSlideTimer) {
+    clearInterval(deptAutoSlideTimer);
+    deptAutoSlideTimer = null;
+  }
+
+  if (!isDeptCarouselControlsInit) {
+    track.addEventListener("mouseenter", () => { isDeptCarouselHovered = true; });
+    track.addEventListener("mouseleave", () => { isDeptCarouselHovered = false; });
+    track.addEventListener("touchstart", () => { isDeptCarouselHovered = true; }, { passive: true });
+    track.addEventListener("touchend", () => {
+      setTimeout(() => { isDeptCarouselHovered = false; }, 2000);
+    }, { passive: true });
+    isDeptCarouselControlsInit = true;
+  }
+
+  deptAutoSlideTimer = setInterval(() => {
+    if (isDeptCarouselHovered) return;
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    if (maxScroll <= 10) return;
+
+    if (track.scrollLeft >= maxScroll - 15) {
+      track.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      const scrollStep = Math.max(280, Math.floor(track.clientWidth * 0.7));
+      track.scrollBy({ left: scrollStep, behavior: "smooth" });
+    }
+  }, 3600);
 }
 
 /**
@@ -580,6 +624,158 @@ function renderDepartments(departments, defaultWhatsApp) {
   allDepartmentsData = departments;
   if (defaultWhatsApp) allDepartmentsWhatsApp = defaultWhatsApp;
 
+  // Check URL query parameters or hash for deep linking (e.g. ?dept=pharmacy or #dept-pharmacy)
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetDept = urlParams.get("dept") || urlParams.get("cat") || (window.location.hash ? window.location.hash.replace("#dept-", "").replace("#", "") : "");
+
+  if (targetDept && targetDept !== "all") {
+    spotlightDepartment(targetDept);
+  } else {
+    renderDepartmentCards(allDepartmentsData);
+  }
+}
+
+function spotlightDepartment(rawDeptId) {
+  if (!allDepartmentsData || !allDepartmentsData.length) return;
+  const container = document.getElementById("departmentsGrid");
+  const filterBar = document.getElementById("deptFilterBar");
+  if (!container) return;
+
+  // Map alternative category aliases to canonical department IDs
+  const aliasMap = {
+    medicine: "pharmacy",
+    medicines: "pharmacy",
+    rx: "pharmacy",
+    supplements: "homeo",
+    skincare: "cosmetics",
+    fragrances: "perfumes",
+    fragrance: "perfumes",
+    makeup: "color_cosmetics",
+    superstore: "grocery",
+    baby: "babycare",
+    mothercare: "babycare",
+    hearing: "hearing_aid",
+    diagnostics: "hearing_aid",
+    glasses: "optics",
+    eyewear: "optics",
+    hospital: "surgical"
+  };
+
+  const cleanId = (rawDeptId || "").toLowerCase().trim();
+  const canonicalId = aliasMap[cleanId] || cleanId;
+  
+  let selectedDept = allDepartmentsData.find(d => d.id.toLowerCase() === canonicalId);
+  if (!selectedDept) {
+    selectedDept = allDepartmentsData.find(d => d.name.toLowerCase().includes(cleanId) || (d.tagline && d.tagline.toLowerCase().includes(cleanId)));
+  }
+  if (!selectedDept) {
+    selectedDept = allDepartmentsData[0];
+  }
+
+  // Hide filter bar in spotlight mode
+  if (filterBar) {
+    filterBar.style.display = "none";
+  }
+
+  const waMsg = selectedDept.whatsappMsg || `Hi D.Watson, I would like to inquire about ${selectedDept.name} products.`;
+  const waUrl = `https://wa.me/${allDepartmentsWhatsApp}?text=${encodeURIComponent(waMsg)}`;
+  const isPharmacy = selectedDept.id === "pharmacy";
+
+  container.innerHTML = `
+    <div class="dept-spotlight-wrap" id="deptSpotlightSection">
+      <div class="dept-spotlight-topbar">
+        <button type="button" class="dept-spotlight-back-btn" onclick="showAllDepartments(event)">
+          <i class="fa-solid fa-arrow-left"></i> View All 13 Departments
+        </button>
+        <span class="badge-mini" style="font-size:0.82rem; padding:6px 14px; background:#EFF6FF; color:#2563EB; border-radius:9999px; font-weight:800;">
+          <i class="fa-solid fa-certificate"></i> Official D. Watson Specialty
+        </span>
+      </div>
+
+      <div class="dept-spotlight-grid">
+        <div class="dept-spotlight-media">
+          <img src="${encodeURI(selectedDept.image)}" alt="${escapeHtml(selectedDept.name)}" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+          <span class="dept-spotlight-badge">
+            <i class="${selectedDept.icon || 'fa-solid fa-star'}"></i> ${escapeHtml(selectedDept.badge || "Featured Specialty")}
+          </span>
+        </div>
+
+        <div class="dept-spotlight-content">
+          <span class="dept-spotlight-tagline">${escapeHtml(selectedDept.tagline)}</span>
+          <h2 class="dept-spotlight-title">${escapeHtml(selectedDept.name)}</h2>
+          <p class="dept-spotlight-desc">${escapeHtml(selectedDept.description)}</p>
+
+          <div class="dept-spotlight-features-title">
+            <i class="fa-solid fa-list-check" style="color:var(--dw-red);"></i> Key Department Specialties &amp; Standards
+          </div>
+          <div class="dept-spotlight-features-grid">
+            ${(selectedDept.features || []).map(f => `
+              <div class="dept-spotlight-feature-card">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>${escapeHtml(f)}</span>
+              </div>
+            `).join("")}
+          </div>
+
+          <div class="dept-spotlight-cta-row">
+            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp">
+              <i class="fa-brands fa-whatsapp"></i> Inquire on WhatsApp
+            </a>
+            ${isPharmacy ? `
+              <a href="prescription.html" class="btn btn-primary">
+                <i class="fa-solid fa-file-prescription"></i> Upload Prescription
+              </a>
+            ` : ""}
+            <a href="branches.html" class="btn btn-outline">
+              <i class="fa-solid fa-location-dot"></i> Available at 25+ Branches
+            </a>
+            <a href="tel:0518438111" class="btn btn-outline" style="border-color:#CBD5E1;">
+              <i class="fa-solid fa-phone"></i> Helpline: 051-8438111
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Switch Strip: All other departments accessible in 1 tap -->
+      <div class="dept-spotlight-other-strip">
+        <div class="dept-spotlight-other-title">
+          <i class="fa-solid fa-arrows-split-up-and-left" style="color:var(--dw-red);"></i> Switch to Another Department:
+        </div>
+        <div class="dept-spotlight-other-pills">
+          ${allDepartmentsData.map(d => {
+            const isActive = d.id === selectedDept.id;
+            return `
+              <button type="button" class="dept-spotlight-pill ${isActive ? 'active' : ''}" onclick="switchSpotlightDept('${d.id}')">
+                <i class="${d.icon || 'fa-solid fa-boxes-stacked'}"></i> ${escapeHtml(d.name.split('&')[0].trim())}
+              </button>
+            `;
+          }).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Smooth scroll to top of showcase
+  const el = document.getElementById("deptSpotlightSection");
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function switchSpotlightDept(deptId) {
+  if (window.history && window.history.pushState) {
+    window.history.pushState(null, "", `departments.html?dept=${deptId}`);
+  }
+  spotlightDepartment(deptId);
+}
+
+function showAllDepartments(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  if (window.history && window.history.pushState) {
+    window.history.pushState(null, "", "departments.html");
+  }
+  const filterBar = document.getElementById("deptFilterBar");
+  if (filterBar) filterBar.style.display = "flex";
   renderDepartmentCards(allDepartmentsData);
 }
 
@@ -2349,23 +2545,58 @@ function initHeaderScroll() {
   }, { passive: true });
 }
 
+function openMobileMenu() {
+  const drawer = document.getElementById("mobileNavDrawer");
+  if (drawer) {
+    drawer.classList.add("active");
+    drawer.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+}
+
+function closeMobileMenu() {
+  const drawer = document.getElementById("mobileNavDrawer");
+  if (drawer) {
+    drawer.classList.remove("active");
+    drawer.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+}
+
+function toggleMobileMenu() {
+  const drawer = document.getElementById("mobileNavDrawer");
+  if (!drawer) return;
+  if (drawer.classList.contains("active")) {
+    closeMobileMenu();
+  } else {
+    openMobileMenu();
+  }
+}
+
 function initMobileMenu() {
   const toggle = document.querySelector(".mobile-toggle");
   const menu = document.querySelector(".nav-menu");
-  if (!toggle || !menu) return;
-
-  toggle.addEventListener("click", () => {
-    const isOpen = menu.classList.toggle("open");
-    toggle.innerHTML = isOpen 
-      ? '<i class="fa-solid fa-xmark"></i>' 
-      : '<i class="fa-solid fa-bars"></i>';
-  });
-
-  document.querySelectorAll(".nav-link").forEach(link => {
-    link.addEventListener("click", () => {
-      menu.classList.remove("open");
-      toggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+  if (toggle && menu) {
+    toggle.addEventListener("click", () => {
+      const isOpen = menu.classList.toggle("open");
+      toggle.innerHTML = isOpen 
+        ? '<i class="fa-solid fa-xmark"></i>' 
+        : '<i class="fa-solid fa-bars"></i>';
     });
+
+    document.querySelectorAll(".nav-link").forEach(link => {
+      link.addEventListener("click", () => {
+        menu.classList.remove("open");
+        toggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+      });
+    });
+  }
+
+  // Handle Escape key to close mobile drawer
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeMobileMenu();
+    }
   });
 }
 
