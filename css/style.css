@@ -76,7 +76,6 @@ html {
   -webkit-font-smoothing: antialiased;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
 }
 
 body {
@@ -86,7 +85,7 @@ body {
   line-height: 1.6;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
 }
 
@@ -268,6 +267,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Single wrapper so both bars always stay on screen, even with overflow-x:hidden on body */
 .sticky-header-wrap {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -3992,5 +3992,288 @@ textarea.form-control {
 .lightbox-nav.next {
   right: 28px;
 }
+
+/* ==========================================================================
+   Dedicated "The Journey of D. Watson" Page Styles
+   ========================================================================== */
+.page-banner-journey {
+  position: relative;
+  background: radial-gradient(circle at top right, rgba(29, 78, 216, 0.25) 0%, transparent 60%),
+              linear-gradient(135deg, #070D1E 0%, #0F172A 50%, #1E293B 100%);
+  color: #FFFFFF;
+  padding: 85px 0 65px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.page-banner-journey::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 10% 80%, rgba(220, 38, 38, 0.15) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.journey-banner-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.journey-breadcrumbs {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #94A3B8;
+  margin-bottom: 18px;
+}
+
+.journey-breadcrumbs a {
+  color: #CBD5E1;
+  text-decoration: none;
+}
+
+.journey-breadcrumbs a:hover {
+  color: #FFFFFF;
+}
+
+.journey-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  color: #FCA5A5;
+  padding: 6px 18px;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.journey-banner-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 900;
+  line-height: 1.15;
+  color: #FFFFFF;
+  margin-bottom: 18px;
+  letter-spacing: -0.5px;
+}
+
+.journey-banner-subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: #CBD5E1;
+  line-height: 1.65;
+  max-width: 780px;
+  margin: 0 auto 36px;
+}
+
+.journey-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.journey-stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 18px 14px;
+  text-align: center;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.journey-stat-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.journey-stat-num {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  display: block;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.journey-stat-label {
+  font-size: 0.78rem;
+  color: #94A3B8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.story-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
+  margin-top: 36px;
+}
+
+.story-card-box {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.story-card-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+  border-color: rgba(29, 78, 216, 0.25);
+}
+
+.story-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.story-card-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(220, 38, 38, 0.08);
+  color: var(--dw-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.story-card-box:hover .story-card-icon {
+  transform: scale(1.1);
+  background: var(--dw-red);
+  color: #FFFFFF;
+}
+
+.story-card-icon.blue {
+  background: rgba(29, 78, 216, 0.08);
+  color: var(--dw-blue);
+}
+
+.story-card-box:hover .story-card-icon.blue {
+  background: var(--dw-blue);
+  color: #FFFFFF;
+}
+
+.story-card-title {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--dw-navy);
+  line-height: 1.3;
+}
+
+.story-card-body {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  line-height: 1.7;
+}
+
+.journey-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 36px;
+}
+
+.journey-pillar-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--border-subtle);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.journey-pillar-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--dw-blue);
+  box-shadow: var(--shadow-md);
+}
+
+.journey-pillar-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  background: #F8FAFC;
+  color: var(--dw-navy);
+  border: 1px solid var(--border-subtle);
+  transition: all 0.3s ease;
+}
+
+.journey-pillar-card:hover .journey-pillar-icon {
+  background: var(--dw-navy);
+  color: #FFFFFF;
+  border-color: var(--dw-navy);
+}
+
+.journey-pillar-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--dw-navy);
+  margin-bottom: 8px;
+}
+
+.journey-pillar-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.journey-cta-box {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  border-radius: 24px;
+  padding: 48px 36px;
+  color: #FFFFFF;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-lg);
+  margin: 60px 0 20px;
+}
+
+.journey-cta-box::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(220, 38, 38, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
 
 
