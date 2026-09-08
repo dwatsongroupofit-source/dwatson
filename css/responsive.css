@@ -1794,3 +1794,103 @@ section, header, footer, nav, main, .container {
     font-size: 0.76rem;
   }
 }
+
+/* ==========================================================================
+   MOBILE-FIRST MULTI-PAGE & APP COMPONENTS RESPONSIVE
+   ========================================================================== */
+@media (max-width: 992px) {
+  .subpage-hero {
+    padding: 38px 0 30px !important;
+  }
+  .subpage-title {
+    font-size: 1.85rem !important;
+  }
+  .subpage-lead {
+    font-size: 0.95rem !important;
+    margin-bottom: 16px !important;
+  }
+  .app-quick-dock {
+    gap: 8px !important;
+  }
+  .app-dock-icon {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 1.2rem !important;
+  }
+  .app-dock-label {
+    font-size: 0.7rem !important;
+  }
+  .quick-rx-card {
+    padding: 14px 16px !important;
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 14px !important;
+  }
+  .quick-rx-left {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 10px !important;
+  }
+  .quick-rx-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  .flagship-spotlight-body {
+    grid-template-columns: 1fr !important;
+  }
+  .leadership-spotlight-inner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .dept-filter-bar {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    padding: 4px 4px 12px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  .dept-filter-bar::-webkit-scrollbar {
+    display: none !important;
+  }
+  .dept-pill-btn {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+  .dept-features-toggle {
+    display: flex !important;
+  }
+  .department-card .dept-features {
+    display: none;
+    margin-top: 8px !important;
+  }
+  .department-card .dept-features.open {
+    display: flex !important;
+  }
+  .prescription-form-card {
+    padding: 24px 18px !important;
+  }
+  .rx-fulfillment-toggle {
+    grid-template-columns: 1fr !important;
+  }
+  .rx-action-buttons {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .app-quick-dock {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 4px !important;
+  }
+  .app-dock-icon {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.1rem !important;
+    border-radius: 12px !important;
+  }
+  .app-dock-label {
+    font-size: 0.65rem !important;
+  }
+}
+

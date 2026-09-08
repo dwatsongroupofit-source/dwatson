@@ -12,16 +12,58 @@
   "categories": ["shopping", "medical", "health"],
   "icons": [
     {
-      "src": "assets/images/logo-emblem.png",
+      "src": "assets/images/pwa-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "assets/images/logo-emblem.png",
+      "src": "assets/images/pwa-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/pwa-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/images/pwa-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Upload Prescription",
+      "short_name": "Upload Rx",
+      "description": "Express prescription upload & pharmacist WhatsApp delivery",
+      "url": "/index.html#prescription-box",
+      "icons": [{ "src": "assets/images/pwa-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Find Nearest Branch",
+      "short_name": "Find Branch",
+      "description": "GPS branch locator across 25+ D. Watson outlets",
+      "url": "/index.html#branches",
+      "icons": [{ "src": "assets/images/pwa-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Search Products & Medicines",
+      "short_name": "Search",
+      "description": "Live search across 20,000+ medicines and cosmetics",
+      "url": "/index.html#products",
+      "icons": [{ "src": "assets/images/pwa-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "WhatsApp Pharmacist",
+      "short_name": "WhatsApp",
+      "description": "Live 24/7 pharmacist consultation and order desk",
+      "url": "https://wa.me/923329716666?text=Hi%20D.Watson%20Chemist,%20I%20need%20assistance.",
+      "icons": [{ "src": "assets/images/pwa-icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

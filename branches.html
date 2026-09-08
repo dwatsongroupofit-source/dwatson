@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Official Branch Network &amp; Flagship Stores | D. Watson Chemist &amp; Superstore</title>
+  <meta name="description" content="Find all 20+ official D. Watson branches across Islamabad, Rawalpindi, and nationwide. Live 24/7 store hours, phone numbers, GPS directions, and flagship store details.">
+  <meta name="keywords" content="D Watson Branches, D Watson Islamabad, D Watson Rawalpindi, D Watson F-6, D Watson Blue Area, Pharmacy near me Islamabad">
+  <meta name="theme-color" content="#0F172A">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://www.dwatson.co/branches.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.dwatson.co/branches.html">
+  <meta property="og:site_name" content="D. Watson Chemist &amp; Superstore">
+  <meta property="og:title" content="Official Branch Network &amp; Flagship Stores | D. Watson Chemist &amp; Superstore">
+  <meta property="og:description" content="Find your nearest D. Watson pharmacy &amp; superstore. 20+ premier locations with 24/7 medicine dispensing and temperature-controlled storage.">
+  <meta property="og:image" content="https://www.dwatson.co/assets/images/store_flagship.jpg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" type="image/png" href="assets/images/favicon.png">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="D. Watson">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon-180.png">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css?v=6.0">
+  <link rel="stylesheet" href="css/responsive.css?v=6.0">
+</head>
+<body class="page-branches">
+
+  <!-- PWA Native App Launch Splash Screen -->
+  <div class="pwa-app-splash" id="pwaAppSplash" aria-hidden="true">
+    <div class="splash-inner">
+      <div class="splash-emblem-wrap">
+        <div class="splash-emblem-halo"></div>
+        <img src="assets/images/pwa-icon-192.png" alt="D. Watson Emblem" class="splash-logo-img">
+      </div>
+      <div class="splash-brand-title">D. WATSON</div>
+      <div class="splash-brand-subtitle">CHEMIST &amp; SUPERSTORE</div>
+      <div class="splash-tagline">Since 1978 • 100% Genuine Healthcare</div>
+      <div class="splash-loader-bar">
+        <div class="splash-loader-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Header Wrapper -->
+  <div class="sticky-header-wrap">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="container top-bar-inner">
+        <div class="announcement-text">
+          <span class="badge-live">24/7 Live Service</span>
+          <span id="topAnnouncement">✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • WhatsApp Express Delivery: 0332-9716666</span>
+        </div>
+        <div class="top-bar-links">
+          <a href="tel:0518438111" id="topPhone"><i class="fa-solid fa-phone"></i> Helpline: 051-8438111</a>
+          <a href="https://wa.me/923329716666" target="_blank" id="topWhatsApp"><i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <header class="navbar">
+      <div class="container nav-inner">
+        <!-- Logo -->
+        <a href="index.html" class="logo" aria-label="D. Watson Chemist &amp; Superstore Home">
+          <img src="assets/images/logo.png" alt="D. Watson Chemist &amp; Superstore Logo" class="logo-img" onerror="this.onerror=null; this.src='assets/images/logo-emblem.png';">
+        </a>
+
+        <!-- Desktop Search Trigger Bar -->
+        <div class="header-search-bar" onclick="openGlobalSearch()" role="button" tabindex="0" aria-label="Search medicines, cosmetics, brands">
+          <i class="fa-solid fa-magnifying-glass header-search-icon"></i>
+          <span class="header-search-placeholder">Search 15,000+ medicines, skincare, perfumes...</span>
+          <span class="header-search-shortcut"><kbd>/</kbd></span>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav>
+          <ul class="nav-menu" id="navMenu">
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="departments.html" class="nav-link">13 Departments</a></li>
+            <li><a href="branches.html" class="nav-link active">⭐ Flagship Branches</a></li>
+            <li><a href="journey.html" class="nav-link">The Journey</a></li>
+            <li><a href="prescription.html" class="nav-link">Prescription</a></li>
+            <li><a href="contact.html" class="nav-link">Contact</a></li>
+          </ul>
+        </nav>
+
+        <!-- Right Actions -->
+        <div class="nav-actions">
+          <button class="search-toggle-btn mobile-only-search" onclick="openGlobalSearch()" aria-label="Open Search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+          <a href="prescription.html" class="btn btn-primary btn-sm btn-pulse" id="navOrderBtn">
+            <i class="fa-solid fa-file-medical"></i> Upload Rx
+          </a>
+          <button class="mobile-toggle" id="mobileToggle" aria-label="Open mobile navigation menu" aria-expanded="false">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <!-- Page Header Hero Banner -->
+  <section class="subpage-hero">
+    <div class="container">
+      <div class="subpage-hero-inner">
+        <span class="subpage-badge"><i class="fa-solid fa-store"></i> Nationwide Retail &amp; Healthcare Network</span>
+        <h1 class="subpage-title">Official <span class="highlight-red">Branch Network</span> &amp; Flagship Stores</h1>
+        <p class="subpage-lead">
+          20+ premier retail pharmacies and departmental superstores across Islamabad, Rawalpindi, and key cities. Equipped with 24/7 registered pharmacist dispensing, computerized optics clinics, and express home delivery.
+        </p>
+
+        <!-- GPS Nearest Branch Action & Branch Search -->
+        <div class="branch-hero-actions">
+          <button type="button" class="btn btn-primary btn-lg btn-gps-pulse" onclick="locateNearestBranch()">
+            <i class="fa-solid fa-location-crosshairs"></i> 📍 Find Nearest Branch to Me
+          </button>
+          <div class="branch-search-input-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="branchSearchInput" placeholder="Search by area (F-6, Blue Area, Saddar, PWD, Bahria)..." oninput="filterBranchesSearch(this.value)">
+          </div>
+        </div>
+        <div id="gpsStatusMessage" class="gps-status-text"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Branches Showcase Section -->
+  <section class="branches-section" id="branches">
+    <div class="container">
+      
+      <!-- City & Flagship Filter Tabs -->
+      <div class="branch-city-filters" id="branchCityFilters">
+        <!-- Rendered dynamically by js/main.js renderBranches() -->
+      </div>
+
+      <!-- Live GPS Active Feedback Banner -->
+      <div id="gpsActiveBanner" class="gps-active-banner" style="display: none;">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>Sorted by closest driving distance to your current location.</span>
+        <button type="button" onclick="resetBranchFilter()" class="btn-clear-gps">Reset Sorting</button>
+      </div>
+
+      <!-- Interactive Map & Branches Grid -->
+      <div class="branches-interactive-layout">
+        <!-- Map Embed Container -->
+        <div class="branches-map-container">
+          <div class="map-card-header">
+            <h3><i class="fa-solid fa-map-location-dot" style="color:var(--dw-red);"></i> Twin Cities Network Map</h3>
+            <span class="map-status-pill"><i class="fa-solid fa-circle-dot"></i> Live GPS Pins</span>
+          </div>
+          <div class="map-embed-frame">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d106198.80931215423!2d72.9576882772583!3d33.68442018898144!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfbf9df1964245%3A0x6a056a2977469a47!2sD.%20Watson%20Chemist%2C%20Super%20Market!5e0!3m2!1sen!2spk!4v1700000000000!5m2!1sen!2spk" 
+              width="100%" 
+              height="380" 
+              style="border:0; border-radius:12px;" 
+              allowfullscreen="" 
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade"
+              title="D. Watson Chemist Store Locations">
+            </iframe>
+          </div>
+        </div>
+
+        <!-- Dynamic Branch Cards Grid -->
+        <div class="branches-grid" id="branchesGrid">
+          <!-- Injected via JavaScript from js/data.js -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Comprehensive Footer -->
+  <footer class="footer">
+    <div class="container footer-top-grid">
+      <div class="footer-col footer-col-brand">
+        <img src="assets/images/logo.png" alt="D. Watson Chemist &amp; Superstore" class="footer-logo" onerror="this.onerror=null; this.src='assets/images/logo-emblem.png';">
+        <p class="footer-desc">
+          Pakistan's most trusted pharmacy &amp; departmental superstore since 1978. Serving millions of families across Islamabad, Rawalpindi, and nationwide with uncompromised medicine genuineness and 24/7 care.
+        </p>
+        <div class="social-links" id="footerSocial">
+          <a href="https://www.facebook.com/DWatsonChemist" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/dwatson_chemist/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://wa.me/923329716666" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading"><i class="fa-solid fa-link" style="color:var(--dw-red);"></i> Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="index.html"><i class="fa-solid fa-angle-right"></i> Home</a></li>
+          <li><a href="departments.html"><i class="fa-solid fa-angle-right"></i> 13 Departments</a></li>
+          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> ⭐ Flagship Branches</a></li>
+          <li><a href="journey.html"><i class="fa-solid fa-angle-right"></i> The Journey &amp; Board</a></li>
+          <li><a href="prescription.html"><i class="fa-solid fa-angle-right"></i> Upload Prescription</a></li>
+          <li><a href="contact.html"><i class="fa-solid fa-angle-right"></i> Contact &amp; Support</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading"><i class="fa-solid fa-store" style="color:var(--dw-red);"></i> Flagship Outlets</h4>
+        <ul class="footer-links">
+          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> F-6 Super Market (Flagship #1)</a></li>
+          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> Blue Area Flagship, Islamabad</a></li>
+          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> Saddar Flagship, Rawalpindi</a></li>
+          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> PWD Main Boulevard</a></li>
+          <li><a href="branches.html"><i class="fa-solid fa-angle-right"></i> Chandni Chowk, Rawalpindi</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading"><i class="fa-solid fa-phone-volume" style="color:var(--dw-red);"></i> 24/7 Helpline</h4>
+        <p style="font-size:0.88rem; color:#94A3B8; margin-bottom:12px;">Universal Ordering &amp; Pharmacist Dispensing Helpline:</p>
+        <p><a href="tel:0518438111" style="color:#FFFFFF; font-weight:800; font-size:1.15rem;"><i class="fa-solid fa-phone"></i> 051-8438111</a></p>
+        <p style="margin-top:6px;"><a href="tel:051111392876" style="color:#CBD5E1; font-size:0.92rem;"><i class="fa-solid fa-phone"></i> UAN: 051-111-392-876</a></p>
+        <p style="margin-top:8px;"><a href="https://wa.me/923329716666" target="_blank" style="color:#25D366; font-weight:700;"><i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666</a></p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p class="copyright">&copy; 1978 &ndash; 2026 D. Watson Chemist &amp; Superstore. All Rights Reserved.</p>
+        <div class="footer-badges">
+          <span class="badge-mini"><i class="fa-solid fa-shield-halved"></i> 100% Genuine Medicines</span>
+          <span class="badge-mini"><i class="fa-solid fa-clock"></i> 24/7 Dispensing</span>
+          <span class="badge-mini"><i class="fa-solid fa-snowflake"></i> Cold-Chain Storage</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Fixed Mobile Bottom Navigation Bar (Always Visible on Mobile) -->
+  <nav class="mobile-bottom-bar" aria-label="Mobile Navigation">
+    <a href="index.html" class="mobile-nav-tab" id="mobTabHome">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="departments.html" class="mobile-nav-tab" id="mobTabDepts">
+      <i class="fa-solid fa-table-cells-large"></i>
+      <span>Departments</span>
+    </a>
+    <a href="prescription.html" class="mobile-nav-tab highlight-rx" id="mobTabRx">
+      <div class="mobile-rx-icon-bubble">
+        <i class="fa-solid fa-camera"></i>
+      </div>
+      <span>Upload Rx</span>
+    </a>
+    <a href="branches.html" class="mobile-nav-tab active" id="mobTabBranches">
+      <i class="fa-solid fa-location-dot"></i>
+      <span>Branches</span>
+    </a>
+    <a href="https://wa.me/923329716666?text=Hi%20D.Watson%20Chemist,%20I%20need%20assistance." target="_blank" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa">
+      <i class="fa-brands fa-whatsapp"></i>
+      <span>WhatsApp</span>
+    </a>
+  </nav>
+
+  <!-- Global Instant Product Search Modal -->
+  <div class="global-search-modal" id="globalSearchModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="search-modal-backdrop" onclick="closeGlobalSearch()"></div>
+    <div class="search-modal-content">
+      <div class="search-modal-header">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass search-icon-inside"></i>
+          <input type="search" id="globalSearchInput" placeholder="Search medicines, skincare, brands (e.g. Panadol, CeraVe, Augmentin)..." autocomplete="off" spellcheck="false">
+          <button type="button" class="search-clear-btn" id="searchClearBtn" onclick="clearGlobalSearch()" aria-label="Clear search">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <button type="button" class="search-close-btn" onclick="closeGlobalSearch()" aria-label="Close search">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="search-results-wrap" id="searchResultsWrap">
+        <div class="search-quick-tags">
+          <span class="quick-tag-label">Popular Searches:</span>
+          <button type="button" class="search-tag-chip" onclick="searchByTag('Panadol')">Panadol</button>
+          <button type="button" class="search-tag-chip" onclick="searchByTag('CeraVe')">CeraVe</button>
+          <button type="button" class="search-tag-chip" onclick="searchByTag('Augmentin')">Augmentin</button>
+          <button type="button" class="search-tag-chip" onclick="searchByTag('Bioblas')">Bioblas</button>
+          <button type="button" class="search-tag-chip" onclick="searchByTag('The Ordinary')">The Ordinary</button>
+          <button type="button" class="search-tag-chip" onclick="searchByTag('Optics')">Optics</button>
+        </div>
+        <div class="search-results-list" id="searchResultsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js?v=6.0"></script>
+  <script src="js/main.js?v=6.0"></script>
+</body>
+</html>

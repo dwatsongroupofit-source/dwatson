@@ -352,17 +352,59 @@ function renderLeadership(management) {
 }
 
 /**
- * Render Department Showcase
+/**
+ * Render Department Showcase with Multi-Category Filtering & Mobile Drawers
  */
+let allDepartmentsData = [];
+let allDepartmentsWhatsApp = "923329716666";
+
+const DEPT_CATEGORY_MAP = {
+  pharmacy: "healthcare",
+  optics: "healthcare",
+  surgical: "healthcare",
+  hearing_aids: "healthcare",
+  homeopathy: "healthcare",
+  cosmetics: "beauty",
+  perfumes: "beauty",
+  color_cosmetics: "beauty",
+  baby_care: "motherbaby",
+  toys: "motherbaby",
+  superstore: "superstore",
+  crockery: "superstore",
+  garments: "superstore"
+};
+
 function renderDepartments(departments, defaultWhatsApp) {
   const container = document.getElementById("departmentsGrid");
   if (!container || !departments) return;
 
-  container.innerHTML = departments.map((dept) => {
-    const waUrl = `https://wa.me/${defaultWhatsApp}?text=${encodeURIComponent(dept.whatsappMsg || `Hi D.Watson, I am inquiring about ${dept.name}.`)}`;
+  allDepartmentsData = departments;
+  if (defaultWhatsApp) allDepartmentsWhatsApp = defaultWhatsApp;
+
+  renderDepartmentCards(allDepartmentsData);
+}
+
+function renderDepartmentCards(deptList) {
+  const container = document.getElementById("departmentsGrid");
+  if (!container) return;
+
+  if (!deptList || deptList.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: #FFFFFF; border-radius: 16px; border: 1px dashed #CBD5E1;">
+        <i class="fa-solid fa-boxes-stacked" style="font-size: 2.5rem; color: #94A3B8; margin-bottom: 12px;"></i>
+        <h4 style="font-size: 1.15rem; color: var(--dw-navy); margin-bottom: 6px;">No departments match your search</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Try searching for "medicine", "skincare", "optics", or "baby care".</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = deptList.map((dept) => {
+    const waUrl = `https://wa.me/${allDepartmentsWhatsApp}?text=${encodeURIComponent(dept.whatsappMsg || `Hi D.Watson, I am inquiring about ${dept.name}.`)}`;
+    const cat = DEPT_CATEGORY_MAP[dept.id] || "superstore";
     
     return `
-      <div class="department-card" id="dept-${dept.id}">
+      <div class="department-card" id="dept-${dept.id}" data-category="${cat}">
         <div class="dept-img-wrap">
           <img src="${encodeURI(dept.image)}" alt="${escapeHtml(dept.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
           <span class="dept-badge">${escapeHtml(dept.badge || "Featured")}</span>
@@ -375,7 +417,13 @@ function renderDepartments(departments, defaultWhatsApp) {
           <div class="dept-tagline">${escapeHtml(dept.tagline)}</div>
           <p class="dept-desc">${escapeHtml(dept.description)}</p>
           
-          <ul class="dept-features">
+          <!-- Mobile Expandable Specialties Drawer Toggle -->
+          <button type="button" class="dept-features-toggle" onclick="toggleDeptFeatures('${dept.id}', this)" aria-expanded="false">
+            <span><i class="fa-solid fa-list-check"></i> Key Specialties (${(dept.features || []).length})</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+
+          <ul class="dept-features" id="deptFeatures-${dept.id}">
             ${(dept.features || []).map(f => `
               <li><i class="fa-solid fa-circle-check"></i> ${escapeHtml(f)}</li>
             `).join("")}
@@ -385,7 +433,7 @@ function renderDepartments(departments, defaultWhatsApp) {
             <a href="${waUrl}" target="_blank" class="btn btn-whatsapp btn-sm">
               <i class="fa-brands fa-whatsapp"></i> Inquire on WhatsApp
             </a>
-            <a href="#branches" class="btn btn-outline btn-sm">
+            <a href="branches.html" class="btn btn-outline btn-sm">
               Branches <i class="fa-solid fa-location-dot"></i>
             </a>
           </div>
@@ -393,6 +441,51 @@ function renderDepartments(departments, defaultWhatsApp) {
       </div>
     `;
   }).join("");
+}
+
+function filterDepartments(categoryKey, clickedBtn) {
+  if (clickedBtn) {
+    const filterBar = clickedBtn.closest(".dept-filter-bar");
+    if (filterBar) {
+      filterBar.querySelectorAll(".dept-pill-btn").forEach(b => b.classList.remove("active"));
+      clickedBtn.classList.add("active");
+    }
+  }
+
+  if (categoryKey === "all") {
+    renderDepartmentCards(allDepartmentsData);
+  } else {
+    const filtered = allDepartmentsData.filter(d => DEPT_CATEGORY_MAP[d.id] === categoryKey);
+    renderDepartmentCards(filtered);
+  }
+}
+
+function filterDepartmentsSearch(query) {
+  const q = (query || "").trim().toLowerCase();
+  if (!q) {
+    renderDepartmentCards(allDepartmentsData);
+    return;
+  }
+
+  const filtered = allDepartmentsData.filter(d => {
+    const nameMatch = (d.name || "").toLowerCase().includes(q);
+    const tagMatch = (d.tagline || "").toLowerCase().includes(q);
+    const descMatch = (d.description || "").toLowerCase().includes(q);
+    const featMatch = (d.features || []).some(f => f.toLowerCase().includes(q));
+    return nameMatch || tagMatch || descMatch || featMatch;
+  });
+
+  renderDepartmentCards(filtered);
+}
+
+function toggleDeptFeatures(deptId, btn) {
+  const featEl = document.getElementById(`deptFeatures-${deptId}`);
+  if (!featEl) return;
+  const isOpen = featEl.classList.toggle("open");
+  if (btn) {
+    btn.classList.toggle("open", isOpen);
+    btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  }
 }
 
 /**
@@ -2383,4 +2476,166 @@ function initPWAInstall() {
     if (banner) banner.style.display = "none";
     deferredPwaPrompt = null;
   });
+}
+
+/**
+ * ==========================================================================
+ * PWA Native App Launch Splash Screen Controller
+ * ==========================================================================
+ */
+function initAppSplashScreen() {
+  const splash = document.getElementById("pwaAppSplash");
+  if (!splash) return;
+
+  const hideSplash = () => {
+    if (splash.classList.contains("splash-hidden")) return;
+    splash.classList.add("splash-hidden");
+    setTimeout(() => {
+      splash.style.display = "none";
+    }, 450);
+  };
+
+  // Auto hide after 950ms or when page fully settles
+  setTimeout(hideSplash, 950);
+  window.addEventListener("load", hideSplash, { once: true });
+}
+
+// Call on early DOM load
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initAppSplashScreen);
+} else {
+  initAppSplashScreen();
+}
+
+/**
+ * ==========================================================================
+ * Subpage Helpers (Prescription, Branches, Contact)
+ * ==========================================================================
+ */
+let rxSelectedFile = null;
+let rxFulfillmentMode = "delivery";
+
+function setFulfillmentMode(mode) {
+  rxFulfillmentMode = mode;
+  const btnHome = document.getElementById("btnHomeDelivery");
+  const btnPickup = document.getElementById("btnStorePickup");
+  const addrGroup = document.getElementById("rxAddressGroup");
+  const branchGroup = document.getElementById("rxBranchGroup");
+
+  if (mode === "delivery") {
+    if (btnHome) btnHome.classList.add("active");
+    if (btnPickup) btnPickup.classList.remove("active");
+    if (addrGroup) addrGroup.style.display = "block";
+    if (branchGroup) branchGroup.style.display = "none";
+  } else {
+    if (btnPickup) btnPickup.classList.add("active");
+    if (btnHome) btnHome.classList.remove("active");
+    if (addrGroup) addrGroup.style.display = "none";
+    if (branchGroup) branchGroup.style.display = "block";
+  }
+}
+
+function handleRxFileSelect(input) {
+  if (!input || !input.files || !input.files[0]) return;
+  const file = input.files[0];
+  rxSelectedFile = file;
+
+  const previewWrap = document.getElementById("rxDropPreview");
+  const defaultWrap = document.getElementById("rxDropDefault");
+  const previewImg = document.getElementById("rxPreviewImg");
+  const fileNameEl = document.getElementById("rxFileName");
+
+  if (fileNameEl) fileNameEl.textContent = file.name;
+
+  if (file.type.startsWith("image/")) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (previewImg) previewImg.src = e.target.result;
+      if (previewWrap) previewWrap.style.display = "flex";
+      if (defaultWrap) defaultWrap.style.display = "none";
+    };
+    reader.readAsDataURL(file);
+  } else {
+    if (previewImg) previewImg.src = "assets/images/logo-emblem.png";
+    if (previewWrap) previewWrap.style.display = "flex";
+    if (defaultWrap) defaultWrap.style.display = "none";
+  }
+}
+
+function removeRxFile(event) {
+  if (event) event.stopPropagation();
+  rxSelectedFile = null;
+  const input = document.getElementById("rxFileInput");
+  if (input) input.value = "";
+  const previewWrap = document.getElementById("rxDropPreview");
+  const defaultWrap = document.getElementById("rxDropDefault");
+  if (previewWrap) previewWrap.style.display = "none";
+  if (defaultWrap) defaultWrap.style.display = "block";
+}
+
+function dispatchRxWhatsApp() {
+  const name = (document.getElementById("rxPatientName")?.value || "").trim() || "Valued Patient";
+  const phone = (document.getElementById("rxPatientPhone")?.value || "").trim();
+  const address = (document.getElementById("rxPatientAddress")?.value || "").trim();
+  const branch = document.getElementById("rxPickupBranch")?.value || "F-6 Super Market";
+  const notes = (document.getElementById("rxNotes")?.value || "").trim();
+  const refId = "DW-RX-" + Math.floor(100000 + Math.random() * 900000);
+
+  let msg = `🏥 *D. WATSON PRESCRIPTION DISPATCH*\n`;
+  msg += `📋 *Ref:* ${refId}\n`;
+  msg += `👤 *Patient:* ${name}\n`;
+  if (phone) msg += `📞 *Contact:* ${phone}\n`;
+  msg += `🚚 *Fulfillment:* ${rxFulfillmentMode === "delivery" ? "Express Home Delivery" : "Store Pickup (" + branch + ")"}\n`;
+  if (rxFulfillmentMode === "delivery" && address) {
+    msg += `📍 *Delivery Address:* ${address}\n`;
+  }
+  if (notes) {
+    msg += `📝 *Notes:* ${notes}\n`;
+  }
+  msg += `\n📸 _Attaching prescription photo now for verification._`;
+
+  const waUrl = `https://wa.me/923329716666?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl, "_blank");
+}
+
+function handlePrescriptionSubmit(e) {
+  e.preventDefault();
+  alert("Prescription received! A registered pharmacist is reviewing your details and will call / WhatsApp you within 5 minutes.");
+  dispatchRxWhatsApp();
+}
+
+function handleContactSubmit(e) {
+  e.preventDefault();
+  const name = document.getElementById("contactName")?.value || "Customer";
+  const phone = document.getElementById("contactPhone")?.value || "";
+  const subject = document.getElementById("contactSubject")?.value || "General Inquiry";
+  const message = document.getElementById("contactMessage")?.value || "";
+
+  let waMsg = `💬 *D. WATSON CUSTOMER INQUIRY*\n`;
+  waMsg += `👤 *From:* ${name} (${phone})\n`;
+  waMsg += `📌 *Topic:* ${subject}\n`;
+  waMsg += `📝 *Message:* ${message}\n`;
+
+  const waUrl = `https://wa.me/923329716666?text=${encodeURIComponent(waMsg)}`;
+  window.open(waUrl, "_blank");
+}
+
+function filterBranchesSearch(query) {
+  const q = (query || "").trim().toLowerCase();
+  const container = document.getElementById("branchesGrid");
+  if (!container || !allBranchesData) return;
+
+  if (!q) {
+    renderBranchCards(allBranchesData);
+    return;
+  }
+
+  const filtered = allBranchesData.filter(b => {
+    const nameMatch = (b.name || "").toLowerCase().includes(q);
+    const addrMatch = (b.address || "").toLowerCase().includes(q);
+    const cityMatch = (b.city || "").toLowerCase().includes(q);
+    return nameMatch || addrMatch || cityMatch;
+  });
+
+  renderBranchCards(filtered);
 }

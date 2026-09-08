@@ -70,6 +70,22 @@
 </head>
 <body>
 
+  <!-- PWA Native App Launch Splash Screen -->
+  <div class="pwa-app-splash" id="pwaAppSplash" aria-hidden="true">
+    <div class="splash-inner">
+      <div class="splash-emblem-wrap">
+        <div class="splash-emblem-halo"></div>
+        <img src="assets/images/pwa-icon-192.png" alt="D. Watson Emblem" class="splash-logo-img">
+      </div>
+      <div class="splash-brand-title">D. WATSON</div>
+      <div class="splash-brand-subtitle">CHEMIST &amp; SUPERSTORE</div>
+      <div class="splash-tagline">Since 1978 • 100% Genuine Healthcare</div>
+      <div class="splash-loader-bar">
+        <div class="splash-loader-progress"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Sticky Header Wrapper (top bar + navbar stay visible on scroll) -->
   <div class="sticky-header-wrap">
 
@@ -98,16 +114,12 @@
 
           <!-- Desktop Navigation Links -->
           <ul class="nav-menu" id="navMenu">
-            <li><a href="index.html#home" class="nav-link">Home</a></li>
-            <li><a href="journey.html" class="nav-link active">The Journey</a></li>
-            <li><a href="index.html#about" class="nav-link">Our Heritage</a></li>
-            <li><a href="index.html#leadership" class="nav-link">Leadership</a></li>
-            <li><a href="index.html#departments" class="nav-link">Departments</a></li>
-            <li><a href="index.html#products" class="nav-link">Products</a></li>
-            <li><a href="index.html#branches" class="nav-link">Branches (24+)</a></li>
-            <li><a href="index.html#gallery" class="nav-link">Gallery</a></li>
-            <li><a href="index.html#contact" class="nav-link">Customer Care</a></li>
-            <li><a href="index.html#faq" class="nav-link">FAQs</a></li>
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="departments.html" class="nav-link">13 Departments</a></li>
+            <li><a href="branches.html" class="nav-link">⭐ Flagship Branches</a></li>
+            <li><a href="journey.html" class="nav-link active">The Journey &amp; Board</a></li>
+            <li><a href="prescription.html" class="nav-link">Prescription</a></li>
+            <li><a href="contact.html" class="nav-link">Contact</a></li>
           </ul>
 
           <!-- Right Action Button -->
@@ -327,6 +339,125 @@
       </div>
     </section>
 
+    <!-- ================= BOARD OF DIRECTORS & EXECUTIVE MANAGEMENT ================= -->
+    <section class="leadership-section" id="leadership" style="padding: 80px 0; background: #FFFFFF;">
+      <div class="container">
+        <div class="section-header" style="text-align: center; margin-bottom: 48px;">
+          <span class="section-tag blue-tag"><i class="fa-solid fa-users-gear"></i> Executive Leadership</span>
+          <h2 class="section-title">Board of <span class="highlight-red">Directors</span> &amp; <span class="highlight-blue">Management</span></h2>
+          <p class="section-subtitle" style="margin: 0 auto; max-width: 720px;">
+            Guided by visionary leadership with five decades of uncompromised dedication to genuine pharmaceuticals, healthcare innovation, and community trust across Pakistan.
+          </p>
+        </div>
+
+        <!-- Dynamic Leadership Grid (populated by main.js or rich fallback) -->
+        <div class="leadership-grid" id="leadershipGrid">
+          <!-- Chairman -->
+          <div class="leader-card leader-chairman-card" data-id="1">
+            <div class="leader-card-inner">
+              <div class="leader-avatar-wrap">
+                <div class="avatar-ring-glow"></div>
+                <img src="assets/images/management/zafar-bakhtawari.png" alt="Mr Zafar Bakhtawari" class="leader-avatar" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/management/zafar-bakhtawari.jpg';">
+                <div class="leader-icon-badge" title="CHAIRMAN"><i class="fa-solid fa-crown"></i></div>
+              </div>
+              <div class="leader-info">
+                <div class="leader-header-row"><span class="leader-badge-pill">Founding Chairman</span></div>
+                <h3 class="leader-name">Mr Zafar Bakhtawari</h3>
+                <div class="leader-role-wrap"><span class="leader-role">CHAIRMAN</span><div class="leader-role-divider"></div></div>
+                <div class="leader-org"><i class="fa-solid fa-building-shield"></i> D. Watson Group of Pharmacies</div>
+                <p class="leader-bio">Visionary founder of D. Watson and Former President of ICCI (Islamabad Chamber of Commerce &amp; Industry). Established the healthcare legacy in 1978 built on 100% authentic medicine dispensing and community trust.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Co-Chairman -->
+          <div class="leader-card leader-cochairman-card" data-id="2">
+            <div class="leader-card-inner">
+              <div class="leader-avatar-wrap">
+                <div class="avatar-ring-glow"></div>
+                <img src="assets/images/management/zahid-bakhtawari.png" alt="Mr Zahid Bakhtawari" class="leader-avatar" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/management/zahid-bakhtawari.jpg';">
+                <div class="leader-icon-badge" title="CO-CHAIRMAN"><i class="fa-solid fa-star"></i></div>
+              </div>
+              <div class="leader-info">
+                <div class="leader-header-row"><span class="leader-badge-pill">Founding Co-Chairman</span></div>
+                <h3 class="leader-name">Mr Zahid Bakhtawari</h3>
+                <div class="leader-role-wrap"><span class="leader-role">CO-CHAIRMAN</span><div class="leader-role-divider"></div></div>
+                <div class="leader-org"><i class="fa-solid fa-building-shield"></i> D. Watson Group of Pharmacies</div>
+                <p class="leader-bio">Co-Founder and strategic pillar of D. Watson. Pioneered the network's commercial governance, institutional partnerships, and regional growth across Pakistan.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- CEO -->
+          <div class="leader-card leader-ceo-card" data-id="3">
+            <div class="leader-card-inner">
+              <div class="leader-avatar-wrap">
+                <div class="avatar-ring-glow"></div>
+                <img src="assets/images/management/abid-bakhtawari.png" alt="Mr Abid Bakhtawari" class="leader-avatar" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/management/abid-bakhtawari.jpg';">
+                <div class="leader-icon-badge" title="CEO"><i class="fa-solid fa-user-tie"></i></div>
+              </div>
+              <div class="leader-info">
+                <div class="leader-header-row"><span class="leader-badge-pill">Chief Executive Officer</span></div>
+                <h3 class="leader-name">Mr Abid Bakhtawari</h3>
+                <div class="leader-role-wrap"><span class="leader-role">CEO</span><div class="leader-role-divider"></div></div>
+                <div class="leader-org"><i class="fa-solid fa-building-shield"></i> D. Watson Group of Pharmacies</div>
+                <p class="leader-bio">Co-Founder and Chief Executive Officer. Architect of D. Watson's stringent cold-chain pharmaceutical standards, hospital supplies, and continuous retail modernization.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Director Haris Bakhtawari -->
+          <div class="leader-card leader-director-card" data-id="4">
+            <div class="leader-card-inner">
+              <div class="leader-avatar-wrap">
+                <div class="avatar-ring-glow"></div>
+                <img src="assets/images/management/haris-bakhtawari.png" alt="Mr Haris Bakhtawari" class="leader-avatar" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/management/haris-bakhtawari.jpg';">
+                <div class="leader-icon-badge" title="DIRECTOR"><i class="fa-solid fa-chart-line"></i></div>
+              </div>
+              <div class="leader-info">
+                <div class="leader-header-row"><span class="leader-badge-pill">Executive Director</span></div>
+                <h3 class="leader-name">Mr Haris Bakhtawari</h3>
+                <div class="leader-role-wrap"><span class="leader-role">DIRECTOR</span><div class="leader-role-divider"></div></div>
+                <div class="leader-org"><i class="fa-solid fa-building-shield"></i> D. Watson Group of Pharmacies</div>
+                <p class="leader-bio">Leading modern retail operations, digital healthcare services, luxury cosmetics sourcing, and customer experience innovation across the 25+ branch ecosystem.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Director Salman Bakhtawari -->
+          <div class="leader-card leader-director-card" data-id="5">
+            <div class="leader-card-inner">
+              <div class="leader-avatar-wrap">
+                <div class="avatar-ring-glow"></div>
+                <img src="assets/images/management/salman-bakhtawari.png" alt="Mr Salman Bakhtawari" class="leader-avatar" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/management/salman-bakhtawari.jpg';">
+                <div class="leader-icon-badge" title="DIRECTOR"><i class="fa-solid fa-briefcase"></i></div>
+              </div>
+              <div class="leader-info">
+                <div class="leader-header-row"><span class="leader-badge-pill">Executive Director</span></div>
+                <h3 class="leader-name">Mr Salman Bakhtawari</h3>
+                <div class="leader-role-wrap"><span class="leader-role">DIRECTOR</span><div class="leader-role-divider"></div></div>
+                <div class="leader-org"><i class="fa-solid fa-building-shield"></i> D. Watson Group of Pharmacies</div>
+                <p class="leader-bio">Spearheading supply chain logistics, state-of-the-art superstore merchandising, optics clinics, and regional expansion initiatives for D. Watson.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leadership Motto Banner -->
+        <div class="leadership-motto-card" style="margin-top: 40px;">
+          <div class="motto-icon-wrap"><i class="fa-solid fa-quote-left"></i></div>
+          <div class="motto-content">
+            <p class="motto-quote">"Our mission is rooted in genuine service, uncompromised medicine authenticity, and restoring wellness for every Pakistani family across generations."</p>
+            <div class="motto-signature">
+              <strong>D. Watson Group of Pharmacies</strong>
+              <span>Executive Governance &bull; Serving Pakistan Since 1978</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- ================= CORE TRUST PILLARS ================= -->
     <section style="padding: 80px 0; background: var(--bg-page);">
       <div class="container">
@@ -512,27 +643,23 @@
     </a>
   </div>
 
-  <!-- Mobile Bottom Quick Actions Bar (Shown on Mobile Screens <= 768px) -->
+  <!-- Fixed Mobile Bottom Navigation Bar (Always Visible on Mobile) -->
   <nav class="mobile-bottom-bar" aria-label="Mobile Navigation">
-    <a href="index.html#home" class="mobile-nav-tab" id="mobTabHome">
+    <a href="index.html" class="mobile-nav-tab" id="mobTabHome">
       <i class="fa-solid fa-house"></i>
       <span>Home</span>
     </a>
-    <a href="journey.html" class="mobile-nav-tab active">
-      <i class="fa-solid fa-award"></i>
-      <span>Journey</span>
+    <a href="departments.html" class="mobile-nav-tab" id="mobTabDepts">
+      <i class="fa-solid fa-table-cells-large"></i>
+      <span>Departments</span>
     </a>
-    <a href="tel:051111392876" class="mobile-nav-tab" id="mobTabCall">
-      <i class="fa-solid fa-phone"></i>
-      <span>Call 24/7</span>
-    </a>
-    <a href="index.html#prescription-box" class="mobile-nav-tab highlight-rx" id="mobTabRx">
+    <a href="prescription.html" class="mobile-nav-tab highlight-rx" id="mobTabRx">
       <div class="mobile-rx-icon-bubble">
         <i class="fa-solid fa-camera"></i>
       </div>
       <span>Upload Rx</span>
     </a>
-    <a href="index.html#branches" class="mobile-nav-tab" id="mobTabBranches">
+    <a href="branches.html" class="mobile-nav-tab" id="mobTabBranches">
       <i class="fa-solid fa-location-dot"></i>
       <span>Branches</span>
     </a>
