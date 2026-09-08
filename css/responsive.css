@@ -206,6 +206,25 @@ section, header, footer, nav, main, .container {
     opacity: 1 !important;
   }
 
+  /* Flagship Call Modal Mobile Elevation & Scroll Clearance */
+  .flagship-call-modal {
+    z-index: 2000000 !important;
+  }
+
+  .flagship-call-sheet {
+    max-height: 88vh !important;
+    padding-bottom: env(safe-area-inset-bottom, 16px) !important;
+  }
+
+  .flagship-call-list {
+    padding: 16px 18px calc(90px + env(safe-area-inset-bottom, 20px)) !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .flagship-call-card:last-child {
+    margin-bottom: 24px !important;
+  }
+
   /* Universal Mobile App Header (All Pages) */
   .mobile-app-header {
     display: flex !important;
