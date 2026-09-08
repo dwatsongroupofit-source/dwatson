@@ -1371,8 +1371,10 @@ function renderFooter(company, branches) {
 
   const footerBranchList = document.getElementById("footerBranchList");
   if (footerBranchList && branches) {
+    const isJourneyPage = window.location.pathname.includes("journey");
+    const branchPrefix = isJourneyPage ? "index.html#branches" : "#branches";
     footerBranchList.innerHTML = branches.slice(0, 6).map(b => `
-      <li><a href="#branches"><i class="fa-solid fa-angle-right"></i> ${escapeHtml(b.name)}</a></li>
+      <li><a href="${branchPrefix}"><i class="fa-solid fa-angle-right"></i> ${escapeHtml(b.name)}</a></li>
     `).join("");
   }
 }

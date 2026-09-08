@@ -2605,9 +2605,11 @@ textarea.form-control {
   margin-bottom: 60px;
 }
 
-.footer-brand img, .footer-emblem-logo {
+.footer-brand img, .footer-emblem-logo, .footer-logo {
   height: 56px;
   width: 56px;
+  max-width: 56px;
+  max-height: 56px;
   object-fit: contain;
   border-radius: 14px;
   background: #FFFFFF;

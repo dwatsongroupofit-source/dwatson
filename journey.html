@@ -39,8 +39,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=5.7">
-  <link rel="stylesheet" href="css/responsive.css?v=5.7">
+  <link rel="stylesheet" href="css/style.css?v=5.8">
+  <link rel="stylesheet" href="css/responsive.css?v=5.8">
 
   <!-- Structured Data: Organization & Breadcrumb -->
   <script type="application/ld+json">
@@ -396,21 +396,15 @@
     </section>
   </main>
 
-  <!-- ================= FOOTER ================= -->
+  <!-- ================= FOOTER SECTION ================= -->
   <footer class="site-footer">
     <div class="container">
-      <div class="footer-grid">
-        <!-- Col 1: Brand & Bio -->
-        <div class="footer-card-box footer-brand-col">
-          <div class="footer-brand-header">
-            <img src="assets/images/logo-emblem.png" alt="D. Watson Emblem" class="footer-logo">
-            <div>
-              <span class="footer-brand-title">D. WATSON</span>
-              <span class="footer-brand-subtitle">CHEMIST &amp; SUPERSTORE</span>
-            </div>
-          </div>
-          <p class="footer-brand-desc">
-            Pakistan's gold standard in genuine pharmaceuticals, international cosmetics, optical precision, and premium departmental superstores since 1978. Five decades of uncompromised healthcare trust.
+      <div class="footer-top-grid">
+        <!-- Col 1: Brand Profile -->
+        <div class="footer-brand">
+          <img src="assets/images/logo-emblem.png" alt="D. Watson Chemist &amp; Superstore" class="footer-emblem-logo">
+          <p class="footer-tagline" id="footerAboutText">
+            Pakistan's premier trusted retail pharmacy and superstore chain since 1978. Offering genuine pharmaceuticals, international cosmetics, optics, surgical supplies, and gourmet groceries.
           </p>
           <div class="footer-social-links">
             <a href="https://www.facebook.com/DWatsonChemist/" target="_blank" class="footer-social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
@@ -440,12 +434,12 @@
         <div class="footer-card-box">
           <h4 class="footer-heading"><i class="fa-solid fa-store" style="color:var(--dw-red);"></i> Flagship Branches</h4>
           <ul class="footer-links" id="footerBranchList">
-            <li><a href="index.html#branches"><i class="fa-solid fa-location-dot"></i> F-6 Super Market, Islamabad</a></li>
-            <li><a href="index.html#branches"><i class="fa-solid fa-location-dot"></i> Blue Area Flagship, Islamabad</a></li>
-            <li><a href="index.html#branches"><i class="fa-solid fa-location-dot"></i> F-10 Markaz Mega Store, Islamabad</a></li>
-            <li><a href="index.html#branches"><i class="fa-solid fa-location-dot"></i> G-9 Markaz Karachi Company</a></li>
-            <li><a href="index.html#branches"><i class="fa-solid fa-location-dot"></i> Saddar Flagship, Rawalpindi</a></li>
-            <li><a href="index.html#branches"><i class="fa-solid fa-location-dot"></i> Bahria Town Phase 4 &amp; 7</a></li>
+            <li><a href="index.html#branches"><i class="fa-solid fa-angle-right"></i> F-6 Super Market, Islamabad</a></li>
+            <li><a href="index.html#branches"><i class="fa-solid fa-angle-right"></i> Blue Area Flagship, Islamabad</a></li>
+            <li><a href="index.html#branches"><i class="fa-solid fa-angle-right"></i> F-10 Markaz Mega Store, Islamabad</a></li>
+            <li><a href="index.html#branches"><i class="fa-solid fa-angle-right"></i> G-9 Markaz Karachi Company</a></li>
+            <li><a href="index.html#branches"><i class="fa-solid fa-angle-right"></i> Saddar Flagship, Rawalpindi</a></li>
+            <li><a href="index.html#branches"><i class="fa-solid fa-angle-right"></i> Bahria Town Phase 4 &amp; 7</a></li>
           </ul>
         </div>
 
@@ -455,66 +449,89 @@
           <a href="tel:0518438111" class="footer-contact-item" style="text-decoration:none;">
             <i class="fa-solid fa-phone"></i>
             <div>
-              <span class="contact-lbl">Central UAN Helpline</span>
-              <strong class="contact-val">051-8438111</strong>
+              <strong style="color:white; display:block;">Universal Helpline</strong>
+              <span id="footerHelpline" style="color:#60A5FA; font-weight:700;">051-8438111</span>
             </div>
           </a>
-          <a href="https://wa.me/923329716666" target="_blank" class="footer-contact-item" style="text-decoration:none;">
-            <i class="fa-brands fa-whatsapp"></i>
+          <a href="mailto:dwatsonconsultation@gmail.com" class="footer-contact-item" style="text-decoration:none;">
+            <i class="fa-solid fa-envelope"></i>
             <div>
-              <span class="contact-lbl">WhatsApp Express Order</span>
-              <strong class="contact-val">0332-9716666</strong>
+              <strong style="color:white; display:block;">Customer Care Email</strong>
+              <span id="footerEmail">dwatsonconsultation@gmail.com</span>
             </div>
           </a>
           <div class="footer-contact-item">
-            <i class="fa-solid fa-clock"></i>
+            <i class="fa-solid fa-location-dot"></i>
             <div>
-              <span class="contact-lbl">Emergency Dispensing</span>
-              <strong class="contact-val">Open 24/7 / 365 Days</strong>
+              <strong style="color:white; display:block;">Head Office (Super Market Branch)</strong>
+              <span id="footerAddress">School Road, Super Market, F-6 Markaz, Islamabad</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Copyright Bar -->
+      <!-- Footer Bottom -->
       <div class="footer-bottom">
-        <p class="copyright-text">
-          &copy; 1978–2026 D. Watson Chemist &amp; Superstore. All Rights Reserved. Powered by Authentic Healthcare Excellence.
-        </p>
-        <div class="footer-legal-links">
+        <div class="footer-copyright">
+          &copy; 1978 &ndash; 2026 <a href="https://bas.dwatson.online" target="_blank" class="footer-copyright-link"><strong>D. Watson Chemist &amp; Superstore</strong></a>. All Rights Reserved.
+        </div>
+        <div class="footer-bottom-links">
           <a href="index.html#about">Privacy Policy</a>
-          <span>•</span>
+          <span style="color:#475569;">•</span>
           <a href="index.html#about">Terms of Service</a>
-          <span>•</span>
-          <a href="index.html#branches">Store Locator</a>
+          <span style="color:#475569;">•</span>
+          <a href="admin.html" class="admin-portal-badge"><i class="fa-solid fa-lock"></i> Admin Portal</a>
         </div>
       </div>
     </div>
   </footer>
 
-  <!-- Mobile Bottom Quick Actions Bar -->
-  <div class="mobile-bottom-bar" id="mobileBottomBar">
-    <a href="index.html" class="mob-bar-item">
+  <!-- Floating Quick WhatsApp Widget -->
+  <div class="floating-widget-wrapper">
+    <div class="floating-popup" id="floatingPopup">
+      <div class="floating-popup-header">
+        <i class="fa-brands fa-whatsapp" style="color:#25D366; font-size:1.3rem;"></i>
+        <span>D. Watson Pharmacy Desk</span>
+      </div>
+      <p class="floating-popup-text">Have a prescription or medicine inquiry? Chat with our pharmacist live on WhatsApp (0332-9716666).</p>
+      <a href="https://wa.me/923329716666?text=Hello%20D.Watson,%20I%20need%20assistance." target="_blank" class="btn btn-whatsapp btn-sm" style="width:100%;">
+        Start WhatsApp Chat
+      </a>
+    </div>
+    <a href="#" id="floatingWaBtn" target="_blank" class="floating-btn-main" aria-label="Chat on WhatsApp">
+      <i class="fa-brands fa-whatsapp"></i>
+    </a>
+  </div>
+
+  <!-- Mobile Bottom Quick Actions Bar (Shown on Mobile Screens <= 768px) -->
+  <nav class="mobile-bottom-bar" aria-label="Mobile Navigation">
+    <a href="index.html#home" class="mobile-nav-tab" id="mobTabHome">
       <i class="fa-solid fa-house"></i>
       <span>Home</span>
     </a>
-    <a href="journey.html" class="mob-bar-item active">
+    <a href="journey.html" class="mobile-nav-tab active">
       <i class="fa-solid fa-award"></i>
       <span>Journey</span>
     </a>
-    <a href="index.html#branches" class="mob-bar-item">
-      <i class="fa-solid fa-map-location-dot"></i>
+    <a href="tel:051111392876" class="mobile-nav-tab" id="mobTabCall">
+      <i class="fa-solid fa-phone"></i>
+      <span>Call 24/7</span>
+    </a>
+    <a href="index.html#prescription-box" class="mobile-nav-tab highlight-rx" id="mobTabRx">
+      <div class="mobile-rx-icon-bubble">
+        <i class="fa-solid fa-camera"></i>
+      </div>
+      <span>Upload Rx</span>
+    </a>
+    <a href="index.html#branches" class="mobile-nav-tab" id="mobTabBranches">
+      <i class="fa-solid fa-location-dot"></i>
       <span>Branches</span>
     </a>
-    <a href="https://wa.me/923329716666" target="_blank" class="mob-bar-item highlight-wa">
+    <a href="https://wa.me/923329716666?text=Hi%20D.Watson%20Chemist,%20I%20need%20assistance." target="_blank" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa">
       <i class="fa-brands fa-whatsapp"></i>
       <span>WhatsApp</span>
     </a>
-    <a href="tel:0518438111" class="mob-bar-item highlight-call">
-      <i class="fa-solid fa-phone"></i>
-      <span>Call</span>
-    </a>
-  </div>
+  </nav>
 
   <!-- Scripts -->
   <script src="js/config.js?v=1.1"></script>
