@@ -76,6 +76,7 @@ const finalAdminHtml = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
   <title>D. Watson Portal Studio | Zero-Code Content &amp; Security Management</title>
   <meta name="robots" content="noindex, nofollow">
 
@@ -88,14 +89,18 @@ const finalAdminHtml = `<!DOCTYPE html>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="assets/images/favicon.png">
-  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
 
-  <!-- Stylesheets (v5.2) -->
-  <link rel="stylesheet" href="css/style.css?v=5.2">
-  <link rel="stylesheet" href="css/admin.css?v=5.2">
+  <!-- Stylesheets (v5.6) -->
+  <link rel="stylesheet" href="/css/style.css?v=5.6">
+  <link rel="stylesheet" href="/css/admin.css?v=5.6">
 
   <style>
+    /* Preserve seamless flexbox layout */
+    #adminStudioMount {
+      display: contents;
+    }
     /* AES Decryptor Specific Styles */
     .decrypt-spinner {
       display: inline-block;
@@ -272,11 +277,11 @@ const finalAdminHtml = `<!DOCTYPE html>
       async function mountStudio(decryptedHtml) {
         mountEl.innerHTML = decryptedHtml;
 
-        // Load dependencies in exact sequence
+        // Load dependencies in exact sequence from root
         try {
-          if (!window.DW_CONFIG) await loadScript("js/config.js?v=1.1");
-          if (!window.getSiteData) await loadScript("js/data.js?v=5.5");
-          await loadScript("js/admin.js?v=5.5");
+          if (!window.DW_CONFIG) await loadScript("/js/config.js?v=1.1");
+          if (!window.getSiteData) await loadScript("/js/data.js?v=5.6");
+          await loadScript("/js/admin.js?v=5.6");
         } catch (err) {
           console.error("Error loading studio dependencies:", err);
         }

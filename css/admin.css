@@ -26,6 +26,10 @@ body.admin-body {
   padding: 0;
 }
 
+#adminStudioMount {
+  display: contents;
+}
+
 /* ==========================================================================
    AUTHENTICATION / LOGIN SCREEN OVERLAY
    ========================================================================== */
