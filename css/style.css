@@ -6966,72 +6966,131 @@ textarea.form-control {
 }
 
 .home-flagship-item {
-  background: #F8FAFC;
+  background: #FFFFFF;
   border: 1px solid #E2E8F0;
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 18px;
+  overflow: hidden;
   display: flex;
-  gap: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .home-flagship-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+  border-color: #CBD5E1;
 }
 
 .home-flagship-thumb {
-  width: 130px;
-  height: 120px;
-  border-radius: 12px;
+  width: 170px;
+  position: relative;
   overflow: hidden;
   flex-shrink: 0;
-  position: relative;
+  background: #F1F5F9;
 }
 
 .home-flagship-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.35s ease;
+  display: block;
+}
+
+.home-flagship-item:hover .home-flagship-thumb img {
+  transform: scale(1.06);
+}
+
+.mockup-flagship-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(15, 23, 42, 0.88);
+  color: #F59E0B;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 4px 9px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.home-flagship-live-status {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(15, 23, 42, 0.88);
+  color: #22C55E;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .home-flagship-detail {
   flex: 1;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.home-flagship-detail h4 {
-  font-size: 1.05rem;
+.home-flagship-city-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #DC2626;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.home-flagship-name {
+  font-size: 1.08rem;
   font-weight: 800;
   color: var(--dw-navy);
-  margin: 4px 0;
+  margin: 0 0 6px;
   line-height: 1.3;
 }
 
-.home-flagship-detail p {
+.home-flagship-addr {
   font-size: 0.82rem;
   color: #64748B;
-  line-height: 1.35;
-  margin-bottom: 8px;
+  line-height: 1.4;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .home-flagship-btn-group {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  flex-wrap: wrap;
 }
 
 .home-flagship-btn-group a {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   font-size: 0.78rem;
   font-weight: 700;
-  padding: 6px 12px;
+  padding: 8px 4px;
   border-radius: 8px;
   text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-flagship-call {

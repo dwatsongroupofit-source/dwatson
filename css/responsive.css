@@ -2016,22 +2016,124 @@ section, header, footer, nav, main, .container {
     font-size: 0.85rem !important;
   }
 
-  /* Flagship Outlets on Mobile */
+  /* Flagship Outlets on Mobile: Modern Card Layout */
+  .mockup-flagship-section .container {
+    padding: 0 16px !important;
+  }
+
+  .mockup-filter-chips {
+    gap: 8px !important;
+    padding-bottom: 10px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .mockup-chip {
+    padding: 7px 14px !important;
+    font-size: 0.78rem !important;
+    border-radius: 999px !important;
+  }
+
   .mockup-flagship-card {
-    padding: 14px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
   }
 
-  .mockup-flagship-img-wrap {
-    height: 130px !important;
+  .home-flagship-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    margin-bottom: 16px !important;
   }
 
-  .mockup-flagship-actions {
-    flex-direction: row !important;
+  .home-flagship-item {
+    flex-direction: column !important;
+    background: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
   }
 
-  .btn-flagship-call, .btn-flagship-dir {
-    flex: 1 !important;
+  .home-flagship-thumb {
+    width: 100% !important;
+    height: 170px !important;
+    border-radius: 0 !important;
+    background: #F1F5F9 !important;
+  }
+
+  .home-flagship-thumb img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  .mockup-flagship-badge {
+    top: 12px !important;
+    left: 12px !important;
+    font-size: 0.72rem !important;
+    padding: 5px 10px !important;
+    border-radius: 8px !important;
+  }
+
+  .home-flagship-live-status {
+    top: 12px !important;
+    right: 12px !important;
+    font-size: 0.72rem !important;
+    padding: 5px 10px !important;
+    border-radius: 8px !important;
+  }
+
+  .home-flagship-detail {
+    padding: 16px 18px 18px !important;
+  }
+
+  .home-flagship-city-tag {
+    font-size: 0.74rem !important;
+    margin-bottom: 4px !important;
+  }
+
+  .home-flagship-name {
+    font-size: 1.15rem !important;
+    margin: 0 0 6px !important;
+    line-height: 1.3 !important;
+  }
+
+  .home-flagship-addr {
+    font-size: 0.84rem !important;
+    line-height: 1.4 !important;
+    margin: 0 0 16px !important;
+  }
+
+  .home-flagship-btn-group {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .home-flagship-btn-group a {
+    height: 42px !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    padding: 0 6px !important;
+    display: flex !important;
+    align-items: center !important;
     justify-content: center !important;
+    gap: 6px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .mockup-view-all-branches {
+    background: #0F172A !important;
+    color: #FFFFFF !important;
+    border-radius: 14px !important;
+    padding: 14px !important;
+    font-size: 0.9rem !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15) !important;
   }
 }
 
@@ -2064,6 +2166,33 @@ section, header, footer, nav, main, .container {
 
   .home-dept-img-wrap {
     height: 120px !important;
+  }
+
+  .home-flagship-thumb {
+    height: 155px !important;
+  }
+
+  .home-flagship-detail {
+    padding: 14px 14px 16px !important;
+  }
+
+  .home-flagship-name {
+    font-size: 1.05rem !important;
+  }
+
+  .home-flagship-addr {
+    font-size: 0.8rem !important;
+    margin-bottom: 14px !important;
+  }
+
+  .home-flagship-btn-group {
+    gap: 6px !important;
+  }
+
+  .home-flagship-btn-group a {
+    height: 38px !important;
+    font-size: 0.76rem !important;
+    gap: 4px !important;
   }
 }
 

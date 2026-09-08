@@ -478,17 +478,18 @@ function renderHomeFlagshipBranches(branches, filter = "all") {
       <div class="home-flagship-item">
         <div class="home-flagship-thumb">
           <img src="${encodeURI(b.image || 'assets/images/store_flagship.jpg')}" alt="${escapeHtml(b.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
-          <span class="mockup-flagship-badge">${escapeHtml(b.flagshipBadge || '⭐ Flagship')}</span>
+          <span class="mockup-flagship-badge">${escapeHtml(b.flagshipBadge || '⭐ Flagship Branch')}</span>
+          <span class="home-flagship-live-status"><span class="live-dot-green"></span> ${escapeHtml(b.timings || "Open 24/7")}</span>
         </div>
         <div class="home-flagship-detail">
-          <div>
-            <div class="mockup-flagship-status"><span class="live-dot-green"></span> ${escapeHtml(b.timings || "Open 24/7")}</div>
-            <h4>${escapeHtml(b.name)}</h4>
-            <p><i class="fa-solid fa-location-dot" style="color:var(--dw-red);"></i> ${escapeHtml(b.address || b.city)}</p>
+          <div class="home-flagship-text-wrap">
+            <span class="home-flagship-city-tag"><i class="fa-solid fa-city"></i> ${escapeHtml(b.city || "Twin Cities")}</span>
+            <h4 class="home-flagship-name">${escapeHtml(b.name)}</h4>
+            <p class="home-flagship-addr"><i class="fa-solid fa-location-dot" style="color:var(--dw-red);"></i> ${escapeHtml(b.address || b.city)}</p>
           </div>
           <div class="home-flagship-btn-group">
             <a href="tel:${rawPhone}" class="btn-flagship-call" title="Call Branch"><i class="fa-solid fa-phone"></i> Call</a>
-            <a href="${mapUrl}" target="_blank" class="btn-flagship-dir" title="Google Maps Directions"><i class="fa-solid fa-map-location-dot"></i> Directions</a>
+            <a href="${mapUrl}" target="_blank" class="btn-flagship-dir" title="Google Maps Directions"><i class="fa-solid fa-location-arrow"></i> Directions</a>
             <a href="${waUrl}" target="_blank" class="btn-flagship-wa" title="WhatsApp Order"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
           </div>
         </div>
