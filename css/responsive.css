@@ -195,9 +195,9 @@ section, header, footer, nav, main, .container {
    3. MOBILE PHONES & TABLETS (<= 992px)
    ========================================================================== */
 @media (max-width: 992px) {
-  /* Provide clearance for the mobile bottom bar */
+  /* Eliminate body bottom padding since site-footer handles bottom bar clearance seamlessly */
   body {
-    padding-bottom: 74px !important;
+    padding-bottom: 0 !important;
   }
 
   .mobile-bottom-bar {
@@ -1263,7 +1263,7 @@ section, header, footer, nav, main, .container {
   /* ================= MODERN RESPONSIVE MOBILE FOOTER ================= */
   .site-footer {
     background: #A50505 !important;
-    padding: 45px 0 130px !important; /* Generous 130px clearance for mobile bottom bar */
+    padding: 36px 0 calc(78px + env(safe-area-inset-bottom, 8px)) !important; /* Seamless 78px clearance for 64px mobile bottom bar */
     border-top: none !important;
     position: relative;
     color: #FFFFFF !important;
@@ -1408,34 +1408,76 @@ section, header, footer, nav, main, .container {
 
   .footer-bottom {
     flex-direction: column !important;
-    gap: 14px !important;
+    align-items: center !important;
     text-align: center !important;
-    padding-top: 22px !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.18) !important;
+    gap: 12px !important;
+    padding-top: 18px !important;
+    margin-top: 24px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
     font-size: 0.82rem !important;
-    color: rgba(255, 255, 255, 0.85) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .footer-copyright {
+    font-size: 0.80rem !important;
+    line-height: 1.6 !important;
+    color: rgba(255, 255, 255, 0.88) !important;
+    text-align: center !important;
+    max-width: 480px;
+    margin: 0 auto !important;
   }
 
   .footer-bottom-links {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px 14px !important;
+    margin: 0 auto !important;
   }
 
   .footer-bottom-links a {
-    color: rgba(255, 255, 255, 0.85) !important;
-    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.88) !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    transition: color 0.2s ease;
+  }
+
+  .footer-bottom-links a:hover {
+    color: #FFFFFF !important;
+    text-decoration: underline !important;
+  }
+
+  .footer-link-divider {
+    color: rgba(255, 255, 255, 0.4) !important;
+    font-size: 0.82rem !important;
+    user-select: none;
   }
 
   .admin-portal-badge {
-    background: rgba(255, 255, 255, 0.15) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: rgba(255, 255, 255, 0.16) !important;
     color: #FFFFFF !important;
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    padding: 6px 14px !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    font-size: 0.78rem !important;
+    text-decoration: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    transition: all 0.2s ease !important;
+    margin: 0 !important;
+  }
+
+  .admin-portal-badge:active,
+  .admin-portal-badge:hover {
+    background: rgba(255, 255, 255, 0.26) !important;
+    color: #FFFFFF !important;
+    transform: translateY(-1px);
   }
 
   .system-portal-badge {

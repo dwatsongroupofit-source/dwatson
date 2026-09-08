@@ -2841,6 +2841,12 @@ textarea.form-control {
   text-shadow: 0 0 8px rgba(253, 224, 71, 0.4);
 }
 
+.footer-link-divider {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  user-select: none;
+}
+
 /* ==========================================================================
    Floating WhatsApp & Quick Action Button
    ========================================================================== */
