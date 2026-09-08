@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D. Watson Portal Studio | Zero-Code Content &amp; Security Management</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/favicon.png">
+  <link rel="shortcut icon" href="favicon.ico">
+
+  <!-- Stylesheets (v5.2 - Official Brand Logo Plate) -->
+  <link rel="stylesheet" href="css/style.css?v=5.2">
+  <link rel="stylesheet" href="css/admin.css?v=5.2">
+</head>
+<body class="admin-body">
+
+  <!-- ================= AUTHENTICATION / LOGIN OVERLAY ================= -->
+  <div class="admin-auth-overlay" id="adminAuthOverlay">
+    <div class="auth-card">
+      <img src="assets/images/logo.png" alt="D. Watson Chemist & Superstore" class="auth-logo">
+      <span class="auth-badge"><i class="fa-solid fa-lock"></i> Protected Studio</span>
+      <h2 class="auth-title">Portal Studio Login</h2>
+      <p class="auth-sub">Enter your administrator credentials to access live website management.</p>
+
+      <div class="auth-error" id="loginError">
+        Invalid username or password. Please try again.
+      </div>
+
+      <form id="adminLoginForm">
+        <div class="auth-input-group">
+          <label for="loginUsername">Administrator Username</label>
+          <input type="text" id="loginUsername" class="auth-input" placeholder="e.g. admin" required autocomplete="username">
+        </div>
+
+        <div class="auth-input-group">
+          <label for="loginPassword">Administrator Password</label>
+          <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required autocomplete="current-password">
+          <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword', this.querySelector('i'))" aria-label="Toggle password view">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; font-size:0.82rem; color:#64748B;">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" id="loginRememberMe"> Remember session
+          </label>
+          <a href="index.html" style="color:#DC2626; font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Back to Site</a>
+        </div>
+
+        <button type="submit" class="auth-btn" id="loginSubmitBtn">
+          <i class="fa-solid fa-unlock-keyhole"></i> Unlock Portal Studio
+        </button>
+      </form>
+    </div>
+  </div>
+
+  
+  <!-- === PROTECTED STUDIO CONTENT START === -->
+  <!-- ================= MOBILE APP HEADER (Shown on Mobile screens <= 992px) ================= -->
+  <div class="admin-mobile-header">
+    <button class="admin-mobile-toggle-btn" onclick="toggleAdminDrawer()" aria-label="Open navigation menu">
+      <i class="fa-solid fa-bars-staggered"></i>
+    </button>
+    <img src="assets/images/logo.png" alt="D. Watson Portal Studio" class="admin-mobile-logo">
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <a href="index.html" target="_blank" class="admin-mobile-action-btn" title="View live site">
+        <i class="fa-solid fa-eye"></i>
+      </a>
+      <button class="admin-mobile-action-btn" onclick="adminLogout()" title="Lock Studio" style="color:#FCA5A5;">
+        <i class="fa-solid fa-lock"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer Backdrop Overlay -->
+  <div class="admin-drawer-backdrop" id="adminDrawerBackdrop" onclick="toggleAdminDrawer()"></div>
+
+  <!-- ================= MAIN ADMIN SIDEBAR ================= -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <img src="assets/images/logo.png" alt="D. Watson Portal Studio" class="admin-sidebar-logo">
+      <button class="admin-sidebar-close-btn" onclick="toggleAdminDrawer()" aria-label="Close menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-category-title">Content Modules</div>
+      <div class="admin-nav-item active" data-tab="tabSlides">
+        <i class="fa-solid fa-images"></i> Hero Slider
+      </div>
+      <div class="admin-nav-item" data-tab="tabBranches">
+        <i class="fa-solid fa-location-dot"></i> Branches Locator
+      </div>
+      <div class="admin-nav-item" data-tab="tabProducts">
+        <i class="fa-solid fa-box-open"></i> Featured Products
+      </div>
+      <div class="admin-nav-item" data-tab="tabGallery">
+        <i class="fa-solid fa-photo-film"></i> Image Gallery
+      </div>
+      <div class="admin-nav-item" data-tab="tabPrescriptions">
+        <i class="fa-solid fa-bell-concierge"></i> Orders &amp; Inquiries Desk
+      </div>
+
+      <div class="nav-category-title">Corporate Settings</div>
+      <div class="admin-nav-item" data-tab="tabManagement">
+        <i class="fa-solid fa-users-gear"></i> Leadership Team
+      </div>
+      <div class="admin-nav-item" data-tab="tabCompany">
+        <i class="fa-solid fa-building"></i> Company &amp; Heritage
+      </div>
+      <div class="admin-nav-item" data-tab="tabSecurity">
+        <i class="fa-solid fa-shield-halved"></i> Security &amp; Password
+      </div>
+      <div class="admin-nav-item" data-tab="tabBackup">
+        <i class="fa-solid fa-cloud-arrow-down"></i> Backup &amp; JSON Sync
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-user-badge">
+        <span><i class="fa-solid fa-user-shield" style="color:#22C55E;"></i> Authenticated Admin</span>
+        <button onclick="adminLogout()" style="color:#F87171; font-weight:700; font-size:0.75rem; background:none; border:none; cursor:pointer;" title="Log out">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Lock
+        </button>
+      </div>
+      <a href="index.html" target="_blank" class="btn btn-outline-white btn-sm" style="width: 100%; margin-top:8px;">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Live Website
+      </a>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN DASHBOARD AREA ================= -->
+  <main class="admin-main">
+    <!-- Topbar -->
+    <header class="admin-topbar">
+      <div class="admin-title-wrap">
+        <h1>Content Management Studio</h1>
+        <p>Live visual updates for slides, 24+ branches, product catalog, gallery &amp; corporate contact numbers.</p>
+      </div>
+
+      <div class="admin-actions">
+        <button class="btn btn-outline btn-sm" onclick="exportSiteJSON()">
+          <i class="fa-solid fa-download"></i> Export JSON
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="adminLogout()" style="border-color:#FCA5A5; color:#DC2626;">
+          <i class="fa-solid fa-lock"></i> Lock Studio
+        </button>
+        <a href="index.html" target="_blank" class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-eye"></i> View Live Site
+        </a>
+      </div>
+    </header>
+
+    <!-- Dynamic Content Area -->
+    <div class="admin-content-area">
+
+      <!-- ================= 1. HERO SLIDES TAB ================= -->
+      <section class="admin-tab-pane active" id="tabSlides">
+        <div class="admin-card">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Homepage Hero Banner Slides</h2>
+              <p style="font-size:0.85rem; color:#64748B;">Manage the top carousel slides, headlines, images, and WhatsApp call-to-action buttons.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openSlideModal(-1)">
+              <i class="fa-solid fa-plus"></i> Add New Slide
+            </button>
+          </div>
+
+          <div class="items-list-grid" id="adminSlidesList">
+            <!-- Populated via admin.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. BRANCHES TAB ================= -->
+      <section class="admin-tab-pane" id="tabBranches">
+        <div class="admin-card">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Store Branches &amp; Locations (24+ Network)</h2>
+              <p style="font-size:0.85rem; color:#64748B;">Official locations across Islamabad, Rawalpindi, Lahore, and regional hubs from dwatson.co.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openBranchModal(-1)">
+              <i class="fa-solid fa-plus"></i> Add New Branch
+            </button>
+          </div>
+
+          <div class="items-list-grid" id="adminBranchesList">
+            <!-- Populated via admin.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. FEATURED PRODUCTS TAB ================= -->
+      <section class="admin-tab-pane" id="tabProducts">
+        <div class="admin-card">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Featured Products &amp; Catalog Showcase</h2>
+              <p style="font-size:0.85rem; color:#64748B;">Manage showcased items from Facebook official posts, prices, stock badges, and descriptions.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openProductModal(-1)">
+              <i class="fa-solid fa-plus"></i> Add New Product
+            </button>
+          </div>
+
+          <div class="items-list-grid" id="adminProductsList">
+            <!-- Populated via admin.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. GALLERY TAB ================= -->
+      <section class="admin-tab-pane" id="tabGallery">
+        <div class="admin-card">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Showcase Image Gallery</h2>
+              <p style="font-size:0.85rem; color:#64748B;">Manage store facade photos, pharmacy labs, cosmetics lounges, and superstore aisles.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openGalleryModal(-1)">
+              <i class="fa-solid fa-plus"></i> Add Photo
+            </button>
+          </div>
+
+          <div class="items-list-grid" id="adminGalleryList">
+            <!-- Populated via admin.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4b. ORDERS & INQUIRIES DESK ================= -->
+      <section class="admin-tab-pane" id="tabPrescriptions">
+        <div class="admin-card">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Customer Orders &amp; Inquiries Desk</h2>
+              <p style="font-size:0.85rem; color:#64748B;">Live records of Product Inquiries &amp; Orders, Prescriptions, and Customer Inquiries with 1-click photo inspection and WhatsApp replies.</p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn btn-outline btn-sm" onclick="renderPrescriptionsList()" title="Refresh live inquiries list">
+                <i class="fa-solid fa-arrows-rotate"></i> Refresh List
+              </button>
+              <button class="btn btn-sm" style="background:#FEE2E2; color:#DC2626; border:1px solid #FECACA;" onclick="handleClearAllInquiries()" title="Permanently clear all inquiries">
+                <i class="fa-solid fa-trash-can"></i> Clear All
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin: 18px 0 10px; flex-wrap: wrap;" id="inquiryFilterBar">
+            <button class="btn btn-primary btn-sm" style="border-radius: 9999px;" onclick="filterInquiriesType('all', this)">
+              <i class="fa-solid fa-layer-group"></i> All Inquiries
+            </button>
+            <button class="btn btn-outline btn-sm" style="border-radius: 9999px;" onclick="filterInquiriesType('product', this)">
+              <i class="fa-solid fa-box-open"></i> Product Orders
+            </button>
+            <button class="btn btn-outline btn-sm" style="border-radius: 9999px;" onclick="filterInquiriesType('prescription', this)">
+              <i class="fa-solid fa-file-prescription"></i> Prescription Uploads
+            </button>
+          </div>
+
+          <div class="items-list-grid" id="adminPrescriptionsList" style="margin-top: 14px;">
+            <!-- Populated dynamically via admin.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. LEADERSHIP TEAM & BOARD TAB ================= -->
+      <section class="admin-tab-pane" id="tabManagement">
+        <div class="admin-card">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Board of Directors &amp; Executive Leadership</h2>
+              <p style="font-size:0.85rem; color:#64748B;">Manage Chairman, CEO, and Executive Directors, profile photos, official titles, and corporate biographies.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openManagementModal(-1)">
+              <i class="fa-solid fa-plus"></i> Add Executive Member
+            </button>
+          </div>
+
+          <div class="editable-items-list" id="adminManagementList">
+            <!-- Populated dynamically via admin.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 6. COMPANY SETTINGS TAB ================= -->
+      <section class="admin-tab-pane" id="tabCompany">
+        <div class="admin-card">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Company Profile, Heritage &amp; Helpline</h2>
+              <p style="font-size:0.85rem; color:#64748B;">Update phone numbers, WhatsApp, announcement ribbon, and Dr. Watson heritage story.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="saveCompanySettings(event)">
+              <i class="fa-solid fa-check"></i> Save Settings
+            </button>
+          </div>
+
+          <form id="companySettingsForm" onsubmit="saveCompanySettings(event)">
+            <div class="form-grid-2">
+              <div class="admin-form-group">
+                <label>Company Brand Name</label>
+                <input type="text" class="admin-form-input" id="setCompanyName" required>
+              </div>
+              <div class="admin-form-group">
+                <label>24/7 Universal Helpline</label>
+                <input type="text" class="admin-form-input" id="setHelpline" required>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="admin-form-group">
+                <label>WhatsApp Number (without + or spaces, e.g. 923329716666)</label>
+                <input type="text" class="admin-form-input" id="setWhatsApp" required>
+              </div>
+              <div class="admin-form-group">
+                <label>WhatsApp Display Text (e.g. 0332-9716666)</label>
+                <input type="text" class="admin-form-input" id="setWhatsAppDisplay" required>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="admin-form-group">
+                <label>Customer Care Email</label>
+                <input type="email" class="admin-form-input" id="setEmail" required>
+              </div>
+              <div class="admin-form-group">
+                <label>Headquarters Address</label>
+                <input type="text" class="admin-form-input" id="setAddress" required>
+              </div>
+            </div>
+
+            <div class="admin-form-group">
+              <label>Top Announcement Banner Text</label>
+              <input type="text" class="admin-form-input" id="setAnnouncement" required>
+            </div>
+
+            <div class="admin-form-group">
+              <label>About Us - Short Summary</label>
+              <textarea class="admin-form-input" id="setAboutShort" rows="2" required></textarea>
+            </div>
+
+            <div class="admin-form-group">
+              <label>About Us - Extended Heritage &amp; Dr. Watson Tribute</label>
+              <textarea class="admin-form-input" id="setAboutHistory" rows="4" required></textarea>
+            </div>
+
+            <div style="text-align: right;">
+              <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-check"></i> Save &amp; Publish Settings
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ================= 6. SECURITY & PASSWORD TAB ================= -->
+      <section class="admin-tab-pane" id="tabSecurity">
+        <div class="admin-card">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Portal Security &amp; Credentials Guard</h2>
+              <p style="font-size:0.85rem; color:#64748B;">Change your administrator login username, password, and security recovery PIN.</p>
+            </div>
+          </div>
+
+          <div style="background:rgba(29, 78, 216, 0.05); border:1px solid rgba(29, 78, 216, 0.2); border-radius:12px; padding:16px; margin-bottom:24px;">
+            <strong style="color:var(--dw-blue); font-size:0.92rem;"><i class="fa-solid fa-shield-halved"></i> Client-Side Cryptographic Protection</strong>
+            <p style="font-size:0.82rem; color:#475569; margin-top:4px; line-height:1.5;">
+              Your portal uses SHA-256 Web Crypto hashing. Passwords are never stored in plain text. Changing your credentials below will immediately protect all future access to <code>admin.html</code> across this browser session.
+            </p>
+          </div>
+
+          <form id="securitySettingsForm" onsubmit="saveSecurityCredentials(event)">
+            <div class="form-grid-2">
+              <div class="admin-form-group">
+                <label>Admin Username</label>
+                <input type="text" class="admin-form-input" id="secUsername" required autocomplete="username">
+              </div>
+              <div class="admin-form-group">
+                <label>Emergency Recovery PIN (4 Digits)</label>
+                <input type="text" class="admin-form-input" id="secPin" maxlength="4" placeholder="1978" required>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="admin-form-group">
+                <label>New Password</label>
+                <input type="password" class="admin-form-input" id="secNewPassword" placeholder="Enter new password" autocomplete="new-password">
+                <small style="color:#64748B; font-size:0.75rem;">Leave empty to keep existing password.</small>
+              </div>
+              <div class="admin-form-group">
+                <label>Confirm New Password</label>
+                <input type="password" class="admin-form-input" id="secConfirmPassword" placeholder="Re-type new password" autocomplete="new-password">
+              </div>
+            </div>
+
+            <div style="text-align: right; margin-top:10px;">
+              <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-lock"></i> Update Security Credentials
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ================= 7. BACKUP & SYNC TAB ================= -->
+      <section class="admin-tab-pane" id="tabBackup">
+        <div class="admin-card">
+          <h2 class="card-title" style="margin-bottom: 8px;">Backup, Export &amp; Restore</h2>
+          <p style="font-size:0.88rem; color:#64748B; margin-bottom: 24px;">
+            Export all your customized website configurations as a clean JSON file, or restore default D. Watson templates.
+          </p>
+
+          <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="exportSiteJSON()">
+              <i class="fa-solid fa-file-arrow-down"></i> Download Site Configuration (.JSON)
+            </button>
+            
+            <button class="btn btn-outline" onclick="triggerImportJSON()">
+              <i class="fa-solid fa-file-arrow-up"></i> Import JSON Configuration
+            </button>
+            <input type="file" id="importJsonInput" accept=".json" style="display:none;" onchange="handleFileImport(event)">
+
+            <button class="btn btn-outline" style="border-color:#FCA5A5; color:#DC2626;" onclick="resetToFactoryDefaults()">
+              <i class="fa-solid fa-rotate-left"></i> Reset to Factory Defaults
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Reusable Modal Popup for Editing -->
+  <div class="admin-modal" id="adminEditModal" role="dialog" aria-modal="true">
+    <div class="admin-modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="adminModalTitle">Edit Item</h3>
+        <button class="modal-close-btn" onclick="closeAdminModal()" aria-label="Close">&times;</button>
+      </div>
+      <div id="adminModalBody">
+        <!-- Injected via admin.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="admin-toast" id="adminToast">
+    Changes saved successfully!
+  </div>
+
+  <!-- Scripts (v3.4) -->
+  <script src="js/config.js?v=1.0"></script>
+  <script src="js/data.js?v=3.4"></script>
+  <script src="js/admin.js?v=3.4"></script>
+  <!-- === PROTECTED STUDIO CONTENT END === -->
+</body>
+</html>

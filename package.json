@@ -4,7 +4,8 @@
   "description": "D. Watson Chemist & Department Store - Portal with Direct Inquiry Email System",
   "scripts": {
     "start": "vercel dev",
-    "dev": "vercel dev"
+    "dev": "vercel dev",
+    "encrypt-admin": "node scripts/encrypt-admin.js"
   },
   "dependencies": {
     "nodemailer": "^6.10.0"

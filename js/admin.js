@@ -29,12 +29,18 @@ async function sha256(message) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function bootAdminApp() {
   loadAdminState();
   initAuthGuard();
   initTabNavigation();
   initInactivityWatcher();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", bootAdminApp);
+} else {
+  bootAdminApp();
+}
 
 /**
  * Load fresh site data into admin state
@@ -79,18 +85,15 @@ async function handleLoginSubmit(e) {
 
   const authConfig = adminData.company.adminAuth || {
     username: "admin",
-    passwordHash: "46f882fc025cba277fc20e6a86e9275bcf11d2797e88deaaaeeb19a164ad0bf2",
-    defaultPassPlain: "dwatson@admin2026",
-    securityPin: "1978"
+    passwordHash: "755490408479e09d5a6c117d7ee41f71dfb25a3ea23ff790f9cd3497d51ee910"
   };
 
   const inputHash = await sha256(passwordInput);
+  // SHA-256 hash check or AES-verified session
   const isValidPass = (inputHash === authConfig.passwordHash) || 
-                      (passwordInput === authConfig.defaultPassPlain) || 
-                      (passwordInput === "dwatson123") || 
-                      (passwordInput === authConfig.securityPin);
+                      (sessionStorage.getItem("dwatson_admin_auth") === "true");
 
-  const isValidUser = (usernameInput.toLowerCase() === authConfig.username.toLowerCase());
+  const isValidUser = (usernameInput.toLowerCase() === (authConfig.username || "admin").toLowerCase());
 
   if (isValidUser && isValidPass) {
     failedAttempts = 0;
@@ -130,10 +133,12 @@ async function handleLoginSubmit(e) {
 
 window.adminLogout = function() {
   sessionStorage.removeItem("dwatson_admin_auth");
+  sessionStorage.removeItem("dwatson_aes_key");
   localStorage.removeItem("dwatson_admin_remember");
+  localStorage.removeItem("dwatson_aes_key");
   const overlay = document.getElementById("adminAuthOverlay");
   if (overlay) overlay.classList.remove("authenticated");
-  showToast("Portal locked successfully.", "info");
+  location.reload();
 };
 
 window.togglePasswordVisibility = function(inputId, iconEl) {

@@ -18,33 +18,63 @@
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <link rel="shortcut icon" href="favicon.ico">
 
-  <!-- Stylesheets (v5.2 - Official Brand Logo Plate) -->
+  <!-- Stylesheets (v5.2) -->
   <link rel="stylesheet" href="css/style.css?v=5.2">
   <link rel="stylesheet" href="css/admin.css?v=5.2">
+
+  <style>
+    /* AES Decryptor Specific Styles */
+    .decrypt-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .auth-error.shake {
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+    .auth-badge.aes-badge {
+      background: rgba(16, 185, 129, 0.12);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+  </style>
 </head>
 <body class="admin-body">
 
-  <!-- ================= AUTHENTICATION / LOGIN OVERLAY ================= -->
+  <!-- ================= AUTHENTICATION / AES DECRYPTION GATE ================= -->
   <div class="admin-auth-overlay" id="adminAuthOverlay">
-    <div class="auth-card">
+    <div class="auth-card" id="authCard">
       <img src="assets/images/logo.png" alt="D. Watson Chemist & Superstore" class="auth-logo">
-      <span class="auth-badge"><i class="fa-solid fa-lock"></i> Protected Studio</span>
+      <span class="auth-badge aes-badge"><i class="fa-solid fa-shield-halved"></i> AES-256 Protected Studio</span>
       <h2 class="auth-title">Portal Studio Login</h2>
-      <p class="auth-sub">Enter your administrator credentials to access live website management.</p>
+      <p class="auth-sub">Enter your administrator credentials to decrypt and unlock live studio management.</p>
 
       <div class="auth-error" id="loginError">
-        Invalid username or password. Please try again.
+        Invalid administrator password. Please try again.
       </div>
 
       <form id="adminLoginForm">
         <div class="auth-input-group">
           <label for="loginUsername">Administrator Username</label>
-          <input type="text" id="loginUsername" class="auth-input" placeholder="e.g. admin" required autocomplete="username">
+          <input type="text" id="loginUsername" class="auth-input" placeholder="e.g. admin" required autocomplete="username" value="admin">
         </div>
 
         <div class="auth-input-group">
           <label for="loginPassword">Administrator Password</label>
-          <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required autocomplete="current-password">
+          <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required autocomplete="current-password" autofocus>
           <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword', this.querySelector('i'))" aria-label="Toggle password view">
             <i class="fa-regular fa-eye"></i>
           </button>
@@ -52,7 +82,7 @@
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; font-size:0.82rem; color:#64748B;">
           <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-            <input type="checkbox" id="loginRememberMe"> Remember session
+            <input type="checkbox" id="loginRememberMe" checked> Remember session
           </label>
           <a href="index.html" style="color:#DC2626; font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Back to Site</a>
         </div>
@@ -64,406 +94,187 @@
     </div>
   </div>
 
-  <!-- ================= MOBILE APP HEADER (Shown on Mobile screens <= 992px) ================= -->
-  <div class="admin-mobile-header">
-    <button class="admin-mobile-toggle-btn" onclick="toggleAdminDrawer()" aria-label="Open navigation menu">
-      <i class="fa-solid fa-bars-staggered"></i>
-    </button>
-    <img src="assets/images/logo.png" alt="D. Watson Portal Studio" class="admin-mobile-logo">
-    <div style="display: flex; gap: 8px; align-items: center;">
-      <a href="index.html" target="_blank" class="admin-mobile-action-btn" title="View live site">
-        <i class="fa-solid fa-eye"></i>
-      </a>
-      <button class="admin-mobile-action-btn" onclick="adminLogout()" title="Lock Studio" style="color:#FCA5A5;">
-        <i class="fa-solid fa-lock"></i>
-      </button>
-    </div>
-  </div>
+  <!-- Dynamic Mount for Decrypted Studio Elements -->
+  <div id="adminStudioMount"></div>
 
-  <!-- Mobile Drawer Backdrop Overlay -->
-  <div class="admin-drawer-backdrop" id="adminDrawerBackdrop" onclick="toggleAdminDrawer()"></div>
+  <!-- AES-256 Encrypted Studio Payload (Zero Plaintext Code) -->
+  <script id="dwEncryptedPayload" type="application/json">{"v":1,"salt":"vAGsO9qGMsoBvRY+4w+PCA==","iv":"zKeF1zp//qg4zS4H","data":"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"}</script>
 
-  <!-- ================= MAIN ADMIN SIDEBAR ================= -->
-  <aside class="admin-sidebar" id="adminSidebar">
-    <div class="sidebar-header">
-      <img src="assets/images/logo.png" alt="D. Watson Portal Studio" class="admin-sidebar-logo">
-      <button class="admin-sidebar-close-btn" onclick="toggleAdminDrawer()" aria-label="Close menu">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
+  <!-- Cryptographic Decryption Engine (Native Web Crypto API) -->
+  <script>
+    (function() {
+      const STORAGE_KEY_AUTH = "dwatson_admin_auth";
+      const STORAGE_KEY_PASS = "dwatson_aes_key";
+      
+      const overlay = document.getElementById("adminAuthOverlay");
+      const form = document.getElementById("adminLoginForm");
+      const usernameInput = document.getElementById("loginUsername");
+      const passwordInput = document.getElementById("loginPassword");
+      const rememberCheckbox = document.getElementById("loginRememberMe");
+      const errorBox = document.getElementById("loginError");
+      const submitBtn = document.getElementById("loginSubmitBtn");
+      const mountEl = document.getElementById("adminStudioMount");
+      const payloadScript = document.getElementById("dwEncryptedPayload");
 
-    <nav class="sidebar-nav">
-      <div class="nav-category-title">Content Modules</div>
-      <div class="admin-nav-item active" data-tab="tabSlides">
-        <i class="fa-solid fa-images"></i> Hero Slider
-      </div>
-      <div class="admin-nav-item" data-tab="tabBranches">
-        <i class="fa-solid fa-location-dot"></i> Branches Locator
-      </div>
-      <div class="admin-nav-item" data-tab="tabProducts">
-        <i class="fa-solid fa-box-open"></i> Featured Products
-      </div>
-      <div class="admin-nav-item" data-tab="tabGallery">
-        <i class="fa-solid fa-photo-film"></i> Image Gallery
-      </div>
-      <div class="admin-nav-item" data-tab="tabPrescriptions">
-        <i class="fa-solid fa-bell-concierge"></i> Orders &amp; Inquiries Desk
-      </div>
+      window.togglePasswordVisibility = function(inputId, iconEl) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        if (input.type === "password") {
+          input.type = "text";
+          if (iconEl) iconEl.className = "fa-regular fa-eye-slash";
+        } else {
+          input.type = "password";
+          if (iconEl) iconEl.className = "fa-regular fa-eye";
+        }
+      };
 
-      <div class="nav-category-title">Corporate Settings</div>
-      <div class="admin-nav-item" data-tab="tabManagement">
-        <i class="fa-solid fa-users-gear"></i> Leadership Team
-      </div>
-      <div class="admin-nav-item" data-tab="tabCompany">
-        <i class="fa-solid fa-building"></i> Company &amp; Heritage
-      </div>
-      <div class="admin-nav-item" data-tab="tabSecurity">
-        <i class="fa-solid fa-shield-halved"></i> Security &amp; Password
-      </div>
-      <div class="admin-nav-item" data-tab="tabBackup">
-        <i class="fa-solid fa-cloud-arrow-down"></i> Backup &amp; JSON Sync
-      </div>
-    </nav>
+      // Base64 helper utilities
+      function base64ToUint8Array(base64) {
+        const binaryString = atob(base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes;
+      }
 
-    <div class="sidebar-footer">
-      <div class="admin-user-badge">
-        <span><i class="fa-solid fa-user-shield" style="color:#22C55E;"></i> Authenticated Admin</span>
-        <button onclick="adminLogout()" style="color:#F87171; font-weight:700; font-size:0.75rem; background:none; border:none; cursor:pointer;" title="Log out">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i> Lock
-        </button>
-      </div>
-      <a href="index.html" target="_blank" class="btn btn-outline-white btn-sm" style="width: 100%; margin-top:8px;">
-        <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Live Website
-      </a>
-    </div>
-  </aside>
+      // AES-256-GCM Decryption Function
+      async function decryptPayload(password) {
+        const payload = JSON.parse(payloadScript.textContent);
+        const salt = base64ToUint8Array(payload.salt);
+        const iv = base64ToUint8Array(payload.iv);
+        const ciphertext = base64ToUint8Array(payload.data);
 
-  <!-- ================= MAIN DASHBOARD AREA ================= -->
-  <main class="admin-main">
-    <!-- Topbar -->
-    <header class="admin-topbar">
-      <div class="admin-title-wrap">
-        <h1>Content Management Studio</h1>
-        <p>Live visual updates for slides, 24+ branches, product catalog, gallery &amp; corporate contact numbers.</p>
-      </div>
+        // 1. Derive AES key from password using PBKDF2 (100,000 iterations)
+        const enc = new TextEncoder();
+        const keyMaterial = await window.crypto.subtle.importKey(
+          "raw",
+          enc.encode(password),
+          { name: "PBKDF2" },
+          false,
+          ["deriveKey"]
+        );
 
-      <div class="admin-actions">
-        <button class="btn btn-outline btn-sm" onclick="exportSiteJSON()">
-          <i class="fa-solid fa-download"></i> Export JSON
-        </button>
-        <button class="btn btn-outline btn-sm" onclick="adminLogout()" style="border-color:#FCA5A5; color:#DC2626;">
-          <i class="fa-solid fa-lock"></i> Lock Studio
-        </button>
-        <a href="index.html" target="_blank" class="btn btn-primary btn-sm">
-          <i class="fa-solid fa-eye"></i> View Live Site
-        </a>
-      </div>
-    </header>
+        const key = await window.crypto.subtle.deriveKey(
+          {
+            name: "PBKDF2",
+            salt: salt,
+            iterations: 100000,
+            hash: "SHA-256"
+          },
+          keyMaterial,
+          { name: "AES-GCM", length: 256 },
+          false,
+          ["decrypt"]
+        );
 
-    <!-- Dynamic Content Area -->
-    <div class="admin-content-area">
+        // 2. Decrypt with AES-GCM (mathematical check verifies password)
+        const decryptedBuffer = await window.crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: iv },
+          key,
+          ciphertext
+        );
 
-      <!-- ================= 1. HERO SLIDES TAB ================= -->
-      <section class="admin-tab-pane active" id="tabSlides">
-        <div class="admin-card">
-          <div class="card-header-flex">
-            <div>
-              <h2 class="card-title">Homepage Hero Banner Slides</h2>
-              <p style="font-size:0.85rem; color:#64748B;">Manage the top carousel slides, headlines, images, and WhatsApp call-to-action buttons.</p>
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="openSlideModal(-1)">
-              <i class="fa-solid fa-plus"></i> Add New Slide
-            </button>
-          </div>
+        return new TextDecoder().decode(decryptedBuffer);
+      }
 
-          <div class="items-list-grid" id="adminSlidesList">
-            <!-- Populated via admin.js -->
-          </div>
-        </div>
-      </section>
+      // Mount decrypted DOM and execute scripts in order
+      function mountStudio(decryptedHtml) {
+        mountEl.innerHTML = decryptedHtml;
 
-      <!-- ================= 2. BRANCHES TAB ================= -->
-      <section class="admin-tab-pane" id="tabBranches">
-        <div class="admin-card">
-          <div class="card-header-flex">
-            <div>
-              <h2 class="card-title">Store Branches &amp; Locations (24+ Network)</h2>
-              <p style="font-size:0.85rem; color:#64748B;">Official locations across Islamabad, Rawalpindi, Lahore, and regional hubs from dwatson.co.</p>
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="openBranchModal(-1)">
-              <i class="fa-solid fa-plus"></i> Add New Branch
-            </button>
-          </div>
+        // Execute any script elements contained inside the decrypted HTML
+        const scripts = Array.from(mountEl.querySelectorAll("script"));
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement("script");
+          Array.from(oldScript.attributes).forEach(attr => {
+            newScript.setAttribute(attr.name, attr.value);
+          });
+          newScript.textContent = oldScript.textContent;
+          oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
 
-          <div class="items-list-grid" id="adminBranchesList">
-            <!-- Populated via admin.js -->
-          </div>
-        </div>
-      </section>
+        // Hide login overlay
+        overlay.classList.add("authenticated");
+      }
 
-      <!-- ================= 3. FEATURED PRODUCTS TAB ================= -->
-      <section class="admin-tab-pane" id="tabProducts">
-        <div class="admin-card">
-          <div class="card-header-flex">
-            <div>
-              <h2 class="card-title">Featured Products &amp; Catalog Showcase</h2>
-              <p style="font-size:0.85rem; color:#64748B;">Manage showcased items from Facebook official posts, prices, stock badges, and descriptions.</p>
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="openProductModal(-1)">
-              <i class="fa-solid fa-plus"></i> Add New Product
-            </button>
-          </div>
+      // Handle Decryption / Unlock
+      async function attemptUnlock(pass, remember) {
+        if (!pass) return false;
+        
+        try {
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="decrypt-spinner"></span> Decrypting Studio...';
+          }
+          if (errorBox) errorBox.classList.remove("show", "shake");
 
-          <div class="items-list-grid" id="adminProductsList">
-            <!-- Populated via admin.js -->
-          </div>
-        </div>
-      </section>
+          const decryptedHtml = await decryptPayload(pass);
+          
+          // Decryption succeeded! Password was 100% correct
+          sessionStorage.setItem(STORAGE_KEY_AUTH, "true");
+          sessionStorage.setItem(STORAGE_KEY_PASS, pass);
+          if (remember) {
+            localStorage.setItem("dwatson_admin_remember", "true");
+            localStorage.setItem(STORAGE_KEY_PASS, pass);
+          } else {
+            localStorage.removeItem("dwatson_admin_remember");
+            localStorage.removeItem(STORAGE_KEY_PASS);
+          }
 
-      <!-- ================= 4. GALLERY TAB ================= -->
-      <section class="admin-tab-pane" id="tabGallery">
-        <div class="admin-card">
-          <div class="card-header-flex">
-            <div>
-              <h2 class="card-title">Showcase Image Gallery</h2>
-              <p style="font-size:0.85rem; color:#64748B;">Manage store facade photos, pharmacy labs, cosmetics lounges, and superstore aisles.</p>
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="openGalleryModal(-1)">
-              <i class="fa-solid fa-plus"></i> Add Photo
-            </button>
-          </div>
+          mountStudio(decryptedHtml);
+          return true;
+        } catch (err) {
+          console.warn("Decryption failed:", err);
+          if (errorBox) {
+            errorBox.textContent = "Invalid administrator password. Access denied.";
+            errorBox.classList.add("show", "shake");
+          }
+          if (passwordInput) {
+            passwordInput.value = "";
+            passwordInput.focus();
+          }
+          return false;
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-unlock-keyhole"></i> Unlock Portal Studio';
+          }
+        }
+      }
 
-          <div class="items-list-grid" id="adminGalleryList">
-            <!-- Populated via admin.js -->
-          </div>
-        </div>
-      </section>
+      // Form Submit Handler
+      form.addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const enteredUser = (usernameInput ? usernameInput.value.trim() : "admin") || "admin";
+        const enteredPass = passwordInput ? passwordInput.value : "";
+        const remember = rememberCheckbox ? rememberCheckbox.checked : true;
 
-      <!-- ================= 4b. ORDERS & INQUIRIES DESK ================= -->
-      <section class="admin-tab-pane" id="tabPrescriptions">
-        <div class="admin-card">
-          <div class="card-header-flex">
-            <div>
-              <h2 class="card-title">Customer Orders &amp; Inquiries Desk</h2>
-              <p style="font-size:0.85rem; color:#64748B;">Live records of Product Inquiries &amp; Orders, Prescriptions, and Customer Inquiries with 1-click photo inspection and WhatsApp replies.</p>
-            </div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button class="btn btn-outline btn-sm" onclick="renderPrescriptionsList()" title="Refresh live inquiries list">
-                <i class="fa-solid fa-arrows-rotate"></i> Refresh List
-              </button>
-              <button class="btn btn-sm" style="background:#FEE2E2; color:#DC2626; border:1px solid #FECACA;" onclick="handleClearAllInquiries()" title="Permanently clear all inquiries">
-                <i class="fa-solid fa-trash-can"></i> Clear All
-              </button>
-            </div>
-          </div>
+        if (enteredUser.toLowerCase() !== "admin") {
+          if (errorBox) {
+            errorBox.textContent = "Unknown username. Default is 'admin'.";
+            errorBox.classList.add("show", "shake");
+          }
+          return;
+        }
 
-          <div style="display: flex; gap: 10px; margin: 18px 0 10px; flex-wrap: wrap;" id="inquiryFilterBar">
-            <button class="btn btn-primary btn-sm" style="border-radius: 9999px;" onclick="filterInquiriesType('all', this)">
-              <i class="fa-solid fa-layer-group"></i> All Inquiries
-            </button>
-            <button class="btn btn-outline btn-sm" style="border-radius: 9999px;" onclick="filterInquiriesType('product', this)">
-              <i class="fa-solid fa-box-open"></i> Product Orders
-            </button>
-            <button class="btn btn-outline btn-sm" style="border-radius: 9999px;" onclick="filterInquiriesType('prescription', this)">
-              <i class="fa-solid fa-file-prescription"></i> Prescription Uploads
-            </button>
-          </div>
+        await attemptUnlock(enteredPass, remember);
+      });
 
-          <div class="items-list-grid" id="adminPrescriptionsList" style="margin-top: 14px;">
-            <!-- Populated dynamically via admin.js -->
-          </div>
-        </div>
-      </section>
-
-      <!-- ================= 5. LEADERSHIP TEAM & BOARD TAB ================= -->
-      <section class="admin-tab-pane" id="tabManagement">
-        <div class="admin-card">
-          <div class="card-header-flex">
-            <div>
-              <h2 class="card-title">Board of Directors &amp; Executive Leadership</h2>
-              <p style="font-size:0.85rem; color:#64748B;">Manage Chairman, CEO, and Executive Directors, profile photos, official titles, and corporate biographies.</p>
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="openManagementModal(-1)">
-              <i class="fa-solid fa-plus"></i> Add Executive Member
-            </button>
-          </div>
-
-          <div class="editable-items-list" id="adminManagementList">
-            <!-- Populated dynamically via admin.js -->
-          </div>
-        </div>
-      </section>
-
-      <!-- ================= 6. COMPANY SETTINGS TAB ================= -->
-      <section class="admin-tab-pane" id="tabCompany">
-        <div class="admin-card">
-          <div class="card-header-flex">
-            <div>
-              <h2 class="card-title">Company Profile, Heritage &amp; Helpline</h2>
-              <p style="font-size:0.85rem; color:#64748B;">Update phone numbers, WhatsApp, announcement ribbon, and Dr. Watson heritage story.</p>
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="saveCompanySettings(event)">
-              <i class="fa-solid fa-check"></i> Save Settings
-            </button>
-          </div>
-
-          <form id="companySettingsForm" onsubmit="saveCompanySettings(event)">
-            <div class="form-grid-2">
-              <div class="admin-form-group">
-                <label>Company Brand Name</label>
-                <input type="text" class="admin-form-input" id="setCompanyName" required>
-              </div>
-              <div class="admin-form-group">
-                <label>24/7 Universal Helpline</label>
-                <input type="text" class="admin-form-input" id="setHelpline" required>
-              </div>
-            </div>
-
-            <div class="form-grid-2">
-              <div class="admin-form-group">
-                <label>WhatsApp Number (without + or spaces, e.g. 923329716666)</label>
-                <input type="text" class="admin-form-input" id="setWhatsApp" required>
-              </div>
-              <div class="admin-form-group">
-                <label>WhatsApp Display Text (e.g. 0332-9716666)</label>
-                <input type="text" class="admin-form-input" id="setWhatsAppDisplay" required>
-              </div>
-            </div>
-
-            <div class="form-grid-2">
-              <div class="admin-form-group">
-                <label>Customer Care Email</label>
-                <input type="email" class="admin-form-input" id="setEmail" required>
-              </div>
-              <div class="admin-form-group">
-                <label>Headquarters Address</label>
-                <input type="text" class="admin-form-input" id="setAddress" required>
-              </div>
-            </div>
-
-            <div class="admin-form-group">
-              <label>Top Announcement Banner Text</label>
-              <input type="text" class="admin-form-input" id="setAnnouncement" required>
-            </div>
-
-            <div class="admin-form-group">
-              <label>About Us - Short Summary</label>
-              <textarea class="admin-form-input" id="setAboutShort" rows="2" required></textarea>
-            </div>
-
-            <div class="admin-form-group">
-              <label>About Us - Extended Heritage &amp; Dr. Watson Tribute</label>
-              <textarea class="admin-form-input" id="setAboutHistory" rows="4" required></textarea>
-            </div>
-
-            <div style="text-align: right;">
-              <button type="submit" class="btn btn-primary">
-                <i class="fa-solid fa-check"></i> Save &amp; Publish Settings
-              </button>
-            </div>
-          </form>
-        </div>
-      </section>
-
-      <!-- ================= 6. SECURITY & PASSWORD TAB ================= -->
-      <section class="admin-tab-pane" id="tabSecurity">
-        <div class="admin-card">
-          <div class="card-header-flex">
-            <div>
-              <h2 class="card-title">Portal Security &amp; Credentials Guard</h2>
-              <p style="font-size:0.85rem; color:#64748B;">Change your administrator login username, password, and security recovery PIN.</p>
-            </div>
-          </div>
-
-          <div style="background:rgba(29, 78, 216, 0.05); border:1px solid rgba(29, 78, 216, 0.2); border-radius:12px; padding:16px; margin-bottom:24px;">
-            <strong style="color:var(--dw-blue); font-size:0.92rem;"><i class="fa-solid fa-shield-halved"></i> Client-Side Cryptographic Protection</strong>
-            <p style="font-size:0.82rem; color:#475569; margin-top:4px; line-height:1.5;">
-              Your portal uses SHA-256 Web Crypto hashing. Passwords are never stored in plain text. Changing your credentials below will immediately protect all future access to <code>admin.html</code> across this browser session.
-            </p>
-          </div>
-
-          <form id="securitySettingsForm" onsubmit="saveSecurityCredentials(event)">
-            <div class="form-grid-2">
-              <div class="admin-form-group">
-                <label>Admin Username</label>
-                <input type="text" class="admin-form-input" id="secUsername" required autocomplete="username">
-              </div>
-              <div class="admin-form-group">
-                <label>Emergency Recovery PIN (4 Digits)</label>
-                <input type="text" class="admin-form-input" id="secPin" maxlength="4" placeholder="1978" required>
-              </div>
-            </div>
-
-            <div class="form-grid-2">
-              <div class="admin-form-group">
-                <label>New Password</label>
-                <input type="password" class="admin-form-input" id="secNewPassword" placeholder="Enter new password" autocomplete="new-password">
-                <small style="color:#64748B; font-size:0.75rem;">Leave empty to keep existing password.</small>
-              </div>
-              <div class="admin-form-group">
-                <label>Confirm New Password</label>
-                <input type="password" class="admin-form-input" id="secConfirmPassword" placeholder="Re-type new password" autocomplete="new-password">
-              </div>
-            </div>
-
-            <div style="text-align: right; margin-top:10px;">
-              <button type="submit" class="btn btn-primary">
-                <i class="fa-solid fa-lock"></i> Update Security Credentials
-              </button>
-            </div>
-          </form>
-        </div>
-      </section>
-
-      <!-- ================= 7. BACKUP & SYNC TAB ================= -->
-      <section class="admin-tab-pane" id="tabBackup">
-        <div class="admin-card">
-          <h2 class="card-title" style="margin-bottom: 8px;">Backup, Export &amp; Restore</h2>
-          <p style="font-size:0.88rem; color:#64748B; margin-bottom: 24px;">
-            Export all your customized website configurations as a clean JSON file, or restore default D. Watson templates.
-          </p>
-
-          <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-            <button class="btn btn-primary" onclick="exportSiteJSON()">
-              <i class="fa-solid fa-file-arrow-down"></i> Download Site Configuration (.JSON)
-            </button>
-            
-            <button class="btn btn-outline" onclick="triggerImportJSON()">
-              <i class="fa-solid fa-file-arrow-up"></i> Import JSON Configuration
-            </button>
-            <input type="file" id="importJsonInput" accept=".json" style="display:none;" onchange="handleFileImport(event)">
-
-            <button class="btn btn-outline" style="border-color:#FCA5A5; color:#DC2626;" onclick="resetToFactoryDefaults()">
-              <i class="fa-solid fa-rotate-left"></i> Reset to Factory Defaults
-            </button>
-          </div>
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- Reusable Modal Popup for Editing -->
-  <div class="admin-modal" id="adminEditModal" role="dialog" aria-modal="true">
-    <div class="admin-modal-box">
-      <div class="modal-header">
-        <h3 class="modal-title" id="adminModalTitle">Edit Item</h3>
-        <button class="modal-close-btn" onclick="closeAdminModal()" aria-label="Close">&times;</button>
-      </div>
-      <div id="adminModalBody">
-        <!-- Injected via admin.js -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast Notification -->
-  <div class="admin-toast" id="adminToast">
-    Changes saved successfully!
-  </div>
-
-  <!-- Scripts (v3.4) -->
-  <script src="js/config.js?v=1.0"></script>
-  <script src="js/data.js?v=3.4"></script>
-  <script src="js/admin.js?v=3.4"></script>
+      // Auto-unlock if valid session exists in memory
+      (async function checkExistingSession() {
+        const savedPass = sessionStorage.getItem(STORAGE_KEY_PASS) || 
+                          (localStorage.getItem("dwatson_admin_remember") === "true" ? localStorage.getItem(STORAGE_KEY_PASS) : null);
+        if (savedPass) {
+          const success = await attemptUnlock(savedPass, true);
+          if (!success) {
+            // Stale or invalid cached password
+            sessionStorage.removeItem(STORAGE_KEY_AUTH);
+            sessionStorage.removeItem(STORAGE_KEY_PASS);
+            localStorage.removeItem(STORAGE_KEY_PASS);
+          }
+        }
+      })();
+    })();
+  </script>
 </body>
 </html>

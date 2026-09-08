@@ -1,0 +1,11 @@
+# Robots.txt for D. Watson Chemist & Superstore (dwatson.co)
+User-agent: *
+Allow: /
+
+# Protect Private Admin Studio from Search Engine Crawlers
+Disallow: /admin.html
+Disallow: /admin
+Disallow: /js/admin.js
+
+# Sitemap
+Sitemap: https://www.dwatson.co/sitemap.xml

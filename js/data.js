@@ -72,13 +72,11 @@ const DEFAULT_SITE_DATA = {
       messenger: "https://m.me/DWatsonChemist"
     },
 
-    // Admin Security Credentials (Protected Client-Side Gate)
+    // Admin Security Credentials (Protected AES Gate)
     adminAuth: {
       username: "admin",
-      // SHA-256 hash of "dwatson@admin2026"
-      passwordHash: "46f882fc025cba277fc20e6a86e9275bcf11d2797e88deaaaeeb19a164ad0bf2",
-      defaultPassPlain: "dwatson@admin2026",
-      securityPin: "1978"
+      // SHA-256 hash of "dwatson123"
+      passwordHash: "755490408479e09d5a6c117d7ee41f71dfb25a3ea23ff790f9cd3497d51ee910"
     }
   },
 
