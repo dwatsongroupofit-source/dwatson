@@ -3851,8 +3851,42 @@ function initTawkToLiveChat() {
 
   window.Tawk_API.onBeforeLoad = suppressTawkBubble;
   window.Tawk_API.onLoad = suppressTawkBubble;
-  window.Tawk_API.onChatMinimized = suppressTawkBubble;
-  window.Tawk_API.onChatHidden = suppressTawkBubble;
+
+  window.Tawk_API.onChatMaximized = function() {
+    // Hide our background popover card immediately so it never shows behind Tawk!
+    if (typeof window.closeBranchMessengerCard === "function") {
+      window.closeBranchMessengerCard();
+    }
+    const card = document.getElementById("branchMessengerCard");
+    if (card) {
+      card.classList.remove("active");
+      card.setAttribute("aria-hidden", "true");
+    }
+    const trigger = document.getElementById("branchMessengerTrigger");
+    if (trigger) trigger.style.display = "none";
+  };
+
+  window.Tawk_API.onChatMinimized = function() {
+    suppressTawkBubble();
+    const card = document.getElementById("branchMessengerCard");
+    if (card) {
+      card.classList.remove("active");
+      card.setAttribute("aria-hidden", "true");
+    }
+    const trigger = document.getElementById("branchMessengerTrigger");
+    if (trigger) trigger.style.display = "flex";
+  };
+
+  window.Tawk_API.onChatHidden = function() {
+    suppressTawkBubble();
+    const card = document.getElementById("branchMessengerCard");
+    if (card) {
+      card.classList.remove("active");
+      card.setAttribute("aria-hidden", "true");
+    }
+    const trigger = document.getElementById("branchMessengerTrigger");
+    if (trigger) trigger.style.display = "flex";
+  };
 
   // Periodically suppress during initial 6 seconds to eliminate any initial bubble flash
   const tawkTimer = setInterval(suppressTawkBubble, 150);
@@ -3871,6 +3905,17 @@ function initTawkToLiveChat() {
  * Launch Branch Live Web Chat (with Photo / Prescription Upload Capability)
  */
 function launchBranchLiveChat(branch) {
+  // Hide background branch selection card immediately
+  if (typeof window.closeBranchMessengerCard === "function") {
+    window.closeBranchMessengerCard();
+  } else {
+    const card = document.getElementById("branchMessengerCard");
+    if (card) {
+      card.classList.remove("active");
+      card.setAttribute("aria-hidden", "true");
+    }
+  }
+
   if (!branch) {
     const data = getSiteData();
     branch = (data && data.branches && data.branches.length) ? data.branches[0] : null;
@@ -3903,6 +3948,9 @@ function launchBranchLiveChat(branch) {
         console.warn("Tawk attribute error:", e);
       }
       window.Tawk_API.maximize();
+      const trigger = document.getElementById("branchMessengerTrigger");
+      if (trigger) trigger.style.display = "none";
+
       if (typeof showToast === "function") {
         showToast(`Connected to ${branch.name} Live Helpdesk.`);
       }
@@ -4199,6 +4247,15 @@ function initFloatingBranchMessenger() {
     if (e.key === "Escape" && card && card.classList.contains("active")) {
       toggleCard(false);
     }
+  });
+
+  // Close card when user interacts with an iframe (such as Tawk.to chat window)
+  window.addEventListener("blur", function() {
+    setTimeout(() => {
+      if (document.activeElement && document.activeElement.tagName === "IFRAME") {
+        toggleCard(false);
+      }
+    }, 100);
   });
 
   // Global methods

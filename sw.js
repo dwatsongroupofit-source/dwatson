@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v15.3)
- * Clean image asset paths and zero 404 cache
+ * D. Watson Chemist & Superstore - Service Worker (v15.4)
+ * Clean image asset paths, zero 404 cache, and live chat focus
  */
 
-const CACHE_NAME = "dwatson-cache-v15.3";
+const CACHE_NAME = "dwatson-cache-v15.4";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -17,8 +17,8 @@ const STATIC_ASSETS = [
   "./css/style.css?v=8.5",
   "./css/responsive.css?v=8.1",
   "./js/config.js?v=1.2",
-  "./js/data.js?v=8.6",
-  "./js/main.js?v=8.5",
+  "./js/data.js?v=8.7",
+  "./js/main.js?v=8.7",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",
