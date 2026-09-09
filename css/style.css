@@ -2544,7 +2544,7 @@ textarea.form-control {
 
 /* Dropzone Active File Preview Card */
 .dropzone-preview {
-  display: flex !important;
+  display: none;
   align-items: center;
   justify-content: flex-start;
   gap: 14px;
@@ -2555,6 +2555,14 @@ textarea.form-control {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
   max-width: 100%;
   box-sizing: border-box;
+}
+
+.dropzone-preview.active {
+  display: flex !important;
+}
+
+.dropzone-default.hidden {
+  display: none !important;
 }
 
 .rx-preview-thumbnail {

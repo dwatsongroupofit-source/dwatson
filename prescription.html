@@ -37,8 +37,7 @@
   <meta name="apple-mobile-web-app-title" content="D. Watson">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon-180.png">
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=8.3">
+  <link rel="stylesheet" href="css/style.css?v=8.4">
   <link rel="stylesheet" href="css/responsive.css?v=8.1">
 </head>
 <body class="page-prescription">
@@ -171,9 +170,9 @@
                 <span class="btn btn-outline btn-sm" style="margin-top:10px;"><i class="fa-solid fa-camera"></i> Open Camera / Gallery</span>
               </div>
               <div class="dropzone-preview" id="rxDropPreview" style="display: none;">
-                <img id="rxPreviewImg" src="" alt="Prescription Preview" class="rx-preview-thumbnail">
+                <img id="rxPreviewImg" src="" alt="Prescription Preview" class="rx-preview-thumbnail" style="display: none;">
                 <div class="rx-preview-info">
-                  <span id="rxFileName" class="rx-preview-name">prescription.jpg</span>
+                  <span id="rxFileName" class="rx-preview-name"></span>
                   <button type="button" class="btn-remove-rx" onclick="removeRxFile(event)"><i class="fa-solid fa-trash"></i> Remove</button>
                 </div>
               </div>
@@ -506,6 +505,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="js/config.js?v=1.1"></script>
   <script src="js/data.js?v=8.0"></script>
-  <script src="js/main.js?v=8.3"></script>
+  <script src="js/main.js?v=8.4"></script>
 </body>
 </html>

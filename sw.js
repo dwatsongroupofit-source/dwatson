@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v13.0)
+ * D. Watson Chemist & Superstore - Service Worker (v14.0)
  * Ultra-fast caching, zero unhandled promise rejections & robust offline resilience
  */
 
-const CACHE_NAME = "dwatson-cache-v13.0";
+const CACHE_NAME = "dwatson-cache-v14.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",

@@ -3087,6 +3087,11 @@ function initPrescriptionBranchSelector() {
   const branchSelect = document.getElementById("rxSelectedBranch");
   if (!branchSelect) return;
 
+  // Guarantee dropzone preview is completely reset and hidden on page load / refresh
+  if (typeof removeRxFile === "function" && !rxSelectedFile) {
+    removeRxFile();
+  }
+
   const data = typeof getSiteData === "function" ? getSiteData() : null;
   if (!data || !data.branches || !data.branches.length) return;
 
@@ -3445,15 +3450,33 @@ function handleRxFileSelect(input) {
   if (file.type && file.type.startsWith("image/")) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      if (previewImg) previewImg.src = e.target.result;
-      if (previewWrap) previewWrap.style.display = "flex";
-      if (defaultWrap) defaultWrap.style.display = "none";
+      if (previewImg) {
+        previewImg.src = e.target.result;
+        previewImg.style.display = "block";
+      }
+      if (previewWrap) {
+        previewWrap.classList.add("active");
+        previewWrap.style.display = "flex";
+      }
+      if (defaultWrap) {
+        defaultWrap.classList.add("hidden");
+        defaultWrap.style.display = "none";
+      }
     };
     reader.readAsDataURL(file);
   } else {
-    if (previewImg) previewImg.src = "assets/images/logo-official.png";
-    if (previewWrap) previewWrap.style.display = "flex";
-    if (defaultWrap) defaultWrap.style.display = "none";
+    if (previewImg) {
+      previewImg.src = "assets/images/logo-official.png";
+      previewImg.style.display = "block";
+    }
+    if (previewWrap) {
+      previewWrap.classList.add("active");
+      previewWrap.style.display = "flex";
+    }
+    if (defaultWrap) {
+      defaultWrap.classList.add("hidden");
+      defaultWrap.style.display = "none";
+    }
   }
 
   // Pre-upload in background immediately so the live link is ready before user clicks submit
@@ -3469,16 +3492,35 @@ function handleRxFileSelect(input) {
 }
 
 function removeRxFile(event) {
-  if (event) event.stopPropagation();
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
   rxSelectedFile = null;
   rxUploadedImageUrl = "";
   rxUploadingPromise = null;
   const input = document.getElementById("rxFileInput");
   if (input) input.value = "";
+  const previewImg = document.getElementById("rxPreviewImg");
+  if (previewImg) {
+    previewImg.src = "";
+    previewImg.style.display = "none";
+  }
+  const fileNameEl = document.getElementById("rxFileName");
+  if (fileNameEl) {
+    fileNameEl.innerHTML = "";
+    fileNameEl.title = "";
+  }
   const previewWrap = document.getElementById("rxDropPreview");
   const defaultWrap = document.getElementById("rxDropDefault");
-  if (previewWrap) previewWrap.style.display = "none";
-  if (defaultWrap) defaultWrap.style.display = "block";
+  if (previewWrap) {
+    previewWrap.classList.remove("active");
+    previewWrap.style.display = "none";
+  }
+  if (defaultWrap) {
+    defaultWrap.classList.remove("hidden");
+    defaultWrap.style.display = "block";
+  }
 }
 
 function dispatchRxWhatsApp(prescriptionPhotoUrl = "") {
