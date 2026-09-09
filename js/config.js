@@ -18,6 +18,25 @@ window.DW_CONFIG = {
   // 🔗 Set to empty to use the serverless same-origin relative path (e.g. Vercel Serverless Functions)
   RAILWAY_BACKEND_URL: "",
 
+  // ☁️ Cloud Image Upload Endpoint (Zero-CORS serverless function on Vercel)
+  UPLOAD_ENDPOINT: "/api/upload",
+
+  // 📸 Direct 100% Client-Side Third-Party Cloud Upload (ImgBB CDN)
+  // Direct browser uploads with zero backend required
+  IMGBB_API_KEY: "5d369a9387210e1432e7018b92d3d0e8",
+  IMGBB_UPLOAD_URL: "https://api.imgbb.com/1/upload",
+
+  /**
+   * Resolves the active image upload endpoint
+   */
+  getUploadUrl: function() {
+    const base = this.getBackendUrl();
+    if (base) {
+      return base + (this.UPLOAD_ENDPOINT.startsWith("/") ? this.UPLOAD_ENDPOINT : "/" + this.UPLOAD_ENDPOINT);
+    }
+    return this.UPLOAD_ENDPOINT;
+  },
+
   /**
    * Resolves the active backend API endpoint dynamically.
    */

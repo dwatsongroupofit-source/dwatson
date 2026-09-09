@@ -2,7 +2,7 @@
   "name": "D. Watson Chemist & Superstore",
   "short_name": "D. Watson",
   "description": "Pakistan's premier trusted pharmacy and superstore chain since 1978. 100% genuine medicines, international cosmetics, and 24/7 express home delivery.",
-  "start_url": "index.html?source=pwa",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#FFFFFF",
   "theme_color": "#A50505",

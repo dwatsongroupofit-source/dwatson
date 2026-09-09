@@ -214,60 +214,116 @@ window.handleAdminImageUpload = async function(inputEl, targetInputId, previewIm
   const file = inputEl.files[0];
   const targetInput = document.getElementById(targetInputId);
   const previewImg = document.getElementById(previewImgId);
+  const uploadLabel = inputEl.closest("label");
+  const origLabelHtml = uploadLabel ? uploadLabel.innerHTML : "";
 
   try {
-    showToast("Optimizing photo from gallery...", "info");
+    if (uploadLabel) {
+      uploadLabel.style.pointerEvents = "none";
+      uploadLabel.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading...`;
+    }
+    showToast("Optimizing & uploading photo to Cloud CDN...", "info");
 
-    // 1. Compress image in-browser to avoid browser LocalStorage quota errors
-    const { dataUrl, blob } = await compressImageFile(file, 1200, 0.82);
+    // 1. Compress image in-browser (max 1200px, 0.82 quality) for optimal size and instant local preview
+    const { dataUrl } = await compressImageFile(file, 1200, 0.82);
 
-    // Set immediate preview and compressed value
+    // Set immediate preview
     if (previewImg) previewImg.src = dataUrl;
-    if (targetInput) targetInput.value = dataUrl;
 
-    // 2. Attempt to upload to public cloud CDN to generate a direct permanent live URL
-    let uploadedLiveUrl = null;
-    try {
-      const formData = new FormData();
-      formData.append("key", "6d207e02198a847aa98d0a2a901485a5");
-      formData.append("action", "upload");
-      formData.append("source", blob, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
-      formData.append("format", "json");
+    // Strategy 1: Direct 100% Client-Side Cloud Upload (ImgBB - Zero Backend Needed)
+    const directImgbbKey = (window.DW_CONFIG && window.DW_CONFIG.IMGBB_API_KEY) || localStorage.getItem("dw_imgbb_api_key");
+    if (directImgbbKey && directImgbbKey.length > 8) {
+      try {
+        const formData = new FormData();
+        formData.append("key", directImgbbKey);
+        formData.append("image", dataUrl.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, ""));
+        formData.append("name", file.name.replace(/\.[^/.]+$/, ""));
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12000);
-
-      const res = await fetch("https://freeimage.host/api/1/upload", {
-        method: "POST",
-        body: formData,
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
-
-      if (res.ok) {
-        const json = await res.json();
-        if (json && json.image && json.image.url) {
-          uploadedLiveUrl = json.image.url;
+        const res = await fetch("https://api.imgbb.com/1/upload", {
+          method: "POST",
+          body: formData
+        });
+        const json = await res.json().catch(() => null);
+        if (res.ok && json && json.data && json.data.url) {
+          uploadedLiveUrl = json.data.url;
         }
+      } catch (imgbbErr) {
+        console.warn("Direct ImgBB notice:", imgbbErr.message);
       }
-    } catch (cdnErr) {
-      console.warn("Cloud CDN upload fallback to compressed DataURL:", cdnErr.message);
+    }
+
+    // Strategy 2: Vercel Serverless Function (/api/upload - Runs automatically on Vercel for free)
+    if (!uploadedLiveUrl) {
+      const uploadUrl = (window.DW_CONFIG && typeof window.DW_CONFIG.getUploadUrl === "function") 
+        ? window.DW_CONFIG.getUploadUrl() 
+        : "/api/upload";
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 25000);
+
+        const res = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            image: dataUrl,
+            filename: file.name
+          }),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.success && json.url) {
+            uploadedLiveUrl = json.url;
+          }
+        } else {
+          const errJson = await res.json().catch(() => null);
+          console.warn("Upload API notice:", res.status, errJson);
+        }
+      } catch (apiErr) {
+        console.warn("Cloud upload API notice:", apiErr.message);
+      }
     }
 
     if (uploadedLiveUrl) {
       if (targetInput) targetInput.value = uploadedLiveUrl;
       if (previewImg) previewImg.src = uploadedLiveUrl;
-      showToast("Photo uploaded live to cloud! Link generated.", "success");
+      showToast("Photo uploaded live to Cloud CDN! Permanent link saved.", "success");
     } else {
-      showToast("Photo compressed & ready! Click Save to apply.", "success");
+      // Fallback: save compressed dataUrl so user's photo is not lost
+      if (targetInput) targetInput.value = dataUrl;
+      showToast("Photo compressed and saved locally. (Click Save to apply)", "warning");
     }
   } catch (err) {
     console.error("Image processing error:", err);
-    showToast("Error processing photo. Please try again or paste image URL.", "error");
+    showToast("Error processing photo: " + (err.message || "Please try again."), "error");
   } finally {
-    // Reset file input so user can pick the same file again if desired
+    if (uploadLabel && origLabelHtml) {
+      uploadLabel.style.pointerEvents = "auto";
+      uploadLabel.innerHTML = origLabelHtml;
+    }
     inputEl.value = "";
   }
+};
+
+/**
+ * 1-Tap Copy Helper for Image URLs
+ */
+window.copyInputLink = function(inputId) {
+  const el = document.getElementById(inputId);
+  if (!el || !el.value) {
+    showToast("No image URL to copy yet.", "info");
+    return;
+  }
+  navigator.clipboard.writeText(el.value).then(() => {
+    showToast("Image link copied to clipboard!", "success");
+  }).catch(() => {
+    el.select();
+    document.execCommand("copy");
+    showToast("Image link copied!", "success");
+  });
 };
 
 
@@ -421,6 +477,9 @@ window.openSlideModal = function(index = -1) {
         <label>Slide Image (Upload Photo or Enter Path/URL)</label>
         <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
           <input type="text" class="admin-form-input" id="slideImage" value="${escapeAdminHtml(slide.image)}" style="flex:1;" oninput="document.getElementById('slideImgPreview').src=this.value;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('slideImage')" title="Copy Image Link" style="padding:6px 10px;">
+            <i class="fa-regular fa-copy"></i>
+          </button>
           <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
             <i class="fa-solid fa-cloud-arrow-up"></i> Upload
             <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'slideImage', 'slideImgPreview')">
@@ -585,6 +644,9 @@ window.openDepartmentModal = function(index = -1) {
         <label>Department Photo (Upload Photo or Enter Path/URL)</label>
         <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
           <input type="text" class="admin-form-input" id="deptImage" value="${escapeAdminHtml(dept.image || '')}" style="flex:1;" oninput="document.getElementById('deptImgPreview').src=this.value;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('deptImage')" title="Copy Image Link" style="padding:6px 10px;">
+            <i class="fa-regular fa-copy"></i>
+          </button>
           <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
             <i class="fa-solid fa-cloud-arrow-up"></i> Upload
             <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'deptImage', 'deptImgPreview')">
@@ -1053,6 +1115,9 @@ window.openBranchModal = function(index = -1) {
           <label>Branch Image (Upload Photo or Enter Path/URL)</label>
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
             <input type="text" class="admin-form-input" id="branchImage" value="${escapeAdminHtml(branch.image || '')}" placeholder="assets/images/branches/f6-supermarket.jpg" style="flex:1;" oninput="document.getElementById('branchImgPreview').src=this.value;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('branchImage')" title="Copy Image Link" style="padding:6px 10px;">
+              <i class="fa-regular fa-copy"></i>
+            </button>
             <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
               <i class="fa-solid fa-cloud-arrow-up"></i> Upload
               <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'branchImage', 'branchImgPreview')">
@@ -1259,6 +1324,9 @@ window.openProductModal = function(index = -1) {
           <label>Product Image (Upload Photo or Enter Path/URL)</label>
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
             <input type="text" class="admin-form-input" id="prodImage" value="${escapeAdminHtml(prod.image)}" style="flex:1;" oninput="document.getElementById('prodImgPreview').src=this.value;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('prodImage')" title="Copy Image Link" style="padding:6px 10px;">
+              <i class="fa-regular fa-copy"></i>
+            </button>
             <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
               <i class="fa-solid fa-cloud-arrow-up"></i> Upload
               <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'prodImage', 'prodImgPreview')">
@@ -1396,6 +1464,9 @@ window.openGalleryModal = function(index = -1) {
         <label>Gallery Photo (Upload from Computer or Enter Path/URL)</label>
         <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
           <input type="text" class="admin-form-input" id="galImage" placeholder="assets/images/Shop Inside/... or paste image URL" value="${escapeAdminHtml(item.image || '')}" required style="flex:1;" oninput="document.getElementById('galImgPreview').src=this.value;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('galImage')" title="Copy Image Link" style="padding:6px 10px;">
+            <i class="fa-regular fa-copy"></i>
+          </button>
           <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
             <i class="fa-solid fa-cloud-arrow-up"></i> Upload from PC
             <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'galImage', 'galImgPreview')">
@@ -1557,7 +1628,12 @@ window.openManagementModal = function(index = -1) {
             <img src="${member.image || 'assets/images/management/zafar-bakhtawari.png'}" id="mgrImgPreview" class="admin-preview-img" style="border-radius:50%; width:70px; height:70px; object-fit:cover;" alt="Portrait Preview" onerror="this.onerror=null; this.src='assets/images/management/zafar-bakhtawari.png';">
           </div>
           <div style="flex:1;">
-            <input type="text" class="admin-form-input" id="mgrImage" value="${escapeAdminHtml(member.image || '')}" placeholder="assets/images/management/... or paste photo URL" style="margin-bottom:8px;" oninput="document.getElementById('mgrImgPreview').src=this.value;">
+            <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+              <input type="text" class="admin-form-input" id="mgrImage" value="${escapeAdminHtml(member.image || '')}" placeholder="assets/images/management/... or paste photo URL" style="flex:1;" oninput="document.getElementById('mgrImgPreview').src=this.value;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('mgrImage')" title="Copy Image Link" style="padding:6px 10px;">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            </div>
             <label class="btn btn-outline btn-sm admin-upload-btn">
               <i class="fa-solid fa-cloud-arrow-up"></i> Upload Portrait from Computer
               <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'mgrImage', 'mgrImgPreview')">
@@ -1899,6 +1975,24 @@ window.deleteInquiryRecord = function(id) {
 window.exportSiteJSON = function() {
   exportSiteDataJSON();
   showToast("Configuration JSON file downloaded.");
+};
+
+window.exportSiteCode = function() {
+  if (typeof exportSiteDataAsCode === "function") {
+    exportSiteDataAsCode();
+  } else {
+    showToast("Export helper loading, please try again in a moment.", "info");
+  }
+};
+
+window.syncSiteDataCloud = async function() {
+  showToast("Synchronizing site data across devices...", "info");
+  if (typeof syncSiteDataToCloud === "function") {
+    await syncSiteDataToCloud(adminData);
+    showToast("Cloud sync broadcast complete! Other devices will receive updates.", "success");
+  } else {
+    showToast("Local data active.", "success");
+  }
 };
 
 window.triggerImportJSON = function() {

@@ -23,7 +23,6 @@ window.slideProducts = function(direction) {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  initAppSplashScreen();
   initWebsite();
   initOrderBranchSelector();
 
@@ -3038,83 +3037,12 @@ function initPWAInstall() {
 }
 
 /**
- * PWA Native App Launch Splash Screen Controller
- * CRITICAL USER REQUIREMENT:
- * - ONLY show when opened as the installed mobile app (standalone PWA).
- * - NEVER show for regular web visitors (desktop or mobile browser tabs).
- * - Pure white background (#FFFFFF) with crystal-clear high-definition D. Watson logo.
+ * PWA Native App Launch Splash Screen Controller (Completely Removed as Requested)
+ * Zero splash delay: App opens instantly with direct website content.
  */
 function initAppSplashScreen() {
-  try {
-    // 1. Strict check: ONLY show when running as an installed standalone mobile app
-    const isStandaloneMatch = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
-    const isIosStandalone = window.navigator.standalone === true;
-    const isPwaUrl = window.location.search.includes('source=pwa') || window.location.search.includes('utm_source=pwa');
-    const isAndroidAppReferrer = document.referrer && document.referrer.includes('android-app://');
-
-    const isInstalledMobileApp = Boolean(isStandaloneMatch || isIosStandalone || isPwaUrl || isAndroidAppReferrer);
-
-    // If regular web browser browsing (desktop or mobile browser tabs), DO NOT SHOW (instant direct load)
-    if (!isInstalledMobileApp) {
-      return;
-    }
-
-    // 2. Only show once per app session so navigating between pages does not re-trigger it
-    if (sessionStorage.getItem('dw_app_splash_seen')) {
-      return;
-    }
-    sessionStorage.setItem('dw_app_splash_seen', '1');
-
-    // 3. Mount splash screen
-    const mountSplash = () => {
-      if (!document.body || document.getElementById('pwaAppSplash')) return;
-
-      const splashEl = document.createElement('div');
-      splashEl.className = 'pwa-app-splash';
-      splashEl.id = 'pwaAppSplash';
-      splashEl.setAttribute('role', 'dialog');
-      splashEl.setAttribute('aria-modal', 'true');
-      splashEl.setAttribute('aria-label', 'Launching D. Watson Mobile App');
-
-      splashEl.innerHTML = `
-        <div style="height: 16px;"></div>
-        <div class="splash-center-content">
-          <div class="splash-emblem-wrap">
-            <div class="splash-emblem-halo"></div>
-            <img src="assets/images/pwa-icon-512.png" alt="D. Watson Emblem" class="splash-emblem-img" width="104" height="104">
-          </div>
-          <h1 class="splash-brand-title">D. Watson</h1>
-          <div class="splash-brand-sub">Chemist &amp; Superstore</div>
-          <div class="splash-brand-motto">Trusted Healthcare Since 1978</div>
-          <div class="splash-loader-track">
-            <div class="splash-loader-bar"></div>
-          </div>
-        </div>
-        <div class="splash-footer-badge">
-          <i class="fa-solid fa-circle-check"></i>
-          <span>Official Mobile App • 100% Genuine</span>
-        </div>
-      `;
-
-      document.body.prepend(splashEl);
-
-      // Smooth dismiss after 1.1s
-      setTimeout(() => {
-        splashEl.classList.add('splash-hiding');
-        setTimeout(() => {
-          splashEl.remove();
-        }, 380);
-      }, 1100);
-    };
-
-    if (document.body) {
-      mountSplash();
-    } else {
-      document.addEventListener('DOMContentLoaded', mountSplash);
-    }
-  } catch (err) {
-    console.warn('Splash screen error:', err);
-  }
+  const existingSplash = document.getElementById('pwaAppSplash');
+  if (existingSplash) existingSplash.remove();
 }
 
 /**
@@ -3394,33 +3322,58 @@ async function uploadPrescriptionImage(file) {
   }
 
   try {
-    const { dataUrl, blob } = await compressRxImageFile(file, 1200, 0.82);
+    const { dataUrl } = await compressRxImageFile(file, 1200, 0.82);
+
+    // Strategy 1: Direct client-side ImgBB upload (if key configured)
+    const directImgbbKey = (window.DW_CONFIG && window.DW_CONFIG.IMGBB_API_KEY) || localStorage.getItem("dw_imgbb_api_key");
+    if (directImgbbKey && directImgbbKey.length > 8) {
+      try {
+        const formData = new FormData();
+        formData.append("key", directImgbbKey);
+        formData.append("image", dataUrl.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, ""));
+        formData.append("name", file.name.replace(/\.[^/.]+$/, ""));
+
+        const res = await fetch("https://api.imgbb.com/1/upload", {
+          method: "POST",
+          body: formData
+        });
+        const json = await res.json().catch(() => null);
+        if (res.ok && json && json.data && json.data.url) {
+          return json.data.url;
+        }
+      } catch (imgbbErr) {
+        console.warn("Direct ImgBB prescription notice:", imgbbErr.message);
+      }
+    }
+
+    // Strategy 2: Vercel Serverless Function (/api/upload)
+    const uploadUrl = (window.DW_CONFIG && typeof window.DW_CONFIG.getUploadUrl === "function") 
+      ? window.DW_CONFIG.getUploadUrl() 
+      : "/api/upload";
 
     try {
-      const formData = new FormData();
-      formData.append("key", "6d207e02198a847aa98d0a2a901485a5");
-      formData.append("action", "upload");
-      formData.append("source", blob, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
-      formData.append("format", "json");
-
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12000);
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
 
-      const res = await fetch("https://freeimage.host/api/1/upload", {
+      const res = await fetch(uploadUrl, {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          image: dataUrl,
+          filename: file.name
+        }),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
 
       if (res.ok) {
         const json = await res.json();
-        if (json && json.image && json.image.url) {
-          return json.image.url;
+        if (json && json.success && json.url) {
+          return json.url;
         }
       }
     } catch (cdnErr) {
-      console.warn("Cloud CDN prescription upload fallback notice:", cdnErr);
+      console.warn("Cloud CDN prescription upload fallback notice:", cdnErr.message);
     }
 
     return dataUrl;
@@ -3696,6 +3649,3 @@ function filterBranchesSearch(query) {
 
   renderBranchCards(filtered);
 }
-
-// Early evaluation for standalone mobile app launch screen
-initAppSplashScreen();

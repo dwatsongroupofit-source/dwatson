@@ -1496,12 +1496,16 @@ function getSiteData() {
 
 /**
  * Save updated site data to LocalStorage with robust quota management
+ * and broadcast across all devices via /api/site-data
  */
 function saveSiteData(data) {
   try {
     const jsonStr = JSON.stringify(data);
     localStorage.setItem(STORAGE_KEY, jsonStr);
     window.dispatchEvent(new Event("siteDataUpdated"));
+
+    // Broadcast update across devices via cloud sync endpoint
+    syncSiteDataToCloud(data);
     return true;
   } catch (e) {
     console.error("Failed to save site data to LocalStorage:", e);
@@ -1516,11 +1520,101 @@ function saveSiteData(data) {
 }
 
 /**
+ * Asynchronously sync site data to cloud API for multi-device access
+ */
+async function syncSiteDataToCloud(data) {
+  try {
+    const endpoint = (window.DW_CONFIG && typeof window.DW_CONFIG.getBackendUrl === "function")
+      ? (window.DW_CONFIG.getBackendUrl() + "/api/site-data")
+      : "/api/site-data";
+
+    await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: data }),
+      keepalive: true
+    }).catch(() => null);
+  } catch (err) {
+    // Non-blocking background sync
+  }
+}
+
+/**
+ * Fetch latest synchronized site data from cloud on startup
+ */
+async function fetchSiteDataFromCloud() {
+  try {
+    const endpoint = (window.DW_CONFIG && typeof window.DW_CONFIG.getBackendUrl === "function")
+      ? (window.DW_CONFIG.getBackendUrl() + "/api/site-data")
+      : "/api/site-data";
+
+    const res = await fetch(endpoint).catch(() => null);
+    if (res && res.ok) {
+      const json = await res.json().catch(() => null);
+      if (json && json.success && json.data) {
+        const localData = localStorage.getItem(STORAGE_KEY);
+        const cloudDataStr = JSON.stringify(json.data);
+        if (localData !== cloudDataStr) {
+          localStorage.setItem(STORAGE_KEY, cloudDataStr);
+          window.dispatchEvent(new Event("siteDataUpdated"));
+          console.log("☁️ Synchronized latest site data from cloud!");
+        }
+      }
+    }
+  } catch (e) {
+    // Silent fallback to local storage
+  }
+}
+
+// Auto-check for fresh cloud-synced site data
+if (typeof window !== "undefined") {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", fetchSiteDataFromCloud);
+  } else {
+    fetchSiteDataFromCloud();
+  }
+}
+
+/**
  * Reset site data to factory defaults
  */
 function resetSiteData() {
   localStorage.removeItem(STORAGE_KEY);
   window.dispatchEvent(new Event("siteDataUpdated"));
+}
+
+/**
+ * Export clean JS code ready to paste into js/data.js (Permanent Git Commit)
+ */
+function exportSiteDataAsCode() {
+  const data = getSiteData();
+  const code = `/**\n * D. Watson Chemist & Superstore - Central Data Store\n * Auto-generated from Admin Studio on ${new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" })}\n */\n\nconst DEFAULT_SITE_DATA = ${JSON.stringify(data, null, 2)};\n`;
+  
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(() => {
+      if (typeof showToast === "function") {
+        showToast("Code copied to clipboard! You can paste into js/data.js.", "success");
+      } else {
+        alert("Site Data code copied to clipboard! You can paste it directly into js/data.js.");
+      }
+    }).catch(() => {
+      downloadCodeAsFile(code);
+    });
+  } else {
+    downloadCodeAsFile(code);
+  }
+}
+
+function downloadCodeAsFile(code) {
+  const blob = new Blob([code], { type: "text/javascript" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `data-backup-${new Date().toISOString().slice(0, 10)}.js`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 /**

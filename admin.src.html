@@ -162,6 +162,9 @@
       </div>
 
       <div class="admin-actions">
+        <button class="btn btn-outline btn-sm" onclick="syncSiteDataCloud()" title="Sync across all devices">
+          <i class="fa-solid fa-rotate"></i> Cloud Sync
+        </button>
         <button class="btn btn-outline btn-sm" onclick="exportSiteJSON()">
           <i class="fa-solid fa-download"></i> Export JSON
         </button>
@@ -521,6 +524,14 @@
           <div style="display: flex; gap: 16px; flex-wrap: wrap;">
             <button class="btn btn-primary" onclick="exportSiteJSON()">
               <i class="fa-solid fa-file-arrow-down"></i> Download Site Configuration (.JSON)
+            </button>
+
+            <button class="btn btn-primary" onclick="exportSiteCode()" style="background:#0F766E;">
+              <i class="fa-solid fa-code"></i> Copy Code for data.js
+            </button>
+            
+            <button class="btn btn-outline" onclick="syncSiteDataCloud()">
+              <i class="fa-solid fa-rotate"></i> Sync Across Devices Now
             </button>
             
             <button class="btn btn-outline" onclick="triggerImportJSON()">
