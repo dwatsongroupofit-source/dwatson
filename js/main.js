@@ -87,6 +87,31 @@ function initWebsite() {
   initPWAInstall();
   initTawkToLiveChat();
   initFloatingBranchMessenger();
+  setupCustomerInfoAutoSync();
+}
+
+/**
+ * Auto-persist and prefill customer contact info across forms and chat
+ */
+function setupCustomerInfoAutoSync() {
+  const fields = [
+    { id: "rxPatientName", key: "dw_customer_name" },
+    { id: "rxPatientPhone", key: "dw_customer_phone" },
+    { id: "contactName", key: "dw_customer_name" },
+    { id: "contactEmail", key: "dw_customer_email" }
+  ];
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (!el) return;
+    const saved = localStorage.getItem(f.key);
+    if (saved && !el.value) el.value = saved;
+    const persist = () => {
+      const val = el.value.trim();
+      if (val) localStorage.setItem(f.key, val);
+    };
+    el.addEventListener("change", persist);
+    el.addEventListener("blur", persist);
+  });
 }
 
 /**
@@ -2443,6 +2468,9 @@ function initPrescriptionUploader(whatsappNumber) {
         return;
       }
 
+      localStorage.setItem("dw_customer_name", name);
+      localStorage.setItem("dw_customer_email", email);
+
       // Set Loading state
       const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '<i class="fa-solid fa-paper-plane"></i> Submit Inquiry';
       if (submitBtn) {
@@ -3626,6 +3654,9 @@ async function handlePrescriptionSubmit(e, mode = "all") {
     if (phoneInput) phoneInput.focus();
     return;
   }
+
+  localStorage.setItem("dw_customer_name", name);
+  localStorage.setItem("dw_customer_phone", phone);
   if (rxFulfillmentMode === "delivery" && !address) {
     alert("Please enter your complete delivery address for express home delivery.");
     if (addressInput) addressInput.focus();
@@ -3840,6 +3871,17 @@ function initTawkToLiveChat() {
   window.Tawk_API = window.Tawk_API || {};
   window.Tawk_LoadStart = new Date();
 
+  // Pre-load known customer profile into Tawk session if available
+  const savedName = localStorage.getItem("dw_customer_name");
+  const savedPhone = localStorage.getItem("dw_customer_phone");
+  const savedEmail = localStorage.getItem("dw_customer_email");
+  if (savedName) {
+    window.Tawk_API.visitor = {
+      name: savedName,
+      email: savedEmail || (savedPhone ? `${savedPhone.replace(/[^0-9]/g, "")}@customer.dwatson.co` : "")
+    };
+  }
+
   // Hide Tawk's default round bubble so it NEVER collides with our single unified icon!
   const suppressTawkBubble = function() {
     try {
@@ -3902,9 +3944,83 @@ function initTawkToLiveChat() {
 }
 
 /**
+ * Synchronize full customer profile, branch, page and context with Tawk.to
+ */
+function sendCustomerInfoToTawk(branch, customerInfo) {
+  if (!window.Tawk_API) return;
+
+  const finalName = (customerInfo && customerInfo.name) || localStorage.getItem("dw_customer_name") || "";
+  const finalPhone = (customerInfo && customerInfo.phone) || localStorage.getItem("dw_customer_phone") || "";
+  const finalEmail = (customerInfo && customerInfo.email) || localStorage.getItem("dw_customer_email") || "";
+
+  // 1. Identify customer in Tawk
+  if (finalName) {
+    window.Tawk_API.visitor = {
+      name: finalName,
+      email: finalEmail || (finalPhone ? `${finalPhone.replace(/[^0-9]/g, "")}@customer.dwatson.co` : "")
+    };
+  }
+
+  // 2. Build full metadata attributes for agent view
+  const bName = (branch && branch.name) ? branch.name : "D. Watson Chemist";
+  const bCity = (branch && branch.city) ? branch.city : "Islamabad";
+  const bPhone = (branch && branch.phone) ? branch.phone : "";
+  const bWa = (branch && branch.whatsapp) ? branch.whatsapp : "923329716666";
+  const pageTitle = document.title ? document.title.split(" - ")[0].trim() : "Store Page";
+
+  const attrs = {
+    'SelectedBranch': bName,
+    'City': bCity,
+    'BranchCity': bCity,
+    'BranchPhone': bPhone,
+    'BranchWhatsApp': bWa,
+    'CurrentPage': pageTitle,
+    'PageURL': window.location.href,
+    'Country': 'Pakistan',
+    'Platform': /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile Web' : 'Desktop Web',
+    'ContactTime': new Date().toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' })
+  };
+
+  if (finalName) {
+    attrs['name'] = finalName;
+    attrs['CustomerName'] = finalName;
+  }
+  if (finalPhone) {
+    attrs['Phone'] = finalPhone;
+    attrs['WhatsApp'] = finalPhone;
+    attrs['CustomerPhone'] = finalPhone;
+  }
+  if (finalEmail) {
+    attrs['email'] = finalEmail;
+  }
+
+  try {
+    if (typeof window.Tawk_API.setAttributes === "function") {
+      window.Tawk_API.setAttributes(attrs, function() {});
+    }
+  } catch (e) {
+    console.warn("Tawk setAttributes error:", e);
+  }
+
+  // 3. Highlighted tags that appear on the conversation ticket
+  try {
+    const cleanBranch = bName.replace(/^D\.\s*Watson\s*/i, "");
+    const tags = [bCity, cleanBranch, pageTitle];
+    if (finalName) tags.unshift(finalName);
+    if (finalPhone) tags.unshift(finalPhone);
+
+    if (typeof window.Tawk_API.addTags === "function") {
+      window.Tawk_API.addTags(tags, function() {});
+    }
+  } catch (e) {
+    console.warn("Tawk addTags error:", e);
+  }
+}
+
+/**
  * Launch Branch Live Web Chat (with Photo / Prescription Upload Capability)
  */
-function launchBranchLiveChat(branch) {
+function launchBranchLiveChat(branch, customerInfo) {
   // Hide background branch selection card immediately
   const card = document.getElementById("branchMessengerCard");
   if (card) {
@@ -3933,17 +4049,7 @@ function launchBranchLiveChat(branch) {
         if (typeof window.Tawk_API.showWidget === "function") {
           window.Tawk_API.showWidget();
         }
-        if (typeof window.Tawk_API.setAttributes === "function") {
-          window.Tawk_API.setAttributes({
-            'SelectedBranch': branch.name,
-            'City': branch.city,
-            'BranchPhone': branch.phone,
-            'BranchWhatsApp': branch.whatsapp || "923329716666"
-          }, function() {});
-        }
-        if (typeof window.Tawk_API.addTags === "function") {
-          window.Tawk_API.addTags([branch.city || 'Islamabad', 'BranchDesk'], function() {});
-        }
+        sendCustomerInfoToTawk(branch, customerInfo);
       } catch (e) {
         console.warn("Tawk attribute error:", e);
       }
@@ -3951,8 +4057,12 @@ function launchBranchLiveChat(branch) {
       const trigger = document.getElementById("branchMessengerTrigger");
       if (trigger) trigger.style.display = "none";
 
+      const cName = (customerInfo && customerInfo.name) || localStorage.getItem("dw_customer_name");
+      const msg = cName
+        ? `Connected to ${branch.name} Live Helpdesk as ${cName}.`
+        : `Connected to ${branch.name} Live Helpdesk.`;
       if (typeof showToast === "function") {
-        showToast(`Connected to ${branch.name} Live Helpdesk.`);
+        showToast(msg);
       }
       return;
     }
@@ -3967,11 +4077,14 @@ function launchBranchLiveChat(branch) {
         attempts++;
         if (window.Tawk_API && typeof window.Tawk_API.maximize === "function") {
           clearInterval(pollTimer);
-          launchBranchLiveChat(branch);
+          launchBranchLiveChat(branch, customerInfo);
         } else if (attempts > 12) {
           clearInterval(pollTimer);
           const waNum = branch.whatsapp || "923329716666";
-          const msg = `Hello D.Watson ${branch.name} Counter Staff, I need live assistance with medicine / prescription / stock inquiry.`;
+          const cName = (customerInfo && customerInfo.name) || localStorage.getItem("dw_customer_name") || "";
+          const msg = cName
+            ? `Hello D.Watson ${branch.name} Counter Staff, this is ${cName}. I need live assistance with medicine / prescription / stock inquiry.`
+            : `Hello D.Watson ${branch.name} Counter Staff, I need live assistance with medicine / prescription / stock inquiry.`;
           window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, "_blank");
         }
       }, 250);
@@ -3984,7 +4097,10 @@ function launchBranchLiveChat(branch) {
     showToast(`Connecting to ${branch.name} Counter Desk...`);
   }
   const waNum = branch.whatsapp || "923329716666";
-  const msg = `Hello D.Watson ${branch.name} Counter Staff, I need live assistance with medicine / prescription / stock inquiry.`;
+  const cName = (customerInfo && customerInfo.name) || localStorage.getItem("dw_customer_name") || "";
+  const msg = cName
+    ? `Hello D.Watson ${branch.name} Counter Staff, this is ${cName}. I need live assistance with medicine / prescription / stock inquiry.`
+    : `Hello D.Watson ${branch.name} Counter Staff, I need live assistance with medicine / prescription / stock inquiry.`;
   const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
   window.open(waUrl, "_blank");
 }
@@ -4052,85 +4168,138 @@ function initFloatingBranchMessenger() {
 
       <!-- Body -->
       <div class="bmc-body">
-        <!-- Branch Selector -->
-        <div class="bmc-field-group">
-          <label class="bmc-field-label" for="bmcBranchSelect">
-            <span>Select Your Branch</span>
-            <small style="color:#10B981; font-weight:700;"><i class="fa-solid fa-location-dot"></i> 20+ Outlets</small>
-          </label>
-          <div class="bmc-branch-select-wrap">
-            <select id="bmcBranchSelect" class="bmc-branch-select">
-              ${selectOptionsHtml}
-            </select>
-            <i class="fa-solid fa-chevron-down bmc-select-chevron"></i>
+        <!-- Panel 1: Main Selection View -->
+        <div class="bmc-panel-main" id="bmcPanelMain">
+          <!-- Known Customer Badge if name is saved -->
+          <div class="bmc-known-customer" id="bmcKnownCustomer" style="display:none;">
+            <div>
+              <i class="fa-solid fa-circle-user" style="color:#0F766E;"></i>
+              <span>Chatting as: <strong id="bmcKnownName"></strong></span>
+            </div>
+            <button type="button" class="bmc-known-edit-btn" id="bmcEditProfileBtn">Change</button>
           </div>
-        </div>
 
-        <!-- Active Branch Info Box -->
-        <div class="bmc-branch-card" id="bmcBranchPreview">
-          <div class="bmc-bc-title">
-            <span id="bmcPName">${escapeHtml(activeBranch.name)}</span>
-            <span class="bmc-bc-badge" id="bmcPBadge">${escapeHtml(activeBranch.badge || 'Flagship')}</span>
-          </div>
-          <div class="bmc-bc-detail">
-            <i class="fa-solid fa-map-pin"></i>
-            <span id="bmcPAddress">${escapeHtml(activeBranch.address || '')}</span>
-          </div>
-          <div class="bmc-bc-contacts">
-            <div class="bmc-bc-contact-item">
-              <span class="bmc-bc-contact-label">WhatsApp Counter</span>
-              <span class="bmc-bc-contact-val" id="bmcPWa" style="color:#16A34A;">${escapeHtml(activeBranch.whatsapp || '923329716666')}</span>
-            </div>
-            <div class="bmc-bc-contact-item">
-              <span class="bmc-bc-contact-label">Counter Direct Phone</span>
-              <span class="bmc-bc-contact-val" id="bmcPPhone">${escapeHtml(activeBranch.phone || '')}</span>
+          <!-- Branch Selector -->
+          <div class="bmc-field-group">
+            <label class="bmc-field-label" for="bmcBranchSelect">
+              <span>Select Your Branch</span>
+              <small style="color:#10B981; font-weight:700;"><i class="fa-solid fa-location-dot"></i> 20+ Outlets</small>
+            </label>
+            <div class="bmc-branch-select-wrap">
+              <select id="bmcBranchSelect" class="bmc-branch-select">
+                ${selectOptionsHtml}
+              </select>
+              <i class="fa-solid fa-chevron-down bmc-select-chevron"></i>
             </div>
           </div>
-        </div>
 
-        <!-- The 2 Prominent Options -->
-        <div class="bmc-options-grid">
-          <!-- Option 1: Live Web Chat -->
-          <div class="bmc-option-card bmc-option-chat" id="bmcLiveChatBtn" role="button" tabindex="0">
-            <div class="bmc-opt-icon-chat">
-              <i class="fa-solid fa-comments"></i>
+          <!-- Active Branch Info Box -->
+          <div class="bmc-branch-card" id="bmcBranchPreview">
+            <div class="bmc-bc-title">
+              <span id="bmcPName">${escapeHtml(activeBranch.name)}</span>
+              <span class="bmc-bc-badge" id="bmcPBadge">${escapeHtml(activeBranch.badge || 'Flagship')}</span>
             </div>
-            <div class="bmc-opt-content">
-              <div class="bmc-opt-header">
-                <span class="bmc-opt-title">1. Live Web Chat</span>
-                <span class="bmc-opt-badge bmc-opt-badge-chat">Online</span>
+            <div class="bmc-bc-detail">
+              <i class="fa-solid fa-map-pin"></i>
+              <span id="bmcPAddress">${escapeHtml(activeBranch.address || '')}</span>
+            </div>
+            <div class="bmc-bc-contacts">
+              <div class="bmc-bc-contact-item">
+                <span class="bmc-bc-contact-label">WhatsApp Counter</span>
+                <span class="bmc-bc-contact-val" id="bmcPWa" style="color:#16A34A;">${escapeHtml(activeBranch.whatsapp || '923329716666')}</span>
               </div>
-              <span class="bmc-opt-desc">Chat live • Send prescription &amp; medicine photos</span>
+              <div class="bmc-bc-contact-item">
+                <span class="bmc-bc-contact-label">Counter Direct Phone</span>
+                <span class="bmc-bc-contact-val" id="bmcPPhone">${escapeHtml(activeBranch.phone || '')}</span>
+              </div>
             </div>
-            <i class="fa-solid fa-chevron-right bmc-opt-arrow"></i>
           </div>
 
-          <!-- Option 2: WhatsApp Chat -->
-          <a href="#" target="_blank" class="bmc-option-card bmc-option-wa" id="bmcWhatsAppBtn">
-            <div class="bmc-opt-icon-wa">
-              <i class="fa-brands fa-whatsapp"></i>
-            </div>
-            <div class="bmc-opt-content">
-              <div class="bmc-opt-header">
-                <span class="bmc-opt-title">2. WhatsApp Branch Chat</span>
-                <span class="bmc-opt-badge bmc-opt-badge-wa">Direct</span>
+          <!-- The 2 Prominent Options -->
+          <div class="bmc-options-grid">
+            <!-- Option 1: Live Web Chat -->
+            <div class="bmc-option-card bmc-option-chat" id="bmcLiveChatBtn" role="button" tabindex="0">
+              <div class="bmc-opt-icon-chat">
+                <i class="fa-solid fa-comments"></i>
               </div>
-              <span class="bmc-opt-desc">Chat directly with branch counter staff on WhatsApp</span>
+              <div class="bmc-opt-content">
+                <div class="bmc-opt-header">
+                  <span class="bmc-opt-title">1. Live Web Chat</span>
+                  <span class="bmc-opt-badge bmc-opt-badge-chat">Online</span>
+                </div>
+                <span class="bmc-opt-desc">Chat live • Send prescription &amp; medicine photos</span>
+              </div>
+              <i class="fa-solid fa-chevron-right bmc-opt-arrow"></i>
             </div>
-            <i class="fa-solid fa-chevron-right bmc-opt-arrow"></i>
+
+            <!-- Option 2: WhatsApp Chat -->
+            <a href="#" target="_blank" class="bmc-option-card bmc-option-wa" id="bmcWhatsAppBtn">
+              <div class="bmc-opt-icon-wa">
+                <i class="fa-brands fa-whatsapp"></i>
+              </div>
+              <div class="bmc-opt-content">
+                <div class="bmc-opt-header">
+                  <span class="bmc-opt-title">2. WhatsApp Branch Chat</span>
+                  <span class="bmc-opt-badge bmc-opt-badge-wa">Direct</span>
+                </div>
+                <span class="bmc-opt-desc">Chat directly with branch counter staff on WhatsApp</span>
+              </div>
+              <i class="fa-solid fa-chevron-right bmc-opt-arrow"></i>
+            </a>
+          </div>
+
+          <!-- Optional Direct Call -->
+          <a href="#" class="bmc-btn-phone" id="bmcCallBtn">
+            <i class="fa-solid fa-phone"></i>
+            <span>Prefer a phone call? Dial Branch Counter Directly</span>
           </a>
+
+          <!-- Prescription & Image Attachment Notice -->
+          <div class="bmc-note">
+            <i class="fa-solid fa-camera"></i>
+            <span><strong>Photo Support:</strong> You can attach prescriptions and product photos in both Live Chat and WhatsApp.</span>
+          </div>
         </div>
 
-        <!-- Optional Direct Call -->
-        <a href="#" class="bmc-btn-phone" id="bmcCallBtn">
-          <i class="fa-solid fa-phone"></i>
-          <span>Prefer a phone call? Dial Branch Counter Directly</span>
-        </a>
+        <!-- Panel 2: Customer Identity Form (Prompts when customer hasn't provided name/phone yet) -->
+        <div class="bmc-customer-step" id="bmcCustomerStep" style="display:none;">
+          <div class="bmc-step-header">
+            <button type="button" class="bmc-step-back" id="bmcStepBackBtn" title="Back to Options">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div>
+              <h5 style="margin:0; font-size:0.95rem; font-weight:800; color:#0F172A;">Customer Information</h5>
+              <span style="font-size:0.75rem; color:#64748B;" id="bmcStepBranchLabel">Connecting to pharmacist</span>
+            </div>
+          </div>
 
-        <!-- Prescription & Image Attachment Notice -->
-        <div class="bmc-note">
-          <i class="fa-solid fa-camera"></i>
-          <span><strong>Photo Support:</strong> You can attach prescriptions and product photos in both Live Chat and WhatsApp.</span>
+          <p style="font-size:0.8rem; color:#475569; margin:4px 0 6px 0; line-height:1.45;">
+            Please enter your name &amp; mobile number so our branch pharmacist can identify you and address your inquiry:
+          </p>
+
+          <div class="bmc-field-group">
+            <label class="bmc-field-label" for="bmcCustName">Your Full Name *</label>
+            <div class="bmc-input-icon-wrap">
+              <i class="fa-solid fa-user"></i>
+              <input type="text" id="bmcCustName" placeholder="e.g. Muhammad Ali" autocomplete="name">
+            </div>
+          </div>
+
+          <div class="bmc-field-group">
+            <label class="bmc-field-label" for="bmcCustPhone">Mobile / WhatsApp Number *</label>
+            <div class="bmc-input-icon-wrap">
+              <i class="fa-solid fa-phone"></i>
+              <input type="tel" id="bmcCustPhone" placeholder="e.g. 0300-1234567" autocomplete="tel">
+            </div>
+          </div>
+
+          <button type="button" class="bmc-btn-connect-chat" id="bmcSubmitChatBtn">
+            <i class="fa-solid fa-comments"></i> Start Live Chat Now
+          </button>
+
+          <button type="button" class="bmc-btn-skip-chat" id="bmcSkipChatBtn">
+            Skip &amp; Continue as Anonymous Guest
+          </button>
         </div>
       </div>
     </div>
@@ -4178,6 +4347,54 @@ function initFloatingBranchMessenger() {
   // Initial update
   updateBranchCard(activeBranch);
 
+  // Helper to update known customer badge
+  function updateKnownCustomerBadge() {
+    const badge = document.getElementById("bmcKnownCustomer");
+    const nameEl = document.getElementById("bmcKnownName");
+    const savedName = localStorage.getItem("dw_customer_name");
+    const savedPhone = localStorage.getItem("dw_customer_phone");
+    if (badge && nameEl) {
+      if (savedName) {
+        badge.style.display = "flex";
+        nameEl.textContent = savedPhone ? `${savedName} (${savedPhone})` : savedName;
+      } else {
+        badge.style.display = "none";
+      }
+    }
+  }
+  updateKnownCustomerBadge();
+
+  // Switch to Customer Identification view
+  function showCustomerPrompt() {
+    const panelMain = document.getElementById("bmcPanelMain");
+    const panelCust = document.getElementById("bmcCustomerStep");
+    const custNameInput = document.getElementById("bmcCustName");
+    const custPhoneInput = document.getElementById("bmcCustPhone");
+    const branchLabel = document.getElementById("bmcStepBranchLabel");
+
+    if (branchLabel && activeBranch) {
+      branchLabel.textContent = `Connecting to ${activeBranch.name} (${activeBranch.city || 'Islamabad'})`;
+    }
+    if (custNameInput) custNameInput.value = localStorage.getItem("dw_customer_name") || "";
+    if (custPhoneInput) custPhoneInput.value = localStorage.getItem("dw_customer_phone") || "";
+
+    if (panelMain) panelMain.style.display = "none";
+    if (panelCust) {
+      panelCust.style.display = "flex";
+      setTimeout(() => {
+        if (custNameInput && !custNameInput.value) custNameInput.focus();
+        else if (custPhoneInput && !custPhoneInput.value) custPhoneInput.focus();
+      }, 100);
+    }
+  }
+
+  function hideCustomerPrompt() {
+    const panelMain = document.getElementById("bmcPanelMain");
+    const panelCust = document.getElementById("bmcCustomerStep");
+    if (panelMain) panelMain.style.display = "flex";
+    if (panelCust) panelCust.style.display = "none";
+  }
+
   // Wire Branch Select change
   const branchSelect = document.getElementById("bmcBranchSelect");
   if (branchSelect) {
@@ -4204,24 +4421,91 @@ function initFloatingBranchMessenger() {
       card.classList.remove("active");
       card.setAttribute("aria-hidden", "true");
       card.style.display = "none";
+      hideCustomerPrompt();
     }
   }
 
   // Wire Live Chat Button (Option 1)
   const liveChatBtn = document.getElementById("bmcLiveChatBtn");
   if (liveChatBtn) {
-    liveChatBtn.addEventListener("click", function(e) {
+    const handleChatClick = function(e) {
       if (e) e.stopPropagation();
-      toggleCard(false);
-      launchBranchLiveChat(activeBranch);
-    });
+      const savedName = localStorage.getItem("dw_customer_name");
+      const savedPhone = localStorage.getItem("dw_customer_phone");
+      if (savedName && savedPhone) {
+        toggleCard(false);
+        launchBranchLiveChat(activeBranch, { name: savedName, phone: savedPhone });
+      } else {
+        showCustomerPrompt();
+      }
+    };
+    liveChatBtn.addEventListener("click", handleChatClick);
     liveChatBtn.addEventListener("keydown", function(e) {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        if (e) e.stopPropagation();
-        toggleCard(false);
-        launchBranchLiveChat(activeBranch);
+        handleChatClick(e);
       }
+    });
+  }
+
+  // Wire Customer Form submission
+  const submitChatBtn = document.getElementById("bmcSubmitChatBtn");
+  if (submitChatBtn) {
+    submitChatBtn.addEventListener("click", function(e) {
+      if (e) e.stopPropagation();
+      const nameInput = document.getElementById("bmcCustName");
+      const phoneInput = document.getElementById("bmcCustPhone");
+      const name = (nameInput ? nameInput.value : "").trim();
+      const phone = (phoneInput ? phoneInput.value : "").trim();
+
+      if (!name) {
+        if (typeof showToast === "function") showToast("Please enter your name.");
+        else alert("Please enter your name.");
+        if (nameInput) nameInput.focus();
+        return;
+      }
+      if (!phone) {
+        if (typeof showToast === "function") showToast("Please enter your phone / WhatsApp number.");
+        else alert("Please enter your phone / WhatsApp number.");
+        if (phoneInput) phoneInput.focus();
+        return;
+      }
+
+      localStorage.setItem("dw_customer_name", name);
+      localStorage.setItem("dw_customer_phone", phone);
+      updateKnownCustomerBadge();
+      hideCustomerPrompt();
+      toggleCard(false);
+      launchBranchLiveChat(activeBranch, { name: name, phone: phone });
+    });
+  }
+
+  // Wire Skip / Anonymous Guest
+  const skipChatBtn = document.getElementById("bmcSkipChatBtn");
+  if (skipChatBtn) {
+    skipChatBtn.addEventListener("click", function(e) {
+      if (e) e.stopPropagation();
+      hideCustomerPrompt();
+      toggleCard(false);
+      launchBranchLiveChat(activeBranch, { guest: true });
+    });
+  }
+
+  // Wire Step Back button
+  const stepBackBtn = document.getElementById("bmcStepBackBtn");
+  if (stepBackBtn) {
+    stepBackBtn.addEventListener("click", function(e) {
+      if (e) e.stopPropagation();
+      hideCustomerPrompt();
+    });
+  }
+
+  // Wire Edit Profile button
+  const editProfileBtn = document.getElementById("bmcEditProfileBtn");
+  if (editProfileBtn) {
+    editProfileBtn.addEventListener("click", function(e) {
+      if (e) e.stopPropagation();
+      showCustomerPrompt();
     });
   }
 
