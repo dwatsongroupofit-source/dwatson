@@ -1139,10 +1139,9 @@ window.filterProductsCategory = function(catKey, btn) {
  */
 function initProductZoomEvents() {
   if (isZoomModalEventsInit) return;
-  isZoomModalEventsInit = true;
-
   const viewport = document.getElementById("zoomViewport");
   if (!viewport) return;
+  isZoomModalEventsInit = true;
 
   // Drag & Pan with Mouse
   viewport.addEventListener("mousedown", (e) => {
@@ -1253,16 +1252,25 @@ function applyProductZoomTransform() {
 window.openProductZoomModal = function(productIdOrIndex) {
   initProductZoomEvents();
 
+  const data = getSiteData();
+  const allProds = data.products || [];
+
   if (!currentProductZoomList || !currentProductZoomList.length) {
-    const data = getSiteData();
-    currentProductZoomList = data.products || [];
+    currentProductZoomList = allProds;
   }
 
   let index = 0;
   if (typeof productIdOrIndex === "number") {
     index = productIdOrIndex;
   } else if (typeof productIdOrIndex === "string") {
-    const foundIdx = currentProductZoomList.findIndex(p => p.id === productIdOrIndex);
+    let foundIdx = currentProductZoomList.findIndex(p => p.id === productIdOrIndex);
+    if (foundIdx === -1) {
+      const foundInAll = allProds.findIndex(p => p.id === productIdOrIndex);
+      if (foundInAll !== -1) {
+        currentProductZoomList = allProds;
+        foundIdx = foundInAll;
+      }
+    }
     index = foundIdx !== -1 ? foundIdx : 0;
   }
 
@@ -1298,8 +1306,12 @@ function updateProductZoomDisplay() {
   if (catEl) catEl.textContent = p.categoryName || p.category || "Healthcare Essential";
   if (counterEl) counterEl.textContent = `${currentProductZoomIndex + 1} / ${currentProductZoomList.length}`;
   if (imgEl) {
-    imgEl.src = p.image || "assets/images/pharmacy.jpg";
+    imgEl.src = encodeURI(p.image || "assets/images/pharmacy.jpg");
     imgEl.alt = p.name;
+    imgEl.onerror = function() {
+      this.onerror = null;
+      this.src = "assets/images/pharmacy.jpg";
+    };
   }
   if (brandEl) brandEl.textContent = p.brand || "D. Watson Certified";
   if (titleEl) titleEl.textContent = p.name;
@@ -1331,7 +1343,7 @@ function renderProductZoomThumbs() {
 
   container.innerHTML = currentProductZoomList.map((item, idx) => `
     <div class="zoom-thumb-item ${idx === currentProductZoomIndex ? 'active' : ''}" onclick="goToProductZoom(${idx})" title="${escapeHtml(item.name)}">
-      <img src="${item.image || 'assets/images/pharmacy.jpg'}" alt="${escapeHtml(item.name)}" loading="lazy">
+      <img src="${encodeURI(item.image || 'assets/images/pharmacy.jpg')}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
     </div>
   `).join("");
 }
