@@ -6521,20 +6521,77 @@ textarea.form-control {
   gap: 4px;
 }
 
+.home-product-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  width: 100%;
+}
+
+.btn-zoom-trigger {
+  background: #F8FAFC;
+  color: #0F172A;
+  border: 1px solid #CBD5E1;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.btn-zoom-trigger:hover {
+  background: #EEF2F6;
+  border-color: #94A3B8;
+  color: #A50505;
+}
+
+.product-zoom-pill {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(11, 27, 61, 0.78);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #FFFFFF;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.88;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.home-product-card:hover .product-zoom-pill {
+  opacity: 1;
+  transform: scale(1.05);
+  background: #A50505;
+}
+
 .home-product-buy-btn {
   background: #25D366;
   color: #FFFFFF;
   font-size: 0.82rem;
   font-weight: 800;
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: 9px 14px;
   text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  width: 100%;
-  margin-top: auto;
+  flex: 1.2;
   box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
   transition: background 0.2s ease, transform 0.15s ease;
 }

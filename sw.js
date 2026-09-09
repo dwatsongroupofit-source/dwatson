@@ -3,7 +3,7 @@
  * Ultra-fast caching, zero unhandled promise rejections & robust offline resilience
  */
 
-const CACHE_NAME = "dwatson-cache-v11.0";
+const CACHE_NAME = "dwatson-cache-v12.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -14,11 +14,11 @@ const STATIC_ASSETS = [
   "./contact.html",
   "./privacy.html",
   "./terms.html",
-  "./css/style.css?v=8.2",
+  "./css/style.css?v=8.3",
   "./css/responsive.css?v=8.1",
   "./js/config.js?v=1.1",
   "./js/data.js?v=8.0",
-  "./js/main.js?v=8.2",
+  "./js/main.js?v=8.3",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",

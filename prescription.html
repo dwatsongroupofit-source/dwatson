@@ -38,7 +38,7 @@
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon-180.png">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=8.1">
+  <link rel="stylesheet" href="css/style.css?v=8.3">
   <link rel="stylesheet" href="css/responsive.css?v=8.1">
 </head>
 <body class="page-prescription">
@@ -258,7 +258,7 @@
 
               <!-- Action Buttons -->
               <div class="rx-action-buttons">
-                <button type="button" class="btn btn-whatsapp btn-lg" onclick="dispatchRxWhatsApp()">
+                <button type="button" class="btn btn-whatsapp btn-lg" onclick="handlePrescriptionSubmit(event, 'whatsapp')">
                   <i class="fa-brands fa-whatsapp"></i> Instant Dispatch on WhatsApp
                 </button>
                 <button type="submit" class="btn btn-primary btn-lg" id="rxSubmitBtn">
@@ -506,6 +506,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="js/config.js?v=1.1"></script>
   <script src="js/data.js?v=8.0"></script>
-  <script src="js/main.js?v=8.0"></script>
+  <script src="js/main.js?v=8.3"></script>
 </body>
 </html>

@@ -559,21 +559,32 @@ function renderHomeProducts(products, defaultWhatsApp) {
   const waNum = defaultWhatsApp || "923329716666";
 
   container.innerHTML = products.map((p) => {
-    const waText = `*--- D. WATSON QUICK ORDER ---*\n🛍️ *Product:* ${p.name}\n💰 *Price:* ${p.price || 'Inquire'}\n🏷️ *Brand:* ${p.brand || 'D. Watson'}\n\nHi D.Watson Chemist, please confirm stock availability and express delivery.`;
+    const fullImgUrl = (typeof getFullImageUrl === "function") ? getFullImageUrl(p.image) : (p.image || "");
+    let waText = `*--- D. WATSON QUICK ORDER ---*\n🛍️ *Product:* ${p.name}\n💰 *Price:* ${p.price || 'Inquire'}\n🏷️ *Brand:* ${p.brand || 'D. Watson'}\n`;
+    if (fullImgUrl) {
+      waText += `📸 *Product Photo Link:* ${fullImgUrl}\n`;
+    }
+    waText += `\nHi D.Watson Chemist, please confirm stock availability and express delivery.`;
     const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waText)}`;
 
     return `
-      <div class="home-product-card" data-product-id="${p.id}">
-        <div class="home-product-img-wrap" onclick="openProductZoomModal('${p.id}')" title="Inspect ${escapeHtml(p.name)}">
+      <div class="home-product-card" data-product-id="${p.id}" onclick="openProductZoomModal('${p.id}')">
+        <div class="home-product-img-wrap" title="Inspect &amp; Zoom ${escapeHtml(p.name)}">
           <img src="${encodeURI(p.image || 'assets/images/pharmacy.jpg')}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+          <span class="product-zoom-pill"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom</span>
         </div>
         <div class="home-product-info">
           <span class="home-product-brand">${escapeHtml(p.brand || 'D. Watson')}</span>
-          <h4 class="home-product-title" onclick="openProductZoomModal('${p.id}')" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h4>
+          <h4 class="home-product-title" title="Click to Zoom ${escapeHtml(p.name)}">${escapeHtml(p.name)}</h4>
           <div class="home-product-price">${escapeHtml(p.price || 'Inquire')}</div>
-          <a href="${waUrl}" target="_blank" class="home-product-buy-btn" title="Order ${escapeHtml(p.name)} via WhatsApp">
-            <i class="fa-brands fa-whatsapp"></i> Buy on WhatsApp
-          </a>
+          <div class="home-product-btn-row">
+            <button type="button" class="btn-zoom-trigger" onclick="event.stopPropagation(); openProductZoomModal('${p.id}')" title="Zoom &amp; Details">
+              <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom
+            </button>
+            <a href="${waUrl}" target="_blank" onclick="event.stopPropagation();" class="home-product-buy-btn" title="Order ${escapeHtml(p.name)} via WhatsApp">
+              <i class="fa-brands fa-whatsapp"></i> Buy
+            </a>
+          </div>
         </div>
       </div>
     `;
@@ -2102,9 +2113,16 @@ function getFullImageUrl(imagePath) {
   
   const cleanPath = imagePath.replace(/^\.?\//, "");
   const encodedPath = encodeURI(cleanPath).replace(/\+/g, "%2B");
-  // Official GitHub Global CDN Raw Link (permanent, live, public, 100% reliable)
-  return `https://raw.githubusercontent.com/wasidevxyz-pixel/dwatson/main/${encodedPath}`;
+  
+  // Prefer live site origin if available, otherwise default to https://www.dwatson.co
+  let origin = "https://www.dwatson.co";
+  if (typeof window !== "undefined" && window.location && window.location.origin && !window.location.hostname.includes("localhost") && !window.location.hostname.includes("127.0.0.1")) {
+    origin = window.location.origin;
+  }
+  return `${origin}/${encodedPath}`;
 }
+window.getFullImageUrl = getFullImageUrl;
+
 
 let activeOrderProduct = null;
 
@@ -3313,80 +3331,94 @@ function compressRxImageFile(file, maxDim = 1200, quality = 0.82) {
 }
 
 /**
- * Upload Prescription Image to Direct Cloud CDN (with Base64 fallback)
+ * Upload Prescription Image to Direct Cloud CDN (ImgBB)
  */
+let rxUploadedImageUrl = "";
+let rxUploadingPromise = null;
+
 async function uploadPrescriptionImage(file) {
   if (!file) return "";
-  if (!file.type.startsWith("image/")) {
-    return "Document: " + file.name;
+  if (rxUploadedImageUrl && rxUploadedImageUrl.startsWith("http")) {
+    return rxUploadedImageUrl;
+  }
+  if (!file.type || !file.type.startsWith("image/")) {
+    return "Document: " + (file.name || "prescription.pdf");
   }
 
+  const directImgbbKey = (window.DW_CONFIG && window.DW_CONFIG.IMGBB_API_KEY) || localStorage.getItem("dw_imgbb_api_key") || "5d369a9387210e1432e7018b92d3d0e8";
+
+  // Strategy 1: Direct File upload to ImgBB
   try {
-    const { dataUrl } = await compressRxImageFile(file, 1200, 0.82);
+    const formData = new FormData();
+    formData.append("key", directImgbbKey);
+    formData.append("image", file, file.name || "prescription.jpg");
 
-    // Strategy 1: Direct client-side ImgBB upload (if key configured)
-    const directImgbbKey = (window.DW_CONFIG && window.DW_CONFIG.IMGBB_API_KEY) || localStorage.getItem("dw_imgbb_api_key");
-    if (directImgbbKey && directImgbbKey.length > 8) {
-      try {
-        const formData = new FormData();
-        formData.append("key", directImgbbKey);
-        formData.append("image", dataUrl.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, ""));
-        formData.append("name", file.name.replace(/\.[^/.]+$/, ""));
+    const res = await fetch("https://api.imgbb.com/1/upload", {
+      method: "POST",
+      body: formData
+    });
+    const json = await res.json().catch(() => null);
+    if (res.ok && json && json.data && json.data.url) {
+      rxUploadedImageUrl = json.data.url;
+      return json.data.url;
+    }
+  } catch (imgbbErr) {
+    console.warn("Direct file upload to ImgBB notice:", imgbbErr.message);
+  }
 
-        const res = await fetch("https://api.imgbb.com/1/upload", {
-          method: "POST",
-          body: formData
-        });
-        const json = await res.json().catch(() => null);
-        if (res.ok && json && json.data && json.data.url) {
-          return json.data.url;
-        }
-      } catch (imgbbErr) {
-        console.warn("Direct ImgBB prescription notice:", imgbbErr.message);
+  // Strategy 2: Compress canvas Blob upload to ImgBB
+  try {
+    const compressed = await compressRxImageFile(file, 1400, 0.85);
+    if (compressed && compressed.blob) {
+      const formData = new FormData();
+      formData.append("key", directImgbbKey);
+      formData.append("image", compressed.blob, file.name || "prescription.jpg");
+
+      const res = await fetch("https://api.imgbb.com/1/upload", {
+        method: "POST",
+        body: formData
+      });
+      const json = await res.json().catch(() => null);
+      if (res.ok && json && json.data && json.data.url) {
+        rxUploadedImageUrl = json.data.url;
+        return json.data.url;
       }
     }
+  } catch (compressErr) {
+    console.warn("Compressed blob upload to ImgBB notice:", compressErr);
+  }
 
-    // Strategy 2: Vercel Serverless Function (/api/upload)
+  // Strategy 3: Serverless /api/upload
+  try {
     const uploadUrl = (window.DW_CONFIG && typeof window.DW_CONFIG.getUploadUrl === "function") 
       ? window.DW_CONFIG.getUploadUrl() 
       : "/api/upload";
 
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000);
-
+    const compressed = await compressRxImageFile(file, 1200, 0.80);
+    if (compressed && compressed.dataUrl) {
       const res = await fetch(uploadUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          image: dataUrl,
-          filename: file.name
-        }),
-        signal: controller.signal
+        body: JSON.stringify({ image: compressed.dataUrl, filename: file.name })
       });
-      clearTimeout(timeoutId);
-
-      if (res.ok) {
-        const json = await res.json();
-        if (json && json.success && json.url) {
-          return json.url;
-        }
+      const json = await res.json().catch(() => null);
+      if (res.ok && json && json.success && json.url) {
+        rxUploadedImageUrl = json.url;
+        return json.url;
       }
-    } catch (cdnErr) {
-      console.warn("Cloud CDN prescription upload fallback notice:", cdnErr.message);
     }
-
-    return dataUrl;
-  } catch (err) {
-    console.warn("Prescription compression notice:", err);
-    return "";
+  } catch (cdnErr) {
+    console.warn("Cloud CDN prescription fallback notice:", cdnErr.message);
   }
+
+  return "";
 }
 
 function handleRxFileSelect(input) {
   if (!input || !input.files || !input.files[0]) return;
   const file = input.files[0];
   rxSelectedFile = file;
+  rxUploadedImageUrl = "";
 
   const previewWrap = document.getElementById("rxDropPreview");
   const defaultWrap = document.getElementById("rxDropDefault");
@@ -3394,11 +3426,11 @@ function handleRxFileSelect(input) {
   const fileNameEl = document.getElementById("rxFileName");
 
   if (fileNameEl) {
-    fileNameEl.textContent = formatShortFileName(file.name, 18);
-    fileNameEl.title = file.name; // Full filename visible on hover
+    fileNameEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${formatShortFileName(file.name, 18)} (Uploading...)`;
+    fileNameEl.title = file.name;
   }
 
-  if (file.type.startsWith("image/")) {
+  if (file.type && file.type.startsWith("image/")) {
     const reader = new FileReader();
     reader.onload = (e) => {
       if (previewImg) previewImg.src = e.target.result;
@@ -3411,11 +3443,24 @@ function handleRxFileSelect(input) {
     if (previewWrap) previewWrap.style.display = "flex";
     if (defaultWrap) defaultWrap.style.display = "none";
   }
+
+  // Pre-upload in background immediately so the live link is ready before user clicks submit
+  rxUploadingPromise = uploadPrescriptionImage(file).then(url => {
+    if (url && url.startsWith("http")) {
+      rxUploadedImageUrl = url;
+      if (fileNameEl) {
+        fileNameEl.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#10B981;"></i> ${formatShortFileName(file.name, 18)} (Ready)`;
+      }
+    }
+    return url;
+  }).catch(() => "");
 }
 
 function removeRxFile(event) {
   if (event) event.stopPropagation();
   rxSelectedFile = null;
+  rxUploadedImageUrl = "";
+  rxUploadingPromise = null;
   const input = document.getElementById("rxFileInput");
   if (input) input.value = "";
   const previewWrap = document.getElementById("rxDropPreview");
@@ -3469,8 +3514,12 @@ function dispatchRxWhatsApp(prescriptionPhotoUrl = "") {
     msg += `📝 *Notes:* ${notes}\n`;
   }
 
-  if (prescriptionPhotoUrl && prescriptionPhotoUrl.startsWith("http")) {
-    msg += `\n📸 *Prescription Photo Link:* ${prescriptionPhotoUrl}\n`;
+  const activePhotoUrl = (prescriptionPhotoUrl && prescriptionPhotoUrl.startsWith("http")) 
+    ? prescriptionPhotoUrl 
+    : (rxUploadedImageUrl && rxUploadedImageUrl.startsWith("http") ? rxUploadedImageUrl : "");
+
+  if (activePhotoUrl) {
+    msg += `\n📸 *Prescription Photo Link:* ${activePhotoUrl}\n`;
   } else {
     msg += `\n📸 _Attaching prescription photo now for verification._`;
   }
@@ -3480,11 +3529,33 @@ function dispatchRxWhatsApp(prescriptionPhotoUrl = "") {
   window.open(waUrl, "_blank");
 }
 
-async function handlePrescriptionSubmit(e) {
+async function handlePrescriptionSubmit(e, mode = "all") {
   if (e) e.preventDefault();
-  const name = (document.getElementById("rxPatientName")?.value || "").trim() || "Valued Patient";
-  const phone = (document.getElementById("rxPatientPhone")?.value || "").trim();
-  const address = (document.getElementById("rxPatientAddress")?.value || "").trim();
+
+  const nameInput = document.getElementById("rxPatientName");
+  const phoneInput = document.getElementById("rxPatientPhone");
+  const addressInput = document.getElementById("rxPatientAddress");
+
+  const name = (nameInput?.value || "").trim();
+  const phone = (phoneInput?.value || "").trim();
+  const address = (addressInput?.value || "").trim();
+
+  if (!name) {
+    alert("Please enter the patient's full name.");
+    if (nameInput) nameInput.focus();
+    return;
+  }
+  if (!phone) {
+    alert("Please enter your mobile / WhatsApp contact number.");
+    if (phoneInput) phoneInput.focus();
+    return;
+  }
+  if (rxFulfillmentMode === "delivery" && !address) {
+    alert("Please enter your complete delivery address for express home delivery.");
+    if (addressInput) addressInput.focus();
+    return;
+  }
+
   const branch = getSelectedPrescriptionBranch();
   const branchName = branch ? branch.name : "D. Watson F-6 Super Market";
   const isExpress = branch ? (branch.expressDelivery !== false) : true;
@@ -3499,18 +3570,29 @@ async function handlePrescriptionSubmit(e) {
     if (!proceed) return;
   }
 
-  const submitBtn = document.querySelector(".btn-submit-rx") || document.querySelector("button[type='submit']");
+  const submitBtn = document.getElementById("rxSubmitBtn");
+  const waBtn = document.querySelector(".btn-whatsapp.btn-lg");
   const origBtnText = submitBtn ? submitBtn.innerHTML : "";
+  const origWaBtnText = waBtn ? waBtn.innerHTML : "";
 
   // 1. Upload prescription image to generate direct live link
-  let prescriptionImageUrl = "";
-  if (rxSelectedFile) {
+  let prescriptionImageUrl = rxUploadedImageUrl || "";
+  if (rxSelectedFile && (!prescriptionImageUrl || !prescriptionImageUrl.startsWith("http"))) {
     try {
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading Prescription Image...`;
       }
-      prescriptionImageUrl = await uploadPrescriptionImage(rxSelectedFile);
+      if (waBtn) {
+        waBtn.disabled = true;
+        waBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading Photo...`;
+      }
+
+      if (rxUploadingPromise) {
+        prescriptionImageUrl = await rxUploadingPromise;
+      } else {
+        prescriptionImageUrl = await uploadPrescriptionImage(rxSelectedFile);
+      }
     } catch (err) {
       console.warn("Prescription photo upload notice:", err);
     }
@@ -3584,9 +3666,20 @@ async function handlePrescriptionSubmit(e) {
     submitBtn.disabled = false;
     submitBtn.innerHTML = origBtnText;
   }
+  if (waBtn) {
+    waBtn.disabled = false;
+    waBtn.innerHTML = origWaBtnText;
+  }
 
-  alert(`Prescription order (${refId}) submitted successfully! Our certified clinical pharmacist from ${branchName} is reviewing your details now. Connecting you to WhatsApp to send prescription photo...`);
+  // 4. Open WhatsApp with complete details & photo link
   dispatchRxWhatsApp(prescriptionImageUrl);
+
+  // 5. Alert user and refresh page cleanly as requested
+  alert(`✅ Prescription Order (${refId}) Submitted Successfully!\n\nOur clinical pharmacist at ${branchName} has received your prescription details and photo. The page will now refresh.`);
+
+  setTimeout(() => {
+    window.location.reload();
+  }, 1200);
 }
 
 /**
