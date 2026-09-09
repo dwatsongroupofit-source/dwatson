@@ -599,7 +599,7 @@ const DEFAULT_SITE_DATA = {
       brand: "Nutricia Danone",
       price: "PKR 7,950",
       tag: "Imported Nutrition",
-      image: "assets/images/Aptamil Gold+ Stage 1 Infant Formula (900g).jpg",
+      image: "assets/images/aptamil-gold-plus-stage-1.jpg",
       description: "Premium nutritionally complete infant milk formula suitable from birth to 6 months.",
       inStock: true
     },
@@ -611,7 +611,7 @@ const DEFAULT_SITE_DATA = {
       brand: "Seven Seas UK",
       price: "PKR 4,800",
       tag: "Immune & Brain Support",
-      image: "assets/images/Seven Seas Cod Liver Oil + Omega 3 (500ml).jpg",
+      image: "assets/images/seven-seas-cod-liver-oil-omega-3.jpg",
       description: "Rich in natural Vitamins A, D and essential Omega-3 fatty acids EPA and DHA.",
       inStock: true
     },
@@ -1471,8 +1471,11 @@ function getSiteData() {
           return d;
         }) : DEFAULT_SITE_DATA.departments,
         categories: (Array.isArray(parsed.categories) && parsed.categories.length) ? parsed.categories : DEFAULT_SITE_DATA.categories,
-        trustedBrands: (Array.isArray(parsed.trustedBrands) && parsed.trustedBrands.length) ? parsed.trustedBrands : DEFAULT_SITE_DATA.trustedBrands,
-        products: (Array.isArray(parsed.products) && parsed.products.length >= 15 && parsed.products[0].image && parsed.products[0].image.includes('Shop Inside/')) ? parsed.products : DEFAULT_SITE_DATA.products,
+        products: ((Array.isArray(parsed.products) && parsed.products.length >= 15 && parsed.products[0].image && parsed.products[0].image.includes('Shop Inside/')) ? parsed.products : DEFAULT_SITE_DATA.products).map(p => {
+          if (p.image && p.image.includes("Aptamil Gold+")) p.image = "assets/images/aptamil-gold-plus-stage-1.jpg";
+          if (p.image && p.image.includes("Seven Seas Cod Liver Oil +")) p.image = "assets/images/seven-seas-cod-liver-oil-omega-3.jpg";
+          return p;
+        }),
         branches: Array.isArray(parsed.branches) && parsed.branches.length ? parsed.branches.map(b => {
           const def = DEFAULT_SITE_DATA.branches.find(db => db.id === b.id);
           if (def && (!b.image || b.image === 'assets/images/store_flagship.jpg' || b.image === 'assets/images/pharmacy.jpg' || b.image === 'assets/images/grocery.jpg' || b.image === 'assets/images/surgical.jpg' || b.image === 'assets/images/optics.jpg' || b.image === 'assets/images/cosmetics.jpg')) {
