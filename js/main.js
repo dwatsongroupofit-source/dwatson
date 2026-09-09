@@ -3861,38 +3861,66 @@ function launchBranchLiveChat(branch) {
 
   const propId = (window.DW_CONFIG && typeof window.DW_CONFIG.getTawkToPropertyId === "function")
     ? window.DW_CONFIG.getTawkToPropertyId()
-    : "";
+    : "6aa0ffd7317f5f3442e34ee4";
 
-  if (propId && propId.trim() && window.Tawk_API && typeof window.Tawk_API.maximize === "function") {
-    try {
-      if (typeof window.Tawk_API.setAttributes === "function") {
-        window.Tawk_API.setAttributes({
-          'SelectedBranch': branch.name,
-          'City': branch.city,
-          'BranchPhone': branch.phone,
-          'BranchWhatsApp': branch.whatsapp || "923329716666"
-        }, function() {});
+  if (propId && propId.trim()) {
+    // If Tawk API is loaded and ready
+    if (window.Tawk_API && typeof window.Tawk_API.maximize === "function") {
+      try {
+        if (typeof window.Tawk_API.showWidget === "function") {
+          window.Tawk_API.showWidget();
+        }
+        if (typeof window.Tawk_API.setAttributes === "function") {
+          window.Tawk_API.setAttributes({
+            'SelectedBranch': branch.name,
+            'City': branch.city,
+            'BranchPhone': branch.phone,
+            'BranchWhatsApp': branch.whatsapp || "923329716666"
+          }, function() {});
+        }
+        if (typeof window.Tawk_API.addTags === "function") {
+          window.Tawk_API.addTags([branch.city || 'Islamabad', 'BranchDesk'], function() {});
+        }
+      } catch (e) {
+        console.warn("Tawk attribute error:", e);
       }
-      if (typeof window.Tawk_API.addTags === "function") {
-        window.Tawk_API.addTags([branch.city || 'Islamabad', 'BranchDesk'], function() {});
+      window.Tawk_API.maximize();
+      if (typeof showToast === "function") {
+        showToast(`Connected to ${branch.name} Live Helpdesk.`);
       }
-    } catch (e) {
-      console.warn("Tawk attribute error:", e);
+      return;
     }
-    window.Tawk_API.maximize();
-    if (typeof showToast === "function") {
-      showToast(`Connected to ${branch.name} Live Helpdesk.`);
+
+    // If script is still initializing, poll for up to 3 seconds
+    if (document.getElementById("tawktoScriptEmbed") || document.querySelector('script[src*="embed.tawk.to"]')) {
+      if (typeof showToast === "function") {
+        showToast(`Opening Live Chat for ${branch.name}...`);
+      }
+      let attempts = 0;
+      const pollTimer = setInterval(() => {
+        attempts++;
+        if (window.Tawk_API && typeof window.Tawk_API.maximize === "function") {
+          clearInterval(pollTimer);
+          launchBranchLiveChat(branch);
+        } else if (attempts > 12) {
+          clearInterval(pollTimer);
+          const waNum = branch.whatsapp || "923329716666";
+          const msg = `Hello D.Watson ${branch.name} Counter Staff, I need live assistance with medicine / prescription / stock inquiry.`;
+          window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, "_blank");
+        }
+      }, 250);
+      return;
     }
-  } else {
-    // Graceful fallback to dedicated branch counter WhatsApp
-    if (typeof showToast === "function") {
-      showToast(`Connecting to ${branch.name} Counter Desk...`);
-    }
-    const waNum = branch.whatsapp || "923329716666";
-    const msg = `Hello D.Watson ${branch.name} Counter Staff, I need live assistance with medicine / prescription / stock inquiry.`;
-    const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
-    window.open(waUrl, "_blank");
   }
+
+  // Graceful fallback to dedicated branch counter WhatsApp
+  if (typeof showToast === "function") {
+    showToast(`Connecting to ${branch.name} Counter Desk...`);
+  }
+  const waNum = branch.whatsapp || "923329716666";
+  const msg = `Hello D.Watson ${branch.name} Counter Staff, I need live assistance with medicine / prescription / stock inquiry.`;
+  const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl, "_blank");
 }
 
 /**

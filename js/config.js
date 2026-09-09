@@ -29,8 +29,8 @@ window.DW_CONFIG = {
   // 💬 Live Chat Configuration (Tawk.to Multi-Agent Branch Messenger)
   // Free unlimited branch agents, mobile apps for staff & branch department routing
   TAWKTO_ENABLED: true,
-  TAWKTO_PROPERTY_ID: "", // Paste your Tawk.to Property ID here or in Admin Settings
-  TAWKTO_WIDGET_ID: "default",
+  TAWKTO_PROPERTY_ID: "6aa0ffd7317f5f3442e34ee4", // Configured Tawk.to Property ID
+  TAWKTO_WIDGET_ID: "1k22eeolv", // Configured Tawk.to Widget ID
 
   /**
    * Resolves whether Tawk.to live chat is active

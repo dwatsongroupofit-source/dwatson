@@ -77,6 +77,11 @@ const DEFAULT_SITE_DATA = {
     deliveryMinOrder: 1000,
     deliveryFreeThreshold: 3000,
 
+    // Live Chat Configuration (Tawk.to Multi-Agent Branch Messenger)
+    tawktoEnabled: true,
+    tawktoPropertyId: "6aa0ffd7317f5f3442e34ee4",
+    tawktoWidgetId: "1k22eeolv",
+
     // Admin Security Credentials (Protected AES Gate)
     adminAuth: {
       username: "admin",

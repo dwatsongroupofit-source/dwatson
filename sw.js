@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v15.0)
- * Multi-Branch Live Messenger, photo reception & zero-downtime cache
+ * D. Watson Chemist & Superstore - Service Worker (v15.1)
+ * Multi-Branch Live Messenger with official Tawk.to integration
  */
 
-const CACHE_NAME = "dwatson-cache-v15.0";
+const CACHE_NAME = "dwatson-cache-v15.1";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
