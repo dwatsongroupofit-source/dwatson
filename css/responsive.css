@@ -1175,6 +1175,13 @@ section, header, footer, nav, main, .container {
     display: none !important;
   }
 
+  /* Elevate Crisp live chat bubble on mobile so it sits cleanly above fixed bottom bar */
+  .crisp-client .crisp-1rqqw7h,
+  .crisp-client [data-selector="chatbox-bubble"],
+  #crisp-chatbox {
+    bottom: 74px !important;
+  }
+
   /* Customer Care Channels on Mobile (Sleek Stacked Cards with Full-Width Action Buttons) */
   .contact-channels-grid {
     grid-template-columns: 1fr !important;

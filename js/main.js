@@ -86,7 +86,7 @@ function initWebsite() {
   initHelplineDropdown();
   initPWAInstall();
   initCrispLiveChat();
-  initFloatingBranchMessenger();
+  ensureFloatingWhatsAppWidget(data.company.whatsapp);
   setupCustomerInfoAutoSync();
 }
 
@@ -154,33 +154,15 @@ function renderHeaderAndCompanyInfo(company) {
   }
   const mobWa = document.getElementById("mobTabWa");
   if (mobWa) {
-    mobWa.href = `https://wa.me/${company.whatsapp}?text=${encodeURIComponent("Hi D.Watson Chemist, I need assistance.")}`;
-    mobWa.onclick = function(e) {
-      if (typeof window.openBranchMessengerCard === "function") {
-        if (e) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        window.openBranchMessengerCard();
-        return false;
-      }
-    };
+    const cleanWa = (company.whatsapp || "923329716666").replace(/[^0-9]/g, "");
+    mobWa.href = `https://wa.me/${cleanWa}?text=${encodeURIComponent("Hi D.Watson Chemist, I need assistance.")}`;
   }
 
   // Floating CTA WhatsApp link
   const floatWaBtn = document.getElementById("floatingWaBtn");
   if (floatWaBtn) {
-    floatWaBtn.href = `https://wa.me/${company.whatsapp}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}`;
-    floatWaBtn.onclick = function(e) {
-      if (typeof window.openBranchMessengerCard === "function") {
-        if (e) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        window.openBranchMessengerCard();
-        return false;
-      }
-    };
+    const cleanWa = (company.whatsapp || "923329716666").replace(/[^0-9]/g, "");
+    floatWaBtn.href = `https://wa.me/${cleanWa}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}`;
   }
 }
 
@@ -3861,13 +3843,12 @@ function filterBranchesSearch(query) {
    ========================================================================== */
 
 /**
- * Initialize Crisp Live Chat Embed with Multi-Agent Branch Support
+ * Initialize Crisp Live Chat Embed with Full Multi-Agent Support
  */
 function initCrispLiveChat() {
   if (!window.DW_CONFIG || !window.DW_CONFIG.isCrispEnabled()) return;
   const websiteId = window.DW_CONFIG.getCrispWebsiteId() || "4ea9bb45-b036-4468-bb27-09fe93c30b3f";
 
-  // If no website ID is configured, unified Branch Messenger falls back to direct branch WhatsApp
   if (!websiteId || !websiteId.trim()) return;
 
   // Prevent duplicate script injection
@@ -3891,55 +3872,33 @@ function initCrispLiveChat() {
     window.$crisp.push(["set", "user:email", [savedEmail]]);
   }
 
-  // Hide Crisp's default round bubble so it NEVER collides with our single unified launcher!
-  window.$crisp.push(["do", "chat:hide"]);
+  // Pre-load session data into Crisp so operators see page, URL, platform
+  const pageTitle = document.title ? document.title.split(" - ")[0].trim() : "Store Page";
+  window.$crisp.push(["set", "session:data", [[
+    ["page_title", pageTitle],
+    ["page_url", window.location.href],
+    ["customer_name", savedName || "Guest User"],
+    ["customer_phone", savedPhone || "Not provided"],
+    ["country", "Pakistan"],
+    ["platform", /Mobi|Android/i.test(navigator.userAgent) ? "Mobile Web" : "Desktop Web"]
+  ]]]);
 
-  // When Crisp finishes loading, enforce bubble hiding
-  window.$crisp.push(["on", "session:loaded", function() {
-    window.$crisp.push(["do", "chat:hide"]);
-  }]);
+  window.$crisp.push(["set", "session:segments", [["Pakistan", "D.Watson Web"]]]);
 
-  // When chat window is opened, hide our floating launcher and popover card immediately
+  // Ensure Crisp chat bubble is explicitly shown and visible!
+  window.$crisp.push(["do", "chat:show"]);
+
+  // When chat window is opened, hide WhatsApp floating button to prevent overlap
   window.$crisp.push(["on", "chat:opened", function() {
-    if (typeof window.closeBranchMessengerCard === "function") {
-      window.closeBranchMessengerCard();
-    }
-    const card = document.getElementById("branchMessengerCard");
-    if (card) {
-      card.classList.remove("active");
-      card.setAttribute("aria-hidden", "true");
-      card.style.display = "none";
-    }
-    const trigger = document.getElementById("branchMessengerTrigger");
-    if (trigger) trigger.style.display = "none";
+    const wa = document.querySelector(".floating-widget-wrapper");
+    if (wa) wa.style.display = "none";
   }]);
 
-  // When customer minimizes / closes the chatbox, hide Crisp bubble and restore our floating launcher
+  // When customer minimizes / closes the chatbox, restore WhatsApp floating button on desktop
   window.$crisp.push(["on", "chat:closed", function() {
-    window.$crisp.push(["do", "chat:hide"]);
-    const card = document.getElementById("branchMessengerCard");
-    if (card) {
-      card.classList.remove("active");
-      card.setAttribute("aria-hidden", "true");
-      card.style.display = "none";
-    }
-    const trigger = document.getElementById("branchMessengerTrigger");
-    if (trigger) trigger.style.display = "flex";
+    const wa = document.querySelector(".floating-widget-wrapper");
+    if (wa && window.innerWidth > 768) wa.style.display = "flex";
   }]);
-
-  // Ensure default bubble stays suppressed during initial startup window
-  let suppressCount = 0;
-  const suppressTimer = setInterval(function() {
-    suppressCount++;
-    try {
-      if (window.$crisp && typeof window.$crisp.push === "function") {
-        if (!window.$crisp.is || !window.$crisp.is("chat:opened")) {
-          window.$crisp.push(["do", "chat:hide"]);
-        }
-      }
-    } catch (e) {}
-    if (suppressCount > 25) clearInterval(suppressTimer);
-  }, 200);
 
   const s = document.createElement("script");
   s.id = "crispScriptEmbed";
@@ -3972,7 +3931,6 @@ function sendCustomerInfoToCrisp(branch, customerInfo) {
   const finalPhone = (customerInfo && customerInfo.phone) || localStorage.getItem("dw_customer_phone") || "";
   const finalEmail = (customerInfo && customerInfo.email) || localStorage.getItem("dw_customer_email") || "";
 
-  // 1. Identify customer in Crisp (Name, Phone, Email)
   if (finalName) {
     window.$crisp.push(["set", "user:nickname", [finalName]]);
   }
@@ -3983,7 +3941,6 @@ function sendCustomerInfoToCrisp(branch, customerInfo) {
     window.$crisp.push(["set", "user:email", [finalEmail]]);
   }
 
-  // 2. Build full metadata attributes for agent view (Crisp session:data)
   const bName = (branch && branch.name) ? branch.name : "D. Watson Chemist";
   const bCity = (branch && branch.city) ? branch.city : "Islamabad";
   const bPhone = (branch && branch.phone) ? branch.phone : "";
@@ -4009,7 +3966,6 @@ function sendCustomerInfoToCrisp(branch, customerInfo) {
     console.warn("Crisp session:data error:", e);
   }
 
-  // 3. Highlighted tags that appear on the conversation ticket in Crisp
   try {
     const cleanBranch = bName.replace(/^D\.\s*Watson\s*/i, "");
     const segments = [bCity, cleanBranch, "D.Watson Web"];
@@ -4020,566 +3976,59 @@ function sendCustomerInfoToCrisp(branch, customerInfo) {
 }
 
 /**
- * Launch Branch Live Web Chat (with Photo / Prescription Upload Capability via Crisp)
+ * Open Crisp Live Chat and sync branch details
  */
 function launchBranchLiveChat(branch, customerInfo) {
-  // Hide background branch selection card immediately
-  const card = document.getElementById("branchMessengerCard");
-  if (card) {
-    card.classList.remove("active");
-    card.setAttribute("aria-hidden", "true");
-    card.style.display = "none";
+  if (window.$crisp && typeof window.$crisp.push === "function") {
+    sendCustomerInfoToCrisp(branch, customerInfo);
+    window.$crisp.push(["do", "chat:show"]);
+    window.$crisp.push(["do", "chat:open"]);
+    return;
   }
-  if (typeof window.closeBranchMessengerCard === "function") {
-    window.closeBranchMessengerCard();
-  }
-
-  if (!branch) {
-    const data = getSiteData();
-    branch = (data && data.branches && data.branches.length) ? data.branches[0] : null;
-  }
-  if (!branch) return;
-
-  const isCrisp = window.DW_CONFIG && window.DW_CONFIG.isCrispEnabled();
-  const websiteId = (window.DW_CONFIG && typeof window.DW_CONFIG.getCrispWebsiteId === "function")
-    ? window.DW_CONFIG.getCrispWebsiteId()
-    : "4ea9bb45-b036-4468-bb27-09fe93c30b3f";
-
-  if (isCrisp && websiteId && websiteId.trim()) {
-    // If Crisp API is loaded and ready
-    if (window.$crisp && typeof window.$crisp.push === "function") {
-      try {
-        sendCustomerInfoToCrisp(branch, customerInfo);
-        window.$crisp.push(["do", "chat:show"]);
-        window.$crisp.push(["do", "chat:open"]);
-      } catch (e) {
-        console.warn("Crisp open error:", e);
-      }
-
-      const trigger = document.getElementById("branchMessengerTrigger");
-      if (trigger) trigger.style.display = "none";
-
-      const cName = (customerInfo && customerInfo.name) || localStorage.getItem("dw_customer_name");
-      const msg = cName
-        ? `Connected to ${branch.name} Live Helpdesk as ${cName}.`
-        : `Connected to ${branch.name} Live Helpdesk.`;
-      if (typeof showToast === "function") {
-        showToast(msg);
-      }
-      return;
-    }
-
-    // If script is still initializing, poll for up to 3 seconds
-    if (document.getElementById("crispScriptEmbed") || document.querySelector('script[src*="client.crisp.chat"]')) {
-      if (typeof showToast === "function") {
-        showToast(`Opening Live Chat for ${branch.name}...`);
-      }
-      let attempts = 0;
-      const pollTimer = setInterval(() => {
-        attempts++;
-        if (window.$crisp && typeof window.$crisp.push === "function") {
-          clearInterval(pollTimer);
-          launchBranchLiveChat(branch, customerInfo);
-        } else if (attempts > 12) {
-          clearInterval(pollTimer);
-          const waNum = branch.whatsapp || "923329716666";
-          const cName = (customerInfo && customerInfo.name) || localStorage.getItem("dw_customer_name") || "";
-          const msg = cName
-            ? `Hello D.Watson ${branch.name} Counter Staff, this is ${cName}. I need live assistance with medicine / prescription / stock inquiry.`
-            : `Hello D.Watson ${branch.name} Counter Staff, I need live assistance with medicine / prescription / stock inquiry.`;
-          window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, "_blank");
-        }
-      }, 250);
-      return;
-    }
-  }
-
-  // Graceful fallback to dedicated branch counter WhatsApp
-  if (typeof showToast === "function") {
-    showToast(`Connecting to ${branch.name} Counter Desk...`);
-  }
-  const waNum = branch.whatsapp || "923329716666";
-  const cName = (customerInfo && customerInfo.name) || localStorage.getItem("dw_customer_name") || "";
-  const msg = cName
-    ? `Hello D.Watson ${branch.name} Counter Staff, this is ${cName}. I need live assistance with medicine / prescription / stock inquiry.`
-    : `Hello D.Watson ${branch.name} Counter Staff, I need live assistance with medicine / prescription / stock inquiry.`;
-  const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
-  window.open(waUrl, "_blank");
+  const waNum = (branch && branch.whatsapp) || "923329716666";
+  window.open(`https://wa.me/${waNum.replace(/[^0-9]/g, "")}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}`, "_blank");
 }
 
 /**
- * Initialize Floating Branch Messenger Dock across the entire website
+ * Ensure Floating WhatsApp Widget is present on all pages (stacked directly above Crisp chat icon)
  */
-function initFloatingBranchMessenger() {
-  if (document.getElementById("branchMessengerDock")) return;
+function ensureFloatingWhatsAppWidget(whatsappNum) {
+  let waNum = (whatsappNum || (window.DW_CONFIG && window.DW_CONFIG.WHATSAPP_NUMBER) || "923329716666").replace(/[^0-9]/g, "");
+  let wrapper = document.querySelector(".floating-widget-wrapper");
 
-  // Suppress old static floating WhatsApp widget if present to prevent clash
-  const oldWidgets = document.querySelectorAll(".floating-widget-wrapper, #floatingPopup");
-  oldWidgets.forEach(w => {
-    w.style.display = "none";
-  });
-
-  const siteData = getSiteData();
-  const branches = (siteData && siteData.branches && siteData.branches.length) ? siteData.branches : [];
-  if (!branches.length) return;
-
-  // Group branches by City for clean UI dropdown
-  const citiesMap = {};
-  branches.forEach(b => {
-    const city = b.city || "Islamabad";
-    if (!citiesMap[city]) citiesMap[city] = [];
-    citiesMap[city].push(b);
-  });
-
-  // Resolve initial selected branch (from localStorage or default to 1)
-  let savedId = parseInt(localStorage.getItem("dw_messenger_branch_id"), 10);
-  let activeBranch = branches.find(b => b.id === savedId) || branches[0];
-
-  // Build Branch Selector Options
-  let selectOptionsHtml = "";
-  Object.keys(citiesMap).forEach(city => {
-    selectOptionsHtml += `<optgroup label="📍 ${escapeHtml(city)}">`;
-    citiesMap[city].forEach(b => {
-      const isSel = (b.id === activeBranch.id) ? "selected" : "";
-      selectOptionsHtml += `<option value="${b.id}" ${isSel}>${escapeHtml(b.name)}</option>`;
-    });
-    selectOptionsHtml += `</optgroup>`;
-  });
-
-  const dock = document.createElement("div");
-  dock.className = "branch-messenger-dock";
-  dock.id = "branchMessengerDock";
-  dock.setAttribute("aria-label", "D. Watson Customer Helpdesk");
-
-  dock.innerHTML = `
-    <!-- Interactive Popover Card -->
-    <div class="branch-messenger-card" id="branchMessengerCard" role="dialog" aria-modal="false" aria-hidden="true">
-      <!-- Header -->
-      <div class="bmc-header">
-        <div class="bmc-header-brand">
-          <img src="assets/images/logo-emblem.png" alt="D. Watson Emblem" class="bmc-logo-emblem" onerror="this.src='assets/images/favicon.png'">
-          <div class="bmc-header-info">
-            <h4>Customer Care &amp; Chat</h4>
-            <span class="bmc-online-status">Pharmacist Active &amp; Ready</span>
-          </div>
+  if (!wrapper) {
+    wrapper = document.createElement("div");
+    wrapper.className = "floating-widget-wrapper";
+    wrapper.innerHTML = `
+      <div class="floating-popup" id="floatingPopup">
+        <div class="floating-popup-header">
+          <i class="fa-brands fa-whatsapp" style="color:#25D366; font-size:1.3rem;"></i>
+          <span>D. Watson Pharmacy Desk</span>
         </div>
-        <button type="button" class="bmc-close-btn" id="bmcCloseBtn" aria-label="Close branch messenger">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <p class="floating-popup-text">Chat directly with our pharmacist on WhatsApp for prescription &amp; medicine inquiries.</p>
+        <a href="https://wa.me/${waNum}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}" target="_blank" class="btn btn-whatsapp btn-sm" style="width:100%;">
+          Start WhatsApp Chat
+        </a>
       </div>
-
-      <!-- Body -->
-      <div class="bmc-body">
-        <!-- Panel 1: Main Selection View -->
-        <div class="bmc-panel-main" id="bmcPanelMain">
-          <!-- Known Customer Badge if name is saved -->
-          <div class="bmc-known-customer" id="bmcKnownCustomer" style="display:none;">
-            <div>
-              <i class="fa-solid fa-circle-user" style="color:#0F766E;"></i>
-              <span>Chatting as: <strong id="bmcKnownName"></strong></span>
-            </div>
-            <button type="button" class="bmc-known-edit-btn" id="bmcEditProfileBtn">Change</button>
-          </div>
-
-          <!-- Branch Selector -->
-          <div class="bmc-field-group">
-            <label class="bmc-field-label" for="bmcBranchSelect">
-              <span>Select Your Branch</span>
-              <small style="color:#10B981; font-weight:700;"><i class="fa-solid fa-location-dot"></i> 20+ Outlets</small>
-            </label>
-            <div class="bmc-branch-select-wrap">
-              <select id="bmcBranchSelect" class="bmc-branch-select">
-                ${selectOptionsHtml}
-              </select>
-              <i class="fa-solid fa-chevron-down bmc-select-chevron"></i>
-            </div>
-          </div>
-
-          <!-- Active Branch Info Box -->
-          <div class="bmc-branch-card" id="bmcBranchPreview">
-            <div class="bmc-bc-title">
-              <span id="bmcPName">${escapeHtml(activeBranch.name)}</span>
-              <span class="bmc-bc-badge" id="bmcPBadge">${escapeHtml(activeBranch.badge || 'Flagship')}</span>
-            </div>
-            <div class="bmc-bc-detail">
-              <i class="fa-solid fa-map-pin"></i>
-              <span id="bmcPAddress">${escapeHtml(activeBranch.address || '')}</span>
-            </div>
-            <div class="bmc-bc-contacts">
-              <div class="bmc-bc-contact-item">
-                <span class="bmc-bc-contact-label">WhatsApp Counter</span>
-                <span class="bmc-bc-contact-val" id="bmcPWa" style="color:#16A34A;">${escapeHtml(activeBranch.whatsapp || '923329716666')}</span>
-              </div>
-              <div class="bmc-bc-contact-item">
-                <span class="bmc-bc-contact-label">Counter Direct Phone</span>
-                <span class="bmc-bc-contact-val" id="bmcPPhone">${escapeHtml(activeBranch.phone || '')}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- The 2 Prominent Options -->
-          <div class="bmc-options-grid">
-            <!-- Option 1: Live Web Chat -->
-            <div class="bmc-option-card bmc-option-chat" id="bmcLiveChatBtn" role="button" tabindex="0">
-              <div class="bmc-opt-icon-chat">
-                <i class="fa-solid fa-comments"></i>
-              </div>
-              <div class="bmc-opt-content">
-                <div class="bmc-opt-header">
-                  <span class="bmc-opt-title">1. Live Web Chat</span>
-                  <span class="bmc-opt-badge bmc-opt-badge-chat">Online</span>
-                </div>
-                <span class="bmc-opt-desc">Chat live • Send prescription &amp; medicine photos</span>
-              </div>
-              <i class="fa-solid fa-chevron-right bmc-opt-arrow"></i>
-            </div>
-
-            <!-- Option 2: WhatsApp Chat -->
-            <a href="#" target="_blank" class="bmc-option-card bmc-option-wa" id="bmcWhatsAppBtn">
-              <div class="bmc-opt-icon-wa">
-                <i class="fa-brands fa-whatsapp"></i>
-              </div>
-              <div class="bmc-opt-content">
-                <div class="bmc-opt-header">
-                  <span class="bmc-opt-title">2. WhatsApp Branch Chat</span>
-                  <span class="bmc-opt-badge bmc-opt-badge-wa">Direct</span>
-                </div>
-                <span class="bmc-opt-desc">Chat directly with branch counter staff on WhatsApp</span>
-              </div>
-              <i class="fa-solid fa-chevron-right bmc-opt-arrow"></i>
-            </a>
-          </div>
-
-          <!-- Optional Direct Call -->
-          <a href="#" class="bmc-btn-phone" id="bmcCallBtn">
-            <i class="fa-solid fa-phone"></i>
-            <span>Prefer a phone call? Dial Branch Counter Directly</span>
-          </a>
-
-          <!-- Prescription & Image Attachment Notice -->
-          <div class="bmc-note">
-            <i class="fa-solid fa-camera"></i>
-            <span><strong>Photo Support:</strong> You can attach prescriptions and product photos in both Live Chat and WhatsApp.</span>
-          </div>
-        </div>
-
-        <!-- Panel 2: Customer Identity Form (Prompts when customer hasn't provided name/phone yet) -->
-        <div class="bmc-customer-step" id="bmcCustomerStep" style="display:none;">
-          <div class="bmc-step-header">
-            <button type="button" class="bmc-step-back" id="bmcStepBackBtn" title="Back to Options">
-              <i class="fa-solid fa-arrow-left"></i>
-            </button>
-            <div>
-              <h5 style="margin:0; font-size:0.95rem; font-weight:800; color:#0F172A;">Customer Information</h5>
-              <span style="font-size:0.75rem; color:#64748B;" id="bmcStepBranchLabel">Connecting to pharmacist</span>
-            </div>
-          </div>
-
-          <p style="font-size:0.8rem; color:#475569; margin:4px 0 6px 0; line-height:1.45;">
-            Please enter your name &amp; mobile number so our branch pharmacist can identify you and address your inquiry:
-          </p>
-
-          <div class="bmc-field-group">
-            <label class="bmc-field-label" for="bmcCustName">Your Full Name *</label>
-            <div class="bmc-input-icon-wrap">
-              <i class="fa-solid fa-user"></i>
-              <input type="text" id="bmcCustName" placeholder="e.g. Muhammad Ali" autocomplete="name">
-            </div>
-          </div>
-
-          <div class="bmc-field-group">
-            <label class="bmc-field-label" for="bmcCustPhone">Mobile / WhatsApp Number *</label>
-            <div class="bmc-input-icon-wrap">
-              <i class="fa-solid fa-phone"></i>
-              <input type="tel" id="bmcCustPhone" placeholder="e.g. 0300-1234567" autocomplete="tel">
-            </div>
-          </div>
-
-          <button type="button" class="bmc-btn-connect-chat" id="bmcSubmitChatBtn">
-            <i class="fa-solid fa-comments"></i> Start Live Chat Now
-          </button>
-
-          <button type="button" class="bmc-btn-skip-chat" id="bmcSkipChatBtn">
-            Skip &amp; Continue as Anonymous Guest
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Floating Launcher Trigger Button (1 Single Clean Floating Action Icon) -->
-    <button type="button" class="branch-messenger-trigger" id="branchMessengerTrigger" aria-label="Customer Helpdesk &amp; Live Chat" title="D. Watson Live Help &amp; WhatsApp">
-      <i class="fa-solid fa-comments"></i>
-      <span class="bm-trigger-live-dot"></span>
-    </button>
-  `;
-
-  document.body.appendChild(dock);
-
-  // Helper to update dynamic branch card
-  function updateBranchCard(branch) {
-    if (!branch) return;
-    activeBranch = branch;
-    localStorage.setItem("dw_messenger_branch_id", branch.id);
-
-    const nameEl = document.getElementById("bmcPName");
-    const badgeEl = document.getElementById("bmcPBadge");
-    const addrEl = document.getElementById("bmcPAddress");
-    const waEl = document.getElementById("bmcPWa");
-    const phoneEl = document.getElementById("bmcPPhone");
-    const waBtn = document.getElementById("bmcWhatsAppBtn");
-    const callBtn = document.getElementById("bmcCallBtn");
-
-    if (nameEl) nameEl.textContent = branch.name;
-    if (badgeEl) badgeEl.textContent = branch.badge || "Verified Outlet";
-    if (addrEl) addrEl.textContent = branch.address || "";
-    if (waEl) waEl.textContent = branch.whatsapp || "923329716666";
-    if (phoneEl) phoneEl.textContent = branch.phone || "";
-
-    if (waBtn) {
-      const waNum = branch.whatsapp || "923329716666";
-      const waMsg = `Hello D.Watson ${branch.name} Counter Desk, I would like to inquire about medicines / prescription availability.`;
-      waBtn.href = `https://wa.me/${waNum}?text=${encodeURIComponent(waMsg)}`;
-    }
-
-    if (callBtn) {
-      callBtn.href = `tel:${(branch.phone || "").replace(/[^0-9]/g, "")}`;
-    }
+      <a href="https://wa.me/${waNum}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}" id="floatingWaBtn" target="_blank" class="floating-btn-main" aria-label="Chat on WhatsApp" title="Chat on WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+      </a>
+    `;
+    document.body.appendChild(wrapper);
   }
 
-  // Initial update
-  updateBranchCard(activeBranch);
-
-  // Helper to update known customer badge
-  function updateKnownCustomerBadge() {
-    const badge = document.getElementById("bmcKnownCustomer");
-    const nameEl = document.getElementById("bmcKnownName");
-    const savedName = localStorage.getItem("dw_customer_name");
-    const savedPhone = localStorage.getItem("dw_customer_phone");
-    if (badge && nameEl) {
-      if (savedName) {
-        badge.style.display = "flex";
-        nameEl.textContent = savedPhone ? `${savedName} (${savedPhone})` : savedName;
-      } else {
-        badge.style.display = "none";
-      }
-    }
+  // Ensure button links directly to WhatsApp
+  const btn = wrapper.querySelector(".floating-btn-main") || document.getElementById("floatingWaBtn");
+  if (btn) {
+    btn.href = `https://wa.me/${waNum}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}`;
   }
-  updateKnownCustomerBadge();
-
-  // Switch to Customer Identification view
-  function showCustomerPrompt() {
-    const panelMain = document.getElementById("bmcPanelMain");
-    const panelCust = document.getElementById("bmcCustomerStep");
-    const custNameInput = document.getElementById("bmcCustName");
-    const custPhoneInput = document.getElementById("bmcCustPhone");
-    const branchLabel = document.getElementById("bmcStepBranchLabel");
-
-    if (branchLabel && activeBranch) {
-      branchLabel.textContent = `Connecting to ${activeBranch.name} (${activeBranch.city || 'Islamabad'})`;
-    }
-    if (custNameInput) custNameInput.value = localStorage.getItem("dw_customer_name") || "";
-    if (custPhoneInput) custPhoneInput.value = localStorage.getItem("dw_customer_phone") || "";
-
-    if (panelMain) panelMain.style.display = "none";
-    if (panelCust) {
-      panelCust.style.display = "flex";
-      setTimeout(() => {
-        if (custNameInput && !custNameInput.value) custNameInput.focus();
-        else if (custPhoneInput && !custPhoneInput.value) custPhoneInput.focus();
-      }, 100);
-    }
-  }
-
-  function hideCustomerPrompt() {
-    const panelMain = document.getElementById("bmcPanelMain");
-    const panelCust = document.getElementById("bmcCustomerStep");
-    if (panelMain) panelMain.style.display = "flex";
-    if (panelCust) panelCust.style.display = "none";
-  }
-
-  // Wire Branch Select change
-  const branchSelect = document.getElementById("bmcBranchSelect");
-  if (branchSelect) {
-    branchSelect.addEventListener("change", function(e) {
-      const bId = parseInt(e.target.value, 10);
-      const chosen = branches.find(b => b.id === bId);
-      if (chosen) updateBranchCard(chosen);
-    });
-  }
-
-  // Toggle Popover Card
-  const triggerBtn = document.getElementById("branchMessengerTrigger");
-  const card = document.getElementById("branchMessengerCard");
-  const closeBtn = document.getElementById("bmcCloseBtn");
-
-  function toggleCard(forceOpen) {
-    if (!card) return;
-    const shouldOpen = (forceOpen !== undefined) ? forceOpen : !card.classList.contains("active");
-    if (shouldOpen) {
-      card.classList.add("active");
-      card.setAttribute("aria-hidden", "false");
-      card.style.display = "flex";
-    } else {
-      card.classList.remove("active");
-      card.setAttribute("aria-hidden", "true");
-      card.style.display = "none";
-      hideCustomerPrompt();
-    }
-  }
-
-  // Wire Live Chat Button (Option 1)
-  const liveChatBtn = document.getElementById("bmcLiveChatBtn");
-  if (liveChatBtn) {
-    const handleChatClick = function(e) {
-      if (e) e.stopPropagation();
-      const savedName = localStorage.getItem("dw_customer_name");
-      const savedPhone = localStorage.getItem("dw_customer_phone");
-      if (savedName && savedPhone) {
-        toggleCard(false);
-        launchBranchLiveChat(activeBranch, { name: savedName, phone: savedPhone });
-      } else {
-        showCustomerPrompt();
-      }
-    };
-    liveChatBtn.addEventListener("click", handleChatClick);
-    liveChatBtn.addEventListener("keydown", function(e) {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        handleChatClick(e);
-      }
-    });
-  }
-
-  // Wire Customer Form submission
-  const submitChatBtn = document.getElementById("bmcSubmitChatBtn");
-  if (submitChatBtn) {
-    submitChatBtn.addEventListener("click", function(e) {
-      if (e) e.stopPropagation();
-      const nameInput = document.getElementById("bmcCustName");
-      const phoneInput = document.getElementById("bmcCustPhone");
-      const name = (nameInput ? nameInput.value : "").trim();
-      const phone = (phoneInput ? phoneInput.value : "").trim();
-
-      if (!name) {
-        if (typeof showToast === "function") showToast("Please enter your name.");
-        else alert("Please enter your name.");
-        if (nameInput) nameInput.focus();
-        return;
-      }
-      if (!phone) {
-        if (typeof showToast === "function") showToast("Please enter your phone / WhatsApp number.");
-        else alert("Please enter your phone / WhatsApp number.");
-        if (phoneInput) phoneInput.focus();
-        return;
-      }
-
-      localStorage.setItem("dw_customer_name", name);
-      localStorage.setItem("dw_customer_phone", phone);
-      updateKnownCustomerBadge();
-      hideCustomerPrompt();
-      toggleCard(false);
-      launchBranchLiveChat(activeBranch, { name: name, phone: phone });
-    });
-  }
-
-  // Wire Skip / Anonymous Guest
-  const skipChatBtn = document.getElementById("bmcSkipChatBtn");
-  if (skipChatBtn) {
-    skipChatBtn.addEventListener("click", function(e) {
-      if (e) e.stopPropagation();
-      hideCustomerPrompt();
-      toggleCard(false);
-      launchBranchLiveChat(activeBranch, { guest: true });
-    });
-  }
-
-  // Wire Step Back button
-  const stepBackBtn = document.getElementById("bmcStepBackBtn");
-  if (stepBackBtn) {
-    stepBackBtn.addEventListener("click", function(e) {
-      if (e) e.stopPropagation();
-      hideCustomerPrompt();
-    });
-  }
-
-  // Wire Edit Profile button
-  const editProfileBtn = document.getElementById("bmcEditProfileBtn");
-  if (editProfileBtn) {
-    editProfileBtn.addEventListener("click", function(e) {
-      if (e) e.stopPropagation();
-      showCustomerPrompt();
-    });
-  }
-
-  // Wire WhatsApp Button (Option 2)
-  const waBtn = document.getElementById("bmcWhatsAppBtn");
-  if (waBtn) {
-    waBtn.addEventListener("click", function() {
-      toggleCard(false);
-    });
-  }
-
-  // Wire Direct Call Button
-  const callBtn = document.getElementById("bmcCallBtn");
-  if (callBtn) {
-    callBtn.addEventListener("click", function() {
-      toggleCard(false);
-    });
-  }
-
-  if (triggerBtn) {
-    triggerBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      toggleCard();
-    });
-  }
-
-  if (closeBtn) {
-    closeBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      toggleCard(false);
-    });
-  }
-
-  // Close when clicking outside
-  document.addEventListener("click", function(e) {
-    if (card && card.classList.contains("active")) {
-      if (!card.contains(e.target) && !triggerBtn.contains(e.target)) {
-        toggleCard(false);
-      }
-    }
-  });
-
-  // Close on Escape key
-  document.addEventListener("keydown", function(e) {
-    if (e.key === "Escape" && card && card.classList.contains("active")) {
-      toggleCard(false);
-    }
-  });
-
-  // Close card when user interacts with an iframe (such as Crisp chat window)
-  window.addEventListener("blur", function() {
-    setTimeout(() => {
-      if (document.activeElement && document.activeElement.tagName === "IFRAME") {
-        toggleCard(false);
-      }
-    }, 100);
-  });
-
-  // Global methods
-  window.openBranchMessengerCard = function(branchId) {
-    if (branchId) {
-      const b = branches.find(item => item.id === branchId);
-      if (b) {
-        if (branchSelect) branchSelect.value = b.id;
-        updateBranchCard(b);
-      }
-    }
-    toggleCard(true);
-  };
-
-  window.closeBranchMessengerCard = function() {
-    toggleCard(false);
-  };
 }
+
+// Global hook for opening live chat from any button or card
+window.openBranchMessengerCard = function(branchId) {
+  if (window.$crisp && typeof window.$crisp.push === "function") {
+    window.$crisp.push(["do", "chat:show"]);
+    window.$crisp.push(["do", "chat:open"]);
+  }
+};
 
