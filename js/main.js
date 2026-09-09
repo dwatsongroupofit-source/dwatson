@@ -3840,6 +3840,24 @@ function initTawkToLiveChat() {
   window.Tawk_API = window.Tawk_API || {};
   window.Tawk_LoadStart = new Date();
 
+  // Hide Tawk's default round bubble so it NEVER collides with our single unified icon!
+  const suppressTawkBubble = function() {
+    try {
+      if (window.Tawk_API && typeof window.Tawk_API.hideWidget === "function") {
+        window.Tawk_API.hideWidget();
+      }
+    } catch (e) {}
+  };
+
+  window.Tawk_API.onBeforeLoad = suppressTawkBubble;
+  window.Tawk_API.onLoad = suppressTawkBubble;
+  window.Tawk_API.onChatMinimized = suppressTawkBubble;
+  window.Tawk_API.onChatHidden = suppressTawkBubble;
+
+  // Periodically suppress during initial 6 seconds to eliminate any initial bubble flash
+  const tawkTimer = setInterval(suppressTawkBubble, 150);
+  setTimeout(() => clearInterval(tawkTimer), 6000);
+
   const s1 = document.createElement("script");
   s1.id = "tawktoScriptEmbed";
   s1.async = true;
@@ -3965,7 +3983,7 @@ function initFloatingBranchMessenger() {
   const dock = document.createElement("div");
   dock.className = "branch-messenger-dock";
   dock.id = "branchMessengerDock";
-  dock.setAttribute("aria-label", "D. Watson Branch Messenger");
+  dock.setAttribute("aria-label", "D. Watson Customer Helpdesk");
 
   dock.innerHTML = `
     <!-- Interactive Popover Card -->
@@ -3975,8 +3993,8 @@ function initFloatingBranchMessenger() {
         <div class="bmc-header-brand">
           <img src="assets/images/logo-emblem.png" alt="D. Watson Emblem" class="bmc-logo-emblem" onerror="this.src='assets/images/favicon.png'">
           <div class="bmc-header-info">
-            <h4>Branch Live Helpdesk</h4>
-            <span class="bmc-online-status">Staff Active &amp; Ready</span>
+            <h4>Customer Care &amp; Chat</h4>
+            <span class="bmc-online-status">Pharmacist Active &amp; Ready</span>
           </div>
         </div>
         <button type="button" class="bmc-close-btn" id="bmcCloseBtn" aria-label="Close branch messenger">
@@ -4022,45 +4040,57 @@ function initFloatingBranchMessenger() {
           </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="bmc-actions">
-          <button type="button" class="bmc-btn-livechat" id="bmcLiveChatBtn">
-            <i class="fa-solid fa-comments"></i>
-            <span>Live Chat with Branch Desk</span>
-          </button>
+        <!-- The 2 Prominent Options -->
+        <div class="bmc-options-grid">
+          <!-- Option 1: Live Web Chat -->
+          <div class="bmc-option-card bmc-option-chat" id="bmcLiveChatBtn" role="button" tabindex="0">
+            <div class="bmc-opt-icon-chat">
+              <i class="fa-solid fa-comments"></i>
+            </div>
+            <div class="bmc-opt-content">
+              <div class="bmc-opt-header">
+                <span class="bmc-opt-title">1. Live Web Chat</span>
+                <span class="bmc-opt-badge bmc-opt-badge-chat">Online</span>
+              </div>
+              <span class="bmc-opt-desc">Chat live • Send prescription &amp; medicine photos</span>
+            </div>
+            <i class="fa-solid fa-chevron-right bmc-opt-arrow"></i>
+          </div>
 
-          <a href="#" target="_blank" class="bmc-btn-whatsapp" id="bmcWhatsAppBtn">
-            <i class="fa-brands fa-whatsapp" style="font-size:1.15rem;"></i>
-            <span>WhatsApp Branch Counter</span>
-          </a>
-
-          <a href="#" class="bmc-btn-phone" id="bmcCallBtn">
-            <i class="fa-solid fa-phone"></i>
-            <span>Call Branch Counter Directly</span>
+          <!-- Option 2: WhatsApp Chat -->
+          <a href="#" target="_blank" class="bmc-option-card bmc-option-wa" id="bmcWhatsAppBtn">
+            <div class="bmc-opt-icon-wa">
+              <i class="fa-brands fa-whatsapp"></i>
+            </div>
+            <div class="bmc-opt-content">
+              <div class="bmc-opt-header">
+                <span class="bmc-opt-title">2. WhatsApp Branch Chat</span>
+                <span class="bmc-opt-badge bmc-opt-badge-wa">Direct</span>
+              </div>
+              <span class="bmc-opt-desc">Chat directly with branch counter staff on WhatsApp</span>
+            </div>
+            <i class="fa-solid fa-chevron-right bmc-opt-arrow"></i>
           </a>
         </div>
+
+        <!-- Optional Direct Call -->
+        <a href="#" class="bmc-btn-phone" id="bmcCallBtn">
+          <i class="fa-solid fa-phone"></i>
+          <span>Prefer a phone call? Dial Branch Counter Directly</span>
+        </a>
 
         <!-- Prescription & Image Attachment Notice -->
         <div class="bmc-note">
           <i class="fa-solid fa-camera"></i>
-          <span><strong>Send Photos Easily:</strong> Attach medicine pictures or prescription photos directly in Live Chat or on branch counter WhatsApp.</span>
+          <span><strong>Photo Support:</strong> You can attach prescriptions and product photos in both Live Chat and WhatsApp.</span>
         </div>
       </div>
     </div>
 
-    <!-- Floating Launcher Trigger Button -->
-    <button type="button" class="branch-messenger-trigger" id="branchMessengerTrigger" aria-label="Open Branch Live Chat &amp; WhatsApp">
-      <div class="bm-trigger-icon-wrap">
-        <i class="fa-solid fa-headset"></i>
-        <span class="bm-trigger-live-dot"></span>
-      </div>
-      <div class="bm-trigger-text">
-        <div class="bm-trigger-title">
-          <span>Branch Desk &amp; Chat</span>
-          <span class="bm-trigger-badge">Live</span>
-        </div>
-        <span class="bm-trigger-sub">Branch Staff Online • Send Photos</span>
-      </div>
+    <!-- Floating Launcher Trigger Button (1 Single Clean Floating Action Icon) -->
+    <button type="button" class="branch-messenger-trigger" id="branchMessengerTrigger" aria-label="Customer Helpdesk &amp; Live Chat" title="D. Watson Live Help &amp; WhatsApp">
+      <i class="fa-solid fa-comments"></i>
+      <span class="bm-trigger-live-dot"></span>
     </button>
   `;
 
@@ -4110,11 +4140,17 @@ function initFloatingBranchMessenger() {
     });
   }
 
-  // Wire Live Chat Button
+  // Wire Live Chat Button (Option 1)
   const liveChatBtn = document.getElementById("bmcLiveChatBtn");
   if (liveChatBtn) {
     liveChatBtn.addEventListener("click", function() {
       launchBranchLiveChat(activeBranch);
+    });
+    liveChatBtn.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        launchBranchLiveChat(activeBranch);
+      }
     });
   }
 

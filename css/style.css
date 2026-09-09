@@ -7937,57 +7937,55 @@ textarea.form-control {
   pointer-events: auto;
 }
 
-/* Floating Launcher Trigger */
+/* Floating Launcher Trigger (1 Single Clean Floating Action Icon) */
 .branch-messenger-trigger {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0F766E 0%, #10B981 100%);
+  color: #FFFFFF;
+  border: 2px solid rgba(255, 255, 255, 0.4);
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F766E 100%);
-  color: #FFFFFF;
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  border-radius: 9999px;
-  padding: 10px 18px 10px 14px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.35), 0 4px 12px rgba(15, 118, 110, 0.25);
+  justify-content: center;
+  box-shadow: 0 10px 28px rgba(15, 118, 110, 0.45), 0 4px 12px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
   user-select: none;
   text-decoration: none;
 }
 
 .branch-messenger-trigger:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.45), 0 6px 16px rgba(15, 118, 110, 0.35);
-  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 14px 36px rgba(15, 118, 110, 0.6), 0 6px 16px rgba(0, 0, 0, 0.2);
+  border-color: #FFFFFF;
 }
 
 .branch-messenger-trigger:active {
-  transform: scale(0.98);
+  transform: scale(0.95);
 }
 
-.bm-trigger-icon-wrap {
-  position: relative;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.branch-messenger-trigger i {
+  font-size: 1.6rem;
   color: #FFFFFF;
-  font-size: 1.25rem;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.branch-messenger-trigger:hover i {
+  transform: scale(1.1);
 }
 
 .bm-trigger-live-dot {
   position: absolute;
   top: 1px;
   right: 1px;
-  width: 11px;
-  height: 11px;
+  width: 14px;
+  height: 14px;
   background: #22C55E;
-  border: 2px solid #0F172A;
+  border: 2.5px solid #FFFFFF;
   border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   animation: bmLivePulse 1.8s infinite;
 }
 
@@ -7995,40 +7993,6 @@ textarea.form-control {
   0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
   70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
   100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-}
-
-.bm-trigger-text {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  line-height: 1.25;
-}
-
-.bm-trigger-title {
-  font-size: 0.92rem;
-  font-weight: 800;
-  color: #FFFFFF;
-  letter-spacing: -0.01em;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.bm-trigger-badge {
-  background: #DC2626;
-  color: #FFFFFF;
-  font-size: 0.65rem;
-  font-weight: 800;
-  padding: 1px 6px;
-  border-radius: 9999px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.bm-trigger-sub {
-  font-size: 0.72rem;
-  color: #94A3B8;
-  font-weight: 600;
 }
 
 /* Branch Messenger Interactive Popover Card */
@@ -8274,63 +8238,136 @@ textarea.form-control {
   color: #0F172A;
 }
 
-/* Action Buttons */
-.bmc-actions {
+/* The 2 Primary Options inside the Popup */
+.bmc-options-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.bmc-btn-livechat {
+.bmc-option-card {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1.5px solid #E2E8F0;
+  background: #FFFFFF;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.22s ease;
+  position: relative;
+  text-align: left;
+  width: 100%;
+}
+
+.bmc-option-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Option 1: Live Web Chat */
+.bmc-option-chat {
+  border-color: rgba(15, 118, 110, 0.35);
+  background: linear-gradient(135deg, #F0FDFA 0%, #FFFFFF 100%);
+}
+
+.bmc-option-chat:hover {
+  border-color: #0F766E;
+  box-shadow: 0 8px 22px rgba(15, 118, 110, 0.2);
+}
+
+.bmc-opt-icon-chat {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #0F766E 0%, #115E59 100%);
   color: #FFFFFF;
-  border: none;
-  border-radius: 12px;
-  padding: 13px 18px;
-  font-family: inherit;
-  font-size: 0.92rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);
-  text-decoration: none;
-  text-align: center;
-}
-
-.bmc-btn-livechat:hover {
-  background: linear-gradient(135deg, #115E59 0%, #042F2E 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(15, 118, 110, 0.45);
-}
-
-.bmc-btn-whatsapp {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  background: #25D366;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 12px;
-  padding: 13px 18px;
-  font-family: inherit;
-  font-size: 0.92rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
-  text-decoration: none;
-  text-align: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
 }
 
-.bmc-btn-whatsapp:hover {
-  background: #20BA5A;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45);
+/* Option 2: WhatsApp Chat */
+.bmc-option-wa {
+  border-color: rgba(37, 211, 102, 0.35);
+  background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%);
+}
+
+.bmc-option-wa:hover {
+  border-color: #25D366;
+  box-shadow: 0 8px 22px rgba(37, 211, 102, 0.22);
+}
+
+.bmc-opt-icon-wa {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #25D366 0%, #16A34A 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.bmc-opt-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.bmc-opt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bmc-opt-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.bmc-opt-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.bmc-opt-badge-chat {
+  background: #CCFBF1;
+  color: #0F766E;
+}
+
+.bmc-opt-badge-wa {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.bmc-opt-desc {
+  font-size: 0.76rem;
+  color: #64748B;
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.bmc-opt-arrow {
+  color: #94A3B8;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+  margin-left: 6px;
+}
+
+.bmc-option-card:hover .bmc-opt-arrow {
+  transform: translateX(3px);
+  color: #0F172A;
 }
 
 .bmc-btn-phone {
@@ -8338,23 +8375,25 @@ textarea.form-control {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #FFFFFF;
-  color: #0F172A;
-  border: 1.5px solid #E2E8F0;
-  border-radius: 12px;
-  padding: 10px 16px;
+  background: #F8FAFC;
+  color: #475569;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 8px 14px;
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
   text-align: center;
+  margin-top: 4px;
 }
 
 .bmc-btn-phone:hover {
-  background: #F8FAFC;
+  background: #FFFFFF;
   border-color: #CBD5E1;
+  color: #0F172A;
 }
 
 /* Prescription & Image Attachment Notice */
@@ -8390,24 +8429,16 @@ textarea.form-control {
     max-width: 360px;
   }
 
-  .bm-trigger-text {
-    display: none;
-  }
-
   .branch-messenger-trigger {
-    padding: 0;
     width: 54px;
     height: 54px;
-    border-radius: 50%;
-    justify-content: center;
   }
 
-  .bm-trigger-icon-wrap {
-    width: 100%;
-    height: 100%;
-    box-shadow: none;
+  .branch-messenger-trigger i {
+    font-size: 1.45rem;
   }
 }
+
 
 
 
