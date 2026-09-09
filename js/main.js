@@ -85,7 +85,7 @@ function initWebsite() {
   initGlobalSearch();
   initHelplineDropdown();
   initPWAInstall();
-  initTawkToLiveChat();
+  initCrispLiveChat();
   initFloatingBranchMessenger();
   setupCustomerInfoAutoSync();
 }
@@ -98,6 +98,7 @@ function setupCustomerInfoAutoSync() {
     { id: "rxPatientName", key: "dw_customer_name" },
     { id: "rxPatientPhone", key: "dw_customer_phone" },
     { id: "contactName", key: "dw_customer_name" },
+    { id: "contactPhone", key: "dw_customer_phone" },
     { id: "contactEmail", key: "dw_customer_email" }
   ];
   fields.forEach(f => {
@@ -107,7 +108,12 @@ function setupCustomerInfoAutoSync() {
     if (saved && !el.value) el.value = saved;
     const persist = () => {
       const val = el.value.trim();
-      if (val) localStorage.setItem(f.key, val);
+      if (val) {
+        localStorage.setItem(f.key, val);
+        if (typeof syncCustomerInfoWithCrisp === "function") {
+          syncCustomerInfoWithCrisp();
+        }
+      }
     };
     el.addEventListener("change", persist);
     el.addEventListener("blur", persist);
@@ -3851,51 +3857,50 @@ function filterBranchesSearch(query) {
 }
 
 /* ==========================================================================
-   MULTI-BRANCH LIVE CHAT & MESSENGER SYSTEM (TAWK.TO + BRANCH WHATSAPP)
+   MULTI-BRANCH LIVE CHAT & MESSENGER SYSTEM (CRISP + BRANCH WHATSAPP)
    ========================================================================== */
 
 /**
- * Initialize Tawk.to Live Chat Embed with Multi-Agent Branch Support
+ * Initialize Crisp Live Chat Embed with Multi-Agent Branch Support
  */
-function initTawkToLiveChat() {
-  if (!window.DW_CONFIG || !window.DW_CONFIG.isTawkToEnabled()) return;
-  const propertyId = window.DW_CONFIG.getTawkToPropertyId();
-  const widgetId = window.DW_CONFIG.getTawkToWidgetId() || "default";
+function initCrispLiveChat() {
+  if (!window.DW_CONFIG || !window.DW_CONFIG.isCrispEnabled()) return;
+  const websiteId = window.DW_CONFIG.getCrispWebsiteId() || "4ea9bb45-b036-4468-bb27-09fe93c30b3f";
 
-  // If no property ID is set yet, we allow our unified Branch Messenger to use direct branch WhatsApp fallback
-  if (!propertyId || !propertyId.trim()) return;
+  // If no website ID is configured, unified Branch Messenger falls back to direct branch WhatsApp
+  if (!websiteId || !websiteId.trim()) return;
 
   // Prevent duplicate script injection
-  if (document.getElementById("tawktoScriptEmbed")) return;
+  if (document.getElementById("crispScriptEmbed")) return;
 
-  window.Tawk_API = window.Tawk_API || {};
-  window.Tawk_LoadStart = new Date();
+  window.$crisp = window.$crisp || [];
+  window.CRISP_WEBSITE_ID = websiteId.trim();
 
-  // Pre-load known customer profile into Tawk session if available
+  // Pre-load known customer profile into Crisp session if available
   const savedName = localStorage.getItem("dw_customer_name");
   const savedPhone = localStorage.getItem("dw_customer_phone");
   const savedEmail = localStorage.getItem("dw_customer_email");
+
   if (savedName) {
-    window.Tawk_API.visitor = {
-      name: savedName,
-      email: savedEmail || (savedPhone ? `${savedPhone.replace(/[^0-9]/g, "")}@customer.dwatson.co` : "")
-    };
+    window.$crisp.push(["set", "user:nickname", [savedName]]);
+  }
+  if (savedPhone) {
+    window.$crisp.push(["set", "user:phone", [savedPhone]]);
+  }
+  if (savedEmail) {
+    window.$crisp.push(["set", "user:email", [savedEmail]]);
   }
 
-  // Hide Tawk's default round bubble so it NEVER collides with our single unified icon!
-  const suppressTawkBubble = function() {
-    try {
-      if (window.Tawk_API && typeof window.Tawk_API.hideWidget === "function") {
-        window.Tawk_API.hideWidget();
-      }
-    } catch (e) {}
-  };
+  // Hide Crisp's default round bubble so it NEVER collides with our single unified launcher!
+  window.$crisp.push(["do", "chat:hide"]);
 
-  window.Tawk_API.onBeforeLoad = suppressTawkBubble;
-  window.Tawk_API.onLoad = suppressTawkBubble;
+  // When Crisp finishes loading, enforce bubble hiding
+  window.$crisp.push(["on", "session:loaded", function() {
+    window.$crisp.push(["do", "chat:hide"]);
+  }]);
 
-  window.Tawk_API.onChatMaximized = function() {
-    // Hide our background popover card immediately so it never shows behind Tawk!
+  // When chat window is opened, hide our floating launcher and popover card immediately
+  window.$crisp.push(["on", "chat:opened", function() {
     if (typeof window.closeBranchMessengerCard === "function") {
       window.closeBranchMessengerCard();
     }
@@ -3903,122 +3908,119 @@ function initTawkToLiveChat() {
     if (card) {
       card.classList.remove("active");
       card.setAttribute("aria-hidden", "true");
+      card.style.display = "none";
     }
     const trigger = document.getElementById("branchMessengerTrigger");
     if (trigger) trigger.style.display = "none";
-  };
+  }]);
 
-  window.Tawk_API.onChatMinimized = function() {
-    suppressTawkBubble();
+  // When customer minimizes / closes the chatbox, hide Crisp bubble and restore our floating launcher
+  window.$crisp.push(["on", "chat:closed", function() {
+    window.$crisp.push(["do", "chat:hide"]);
     const card = document.getElementById("branchMessengerCard");
     if (card) {
       card.classList.remove("active");
       card.setAttribute("aria-hidden", "true");
+      card.style.display = "none";
     }
     const trigger = document.getElementById("branchMessengerTrigger");
     if (trigger) trigger.style.display = "flex";
-  };
+  }]);
 
-  window.Tawk_API.onChatHidden = function() {
-    suppressTawkBubble();
-    const card = document.getElementById("branchMessengerCard");
-    if (card) {
-      card.classList.remove("active");
-      card.setAttribute("aria-hidden", "true");
-    }
-    const trigger = document.getElementById("branchMessengerTrigger");
-    if (trigger) trigger.style.display = "flex";
-  };
+  // Ensure default bubble stays suppressed during initial startup window
+  let suppressCount = 0;
+  const suppressTimer = setInterval(function() {
+    suppressCount++;
+    try {
+      if (window.$crisp && typeof window.$crisp.push === "function") {
+        if (!window.$crisp.is || !window.$crisp.is("chat:opened")) {
+          window.$crisp.push(["do", "chat:hide"]);
+        }
+      }
+    } catch (e) {}
+    if (suppressCount > 25) clearInterval(suppressTimer);
+  }, 200);
 
-  // Periodically suppress during initial 6 seconds to eliminate any initial bubble flash
-  const tawkTimer = setInterval(suppressTawkBubble, 150);
-  setTimeout(() => clearInterval(tawkTimer), 6000);
-
-  const s1 = document.createElement("script");
-  s1.id = "tawktoScriptEmbed";
-  s1.async = true;
-  s1.src = `https://embed.tawk.to/${encodeURIComponent(propertyId.trim())}/${encodeURIComponent(widgetId.trim())}`;
-  s1.charset = "UTF-8";
-  s1.setAttribute("crossorigin", "*");
-  document.head.appendChild(s1);
+  const s = document.createElement("script");
+  s.id = "crispScriptEmbed";
+  s.async = true;
+  s.src = "https://client.crisp.chat/l.js";
+  document.head.appendChild(s);
 }
 
 /**
- * Synchronize full customer profile, branch, page and context with Tawk.to
+ * Sync saved customer profile to active Crisp session
  */
-function sendCustomerInfoToTawk(branch, customerInfo) {
-  if (!window.Tawk_API) return;
+function syncCustomerInfoWithCrisp() {
+  if (!window.$crisp || typeof window.$crisp.push !== "function") return;
+  const name = localStorage.getItem("dw_customer_name");
+  const phone = localStorage.getItem("dw_customer_phone");
+  const email = localStorage.getItem("dw_customer_email");
+
+  if (name) window.$crisp.push(["set", "user:nickname", [name]]);
+  if (phone) window.$crisp.push(["set", "user:phone", [phone]]);
+  if (email) window.$crisp.push(["set", "user:email", [email]]);
+}
+
+/**
+ * Synchronize full customer profile, branch, page and context with Crisp
+ */
+function sendCustomerInfoToCrisp(branch, customerInfo) {
+  if (!window.$crisp || typeof window.$crisp.push !== "function") return;
 
   const finalName = (customerInfo && customerInfo.name) || localStorage.getItem("dw_customer_name") || "";
   const finalPhone = (customerInfo && customerInfo.phone) || localStorage.getItem("dw_customer_phone") || "";
   const finalEmail = (customerInfo && customerInfo.email) || localStorage.getItem("dw_customer_email") || "";
 
-  // 1. Identify customer in Tawk
+  // 1. Identify customer in Crisp (Name, Phone, Email)
   if (finalName) {
-    window.Tawk_API.visitor = {
-      name: finalName,
-      email: finalEmail || (finalPhone ? `${finalPhone.replace(/[^0-9]/g, "")}@customer.dwatson.co` : "")
-    };
+    window.$crisp.push(["set", "user:nickname", [finalName]]);
+  }
+  if (finalPhone) {
+    window.$crisp.push(["set", "user:phone", [finalPhone]]);
+  }
+  if (finalEmail) {
+    window.$crisp.push(["set", "user:email", [finalEmail]]);
   }
 
-  // 2. Build full metadata attributes for agent view
+  // 2. Build full metadata attributes for agent view (Crisp session:data)
   const bName = (branch && branch.name) ? branch.name : "D. Watson Chemist";
   const bCity = (branch && branch.city) ? branch.city : "Islamabad";
   const bPhone = (branch && branch.phone) ? branch.phone : "";
   const bWa = (branch && branch.whatsapp) ? branch.whatsapp : "923329716666";
   const pageTitle = document.title ? document.title.split(" - ")[0].trim() : "Store Page";
 
-  const attrs = {
-    'SelectedBranch': bName,
-    'City': bCity,
-    'BranchCity': bCity,
-    'BranchPhone': bPhone,
-    'BranchWhatsApp': bWa,
-    'CurrentPage': pageTitle,
-    'PageURL': window.location.href,
-    'Country': 'Pakistan',
-    'Platform': /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile Web' : 'Desktop Web',
-    'ContactTime': new Date().toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' })
-  };
-
-  if (finalName) {
-    attrs['name'] = finalName;
-    attrs['CustomerName'] = finalName;
-  }
-  if (finalPhone) {
-    attrs['Phone'] = finalPhone;
-    attrs['WhatsApp'] = finalPhone;
-    attrs['CustomerPhone'] = finalPhone;
-  }
-  if (finalEmail) {
-    attrs['email'] = finalEmail;
-  }
+  const sessionData = [
+    ["branch_name", bName],
+    ["branch_city", bCity],
+    ["branch_phone", bPhone],
+    ["branch_whatsapp", bWa],
+    ["customer_name", finalName || "Guest User"],
+    ["customer_phone", finalPhone || "Not provided"],
+    ["page_title", pageTitle],
+    ["page_url", window.location.href],
+    ["country", "Pakistan"],
+    ["platform", /Mobi|Android/i.test(navigator.userAgent) ? "Mobile Web" : "Desktop Web"]
+  ];
 
   try {
-    if (typeof window.Tawk_API.setAttributes === "function") {
-      window.Tawk_API.setAttributes(attrs, function() {});
-    }
+    window.$crisp.push(["set", "session:data", [sessionData]]);
   } catch (e) {
-    console.warn("Tawk setAttributes error:", e);
+    console.warn("Crisp session:data error:", e);
   }
 
-  // 3. Highlighted tags that appear on the conversation ticket
+  // 3. Highlighted tags that appear on the conversation ticket in Crisp
   try {
     const cleanBranch = bName.replace(/^D\.\s*Watson\s*/i, "");
-    const tags = [bCity, cleanBranch, pageTitle];
-    if (finalName) tags.unshift(finalName);
-    if (finalPhone) tags.unshift(finalPhone);
-
-    if (typeof window.Tawk_API.addTags === "function") {
-      window.Tawk_API.addTags(tags, function() {});
-    }
+    const segments = [bCity, cleanBranch, "D.Watson Web"];
+    window.$crisp.push(["set", "session:segments", [segments]]);
   } catch (e) {
-    console.warn("Tawk addTags error:", e);
+    console.warn("Crisp session:segments error:", e);
   }
 }
 
 /**
- * Launch Branch Live Web Chat (with Photo / Prescription Upload Capability)
+ * Launch Branch Live Web Chat (with Photo / Prescription Upload Capability via Crisp)
  */
 function launchBranchLiveChat(branch, customerInfo) {
   // Hide background branch selection card immediately
@@ -4038,22 +4040,22 @@ function launchBranchLiveChat(branch, customerInfo) {
   }
   if (!branch) return;
 
-  const propId = (window.DW_CONFIG && typeof window.DW_CONFIG.getTawkToPropertyId === "function")
-    ? window.DW_CONFIG.getTawkToPropertyId()
-    : "6aa0ffd7317f5f3442e34ee4";
+  const isCrisp = window.DW_CONFIG && window.DW_CONFIG.isCrispEnabled();
+  const websiteId = (window.DW_CONFIG && typeof window.DW_CONFIG.getCrispWebsiteId === "function")
+    ? window.DW_CONFIG.getCrispWebsiteId()
+    : "4ea9bb45-b036-4468-bb27-09fe93c30b3f";
 
-  if (propId && propId.trim()) {
-    // If Tawk API is loaded and ready
-    if (window.Tawk_API && typeof window.Tawk_API.maximize === "function") {
+  if (isCrisp && websiteId && websiteId.trim()) {
+    // If Crisp API is loaded and ready
+    if (window.$crisp && typeof window.$crisp.push === "function") {
       try {
-        if (typeof window.Tawk_API.showWidget === "function") {
-          window.Tawk_API.showWidget();
-        }
-        sendCustomerInfoToTawk(branch, customerInfo);
+        sendCustomerInfoToCrisp(branch, customerInfo);
+        window.$crisp.push(["do", "chat:show"]);
+        window.$crisp.push(["do", "chat:open"]);
       } catch (e) {
-        console.warn("Tawk attribute error:", e);
+        console.warn("Crisp open error:", e);
       }
-      window.Tawk_API.maximize();
+
       const trigger = document.getElementById("branchMessengerTrigger");
       if (trigger) trigger.style.display = "none";
 
@@ -4068,14 +4070,14 @@ function launchBranchLiveChat(branch, customerInfo) {
     }
 
     // If script is still initializing, poll for up to 3 seconds
-    if (document.getElementById("tawktoScriptEmbed") || document.querySelector('script[src*="embed.tawk.to"]')) {
+    if (document.getElementById("crispScriptEmbed") || document.querySelector('script[src*="client.crisp.chat"]')) {
       if (typeof showToast === "function") {
         showToast(`Opening Live Chat for ${branch.name}...`);
       }
       let attempts = 0;
       const pollTimer = setInterval(() => {
         attempts++;
-        if (window.Tawk_API && typeof window.Tawk_API.maximize === "function") {
+        if (window.$crisp && typeof window.$crisp.push === "function") {
           clearInterval(pollTimer);
           launchBranchLiveChat(branch, customerInfo);
         } else if (attempts > 12) {
@@ -4555,7 +4557,7 @@ function initFloatingBranchMessenger() {
     }
   });
 
-  // Close card when user interacts with an iframe (such as Tawk.to chat window)
+  // Close card when user interacts with an iframe (such as Crisp chat window)
   window.addEventListener("blur", function() {
     setTimeout(() => {
       if (document.activeElement && document.activeElement.tagName === "IFRAME") {

@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v15.7)
- * Customer identity and context sync for Tawk.to live chat
+ * D. Watson Chemist & Superstore - Service Worker (v15.8)
+ * Multi-branch Crisp live chat & WhatsApp messenger system
  */
 
-const CACHE_NAME = "dwatson-cache-v15.7";
+const CACHE_NAME = "dwatson-cache-v15.8";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -18,7 +18,7 @@ const STATIC_ASSETS = [
   "./css/responsive.css?v=8.1",
   "./js/config.js?v=1.2",
   "./js/data.js?v=8.7",
-  "./js/main.js?v=8.9",
+  "./js/main.js?v=9.0",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",

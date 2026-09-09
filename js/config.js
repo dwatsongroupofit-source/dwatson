@@ -26,33 +26,24 @@ window.DW_CONFIG = {
   IMGBB_API_KEY: "5d369a9387210e1432e7018b92d3d0e8",
   IMGBB_UPLOAD_URL: "https://api.imgbb.com/1/upload",
 
-  // 💬 Live Chat Configuration (Tawk.to Multi-Agent Branch Messenger)
-  // Free unlimited branch agents, mobile apps for staff & branch department routing
-  TAWKTO_ENABLED: true,
-  TAWKTO_PROPERTY_ID: "6aa0ffd7317f5f3442e34ee4", // Configured Tawk.to Property ID
-  TAWKTO_WIDGET_ID: "1k22eeolv", // Configured Tawk.to Widget ID
+  // 💬 Live Chat Configuration (Crisp Advanced Multi-Agent Live Chat)
+  CRISP_ENABLED: true,
+  CRISP_WEBSITE_ID: "4ea9bb45-b036-4468-bb27-09fe93c30b3f", // User's Crisp Website ID
 
   /**
-   * Resolves whether Tawk.to live chat is active
+   * Resolves whether Crisp live chat is active
    */
-  isTawkToEnabled: function() {
-    const saved = localStorage.getItem("dw_tawkto_enabled");
+  isCrispEnabled: function() {
+    const saved = localStorage.getItem("dw_crisp_enabled");
     if (saved !== null) return saved === "true";
-    return Boolean(this.TAWKTO_ENABLED);
+    return Boolean(this.CRISP_ENABLED);
   },
 
   /**
-   * Returns active Tawk.to Property ID
+   * Returns active Crisp Website ID
    */
-  getTawkToPropertyId: function() {
-    return localStorage.getItem("dw_tawkto_property_id") || this.TAWKTO_PROPERTY_ID || "";
-  },
-
-  /**
-   * Returns active Tawk.to Widget ID
-   */
-  getTawkToWidgetId: function() {
-    return localStorage.getItem("dw_tawkto_widget_id") || this.TAWKTO_WIDGET_ID || "default";
+  getCrispWebsiteId: function() {
+    return localStorage.getItem("dw_crisp_website_id") || this.CRISP_WEBSITE_ID || "";
   },
 
   /**

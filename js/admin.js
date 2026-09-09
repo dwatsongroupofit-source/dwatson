@@ -1726,14 +1726,13 @@ function populateCompanySettingsForm() {
   setVal("setDeliveryMinOrder", c.deliveryMinOrder !== undefined ? c.deliveryMinOrder : 1000);
   setVal("setDeliveryFreeThreshold", c.deliveryFreeThreshold !== undefined ? c.deliveryFreeThreshold : 3000);
 
-  // Tawk.to Live Chat Settings
-  const tawkEnabledEl = document.getElementById("setTawkToEnabled");
-  if (tawkEnabledEl) {
-    const savedEnabled = localStorage.getItem("dw_tawkto_enabled");
-    tawkEnabledEl.checked = (savedEnabled !== null) ? (savedEnabled === "true") : (c.tawktoEnabled !== false);
+  // Crisp Live Chat Settings
+  const crispEnabledEl = document.getElementById("setCrispEnabled");
+  if (crispEnabledEl) {
+    const savedEnabled = localStorage.getItem("dw_crisp_enabled");
+    crispEnabledEl.checked = (savedEnabled !== null) ? (savedEnabled === "true") : (c.crispEnabled !== false);
   }
-  setVal("setTawkToPropertyId", localStorage.getItem("dw_tawkto_property_id") || c.tawktoPropertyId || "");
-  setVal("setTawkToWidgetId", localStorage.getItem("dw_tawkto_widget_id") || c.tawktoWidgetId || "default");
+  setVal("setCrispWebsiteId", localStorage.getItem("dw_crisp_website_id") || c.crispWebsiteId || "4ea9bb45-b036-4468-bb27-09fe93c30b3f");
 }
 
 window.saveCompanySettings = function(e) {
@@ -1750,24 +1749,18 @@ window.saveCompanySettings = function(e) {
   adminData.company.aboutShort = document.getElementById("setAboutShort").value.trim();
   adminData.company.aboutHistory = document.getElementById("setAboutHistory").value.trim();
 
-  // Tawk.to Live Chat Settings
-  const tawkEnabledEl = document.getElementById("setTawkToEnabled");
-  const tawkPropEl = document.getElementById("setTawkToPropertyId");
-  const tawkWidgetEl = document.getElementById("setTawkToWidgetId");
+  // Crisp Live Chat Settings
+  const crispEnabledEl = document.getElementById("setCrispEnabled");
+  const crispWebIdEl = document.getElementById("setCrispWebsiteId");
 
-  if (tawkEnabledEl) {
-    adminData.company.tawktoEnabled = tawkEnabledEl.checked;
-    localStorage.setItem("dw_tawkto_enabled", tawkEnabledEl.checked ? "true" : "false");
+  if (crispEnabledEl) {
+    adminData.company.crispEnabled = crispEnabledEl.checked;
+    localStorage.setItem("dw_crisp_enabled", crispEnabledEl.checked ? "true" : "false");
   }
-  if (tawkPropEl) {
-    const propVal = tawkPropEl.value.trim();
-    adminData.company.tawktoPropertyId = propVal;
-    localStorage.setItem("dw_tawkto_property_id", propVal);
-  }
-  if (tawkWidgetEl) {
-    const widgetVal = tawkWidgetEl.value.trim() || "default";
-    adminData.company.tawktoWidgetId = widgetVal;
-    localStorage.setItem("dw_tawkto_widget_id", widgetVal);
+  if (crispWebIdEl) {
+    const webIdVal = crispWebIdEl.value.trim() || "4ea9bb45-b036-4468-bb27-09fe93c30b3f";
+    adminData.company.crispWebsiteId = webIdVal;
+    localStorage.setItem("dw_crisp_website_id", webIdVal);
   }
 
   const delFeeEl = document.getElementById("setDeliveryFee");
