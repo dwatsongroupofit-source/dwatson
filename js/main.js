@@ -3906,14 +3906,14 @@ function initTawkToLiveChat() {
  */
 function launchBranchLiveChat(branch) {
   // Hide background branch selection card immediately
+  const card = document.getElementById("branchMessengerCard");
+  if (card) {
+    card.classList.remove("active");
+    card.setAttribute("aria-hidden", "true");
+    card.style.display = "none";
+  }
   if (typeof window.closeBranchMessengerCard === "function") {
     window.closeBranchMessengerCard();
-  } else {
-    const card = document.getElementById("branchMessengerCard");
-    if (card) {
-      card.classList.remove("active");
-      card.setAttribute("aria-hidden", "true");
-    }
   }
 
   if (!branch) {
@@ -4188,20 +4188,6 @@ function initFloatingBranchMessenger() {
     });
   }
 
-  // Wire Live Chat Button (Option 1)
-  const liveChatBtn = document.getElementById("bmcLiveChatBtn");
-  if (liveChatBtn) {
-    liveChatBtn.addEventListener("click", function() {
-      launchBranchLiveChat(activeBranch);
-    });
-    liveChatBtn.addEventListener("keydown", function(e) {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        launchBranchLiveChat(activeBranch);
-      }
-    });
-  }
-
   // Toggle Popover Card
   const triggerBtn = document.getElementById("branchMessengerTrigger");
   const card = document.getElementById("branchMessengerCard");
@@ -4213,10 +4199,46 @@ function initFloatingBranchMessenger() {
     if (shouldOpen) {
       card.classList.add("active");
       card.setAttribute("aria-hidden", "false");
+      card.style.display = "flex";
     } else {
       card.classList.remove("active");
       card.setAttribute("aria-hidden", "true");
+      card.style.display = "none";
     }
+  }
+
+  // Wire Live Chat Button (Option 1)
+  const liveChatBtn = document.getElementById("bmcLiveChatBtn");
+  if (liveChatBtn) {
+    liveChatBtn.addEventListener("click", function(e) {
+      if (e) e.stopPropagation();
+      toggleCard(false);
+      launchBranchLiveChat(activeBranch);
+    });
+    liveChatBtn.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        if (e) e.stopPropagation();
+        toggleCard(false);
+        launchBranchLiveChat(activeBranch);
+      }
+    });
+  }
+
+  // Wire WhatsApp Button (Option 2)
+  const waBtn = document.getElementById("bmcWhatsAppBtn");
+  if (waBtn) {
+    waBtn.addEventListener("click", function() {
+      toggleCard(false);
+    });
+  }
+
+  // Wire Direct Call Button
+  const callBtn = document.getElementById("bmcCallBtn");
+  if (callBtn) {
+    callBtn.addEventListener("click", function() {
+      toggleCard(false);
+    });
   }
 
   if (triggerBtn) {
