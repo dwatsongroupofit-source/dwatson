@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v15.5)
- * Clean image asset paths, zero 404 cache, and instant live chat dismissal
+ * D. Watson Chemist & Superstore - Service Worker (v15.6)
+ * Clean image asset paths, zero 404 cache, and updated software link
  */
 
-const CACHE_NAME = "dwatson-cache-v15.5";
+const CACHE_NAME = "dwatson-cache-v15.6";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
