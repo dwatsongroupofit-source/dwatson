@@ -411,15 +411,20 @@ const DEPT_CATEGORY_MAP = {
   pharmacy: "healthcare",
   optics: "healthcare",
   surgical: "healthcare",
+  hearing_aid: "healthcare",
   hearing_aids: "healthcare",
+  homeo: "healthcare",
   homeopathy: "healthcare",
   cosmetics: "beauty",
   perfumes: "beauty",
   color_cosmetics: "beauty",
+  babycare: "motherbaby",
   baby_care: "motherbaby",
   toys: "motherbaby",
+  grocery: "superstore",
   superstore: "superstore",
   crockery: "superstore",
+  undergarments: "superstore",
   garments: "superstore"
 };
 
@@ -699,12 +704,16 @@ function spotlightDepartment(rawDeptId) {
   const filterBar = document.getElementById("deptFilterBar");
   if (!container) return;
 
+  // Ensure full-width container in spotlight mode
+  container.classList.add("spotlight-active");
+
   // Map alternative category aliases to canonical department IDs
   const aliasMap = {
     medicine: "pharmacy",
     medicines: "pharmacy",
     rx: "pharmacy",
     supplements: "homeo",
+    nutrition: "homeo",
     skincare: "cosmetics",
     fragrances: "perfumes",
     fragrance: "perfumes",
@@ -712,22 +721,30 @@ function spotlightDepartment(rawDeptId) {
     superstore: "grocery",
     baby: "babycare",
     mothercare: "babycare",
+    baby_care: "babycare",
     hearing: "hearing_aid",
+    hearing_aids: "hearing_aid",
     diagnostics: "hearing_aid",
     glasses: "optics",
     eyewear: "optics",
-    hospital: "surgical"
+    hospital: "surgical",
+    homeopathy: "homeo",
+    garments: "undergarments"
   };
 
   const cleanId = (rawDeptId || "").toLowerCase().trim();
   const canonicalId = aliasMap[cleanId] || cleanId;
   
-  let selectedDept = allDepartmentsData.find(d => d.id.toLowerCase() === canonicalId);
+  let selectedIndex = allDepartmentsData.findIndex(d => d.id.toLowerCase() === canonicalId);
+  let selectedDept = selectedIndex >= 0 ? allDepartmentsData[selectedIndex] : null;
+
   if (!selectedDept) {
-    selectedDept = allDepartmentsData.find(d => d.name.toLowerCase().includes(cleanId) || (d.tagline && d.tagline.toLowerCase().includes(cleanId)));
+    selectedIndex = allDepartmentsData.findIndex(d => d.name.toLowerCase().includes(cleanId) || (d.tagline && d.tagline.toLowerCase().includes(cleanId)));
+    selectedDept = selectedIndex >= 0 ? allDepartmentsData[selectedIndex] : null;
   }
   if (!selectedDept) {
     selectedDept = allDepartmentsData[0];
+    selectedIndex = 0;
   }
 
   // Hide filter bar in spotlight mode
@@ -739,72 +756,228 @@ function spotlightDepartment(rawDeptId) {
   const waUrl = `https://wa.me/${allDepartmentsWhatsApp}?text=${encodeURIComponent(waMsg)}`;
   const isPharmacy = selectedDept.id === "pharmacy";
 
+  // Product Matching for Current Department
+  const allProds = (typeof DEFAULT_SITE_DATA !== "undefined" && Array.isArray(DEFAULT_SITE_DATA.products))
+    ? DEFAULT_SITE_DATA.products
+    : ((typeof allProductsData !== "undefined" && Array.isArray(allProductsData)) ? allProductsData : []);
+
+  let matchingProducts = allProds.filter(p => {
+    const cat = (p.category || "").toLowerCase();
+    const catName = (p.categoryName || "").toLowerCase();
+    const name = (p.name || "").toLowerCase();
+    const desc = (p.description || "").toLowerCase();
+    const deptId = selectedDept.id.toLowerCase();
+
+    if (deptId === "babycare") {
+      return cat === "baby" || cat === "babycare" || catName.includes("baby") || name.includes("aptamil") || name.includes("baby") || name.includes("infant") || desc.includes("infant");
+    }
+    if (deptId === "cosmetics") {
+      return cat === "cosmetics" || catName.includes("cosmetic") || catName.includes("skincare");
+    }
+    if (deptId === "color_cosmetics") {
+      return cat === "cosmetics" && (name.includes("primer") || name.includes("blush") || name.includes("flormar") || name.includes("golden rose"));
+    }
+    if (deptId === "perfumes") {
+      return cat === "perfumes" || catName.includes("fragrance") || name.includes("perfume");
+    }
+    if (deptId === "grocery") {
+      return cat === "grocery" || catName.includes("grocery") || catName.includes("superstore");
+    }
+    if (deptId === "optics") {
+      return cat === "optics" || catName.includes("optics") || name.includes("ray-ban") || name.includes("aviator");
+    }
+    if (deptId === "surgical" || deptId === "hearing_aid") {
+      return cat === "surgical" || catName.includes("surgical") || name.includes("omron") || name.includes("accu-chek") || name.includes("monitor");
+    }
+    if (deptId === "pharmacy" || deptId === "homeo") {
+      return cat === "pharmacy" || catName.includes("pharmacy") || catName.includes("supplement") || name.includes("centrum") || name.includes("seven seas");
+    }
+    return false;
+  });
+
+  // Ensure department has 3-4 featured items displayed
+  if (matchingProducts.length < 3) {
+    const fallbackIds = ["p10", "p14", "p11", "p16", "p1"]; // CeraVe, Aptamil, Omron, Centrum, Purest Solutions
+    fallbackIds.forEach(fid => {
+      if (matchingProducts.length < 4 && !matchingProducts.some(p => p.id === fid)) {
+        const found = allProds.find(p => p.id === fid);
+        if (found) matchingProducts.push(found);
+      }
+    });
+  }
+
   container.innerHTML = `
     <div class="dept-spotlight-wrap" id="deptSpotlightSection">
+      <!-- Breadcrumb & Top Bar -->
       <div class="dept-spotlight-topbar">
-        <button type="button" class="dept-spotlight-back-btn" onclick="showAllDepartments(event)">
-          <i class="fa-solid fa-arrow-left"></i> View All 13 Departments
-        </button>
-        <span class="badge-mini" style="font-size:0.82rem; padding:6px 14px; background:#EFF6FF; color:#2563EB; border-radius:9999px; font-weight:800;">
-          <i class="fa-solid fa-certificate"></i> Official D. Watson Specialty
-        </span>
-      </div>
-
-      <div class="dept-spotlight-grid">
-        <div class="dept-spotlight-media">
-          <img src="${encodeURI(selectedDept.image)}" alt="${escapeHtml(selectedDept.name)}" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
-          <span class="dept-spotlight-badge">
-            <i class="${selectedDept.icon || 'fa-solid fa-star'}"></i> ${escapeHtml(selectedDept.badge || "Featured Specialty")}
+        <div class="dept-spotlight-nav-left">
+          <button type="button" class="dept-spotlight-back-btn" onclick="showAllDepartments(event)" title="Back to all departments">
+            <i class="fa-solid fa-arrow-left"></i> View All 13 Departments
+          </button>
+          <div class="dept-spotlight-breadcrumb">
+            <a href="index.html">Home</a>
+            <i class="fa-solid fa-chevron-right"></i>
+            <a href="departments.html" onclick="showAllDepartments(event)">Departments</a>
+            <i class="fa-solid fa-chevron-right"></i>
+            <span class="breadcrumb-current">${escapeHtml(selectedDept.name)}</span>
+          </div>
+        </div>
+        <div class="dept-spotlight-nav-right">
+          <span class="dept-spotlight-badge-official">
+            <i class="fa-solid fa-certificate"></i> Official D. Watson Specialty
+          </span>
+          <span class="dept-spotlight-badge-branches">
+            <i class="fa-solid fa-store"></i> 25+ Flagship Branches
           </span>
         </div>
+      </div>
 
+      <!-- Main Two-Column Showcase Grid -->
+      <div class="dept-spotlight-grid">
+        <!-- Visual Media & Trust Column -->
+        <div class="dept-spotlight-left-col">
+          <div class="dept-spotlight-media">
+            <img src="${encodeURI(selectedDept.image)}" alt="${escapeHtml(selectedDept.name)}" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+            <span class="dept-spotlight-badge">
+              <i class="${selectedDept.icon || 'fa-solid fa-star'}"></i> ${escapeHtml(selectedDept.badge || "Featured Specialty")}
+            </span>
+            <span class="dept-spotlight-live-status">
+              <span class="live-dot"></span> In Stock at Flagships
+            </span>
+            <div class="dept-spotlight-media-footer">
+              <i class="fa-solid fa-location-dot"></i> Available across Islamabad, Rawalpindi, Lahore &amp; Abbottabad
+            </div>
+          </div>
+
+          <!-- Quality & Service Trust Grid -->
+          <div class="dept-trust-grid">
+            <div class="dept-trust-item">
+              <i class="fa-solid fa-shield-check"></i>
+              <div>
+                <strong>100% Genuine</strong>
+                <span>Direct Sourcing Guaranteed</span>
+              </div>
+            </div>
+            <div class="dept-trust-item">
+              <i class="fa-solid fa-temperature-arrow-down"></i>
+              <div>
+                <strong>Cold-Chain Storage</strong>
+                <span>2°C - 8°C Monitored Climate</span>
+              </div>
+            </div>
+            <div class="dept-trust-item">
+              <i class="fa-solid fa-truck-bolt"></i>
+              <div>
+                <strong>2-4 Hr Delivery</strong>
+                <span>Express Twin Cities Service</span>
+              </div>
+            </div>
+            <div class="dept-trust-item">
+              <i class="fa-solid fa-user-doctor"></i>
+              <div>
+                <strong>Expert Assistance</strong>
+                <span>Registered Pharmacists On-Site</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content & Specialties Column -->
         <div class="dept-spotlight-content">
-          <span class="dept-spotlight-tagline">${escapeHtml(selectedDept.tagline)}</span>
+          <div class="dept-spotlight-eyebrow">
+            <span class="dept-eyebrow-tag">${escapeHtml(selectedDept.tagline || "D. Watson Specialty")}</span>
+            <span class="dept-number-pill">Department ${selectedIndex + 1} of 13</span>
+          </div>
           <h2 class="dept-spotlight-title">${escapeHtml(selectedDept.name)}</h2>
           <p class="dept-spotlight-desc">${escapeHtml(selectedDept.description)}</p>
 
-          <div class="dept-spotlight-features-title">
-            <i class="fa-solid fa-list-check" style="color:var(--dw-red);"></i> Key Department Specialties &amp; Standards
+          <div class="dept-spotlight-features-header">
+            <div class="dept-spotlight-features-title">
+              <i class="fa-solid fa-list-check" style="color:var(--dw-red);"></i> Key Department Specialties &amp; Standards
+            </div>
+            <span class="features-count">${(selectedDept.features || []).length} Verified Standards</span>
           </div>
           <div class="dept-spotlight-features-grid">
             ${(selectedDept.features || []).map(f => `
               <div class="dept-spotlight-feature-card">
-                <i class="fa-solid fa-circle-check"></i>
+                <div class="feature-card-icon"><i class="fa-solid fa-check"></i></div>
                 <span>${escapeHtml(f)}</span>
               </div>
             `).join("")}
           </div>
 
           <div class="dept-spotlight-cta-row">
-            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp">
+            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp btn-spotlight-wa">
               <i class="fa-brands fa-whatsapp"></i> Inquire on WhatsApp
             </a>
             ${isPharmacy ? `
-              <a href="prescription.html" class="btn btn-primary">
+              <a href="prescription.html" class="btn btn-primary btn-spotlight-rx">
                 <i class="fa-solid fa-file-prescription"></i> Upload Prescription
               </a>
             ` : ""}
-            <a href="branches.html" class="btn btn-outline">
+            <a href="branches.html" class="btn btn-outline" style="border-radius:12px; padding:12px 20px;">
               <i class="fa-solid fa-location-dot"></i> Available at 25+ Branches
             </a>
-            <a href="tel:0518438111" class="btn btn-outline" style="border-color:#CBD5E1;">
+            <a href="tel:0518438111" class="btn btn-outline" style="border-radius:12px; padding:12px 20px; border-color:#CBD5E1;">
               <i class="fa-solid fa-phone"></i> Helpline: 051-8438111
             </a>
           </div>
         </div>
       </div>
 
+      <!-- Department Featured Products Showcase -->
+      ${matchingProducts.length > 0 ? `
+        <div class="dept-products-section">
+          <div class="dept-products-header">
+            <div class="dept-products-title">
+              <i class="fa-solid fa-boxes-stacked" style="color:var(--dw-red);"></i>
+              <span>Featured Products in ${escapeHtml(selectedDept.name)}</span>
+            </div>
+            <span class="dept-products-badge">Direct In-Store Stock</span>
+          </div>
+          <div class="dept-products-grid">
+            ${matchingProducts.map(p => {
+              const pWaText = `*--- D. WATSON INQUIRY ---*\n🛍️ *Product:* ${p.name}\n💰 *Price:* ${p.price || 'Inquire'}\n🏷️ *Department:* ${selectedDept.name}\n\nHi D.Watson Chemist, please confirm stock availability and express delivery.`;
+              const pWaUrl = `https://wa.me/${allDepartmentsWhatsApp}?text=${encodeURIComponent(pWaText)}`;
+              return `
+                <div class="dept-prod-card" onclick="openProductZoomModal('${p.id}')">
+                  <div class="dept-prod-img-wrap">
+                    <img src="${encodeURI(p.image || 'assets/images/pharmacy.jpg')}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+                    <button type="button" class="dept-prod-zoom-btn" onclick="event.stopPropagation(); openProductZoomModal('${p.id}')" title="Zoom &amp; Inspect">
+                      <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom
+                    </button>
+                  </div>
+                  <div class="dept-prod-body">
+                    <span class="dept-prod-brand">${escapeHtml(p.brand || 'D. Watson')}</span>
+                    <h4 class="dept-prod-title" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h4>
+                    <div class="dept-prod-footer">
+                      <span class="dept-prod-price">${escapeHtml(p.price || 'Inquire')}</span>
+                      <a href="${pWaUrl}" target="_blank" onclick="event.stopPropagation();" class="dept-prod-wa-btn">
+                        <i class="fa-brands fa-whatsapp"></i> Buy
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      ` : ""}
+
       <!-- Quick Switch Strip: All other departments accessible in 1 tap -->
       <div class="dept-spotlight-other-strip">
-        <div class="dept-spotlight-other-title">
-          <i class="fa-solid fa-arrows-split-up-and-left" style="color:var(--dw-red);"></i> Switch to Another Department:
+        <div class="dept-spotlight-other-header">
+          <div class="dept-spotlight-other-title">
+            <i class="fa-solid fa-arrows-split-up-and-left"></i> Switch to Another Department:
+          </div>
+          <span class="other-hint">13 Specialized Departments Available</span>
         </div>
         <div class="dept-spotlight-other-pills">
           ${allDepartmentsData.map(d => {
             const isActive = d.id === selectedDept.id;
             return `
               <button type="button" class="dept-spotlight-pill ${isActive ? 'active' : ''}" onclick="switchSpotlightDept('${d.id}')">
-                <i class="${d.icon || 'fa-solid fa-boxes-stacked'}"></i> ${escapeHtml(d.name.split('&')[0].trim())}
+                <i class="${d.icon || 'fa-solid fa-boxes-stacked'}"></i> <span>${escapeHtml(d.name.split('&')[0].trim())}</span>
               </button>
             `;
           }).join("")}
@@ -832,6 +1005,10 @@ function showAllDepartments(e) {
   if (window.history && window.history.pushState) {
     window.history.pushState(null, "", "departments.html");
   }
+  const container = document.getElementById("departmentsGrid");
+  if (container) {
+    container.classList.remove("spotlight-active");
+  }
   const filterBar = document.getElementById("deptFilterBar");
   if (filterBar) filterBar.style.display = "flex";
   renderDepartmentCards(allDepartmentsData);
@@ -840,6 +1017,12 @@ function showAllDepartments(e) {
 function renderDepartmentCards(deptList) {
   const container = document.getElementById("departmentsGrid");
   if (!container) return;
+
+  container.classList.remove("spotlight-active");
+  const filterBar = document.getElementById("deptFilterBar");
+  if (filterBar) {
+    filterBar.style.display = "flex";
+  }
 
   if (!deptList || deptList.length === 0) {
     container.innerHTML = `
@@ -858,7 +1041,7 @@ function renderDepartmentCards(deptList) {
     
     return `
       <div class="department-card" id="dept-${dept.id}" data-category="${cat}">
-        <div class="dept-img-wrap">
+        <div class="dept-img-wrap" onclick="switchSpotlightDept('${dept.id}')" style="cursor:pointer;" title="Click to view full department details">
           <img src="${encodeURI(dept.image)}" alt="${escapeHtml(dept.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
           <span class="dept-badge">${escapeHtml(dept.badge || "Featured")}</span>
           <div class="dept-icon-floating">
@@ -866,7 +1049,7 @@ function renderDepartmentCards(deptList) {
           </div>
         </div>
         <div class="dept-body">
-          <h3 class="dept-title">${escapeHtml(dept.name)}</h3>
+          <h3 class="dept-title" onclick="switchSpotlightDept('${dept.id}')" style="cursor:pointer;" title="Click to view full department details">${escapeHtml(dept.name)}</h3>
           <div class="dept-tagline">${escapeHtml(dept.tagline)}</div>
           <p class="dept-desc">${escapeHtml(dept.description)}</p>
           
@@ -883,11 +1066,14 @@ function renderDepartmentCards(deptList) {
           </ul>
 
           <div class="dept-card-footer">
+            <button type="button" class="btn btn-primary btn-sm" onclick="switchSpotlightDept('${dept.id}')">
+              <i class="fa-solid fa-arrow-right"></i> View Details
+            </button>
             <a href="${waUrl}" target="_blank" class="btn btn-whatsapp btn-sm">
-              <i class="fa-brands fa-whatsapp"></i> Inquire on WhatsApp
+              <i class="fa-brands fa-whatsapp"></i> Inquire
             </a>
-            <a href="branches.html" class="btn btn-outline btn-sm">
-              Branches <i class="fa-solid fa-location-dot"></i>
+            <a href="branches.html" class="btn btn-outline btn-sm" title="Branches">
+              <i class="fa-solid fa-location-dot"></i>
             </a>
           </div>
         </div>
