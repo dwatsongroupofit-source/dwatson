@@ -85,6 +85,8 @@ function initWebsite() {
   initGlobalSearch();
   initHelplineDropdown();
   initPWAInstall();
+  initTawkToLiveChat();
+  initFloatingBranchMessenger();
 }
 
 /**
@@ -122,12 +124,32 @@ function renderHeaderAndCompanyInfo(company) {
   const mobWa = document.getElementById("mobTabWa");
   if (mobWa) {
     mobWa.href = `https://wa.me/${company.whatsapp}?text=${encodeURIComponent("Hi D.Watson Chemist, I need assistance.")}`;
+    mobWa.onclick = function(e) {
+      if (typeof window.openBranchMessengerCard === "function") {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        window.openBranchMessengerCard();
+        return false;
+      }
+    };
   }
 
   // Floating CTA WhatsApp link
   const floatWaBtn = document.getElementById("floatingWaBtn");
   if (floatWaBtn) {
     floatWaBtn.href = `https://wa.me/${company.whatsapp}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}`;
+    floatWaBtn.onclick = function(e) {
+      if (typeof window.openBranchMessengerCard === "function") {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        window.openBranchMessengerCard();
+        return false;
+      }
+    };
   }
 }
 
@@ -3796,3 +3818,339 @@ function filterBranchesSearch(query) {
 
   renderBranchCards(filtered);
 }
+
+/* ==========================================================================
+   MULTI-BRANCH LIVE CHAT & MESSENGER SYSTEM (TAWK.TO + BRANCH WHATSAPP)
+   ========================================================================== */
+
+/**
+ * Initialize Tawk.to Live Chat Embed with Multi-Agent Branch Support
+ */
+function initTawkToLiveChat() {
+  if (!window.DW_CONFIG || !window.DW_CONFIG.isTawkToEnabled()) return;
+  const propertyId = window.DW_CONFIG.getTawkToPropertyId();
+  const widgetId = window.DW_CONFIG.getTawkToWidgetId() || "default";
+
+  // If no property ID is set yet, we allow our unified Branch Messenger to use direct branch WhatsApp fallback
+  if (!propertyId || !propertyId.trim()) return;
+
+  // Prevent duplicate script injection
+  if (document.getElementById("tawktoScriptEmbed")) return;
+
+  window.Tawk_API = window.Tawk_API || {};
+  window.Tawk_LoadStart = new Date();
+
+  const s1 = document.createElement("script");
+  s1.id = "tawktoScriptEmbed";
+  s1.async = true;
+  s1.src = `https://embed.tawk.to/${encodeURIComponent(propertyId.trim())}/${encodeURIComponent(widgetId.trim())}`;
+  s1.charset = "UTF-8";
+  s1.setAttribute("crossorigin", "*");
+  document.head.appendChild(s1);
+}
+
+/**
+ * Launch Branch Live Web Chat (with Photo / Prescription Upload Capability)
+ */
+function launchBranchLiveChat(branch) {
+  if (!branch) {
+    const data = getSiteData();
+    branch = (data && data.branches && data.branches.length) ? data.branches[0] : null;
+  }
+  if (!branch) return;
+
+  const propId = (window.DW_CONFIG && typeof window.DW_CONFIG.getTawkToPropertyId === "function")
+    ? window.DW_CONFIG.getTawkToPropertyId()
+    : "";
+
+  if (propId && propId.trim() && window.Tawk_API && typeof window.Tawk_API.maximize === "function") {
+    try {
+      if (typeof window.Tawk_API.setAttributes === "function") {
+        window.Tawk_API.setAttributes({
+          'SelectedBranch': branch.name,
+          'City': branch.city,
+          'BranchPhone': branch.phone,
+          'BranchWhatsApp': branch.whatsapp || "923329716666"
+        }, function() {});
+      }
+      if (typeof window.Tawk_API.addTags === "function") {
+        window.Tawk_API.addTags([branch.city || 'Islamabad', 'BranchDesk'], function() {});
+      }
+    } catch (e) {
+      console.warn("Tawk attribute error:", e);
+    }
+    window.Tawk_API.maximize();
+    if (typeof showToast === "function") {
+      showToast(`Connected to ${branch.name} Live Helpdesk.`);
+    }
+  } else {
+    // Graceful fallback to dedicated branch counter WhatsApp
+    if (typeof showToast === "function") {
+      showToast(`Connecting to ${branch.name} Counter Desk...`);
+    }
+    const waNum = branch.whatsapp || "923329716666";
+    const msg = `Hello D.Watson ${branch.name} Counter Staff, I need live assistance with medicine / prescription / stock inquiry.`;
+    const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+    window.open(waUrl, "_blank");
+  }
+}
+
+/**
+ * Initialize Floating Branch Messenger Dock across the entire website
+ */
+function initFloatingBranchMessenger() {
+  if (document.getElementById("branchMessengerDock")) return;
+
+  // Suppress old static floating WhatsApp widget if present to prevent clash
+  const oldWidgets = document.querySelectorAll(".floating-widget-wrapper, #floatingPopup");
+  oldWidgets.forEach(w => {
+    w.style.display = "none";
+  });
+
+  const siteData = getSiteData();
+  const branches = (siteData && siteData.branches && siteData.branches.length) ? siteData.branches : [];
+  if (!branches.length) return;
+
+  // Group branches by City for clean UI dropdown
+  const citiesMap = {};
+  branches.forEach(b => {
+    const city = b.city || "Islamabad";
+    if (!citiesMap[city]) citiesMap[city] = [];
+    citiesMap[city].push(b);
+  });
+
+  // Resolve initial selected branch (from localStorage or default to 1)
+  let savedId = parseInt(localStorage.getItem("dw_messenger_branch_id"), 10);
+  let activeBranch = branches.find(b => b.id === savedId) || branches[0];
+
+  // Build Branch Selector Options
+  let selectOptionsHtml = "";
+  Object.keys(citiesMap).forEach(city => {
+    selectOptionsHtml += `<optgroup label="📍 ${escapeHtml(city)}">`;
+    citiesMap[city].forEach(b => {
+      const isSel = (b.id === activeBranch.id) ? "selected" : "";
+      selectOptionsHtml += `<option value="${b.id}" ${isSel}>${escapeHtml(b.name)}</option>`;
+    });
+    selectOptionsHtml += `</optgroup>`;
+  });
+
+  const dock = document.createElement("div");
+  dock.className = "branch-messenger-dock";
+  dock.id = "branchMessengerDock";
+  dock.setAttribute("aria-label", "D. Watson Branch Messenger");
+
+  dock.innerHTML = `
+    <!-- Interactive Popover Card -->
+    <div class="branch-messenger-card" id="branchMessengerCard" role="dialog" aria-modal="false" aria-hidden="true">
+      <!-- Header -->
+      <div class="bmc-header">
+        <div class="bmc-header-brand">
+          <img src="assets/images/logo-emblem.png" alt="D. Watson Emblem" class="bmc-logo-emblem" onerror="this.src='assets/images/favicon.png'">
+          <div class="bmc-header-info">
+            <h4>Branch Live Helpdesk</h4>
+            <span class="bmc-online-status">Staff Active &amp; Ready</span>
+          </div>
+        </div>
+        <button type="button" class="bmc-close-btn" id="bmcCloseBtn" aria-label="Close branch messenger">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="bmc-body">
+        <!-- Branch Selector -->
+        <div class="bmc-field-group">
+          <label class="bmc-field-label" for="bmcBranchSelect">
+            <span>Select Your Branch</span>
+            <small style="color:#10B981; font-weight:700;"><i class="fa-solid fa-location-dot"></i> 20+ Outlets</small>
+          </label>
+          <div class="bmc-branch-select-wrap">
+            <select id="bmcBranchSelect" class="bmc-branch-select">
+              ${selectOptionsHtml}
+            </select>
+            <i class="fa-solid fa-chevron-down bmc-select-chevron"></i>
+          </div>
+        </div>
+
+        <!-- Active Branch Info Box -->
+        <div class="bmc-branch-card" id="bmcBranchPreview">
+          <div class="bmc-bc-title">
+            <span id="bmcPName">${escapeHtml(activeBranch.name)}</span>
+            <span class="bmc-bc-badge" id="bmcPBadge">${escapeHtml(activeBranch.badge || 'Flagship')}</span>
+          </div>
+          <div class="bmc-bc-detail">
+            <i class="fa-solid fa-map-pin"></i>
+            <span id="bmcPAddress">${escapeHtml(activeBranch.address || '')}</span>
+          </div>
+          <div class="bmc-bc-contacts">
+            <div class="bmc-bc-contact-item">
+              <span class="bmc-bc-contact-label">WhatsApp Counter</span>
+              <span class="bmc-bc-contact-val" id="bmcPWa" style="color:#16A34A;">${escapeHtml(activeBranch.whatsapp || '923329716666')}</span>
+            </div>
+            <div class="bmc-bc-contact-item">
+              <span class="bmc-bc-contact-label">Counter Direct Phone</span>
+              <span class="bmc-bc-contact-val" id="bmcPPhone">${escapeHtml(activeBranch.phone || '')}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="bmc-actions">
+          <button type="button" class="bmc-btn-livechat" id="bmcLiveChatBtn">
+            <i class="fa-solid fa-comments"></i>
+            <span>Live Chat with Branch Desk</span>
+          </button>
+
+          <a href="#" target="_blank" class="bmc-btn-whatsapp" id="bmcWhatsAppBtn">
+            <i class="fa-brands fa-whatsapp" style="font-size:1.15rem;"></i>
+            <span>WhatsApp Branch Counter</span>
+          </a>
+
+          <a href="#" class="bmc-btn-phone" id="bmcCallBtn">
+            <i class="fa-solid fa-phone"></i>
+            <span>Call Branch Counter Directly</span>
+          </a>
+        </div>
+
+        <!-- Prescription & Image Attachment Notice -->
+        <div class="bmc-note">
+          <i class="fa-solid fa-camera"></i>
+          <span><strong>Send Photos Easily:</strong> Attach medicine pictures or prescription photos directly in Live Chat or on branch counter WhatsApp.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Launcher Trigger Button -->
+    <button type="button" class="branch-messenger-trigger" id="branchMessengerTrigger" aria-label="Open Branch Live Chat &amp; WhatsApp">
+      <div class="bm-trigger-icon-wrap">
+        <i class="fa-solid fa-headset"></i>
+        <span class="bm-trigger-live-dot"></span>
+      </div>
+      <div class="bm-trigger-text">
+        <div class="bm-trigger-title">
+          <span>Branch Desk &amp; Chat</span>
+          <span class="bm-trigger-badge">Live</span>
+        </div>
+        <span class="bm-trigger-sub">Branch Staff Online • Send Photos</span>
+      </div>
+    </button>
+  `;
+
+  document.body.appendChild(dock);
+
+  // Helper to update dynamic branch card
+  function updateBranchCard(branch) {
+    if (!branch) return;
+    activeBranch = branch;
+    localStorage.setItem("dw_messenger_branch_id", branch.id);
+
+    const nameEl = document.getElementById("bmcPName");
+    const badgeEl = document.getElementById("bmcPBadge");
+    const addrEl = document.getElementById("bmcPAddress");
+    const waEl = document.getElementById("bmcPWa");
+    const phoneEl = document.getElementById("bmcPPhone");
+    const waBtn = document.getElementById("bmcWhatsAppBtn");
+    const callBtn = document.getElementById("bmcCallBtn");
+
+    if (nameEl) nameEl.textContent = branch.name;
+    if (badgeEl) badgeEl.textContent = branch.badge || "Verified Outlet";
+    if (addrEl) addrEl.textContent = branch.address || "";
+    if (waEl) waEl.textContent = branch.whatsapp || "923329716666";
+    if (phoneEl) phoneEl.textContent = branch.phone || "";
+
+    if (waBtn) {
+      const waNum = branch.whatsapp || "923329716666";
+      const waMsg = `Hello D.Watson ${branch.name} Counter Desk, I would like to inquire about medicines / prescription availability.`;
+      waBtn.href = `https://wa.me/${waNum}?text=${encodeURIComponent(waMsg)}`;
+    }
+
+    if (callBtn) {
+      callBtn.href = `tel:${(branch.phone || "").replace(/[^0-9]/g, "")}`;
+    }
+  }
+
+  // Initial update
+  updateBranchCard(activeBranch);
+
+  // Wire Branch Select change
+  const branchSelect = document.getElementById("bmcBranchSelect");
+  if (branchSelect) {
+    branchSelect.addEventListener("change", function(e) {
+      const bId = parseInt(e.target.value, 10);
+      const chosen = branches.find(b => b.id === bId);
+      if (chosen) updateBranchCard(chosen);
+    });
+  }
+
+  // Wire Live Chat Button
+  const liveChatBtn = document.getElementById("bmcLiveChatBtn");
+  if (liveChatBtn) {
+    liveChatBtn.addEventListener("click", function() {
+      launchBranchLiveChat(activeBranch);
+    });
+  }
+
+  // Toggle Popover Card
+  const triggerBtn = document.getElementById("branchMessengerTrigger");
+  const card = document.getElementById("branchMessengerCard");
+  const closeBtn = document.getElementById("bmcCloseBtn");
+
+  function toggleCard(forceOpen) {
+    if (!card) return;
+    const shouldOpen = (forceOpen !== undefined) ? forceOpen : !card.classList.contains("active");
+    if (shouldOpen) {
+      card.classList.add("active");
+      card.setAttribute("aria-hidden", "false");
+    } else {
+      card.classList.remove("active");
+      card.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  if (triggerBtn) {
+    triggerBtn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      toggleCard();
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      toggleCard(false);
+    });
+  }
+
+  // Close when clicking outside
+  document.addEventListener("click", function(e) {
+    if (card && card.classList.contains("active")) {
+      if (!card.contains(e.target) && !triggerBtn.contains(e.target)) {
+        toggleCard(false);
+      }
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape" && card && card.classList.contains("active")) {
+      toggleCard(false);
+    }
+  });
+
+  // Global methods
+  window.openBranchMessengerCard = function(branchId) {
+    if (branchId) {
+      const b = branches.find(item => item.id === branchId);
+      if (b) {
+        if (branchSelect) branchSelect.value = b.id;
+        updateBranchCard(b);
+      }
+    }
+    toggleCard(true);
+  };
+
+  window.closeBranchMessengerCard = function() {
+    toggleCard(false);
+  };
+}
+

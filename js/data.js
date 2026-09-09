@@ -663,7 +663,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/pwd.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care", "Surgical Supplies"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+PWD+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716662"
     },
     {
       id: "b_ghauri",
@@ -682,7 +682,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/ghauri-town.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Personal Care"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Ghauri+Town+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716663"
     },
     {
       id: "b_chandni",
@@ -701,7 +701,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/chandni-chowk.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Surgical Supplies", "Optics"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Chandni+Chowk+Rawalpindi",
-      whatsapp: "923329716666"
+      whatsapp: "923329716664"
     },
     {
       id: "b_gujar_khan",
@@ -720,7 +720,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/gujar-khan.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care", "Surgical"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Gujar+Khan",
-      whatsapp: "923329716666"
+      whatsapp: "923329716665"
     },
     {
       id: "b_g15",
@@ -739,7 +739,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/g15-markaz.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Baby Care"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+G-15+Markaz+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716667"
     },
     {
       id: "b_attock",
@@ -758,7 +758,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/attock.jpg",
       services: ["Pharmacy", "Surgical Supplies", "Cosmetics", "Grocery"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Attock",
-      whatsapp: "923329716666"
+      whatsapp: "923329716668"
     },
 
     // === ADDITIONAL NETWORK OUTLETS ===
@@ -779,7 +779,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/blue-area.jpg",
       services: ["Pharmacy", "Cosmetics Studio", "Mega Superstore", "Optics Clinic", "Surgical Supplies", "Undergarments"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Blue+Area+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716669"
     },
     {
       id: "b_f7",
@@ -793,7 +793,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/f7-markaz.jpg",
       services: ["Pharmacy", "Luxury Cosmetics", "Personal Care", "Optics"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+F-7+Markaz+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716671"
     },
     {
       id: "b_f10",
@@ -807,7 +807,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/f10-markaz.jpg",
       services: ["Pharmacy", "Cosmetics Counter", "Superstore", "Optics Clinic", "Surgical Dept"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+F-10+Markaz+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716672"
     },
     {
       id: "b_f11",
@@ -821,7 +821,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/f11-markaz.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Optics"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+F-11+Markaz+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716673"
     },
     {
       id: "b_g9",
@@ -835,7 +835,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/g9-markaz.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Surgical Supplies"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+G-9+Markaz+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716674"
     },
     {
       id: "b_g11",
@@ -849,7 +849,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/g11-markaz.jpg",
       services: ["Pharmacy", "Cosmetics", "Superstore Essentials"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+G-11+Markaz+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716675"
     },
     {
       id: "b_i8",
@@ -863,7 +863,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/i8-markaz.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Optics"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+I-8+Markaz+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716676"
     },
     {
       id: "b_i10",
@@ -877,7 +877,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/i10-markaz.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Surgical"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+I-10+Markaz+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716677"
     },
     {
       id: "b_dha",
@@ -891,7 +891,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/dha-phase2.jpg",
       services: ["Pharmacy", "Cosmetics", "Superstore", "Optics", "Surgical"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+DHA+Phase+2+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716678"
     },
     {
       id: "b_gulberg_isb",
@@ -905,7 +905,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/gulberg-greens.jpg",
       services: ["Pharmacy", "Cosmetics Studio", "Superstore", "Optics"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Gulberg+Greens+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923329716679"
     },
     {
       id: "b_saddar",
@@ -919,7 +919,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/saddar-rawalpindi.jpg",
       services: ["Pharmacy", "Optics Lab", "Surgical Hub", "Cosmetics", "Undergarments"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Saddar+Rawalpindi",
-      whatsapp: "923329716666"
+      whatsapp: "923329716670"
     },
     {
       id: "b_bahria4",

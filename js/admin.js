@@ -1725,6 +1725,15 @@ function populateCompanySettingsForm() {
   setVal("setDeliveryFee", c.deliveryDefaultFee !== undefined ? c.deliveryDefaultFee : 200);
   setVal("setDeliveryMinOrder", c.deliveryMinOrder !== undefined ? c.deliveryMinOrder : 1000);
   setVal("setDeliveryFreeThreshold", c.deliveryFreeThreshold !== undefined ? c.deliveryFreeThreshold : 3000);
+
+  // Tawk.to Live Chat Settings
+  const tawkEnabledEl = document.getElementById("setTawkToEnabled");
+  if (tawkEnabledEl) {
+    const savedEnabled = localStorage.getItem("dw_tawkto_enabled");
+    tawkEnabledEl.checked = (savedEnabled !== null) ? (savedEnabled === "true") : (c.tawktoEnabled !== false);
+  }
+  setVal("setTawkToPropertyId", localStorage.getItem("dw_tawkto_property_id") || c.tawktoPropertyId || "");
+  setVal("setTawkToWidgetId", localStorage.getItem("dw_tawkto_widget_id") || c.tawktoWidgetId || "default");
 }
 
 window.saveCompanySettings = function(e) {
@@ -1741,6 +1750,26 @@ window.saveCompanySettings = function(e) {
   adminData.company.aboutShort = document.getElementById("setAboutShort").value.trim();
   adminData.company.aboutHistory = document.getElementById("setAboutHistory").value.trim();
 
+  // Tawk.to Live Chat Settings
+  const tawkEnabledEl = document.getElementById("setTawkToEnabled");
+  const tawkPropEl = document.getElementById("setTawkToPropertyId");
+  const tawkWidgetEl = document.getElementById("setTawkToWidgetId");
+
+  if (tawkEnabledEl) {
+    adminData.company.tawktoEnabled = tawkEnabledEl.checked;
+    localStorage.setItem("dw_tawkto_enabled", tawkEnabledEl.checked ? "true" : "false");
+  }
+  if (tawkPropEl) {
+    const propVal = tawkPropEl.value.trim();
+    adminData.company.tawktoPropertyId = propVal;
+    localStorage.setItem("dw_tawkto_property_id", propVal);
+  }
+  if (tawkWidgetEl) {
+    const widgetVal = tawkWidgetEl.value.trim() || "default";
+    adminData.company.tawktoWidgetId = widgetVal;
+    localStorage.setItem("dw_tawkto_widget_id", widgetVal);
+  }
+
   const delFeeEl = document.getElementById("setDeliveryFee");
   const minOrderEl = document.getElementById("setDeliveryMinOrder");
   const freeThreshEl = document.getElementById("setDeliveryFreeThreshold");
@@ -1750,7 +1779,7 @@ window.saveCompanySettings = function(e) {
   if (freeThreshEl) adminData.company.deliveryFreeThreshold = parseInt(freeThreshEl.value, 10) || 3000;
 
   saveSiteData(adminData);
-  showToast("Company settings, delivery policies & heritage published live!");
+  showToast("Company settings, delivery policies & live chat configuration published!");
 };
 
 /* ==========================================================================

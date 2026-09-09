@@ -26,6 +26,35 @@ window.DW_CONFIG = {
   IMGBB_API_KEY: "5d369a9387210e1432e7018b92d3d0e8",
   IMGBB_UPLOAD_URL: "https://api.imgbb.com/1/upload",
 
+  // 💬 Live Chat Configuration (Tawk.to Multi-Agent Branch Messenger)
+  // Free unlimited branch agents, mobile apps for staff & branch department routing
+  TAWKTO_ENABLED: true,
+  TAWKTO_PROPERTY_ID: "", // Paste your Tawk.to Property ID here or in Admin Settings
+  TAWKTO_WIDGET_ID: "default",
+
+  /**
+   * Resolves whether Tawk.to live chat is active
+   */
+  isTawkToEnabled: function() {
+    const saved = localStorage.getItem("dw_tawkto_enabled");
+    if (saved !== null) return saved === "true";
+    return Boolean(this.TAWKTO_ENABLED);
+  },
+
+  /**
+   * Returns active Tawk.to Property ID
+   */
+  getTawkToPropertyId: function() {
+    return localStorage.getItem("dw_tawkto_property_id") || this.TAWKTO_PROPERTY_ID || "";
+  },
+
+  /**
+   * Returns active Tawk.to Widget ID
+   */
+  getTawkToWidgetId: function() {
+    return localStorage.getItem("dw_tawkto_widget_id") || this.TAWKTO_WIDGET_ID || "default";
+  },
+
   /**
    * Resolves the active image upload endpoint
    */

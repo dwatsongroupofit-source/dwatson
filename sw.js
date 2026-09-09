@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v14.0)
- * Ultra-fast caching, zero unhandled promise rejections & robust offline resilience
+ * D. Watson Chemist & Superstore - Service Worker (v15.0)
+ * Multi-Branch Live Messenger, photo reception & zero-downtime cache
  */
 
-const CACHE_NAME = "dwatson-cache-v14.0";
+const CACHE_NAME = "dwatson-cache-v15.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -14,11 +14,11 @@ const STATIC_ASSETS = [
   "./contact.html",
   "./privacy.html",
   "./terms.html",
-  "./css/style.css?v=8.3",
+  "./css/style.css?v=8.5",
   "./css/responsive.css?v=8.1",
-  "./js/config.js?v=1.1",
-  "./js/data.js?v=8.0",
-  "./js/main.js?v=8.3",
+  "./js/config.js?v=1.2",
+  "./js/data.js?v=8.5",
+  "./js/main.js?v=8.5",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",
