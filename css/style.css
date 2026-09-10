@@ -9097,7 +9097,7 @@ textarea.form-control {
 /* Mobile Responsiveness for Messenger Dock */
 @media (max-width: 768px) {
   .branch-messenger-dock {
-    bottom: 84px;
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
     right: 16px;
   }
   

@@ -49,7 +49,8 @@ section, header, footer, nav, main, .container {
   border-top: 1px solid rgba(255, 255, 255, 0.22);
   border-top-left-radius: 18px;
   border-top-right-radius: 18px;
-  z-index: 999999 !important;
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
   box-shadow: 0 -8px 24px rgba(128, 0, 0, 0.4);
   padding: 0 4px;
   padding-bottom: env(safe-area-inset-bottom, 0);
@@ -73,6 +74,9 @@ section, header, footer, nav, main, .container {
   font-weight: 700;
   gap: 3px;
   cursor: pointer;
+  position: relative !important;
+  z-index: 2 !important;
+  pointer-events: auto !important;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   -webkit-tap-highlight-color: transparent;
 }
@@ -93,6 +97,12 @@ section, header, footer, nav, main, .container {
 .mobile-nav-tab:hover i {
   transform: translateY(-2px);
   color: #FDE047 !important;
+}
+
+.mobile-nav-tab.mobile-wa-tab {
+  position: relative !important;
+  z-index: 3 !important;
+  pointer-events: auto !important;
 }
 
 .mobile-nav-tab.mobile-wa-tab i {
@@ -1175,11 +1185,33 @@ section, header, footer, nav, main, .container {
     display: none !important;
   }
 
-  /* Elevate Crisp live chat bubble on mobile so it sits cleanly above fixed bottom bar */
-  .crisp-client .crisp-1rqqw7h,
+  /* Elevate Crisp live chat bubble cleanly on mobile so it sits safely above fixed bottom bar (64px) */
+  :root,
+  html,
+  body,
+  .crisp-client,
+  .crisp-client * {
+    --crisp-customization-mobile-button-vertical: calc(78px + env(safe-area-inset-bottom, 0px)) !important;
+    --crisp-customization-button-vertical: calc(78px + env(safe-area-inset-bottom, 0px)) !important;
+    --crisp-customization-default-button-vertical: calc(78px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .crisp-client,
+  .crisp-client > div,
+  .crisp-client [data-chat-status],
+  .crisp-client [data-id="chatbox-bubble"],
   .crisp-client [data-selector="chatbox-bubble"],
+  .crisp-client [class*="cc-"],
+  .crisp-client [class*="crisp-"],
+  .crisp-client iframe,
   #crisp-chatbox {
-    bottom: 74px !important;
+    margin-bottom: calc(78px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .crisp-client .cc-165wh .cc-lk42u .cc-13wro,
+  .crisp-client [data-id="chatbox-bubble"],
+  .crisp-client [data-selector="chatbox-bubble"] {
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
   /* Customer Care Channels on Mobile (Sleek Stacked Cards with Full-Width Action Buttons) */

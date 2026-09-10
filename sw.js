@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v16.0)
- * Cloudinary direct CDN integration & reliable product persistence
+ * D. Watson Chemist & Superstore - Service Worker (v17.0)
+ * Mobile bottom bar z-index & Crisp messenger clean elevation
  */
 
-const CACHE_NAME = "dwatson-cache-v16.0";
+const CACHE_NAME = "dwatson-cache-v17.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -15,10 +15,10 @@ const STATIC_ASSETS = [
   "./privacy.html",
   "./terms.html",
   "./css/style.css?v=8.7",
-  "./css/responsive.css?v=8.2",
+  "./css/responsive.css?v=9.0",
   "./js/config.js?v=1.3",
   "./js/data.js?v=8.8",
-  "./js/main.js?v=9.2",
+  "./js/main.js?v=9.3",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",

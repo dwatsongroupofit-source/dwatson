@@ -156,6 +156,9 @@ function renderHeaderAndCompanyInfo(company) {
   if (mobWa) {
     const cleanWa = (company.whatsapp || "923329716666").replace(/[^0-9]/g, "");
     mobWa.href = `https://wa.me/${cleanWa}?text=${encodeURIComponent("Hi D.Watson Chemist, I need assistance.")}`;
+    mobWa.addEventListener("click", function(e) {
+      e.stopPropagation();
+    });
   }
 
   // Floating CTA WhatsApp link
@@ -4096,6 +4099,35 @@ function initCrispLiveChat() {
 
   // Ensure Crisp chat bubble is explicitly shown and visible!
   window.$crisp.push(["do", "chat:show"]);
+
+  // On mobile screens (<= 992px), elevate Crisp bubble above the fixed mobile bottom bar (height 64px)
+  // so it never overlaps or blocks the WhatsApp tab (#mobTabWa) in the footer
+  function applyCrispElevation() {
+    if (window.innerWidth <= 992) {
+      const offset = "calc(78px + env(safe-area-inset-bottom, 0px))";
+      document.documentElement.style.setProperty("--crisp-customization-mobile-button-vertical", offset, "important");
+      document.documentElement.style.setProperty("--crisp-customization-button-vertical", offset, "important");
+      document.documentElement.style.setProperty("--crisp-customization-default-button-vertical", offset, "important");
+      const client = document.querySelector(".crisp-client");
+      if (client) {
+        client.style.setProperty("--crisp-customization-mobile-button-vertical", offset, "important");
+        client.style.setProperty("--crisp-customization-button-vertical", offset, "important");
+      }
+    } else {
+      document.documentElement.style.removeProperty("--crisp-customization-mobile-button-vertical");
+      document.documentElement.style.removeProperty("--crisp-customization-button-vertical");
+      document.documentElement.style.removeProperty("--crisp-customization-default-button-vertical");
+      const client = document.querySelector(".crisp-client");
+      if (client) {
+        client.style.removeProperty("--crisp-customization-mobile-button-vertical");
+        client.style.removeProperty("--crisp-customization-button-vertical");
+      }
+    }
+  }
+
+  applyCrispElevation();
+  window.addEventListener("resize", applyCrispElevation, { passive: true });
+  window.$crisp.push(["on", "session:loaded", applyCrispElevation]);
 
   // When chat window is opened, hide WhatsApp floating button to prevent overlap
   window.$crisp.push(["on", "chat:opened", function() {
