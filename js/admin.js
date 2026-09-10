@@ -10,6 +10,7 @@ let failedAttempts = 0;
 let lockoutTimer = null;
 let inactivityTimer = null;
 let activeInquiryFilter = "all";
+let activeAdminProductDeptFilter = "all";
 let isCloudSyncInitialized = false;
 const ADMIN_CLOUD_TOPIC = "dwatson_pharmacy_inquiries_2026";
 const ADMIN_CLOUD_URL = `https://ntfy.sh/${ADMIN_CLOUD_TOPIC}`;
@@ -1389,8 +1390,6 @@ window.deleteBranch = function(idx) {
     showToast("Branch removed.");
   }
 };
-
-let activeAdminProductDeptFilter = "all";
 
 window.filterAdminProductsByDept = function(deptId) {
   activeAdminProductDeptFilter = deptId || "all";
