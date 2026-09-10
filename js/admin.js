@@ -409,7 +409,7 @@ function resetInactivityTimer() {
 }
 
 /**
- * Tab Navigation, Top Menu Bar & Drawer Controller
+ * Tab Navigation & Mobile Drawer Controller
  */
 function switchAdminTab(targetPaneId) {
   if (!targetPaneId) return;
@@ -420,21 +420,7 @@ function switchAdminTab(targetPaneId) {
     else t.classList.remove("active");
   });
 
-  // 2. Sync menubar dropdown items & parent dropdown buttons
-  document.querySelectorAll(".menubar-dropdown-item").forEach(item => {
-    if (item.getAttribute("data-tab") === targetPaneId) item.classList.add("active");
-    else item.classList.remove("active");
-  });
-  document.querySelectorAll(".menubar-dropdown").forEach(dd => {
-    const hasActive = dd.querySelector(".menubar-dropdown-item.active");
-    const btn = dd.querySelector(".menubar-btn");
-    if (btn) {
-      if (hasActive) btn.classList.add("active");
-      else btn.classList.remove("active");
-    }
-  });
-
-  // 3. Sync quick tab buttons (scroll active into view)
+  // 2. Sync mobile quick tab buttons (scroll active into view)
   document.querySelectorAll(".quick-tab-btn").forEach(btn => {
     if (btn.getAttribute("data-tab") === targetPaneId) {
       btn.classList.add("active");
@@ -444,13 +430,7 @@ function switchAdminTab(targetPaneId) {
     }
   });
 
-  // 4. Sync mobile jump dropdown select
-  const jumpSelect = document.getElementById("adminMobileJumpSelect");
-  if (jumpSelect && jumpSelect.value !== targetPaneId) {
-    jumpSelect.value = targetPaneId;
-  }
-
-  // 5. Switch active pane
+  // 3. Switch active pane
   document.querySelectorAll(".admin-tab-pane").forEach(pane => {
     pane.classList.remove("active");
   });
@@ -477,30 +457,13 @@ function initTabNavigation() {
     });
   });
 
-  // Menubar dropdown items
-  document.querySelectorAll(".menubar-dropdown-item").forEach(item => {
-    item.addEventListener("click", (e) => {
-      e.preventDefault();
-      const targetPaneId = item.getAttribute("data-tab");
-      switchAdminTab(targetPaneId);
-    });
-  });
-
-  // Quick-tab buttons
+  // Mobile quick-tab buttons
   document.querySelectorAll(".quick-tab-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const targetPaneId = btn.getAttribute("data-tab");
       switchAdminTab(targetPaneId);
     });
   });
-
-  // Mobile Jump selector
-  const jumpSelect = document.getElementById("adminMobileJumpSelect");
-  if (jumpSelect) {
-    jumpSelect.addEventListener("change", (e) => {
-      switchAdminTab(e.target.value);
-    });
-  }
 }
 
 window.toggleDesktopSidebar = function() {

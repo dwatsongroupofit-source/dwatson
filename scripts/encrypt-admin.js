@@ -92,14 +92,57 @@ const finalAdminHtml = `<!DOCTYPE html>
   <link rel="icon" type="image/png" href="/assets/images/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
 
-  <!-- Stylesheets (v8.9) -->
+  <!-- Stylesheets (Dynamic Cache-Busting) -->
   <link rel="stylesheet" href="/css/style.css?v=8.9">
-  <link rel="stylesheet" href="/css/admin.css?v=9.2">
+  <link rel="stylesheet" href="/css/admin.css?v=${Date.now()}">
 
   <style>
     /* Preserve seamless flexbox layout */
     #adminStudioMount {
       display: contents;
+    }
+    .admin-mobile-quick-tabs {
+      display: none;
+    }
+    @media (max-width: 992px) {
+      .admin-mobile-quick-tabs {
+        display: flex;
+        background: #0F172A;
+        padding: 8px 12px;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: sticky;
+        top: 64px;
+        z-index: 1050;
+        gap: 8px;
+      }
+      .admin-mobile-quick-tabs::-webkit-scrollbar {
+        display: none;
+      }
+      .admin-mobile-quick-tabs .quick-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #94A3B8;
+        font-size: 0.8rem;
+        font-weight: 700;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .admin-mobile-quick-tabs .quick-tab-btn.active {
+        background: #DC2626;
+        color: #FFFFFF;
+        border-color: #DC2626;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+      }
     }
     /* AES Decryptor Specific Styles */
     .decrypt-spinner {

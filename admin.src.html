@@ -83,6 +83,22 @@
     </div>
   </div>
 
+  <!-- ================= MOBILE QUICK-TABS BAR (Shown ONLY on mobile screens <= 992px) ================= -->
+  <div class="admin-mobile-quick-tabs" id="adminMobileQuickTabs">
+    <button type="button" class="quick-tab-btn active" data-tab="tabSlides"><i class="fa-solid fa-images"></i> Slider</button>
+    <button type="button" class="quick-tab-btn" data-tab="tabProducts"><i class="fa-solid fa-box-open"></i> Products</button>
+    <button type="button" class="quick-tab-btn" data-tab="tabDepartments"><i class="fa-solid fa-table-cells-large"></i> Departments</button>
+    <button type="button" class="quick-tab-btn" data-tab="tabBranches"><i class="fa-solid fa-location-dot"></i> Branches</button>
+    <button type="button" class="quick-tab-btn" data-tab="tabCategories"><i class="fa-solid fa-shapes"></i> Categories</button>
+    <button type="button" class="quick-tab-btn" data-tab="tabBrands"><i class="fa-solid fa-handshake"></i> Brands</button>
+    <button type="button" class="quick-tab-btn" data-tab="tabPrescriptions"><i class="fa-solid fa-bell-concierge"></i> Orders/Rx</button>
+    <button type="button" class="quick-tab-btn" data-tab="tabGallery"><i class="fa-solid fa-photo-film"></i> Gallery</button>
+    <button type="button" class="quick-tab-btn" data-tab="tabManagement"><i class="fa-solid fa-users-gear"></i> Leadership</button>
+    <button type="button" class="quick-tab-btn" data-tab="tabCompany"><i class="fa-solid fa-landmark"></i> Heritage</button>
+    <button type="button" class="quick-tab-btn" data-tab="tabSecurity"><i class="fa-solid fa-shield-halved"></i> Security</button>
+    <button type="button" class="quick-tab-btn" data-tab="tabBackup"><i class="fa-solid fa-cloud-arrow-down"></i> Backup</button>
+  </div>
+
   <!-- Mobile Drawer Backdrop Overlay -->
   <div class="admin-drawer-backdrop" id="adminDrawerBackdrop" onclick="toggleAdminDrawer()"></div>
 
@@ -184,135 +200,6 @@
         </a>
       </div>
     </header>
-
-    <!-- ================= COMPREHENSIVE RESPONSIVE TOP MENU BAR ================= -->
-    <nav class="admin-menubar" id="adminMenubar">
-      <!-- 1. Dropdown Navigation Menus (Desktop / Large Viewports) -->
-      <div class="menubar-dropdowns-strip">
-        <!-- Content Modules Dropdown -->
-        <div class="menubar-dropdown">
-          <button type="button" class="menubar-btn active" id="dropdownContentBtn" aria-haspopup="true">
-            <i class="fa-solid fa-layer-group"></i>
-            <span>Content Modules</span>
-            <i class="fa-solid fa-chevron-down caret-icon"></i>
-          </button>
-          <div class="menubar-dropdown-menu">
-            <a href="javascript:void(0)" class="menubar-dropdown-item active" data-tab="tabSlides" onclick="switchAdminTab('tabSlides')">
-              <i class="fa-solid fa-images"></i> Hero Slider
-            </a>
-            <a href="javascript:void(0)" class="menubar-dropdown-item" data-tab="tabProducts" onclick="switchAdminTab('tabProducts')">
-              <i class="fa-solid fa-box-open"></i> Featured Products
-            </a>
-            <a href="javascript:void(0)" class="menubar-dropdown-item" data-tab="tabDepartments" onclick="switchAdminTab('tabDepartments')">
-              <i class="fa-solid fa-table-cells-large"></i> 13 Departments
-            </a>
-            <a href="javascript:void(0)" class="menubar-dropdown-item" data-tab="tabCategories" onclick="switchAdminTab('tabCategories')">
-              <i class="fa-solid fa-shapes"></i> Popular Categories
-            </a>
-            <a href="javascript:void(0)" class="menubar-dropdown-item" data-tab="tabBrands" onclick="switchAdminTab('tabBrands')">
-              <i class="fa-solid fa-handshake"></i> Partner Brands
-            </a>
-            <a href="javascript:void(0)" class="menubar-dropdown-item" data-tab="tabGallery" onclick="switchAdminTab('tabGallery')">
-              <i class="fa-solid fa-photo-film"></i> Image Gallery
-            </a>
-          </div>
-        </div>
-
-        <!-- Operations Dropdown -->
-        <div class="menubar-dropdown">
-          <button type="button" class="menubar-btn" id="dropdownOpsBtn" aria-haspopup="true">
-            <i class="fa-solid fa-truck-fast"></i>
-            <span>Operations &amp; Hubs</span>
-            <i class="fa-solid fa-chevron-down caret-icon"></i>
-          </button>
-          <div class="menubar-dropdown-menu">
-            <a href="javascript:void(0)" class="menubar-dropdown-item" data-tab="tabBranches" onclick="switchAdminTab('tabBranches')">
-              <i class="fa-solid fa-location-dot"></i> Branches &amp; Hubs
-            </a>
-            <a href="javascript:void(0)" class="menubar-dropdown-item" data-tab="tabPrescriptions" onclick="switchAdminTab('tabPrescriptions')">
-              <i class="fa-solid fa-bell-concierge"></i> Orders &amp; Prescriptions Desk
-            </a>
-          </div>
-        </div>
-
-        <!-- Organization Dropdown -->
-        <div class="menubar-dropdown">
-          <button type="button" class="menubar-btn" id="dropdownOrgBtn" aria-haspopup="true">
-            <i class="fa-solid fa-building"></i>
-            <span>Organization</span>
-            <i class="fa-solid fa-chevron-down caret-icon"></i>
-          </button>
-          <div class="menubar-dropdown-menu">
-            <a href="javascript:void(0)" class="menubar-dropdown-item" data-tab="tabManagement" onclick="switchAdminTab('tabManagement')">
-              <i class="fa-solid fa-users-gear"></i> Leadership Team
-            </a>
-            <a href="javascript:void(0)" class="menubar-dropdown-item" data-tab="tabCompany" onclick="switchAdminTab('tabCompany')">
-              <i class="fa-solid fa-landmark"></i> Company &amp; Heritage
-            </a>
-          </div>
-        </div>
-
-        <!-- System Dropdown -->
-        <div class="menubar-dropdown">
-          <button type="button" class="menubar-btn" id="dropdownSysBtn" aria-haspopup="true">
-            <i class="fa-solid fa-shield-halved"></i>
-            <span>System &amp; Data</span>
-            <i class="fa-solid fa-chevron-down caret-icon"></i>
-          </button>
-          <div class="menubar-dropdown-menu">
-            <a href="javascript:void(0)" class="menubar-dropdown-item" data-tab="tabSecurity" onclick="switchAdminTab('tabSecurity')">
-              <i class="fa-solid fa-key"></i> Security &amp; Password
-            </a>
-            <a href="javascript:void(0)" class="menubar-dropdown-item" data-tab="tabBackup" onclick="switchAdminTab('tabBackup')">
-              <i class="fa-solid fa-cloud-arrow-down"></i> Backup &amp; JSON Sync
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. Mobile Quick Dropdown Jump Selector (Shown on mobile screens <= 768px) -->
-      <div class="admin-mobile-jump-wrap">
-        <label for="adminMobileJumpSelect" class="admin-mobile-jump-label">
-          <i class="fa-solid fa-bars-progress"></i> Jump to:
-        </label>
-        <select id="adminMobileJumpSelect" class="admin-mobile-jump-select" onchange="switchAdminTab(this.value)">
-          <optgroup label="Content Modules">
-            <option value="tabSlides">Hero Slider</option>
-            <option value="tabProducts">Featured Products</option>
-            <option value="tabDepartments">13 Departments</option>
-            <option value="tabCategories">Popular Categories</option>
-            <option value="tabBrands">Partner Brands</option>
-            <option value="tabGallery">Image Gallery</option>
-          </optgroup>
-          <optgroup label="Operations &amp; Hubs">
-            <option value="tabBranches">Branches &amp; Hubs</option>
-            <option value="tabPrescriptions">Orders &amp; Prescriptions Desk</option>
-          </optgroup>
-          <optgroup label="Corporate &amp; Settings">
-            <option value="tabManagement">Leadership Team</option>
-            <option value="tabCompany">Company &amp; Heritage</option>
-            <option value="tabSecurity">Security &amp; Password</option>
-            <option value="tabBackup">Backup &amp; JSON Sync</option>
-          </optgroup>
-        </select>
-      </div>
-
-      <!-- 3. Responsive Horizontal Quick-Switch Pills Bar (All 12 Modules) -->
-      <div class="admin-quick-tabs-container" id="adminQuickTabsStrip">
-        <button type="button" class="quick-tab-btn active" data-tab="tabSlides"><i class="fa-solid fa-images"></i> Slider</button>
-        <button type="button" class="quick-tab-btn" data-tab="tabProducts"><i class="fa-solid fa-box-open"></i> Products</button>
-        <button type="button" class="quick-tab-btn" data-tab="tabDepartments"><i class="fa-solid fa-table-cells-large"></i> Departments</button>
-        <button type="button" class="quick-tab-btn" data-tab="tabBranches"><i class="fa-solid fa-location-dot"></i> Branches</button>
-        <button type="button" class="quick-tab-btn" data-tab="tabCategories"><i class="fa-solid fa-shapes"></i> Categories</button>
-        <button type="button" class="quick-tab-btn" data-tab="tabBrands"><i class="fa-solid fa-handshake"></i> Brands</button>
-        <button type="button" class="quick-tab-btn" data-tab="tabPrescriptions"><i class="fa-solid fa-bell-concierge"></i> Orders/Rx</button>
-        <button type="button" class="quick-tab-btn" data-tab="tabGallery"><i class="fa-solid fa-photo-film"></i> Gallery</button>
-        <button type="button" class="quick-tab-btn" data-tab="tabManagement"><i class="fa-solid fa-users-gear"></i> Leadership</button>
-        <button type="button" class="quick-tab-btn" data-tab="tabCompany"><i class="fa-solid fa-landmark"></i> Heritage</button>
-        <button type="button" class="quick-tab-btn" data-tab="tabSecurity"><i class="fa-solid fa-shield-halved"></i> Security</button>
-        <button type="button" class="quick-tab-btn" data-tab="tabBackup"><i class="fa-solid fa-cloud-arrow-down"></i> Backup</button>
-      </div>
-    </nav>
 
     <!-- Dynamic Content Area -->
     <div class="admin-content-area">
