@@ -54,6 +54,36 @@ module.exports = async (req, res) => {
     }
 
     const filename = (body.filename || body.name || `dwatson_${Date.now()}`).replace(/[^a-zA-Z0-9_.-]/g, "_");
+
+    // 1. Cloudinary Upload (Cloud Name: bempxyod)
+    const cldName = process.env.CLOUDINARY_CLOUD_NAME || "bempxyod";
+    const cldPreset = process.env.CLOUDINARY_UPLOAD_PRESET || "dwatson";
+    if (cldName && cldPreset) {
+      try {
+        const cldForm = new FormData();
+        cldForm.append("file", `data:image/jpeg;base64,${cleanBase64}`);
+        cldForm.append("upload_preset", cldPreset);
+
+        const cldRes = await fetch(`https://api.cloudinary.com/v1_1/${cldName}/image/upload`, {
+          method: "POST",
+          body: cldForm
+        });
+        const cldData = await cldRes.json().catch(() => null);
+        if (cldRes.ok && cldData && cldData.secure_url) {
+          return res.status(200).json({
+            success: true,
+            url: cldData.secure_url,
+            display_url: cldData.secure_url,
+            thumb_url: cldData.secure_url,
+            name: filename,
+            provider: "cloudinary"
+          });
+        }
+      } catch (cldErr) {
+        console.warn("Cloudinary upload fallback:", cldErr.message);
+      }
+    }
+
     const freeImageApiKey = process.env.FREEIMAGE_API_KEY || "6d207e02198a847aa98d0a2a901485a5";
 
     // 2. Upload to FreeImage.host API using native Node.js FormData

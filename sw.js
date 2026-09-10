@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v15.9)
- * Multi-branch Crisp live chat & WhatsApp messenger system
+ * D. Watson Chemist & Superstore - Service Worker (v16.0)
+ * Cloudinary direct CDN integration & reliable product persistence
  */
 
-const CACHE_NAME = "dwatson-cache-v15.9";
+const CACHE_NAME = "dwatson-cache-v16.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -16,9 +16,9 @@ const STATIC_ASSETS = [
   "./terms.html",
   "./css/style.css?v=8.7",
   "./css/responsive.css?v=8.2",
-  "./js/config.js?v=1.2",
-  "./js/data.js?v=8.7",
-  "./js/main.js?v=9.1",
+  "./js/config.js?v=1.3",
+  "./js/data.js?v=8.8",
+  "./js/main.js?v=9.2",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",

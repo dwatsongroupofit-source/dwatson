@@ -21,8 +21,13 @@ window.DW_CONFIG = {
   // ☁️ Cloud Image Upload Endpoint (Zero-CORS serverless function on Vercel)
   UPLOAD_ENDPOINT: "/api/upload",
 
+  // ☁️ Cloudinary Configuration (Direct 100% Client-Side High-Speed CDN Upload)
+  CLOUDINARY_CLOUD_NAME: "bempxyod",
+  CLOUDINARY_API_KEY: "476475917961377",
+  CLOUDINARY_UPLOAD_PRESET: "dwatson", // Unsigned upload preset created in Cloudinary Console
+  CLOUDINARY_UPLOAD_URL: "https://api.cloudinary.com/v1_1/bempxyod/image/upload",
+
   // 📸 Direct 100% Client-Side Third-Party Cloud Upload (ImgBB CDN)
-  // Direct browser uploads with zero backend required
   IMGBB_API_KEY: "5d369a9387210e1432e7018b92d3d0e8",
   IMGBB_UPLOAD_URL: "https://api.imgbb.com/1/upload",
 

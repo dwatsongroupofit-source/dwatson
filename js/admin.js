@@ -230,25 +230,54 @@ window.handleAdminImageUpload = async function(inputEl, targetInputId, previewIm
     // Set immediate preview
     if (previewImg) previewImg.src = dataUrl;
 
-    // Strategy 1: Direct 100% Client-Side Cloud Upload (ImgBB - Zero Backend Needed)
-    const directImgbbKey = (window.DW_CONFIG && window.DW_CONFIG.IMGBB_API_KEY) || localStorage.getItem("dw_imgbb_api_key");
-    if (directImgbbKey && directImgbbKey.length > 8) {
-      try {
-        const formData = new FormData();
-        formData.append("key", directImgbbKey);
-        formData.append("image", dataUrl.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, ""));
-        formData.append("name", file.name.replace(/\.[^/.]+$/, ""));
+    let uploadedLiveUrl = null;
 
-        const res = await fetch("https://api.imgbb.com/1/upload", {
+    // Strategy 1: Direct Cloudinary Cloud CDN Upload (Highest quality, auto-crop & zero backend needed)
+    const cldName = (window.DW_CONFIG && window.DW_CONFIG.CLOUDINARY_CLOUD_NAME) || localStorage.getItem("dw_cloudinary_cloud_name") || "bempxyod";
+    const cldPreset = localStorage.getItem("dw_cloudinary_preset") || (window.DW_CONFIG && window.DW_CONFIG.CLOUDINARY_UPLOAD_PRESET) || "dwatson";
+
+    if (cldName && cldPreset) {
+      try {
+        const cldForm = new FormData();
+        cldForm.append("file", file);
+        cldForm.append("upload_preset", cldPreset);
+        
+        const cldRes = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(cldName)}/image/upload`, {
           method: "POST",
-          body: formData
+          body: cldForm
         });
-        const json = await res.json().catch(() => null);
-        if (res.ok && json && json.data && json.data.url) {
-          uploadedLiveUrl = json.data.url;
+        const cldJson = await cldRes.json().catch(() => null);
+        if (cldRes.ok && cldJson && cldJson.secure_url) {
+          uploadedLiveUrl = cldJson.secure_url;
+        } else if (cldJson && cldJson.error) {
+          console.warn("Cloudinary upload notice:", cldJson.error.message);
         }
-      } catch (imgbbErr) {
-        console.warn("Direct ImgBB notice:", imgbbErr.message);
+      } catch (cldErr) {
+        console.warn("Cloudinary fetch notice:", cldErr.message);
+      }
+    }
+
+    // Strategy 2: Direct Client-Side ImgBB (if custom key configured)
+    if (!uploadedLiveUrl) {
+      const directImgbbKey = (window.DW_CONFIG && window.DW_CONFIG.IMGBB_API_KEY) || localStorage.getItem("dw_imgbb_api_key");
+      if (directImgbbKey && directImgbbKey.length > 8) {
+        try {
+          const formData = new FormData();
+          formData.append("key", directImgbbKey);
+          formData.append("image", dataUrl.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, ""));
+          formData.append("name", file.name.replace(/\.[^/.]+$/, ""));
+
+          const res = await fetch("https://api.imgbb.com/1/upload", {
+            method: "POST",
+            body: formData
+          });
+          const json = await res.json().catch(() => null);
+          if (res.ok && json && json.data && json.data.url) {
+            uploadedLiveUrl = json.data.url;
+          }
+        } catch (imgbbErr) {
+          console.warn("Direct ImgBB notice:", imgbbErr.message);
+        }
       }
     }
 

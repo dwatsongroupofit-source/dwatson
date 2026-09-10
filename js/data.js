@@ -1454,15 +1454,15 @@ function getSiteData() {
             ...((parsed.company && parsed.company.adminAuth) || {})
           }
         },
-        heroSlides: (Array.isArray(parsed.heroSlides) && parsed.heroSlides.length && parsed.heroSlides[0].image && parsed.heroSlides[0].image.includes('Slider Image/')) ? parsed.heroSlides : DEFAULT_SITE_DATA.heroSlides,
+        heroSlides: (Array.isArray(parsed.heroSlides) && parsed.heroSlides.length) ? parsed.heroSlides : DEFAULT_SITE_DATA.heroSlides,
         management: (Array.isArray(parsed.management) && parsed.management.length) ? parsed.management.map(m => {
           const def = DEFAULT_SITE_DATA.management.find(dm => dm.id === m.id || dm.name === m.name);
-          if (def && (!m.image || !m.image.includes('management/'))) {
+          if (def && (!m.image || (!m.image.includes('management/') && !m.image.startsWith('http')))) {
             m.image = def.image;
           }
           return m;
         }) : DEFAULT_SITE_DATA.management,
-        departments: (Array.isArray(parsed.departments) && parsed.departments.length >= 10) ? parsed.departments.map(d => {
+        departments: (Array.isArray(parsed.departments) && parsed.departments.length) ? parsed.departments.map(d => {
           const def = DEFAULT_SITE_DATA.departments.find(dd => dd.id === d.id);
           if (def && (!d.image || d.image === 'assets/images/pharmacy.jpg' || d.image === 'assets/images/cosmetics.jpg' || d.image === 'assets/images/grocery.jpg' || d.image === 'assets/images/apparel.jpg')) {
             d.image = def.image;
@@ -1470,7 +1470,7 @@ function getSiteData() {
           return d;
         }) : DEFAULT_SITE_DATA.departments,
         categories: (Array.isArray(parsed.categories) && parsed.categories.length) ? parsed.categories : DEFAULT_SITE_DATA.categories,
-        products: ((Array.isArray(parsed.products) && parsed.products.length >= 15 && parsed.products[0].image && parsed.products[0].image.includes('Shop Inside/')) ? parsed.products : DEFAULT_SITE_DATA.products).map(p => {
+        products: ((Array.isArray(parsed.products) && parsed.products.length > 0) ? parsed.products : DEFAULT_SITE_DATA.products).map(p => {
           if (p.image && p.image.includes("Aptamil Gold+")) p.image = "assets/images/aptamil-gold-plus-stage-1.jpg";
           if (p.image && p.image.includes("Seven Seas Cod Liver Oil +")) p.image = "assets/images/seven-seas-cod-liver-oil-omega-3.jpg";
           return p;
@@ -1491,7 +1491,7 @@ function getSiteData() {
           }
           return b;
         }) : DEFAULT_SITE_DATA.branches,
-        gallery: (Array.isArray(parsed.gallery) && parsed.gallery.length >= 20) ? parsed.gallery : DEFAULT_SITE_DATA.gallery,
+        gallery: (Array.isArray(parsed.gallery) && parsed.gallery.length) ? parsed.gallery : DEFAULT_SITE_DATA.gallery,
         faqs: Array.isArray(parsed.faqs) && parsed.faqs.length ? parsed.faqs : DEFAULT_SITE_DATA.faqs
       };
     }

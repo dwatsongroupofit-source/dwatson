@@ -3586,9 +3586,32 @@ async function uploadPrescriptionImage(file) {
     return "Document: " + (file.name || "prescription.pdf");
   }
 
+  // Strategy 1: Direct Cloudinary Cloud Upload (Fast, reliable, no backend required)
+  const cldName = (window.DW_CONFIG && window.DW_CONFIG.CLOUDINARY_CLOUD_NAME) || "bempxyod";
+  const cldPreset = (window.DW_CONFIG && window.DW_CONFIG.CLOUDINARY_UPLOAD_PRESET) || "dwatson";
+  if (cldName && cldPreset) {
+    try {
+      const cldForm = new FormData();
+      cldForm.append("file", file);
+      cldForm.append("upload_preset", cldPreset);
+
+      const cldRes = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(cldName)}/image/upload`, {
+        method: "POST",
+        body: cldForm
+      });
+      const cldJson = await cldRes.json().catch(() => null);
+      if (cldRes.ok && cldJson && cldJson.secure_url) {
+        rxUploadedImageUrl = cldJson.secure_url;
+        return cldJson.secure_url;
+      }
+    } catch (cldErr) {
+      console.warn("Direct prescription upload to Cloudinary notice:", cldErr.message);
+    }
+  }
+
   const directImgbbKey = (window.DW_CONFIG && window.DW_CONFIG.IMGBB_API_KEY) || localStorage.getItem("dw_imgbb_api_key") || "5d369a9387210e1432e7018b92d3d0e8";
 
-  // Strategy 1: Direct File upload to ImgBB
+  // Strategy 2: Direct File upload to ImgBB
   try {
     const formData = new FormData();
     formData.append("key", directImgbbKey);
