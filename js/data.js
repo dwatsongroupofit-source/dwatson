@@ -1791,7 +1791,72 @@ const STORAGE_KEY = "dwatson_site_data_v19";
  */
 function getSiteData() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    let saved = localStorage.getItem(STORAGE_KEY);
+    
+    // Automatic migration: if current key is empty, check all prior storage versions
+    if (!saved) {
+      const prevVersions = [
+        "dwatson_site_data_v18", "dwatson_site_data_v17", "dwatson_site_data_v16",
+        "dwatson_site_data_v15", "dwatson_site_data_v14", "dwatson_site_data_v13",
+        "dwatson_site_data_v12", "dwatson_site_data_v11", "dwatson_site_data_v10",
+        "dwatson_site_data_v9", "dwatson_site_data_v8", "dwatson_site_data_v7",
+        "dwatson_site_data_v6", "dwatson_site_data_v5", "dwatson_site_data_v4",
+        "dwatson_site_data_v3", "dwatson_site_data_v2", "dwatson_site_data_v1",
+        "dwatson_site_data"
+      ];
+      for (const k of prevVersions) {
+        const candidate = localStorage.getItem(k);
+        if (candidate) {
+          try {
+            const parsedCandidate = JSON.parse(candidate);
+            if (parsedCandidate && typeof parsedCandidate === "object") {
+              saved = candidate;
+              localStorage.setItem(STORAGE_KEY, candidate);
+              break;
+            }
+          } catch (e) {}
+        }
+      }
+    }
+
+    // Comprehensive custom product harvester across all storage slots
+    // Ensures any product created with Cloudinary CDN or custom admin edits is never lost!
+    const harvestedCustomProducts = [];
+    const harvestedCustomIds = new Set();
+
+    function harvestCustomItems(list) {
+      if (!Array.isArray(list)) return;
+      for (const p of list) {
+        if (!p || !p.name) continue;
+        const isDefaultId = typeof p.id === "string" && /^p([1-9]|[1-4][0-9])$/.test(p.id);
+        const isCloudinary = typeof p.image === "string" && (p.image.includes("cloudinary.com") || p.image.includes("iili.io") || p.image.includes("imgur.com"));
+        const isCustom = !isDefaultId || isCloudinary || Boolean(p.isCustom);
+        if (isCustom && !harvestedCustomIds.has(p.id)) {
+          harvestedCustomIds.add(p.id);
+          harvestedCustomProducts.push(p);
+        }
+      }
+    }
+
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith("dwatson_site_data") || k.includes("custom_product"))) {
+          try {
+            const rawVal = localStorage.getItem(k);
+            if (rawVal) {
+              const parsedVal = JSON.parse(rawVal);
+              if (parsedVal && Array.isArray(parsedVal.products)) {
+                harvestCustomItems(parsedVal.products);
+              } else if (Array.isArray(parsedVal)) {
+                harvestCustomItems(parsedVal);
+              }
+            }
+          } catch (e) {}
+        }
+      }
+    } catch (e) {}
+
     if (saved) {
       const parsed = JSON.parse(saved);
       // Auto-heal any stale whatsapp numbers if present
@@ -1832,17 +1897,53 @@ function getSiteData() {
         categories: (Array.isArray(parsed.categories) && parsed.categories.length) ? parsed.categories : DEFAULT_SITE_DATA.categories,
         deletedProductIds: Array.isArray(parsed.deletedProductIds) ? parsed.deletedProductIds : [],
         products: (() => {
+          const deletedIds = new Set(Array.isArray(parsed.deletedProductIds) ? parsed.deletedProductIds : []);
+          
+          // 1. Collect all custom products (from current storage + older harvested storage)
+          const customProds = [];
+          const seenIds = new Set();
+
+          harvestedCustomProducts.forEach(p => {
+            if (!deletedIds.has(p.id) && !seenIds.has(p.id)) {
+              seenIds.add(p.id);
+              customProds.push(p);
+            }
+          });
+
           if (Array.isArray(parsed.products)) {
-            const deletedIds = new Set(Array.isArray(parsed.deletedProductIds) ? parsed.deletedProductIds : []);
-            return parsed.products
-              .filter(p => !deletedIds.has(p.id))
-              .map(p => {
-                if (p.image && p.image.includes("Aptamil Gold+")) p.image = "assets/images/aptamil-gold-plus-stage-1.jpg";
-                if (p.image && p.image.includes("Seven Seas Cod Liver Oil +")) p.image = "assets/images/seven-seas-cod-liver-oil-omega-3.jpg";
-                return p;
-              });
+            parsed.products.forEach(p => {
+              if (p && !deletedIds.has(p.id) && !seenIds.has(p.id)) {
+                const isDefaultId = typeof p.id === "string" && /^p([1-9]|[1-4][0-9])$/.test(p.id);
+                const isCloudinary = typeof p.image === "string" && (p.image.includes("cloudinary.com") || p.image.includes("iili.io") || p.image.includes("imgur.com"));
+                if (!isDefaultId || isCloudinary || p.isCustom) {
+                  seenIds.add(p.id);
+                  customProds.push(p);
+                }
+              }
+            });
           }
-          return DEFAULT_SITE_DATA.products;
+
+          // 2. Collect default catalog products, using any user-customized versions if saved
+          const userSavedMap = new Map();
+          if (Array.isArray(parsed.products)) {
+            parsed.products.forEach(p => {
+              if (p && p.id) userSavedMap.set(p.id, p);
+            });
+          }
+
+          const defaultCatalog = DEFAULT_SITE_DATA.products
+            .filter(defP => !deletedIds.has(defP.id))
+            .map(defP => {
+              const savedVersion = userSavedMap.get(defP.id);
+              const activeProd = savedVersion ? { ...defP, ...savedVersion } : { ...defP };
+              if (activeProd.image && activeProd.image.includes("Aptamil Gold+")) activeProd.image = "assets/images/aptamil-gold-plus-stage-1.jpg";
+              if (activeProd.image && activeProd.image.includes("Seven Seas Cod Liver Oil +")) activeProd.image = "assets/images/seven-seas-cod-liver-oil-omega-3.jpg";
+              seenIds.add(activeProd.id);
+              return activeProd;
+            });
+
+          // Custom products (Cloudinary / custom additions) always lead at the front (#1)
+          return [...customProds, ...defaultCatalog];
         })(),
         branches: Array.isArray(parsed.branches) && parsed.branches.length ? parsed.branches.map(b => {
           const def = DEFAULT_SITE_DATA.branches.find(db => db.id === b.id);

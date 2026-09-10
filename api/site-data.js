@@ -13,6 +13,7 @@ let cachedSiteData = null;
 let lastUpdated = 0;
 
 const DATA_FILE_PATH = path.join(process.cwd(), "data", "site-data-custom.json");
+const TMP_DATA_FILE_PATH = path.join("/tmp", "dwatson-site-data-custom.json");
 
 module.exports = async (req, res) => {
   // 1. CORS Headers for cross-device support (mobile to local server / cross-origin)
@@ -41,13 +42,17 @@ module.exports = async (req, res) => {
         });
       }
 
-      if (fs.existsSync(DATA_FILE_PATH)) {
-        const fileContent = fs.readFileSync(DATA_FILE_PATH, "utf8");
+      const filePathToRead = fs.existsSync(DATA_FILE_PATH) 
+        ? DATA_FILE_PATH 
+        : (fs.existsSync(TMP_DATA_FILE_PATH) ? TMP_DATA_FILE_PATH : null);
+
+      if (filePathToRead) {
+        const fileContent = fs.readFileSync(filePathToRead, "utf8");
         const parsed = JSON.parse(fileContent);
         cachedSiteData = parsed;
         return res.status(200).json({
           success: true,
-          source: "disk",
+          source: filePathToRead.includes("/tmp") ? "tmp-cache" : "disk",
           lastUpdated: lastUpdated || Date.now(),
           data: parsed
         });
@@ -90,8 +95,12 @@ module.exports = async (req, res) => {
         }
         fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(siteData, null, 2), "utf8");
       } catch (fsErr) {
-        // On read-only serverless filesystems (e.g. Vercel production), disk write might be restricted
-        console.warn("Disk write notice (in-memory sync active):", fsErr.message);
+        // Fallback to /tmp on serverless filesystems (e.g. Vercel production)
+        try {
+          fs.writeFileSync(TMP_DATA_FILE_PATH, JSON.stringify(siteData, null, 2), "utf8");
+        } catch (tmpErr) {
+          console.warn("Disk write notice (in-memory sync active):", fsErr.message);
+        }
       }
 
       return res.status(200).json({

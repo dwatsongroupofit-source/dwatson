@@ -3,7 +3,7 @@
  * Infinite Catalog (All Departments), Zero Duplicates & Arrow Slider Navigation
  */
 
-const CACHE_NAME = "dwatson-cache-v21.0";
+const CACHE_NAME = "dwatson-cache-v22.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -16,9 +16,9 @@ const STATIC_ASSETS = [
   "./terms.html",
   "./css/style.css?v=8.9",
   "./css/responsive.css?v=9.1",
-  "./js/config.js?v=1.3",
-  "./js/data.js?v=8.8",
-  "./js/main.js?v=9.6",
+  "./js/config.js?v=10.0",
+  "./js/data.js?v=10.0",
+  "./js/main.js?v=10.0",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",

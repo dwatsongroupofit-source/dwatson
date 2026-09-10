@@ -798,7 +798,7 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
 let homeProductAutoScrollAnimId = null;
 let isHomeProductPaused = false;
 let homeProductResumeTimeout = null;
-const HOME_PRODUCT_SCROLL_SPEED = 2.0;
+const HOME_PRODUCT_SCROLL_SPEED = 3.5;
 
 window.manualScrollHomeProducts = function(direction) {
   const wrap = document.getElementById("homeProductsMarqueeWrap");

@@ -37,6 +37,9 @@ async function sha256(message) {
 
 function bootAdminApp() {
   loadAdminState();
+  if (typeof fetchSiteDataFromCloud === "function") {
+    fetchSiteDataFromCloud().catch(() => null);
+  }
   initAuthGuard();
   initTabNavigation();
   initInactivityWatcher();
@@ -45,6 +48,13 @@ function bootAdminApp() {
 window.bootAdminApp = bootAdminApp;
 window.initTabNavigation = initTabNavigation;
 window.renderAllSections = renderAllSections;
+
+// Auto-refresh admin view whenever fresh site data arrives from cloud sync
+window.addEventListener("siteDataUpdated", () => {
+  loadAdminState();
+  if (typeof renderProductsList === "function") renderProductsList();
+  if (typeof renderAllSections === "function") renderAllSections();
+});
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", bootAdminApp);
@@ -1421,7 +1431,20 @@ function renderProductsList() {
 
   // Filter products if active filter != 'all'
   let displayedProducts = adminData.products.map((p, originalIdx) => ({ ...p, originalIdx }));
-  if (activeAdminProductDeptFilter !== "all") {
+  
+  const customCount = adminData.products.filter(p => {
+    const isCloudinary = typeof p.image === "string" && (p.image.includes("cloudinary.com") || p.image.includes("iili.io") || p.image.includes("imgur.com"));
+    const isCustomId = typeof p.id === "string" && !/^p([1-9]|[1-4][0-9])$/.test(p.id);
+    return isCloudinary || isCustomId || Boolean(p.isCustom);
+  }).length;
+
+  if (activeAdminProductDeptFilter === "custom") {
+    displayedProducts = displayedProducts.filter(p => {
+      const isCloudinary = typeof p.image === "string" && (p.image.includes("cloudinary.com") || p.image.includes("iili.io") || p.image.includes("imgur.com"));
+      const isCustomId = typeof p.id === "string" && !/^p([1-9]|[1-4][0-9])$/.test(p.id);
+      return isCloudinary || isCustomId || Boolean(p.isCustom);
+    });
+  } else if (activeAdminProductDeptFilter !== "all") {
     displayedProducts = displayedProducts.filter(p => {
       const cat = (p.category || "").toLowerCase();
       const target = activeAdminProductDeptFilter.toLowerCase();
@@ -1433,11 +1456,13 @@ function renderProductsList() {
     <div style="margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:#FFFFFF; padding:10px 14px; border-radius:10px; border:1px solid #E2E8F0;">
       <span style="font-size:0.85rem; font-weight:700; color:#475569;">
         <i class="fa-solid fa-layer-group" style="color:var(--dw-red);"></i> Showing <strong>${displayedProducts.length}</strong> of <strong>${adminData.products.length}</strong> products in catalog
+        ${customCount > 0 ? `<span style="margin-left:8px; background:#E0F2FE; color:#0284C7; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:700;"><i class="fa-solid fa-cloud"></i> ${customCount} Custom / Cloudinary</span>` : ''}
       </span>
       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
         <label for="adminProductDeptFilterSelect" style="font-size:0.82rem; font-weight:700; color:#64748B; margin:0;"><i class="fa-solid fa-filter"></i> Filter Department:</label>
         <select id="adminProductDeptFilterSelect" class="admin-form-input" style="padding:6px 12px; font-size:0.85rem; min-width:180px; width:auto; border-color:#CBD5E1;" onchange="filterAdminProductsByDept(this.value)">
           <option value="all" ${activeAdminProductDeptFilter === "all" ? "selected" : ""}>All Departments (${adminData.products.length})</option>
+          ${customCount > 0 ? `<option value="custom" ${activeAdminProductDeptFilter === "custom" ? "selected" : ""}>☁️ Custom &amp; Cloudinary (${customCount})</option>` : ''}
           ${allDepts.map(d => {
             const count = adminData.products.filter(p => (p.category || "").toLowerCase() === d.id.toLowerCase() || (p.categoryName && p.categoryName.toLowerCase().includes(d.name.toLowerCase()))).length;
             return `<option value="${d.id}" ${activeAdminProductDeptFilter === d.id ? "selected" : ""}>${d.name} (${count})</option>`;
@@ -1451,9 +1476,9 @@ function renderProductsList() {
   if (!displayedProducts.length) {
     container.innerHTML = countHeader + `
       <div style="text-align:center; padding:35px 20px; background:#F8FAFC; border-radius:12px; border:1px dashed #CBD5E1;">
-        <p style="color:#64748B; margin:0 0 10px;">No products currently assigned to this department.</p>
+        <p style="color:#64748B; margin:0 0 10px;">No products currently match this filter.</p>
         <button type="button" class="btn btn-primary btn-sm" onclick="openProductModal(-1)">
-          <i class="fa-solid fa-plus"></i> Add Product to this Department
+          <i class="fa-solid fa-plus"></i> Add Product
         </button>
       </div>
     `;
@@ -1462,14 +1487,22 @@ function renderProductsList() {
 
   container.innerHTML = countHeader + displayedProducts.map((prod) => {
     const idx = prod.originalIdx;
+    const isCloudinary = typeof prod.image === "string" && (prod.image.includes("cloudinary.com") || prod.image.includes("iili.io") || prod.image.includes("imgur.com"));
+    const isCustomId = typeof prod.id === "string" && !/^p([1-9]|[1-4][0-9])$/.test(prod.id);
+    const isCustom = isCloudinary || isCustomId || Boolean(prod.isCustom);
+
     return `
-    <div class="editable-item-card">
+    <div class="editable-item-card" style="${isCustom ? 'border-color:#38BDF8; background:#F0F9FF;' : ''}">
       <div style="position:absolute; top:8px; left:8px; background:rgba(15,23,42,0.85); color:#FFFFFF; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:4px; z-index:2;">
         #${idx + 1}
       </div>
-      <img src="${prod.image || 'assets/images/pharmacy.jpg'}" class="item-thumbnail" alt="${escapeAdminHtml(prod.name)}">
+      <img src="${prod.image || 'assets/images/pharmacy.jpg'}" class="item-thumbnail" alt="${escapeAdminHtml(prod.name)}" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
       <div class="item-info">
-        <div class="item-title">${escapeAdminHtml(prod.name)} <span style="font-weight:700; color:var(--dw-blue); font-size:0.82rem;">(${escapeAdminHtml(prod.price || 'Inquire')})</span></div>
+        <div class="item-title">
+          ${escapeAdminHtml(prod.name)} 
+          <span style="font-weight:700; color:var(--dw-blue); font-size:0.82rem;">(${escapeAdminHtml(prod.price || 'Inquire')})</span>
+          ${isCustom ? `<span style="background:#DCFCE7; color:#15803D; font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:4px; border:1px solid #86EFAC; margin-left:6px; display:inline-flex; align-items:center; gap:4px;"><i class="fa-solid fa-cloud"></i> Live Cloudinary CDN</span>` : ''}
+        </div>
         <div class="item-sub"><strong>Brand:</strong> ${escapeAdminHtml(prod.brand || 'D. Watson')} • <strong>Department:</strong> <span style="color:var(--dw-red); font-weight:700;">${escapeAdminHtml(prod.categoryName || prod.category)}</span></div>
         <div style="font-size:0.78rem; color:#64748B;">${escapeAdminHtml(prod.description || '')}</div>
         
