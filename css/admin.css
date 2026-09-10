@@ -317,6 +317,68 @@ body.admin-body {
   z-index: 100;
 }
 
+.sidebar-toggle-desktop-btn {
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.05rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sidebar-toggle-desktop-btn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+/* Collapsed Sidebar on Desktop */
+.admin-sidebar.collapsed {
+  width: 76px;
+  min-width: 76px;
+}
+
+.admin-sidebar.collapsed .sidebar-header {
+  padding: 16px 10px;
+  justify-content: center;
+}
+
+.admin-sidebar.collapsed .admin-sidebar-logo {
+  display: none;
+}
+
+.admin-sidebar.collapsed .nav-category-title {
+  display: none;
+}
+
+.admin-sidebar.collapsed .admin-nav-item {
+  justify-content: center;
+  padding: 12px 8px;
+  font-size: 0;
+}
+
+.admin-sidebar.collapsed .admin-nav-item i {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.admin-sidebar.collapsed .sidebar-footer {
+  padding: 12px 6px;
+  align-items: center;
+}
+
+.admin-sidebar.collapsed .admin-user-badge span,
+.admin-sidebar.collapsed .sidebar-footer a span,
+.admin-sidebar.collapsed .sidebar-footer div:last-child {
+  display: none;
+}
+
 .admin-title-wrap h1 {
   font-size: 1.4rem;
   font-weight: 800;
@@ -577,7 +639,38 @@ body.admin-body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.admin-mobile-toggle-btn,
+.admin-mobile-toggle-btn {
+  background: #DC2626;
+  border: 1px solid #EF4444;
+  color: #FFFFFF;
+  padding: 0 14px;
+  height: 40px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.4);
+}
+
+.admin-mobile-toggle-btn:hover {
+  background: #B91C1C;
+}
+
+.admin-mobile-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+.mobile-toggle-text {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .admin-mobile-action-btn {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -594,7 +687,6 @@ body.admin-body {
   text-decoration: none;
 }
 
-.admin-mobile-toggle-btn:active,
 .admin-mobile-action-btn:active {
   transform: scale(0.94);
   background: rgba(255, 255, 255, 0.15);
@@ -640,38 +732,145 @@ body.admin-body {
 }
 
 /* ==========================================================================
-   Mobile Quick-Tabs Bar (Fast 1-Tap Switching across all Content Modules)
+   Admin Studio Top Menu Bar (Categorized Dropdowns & Responsive Quick Tabs)
    ========================================================================== */
-.admin-mobile-quick-tabs {
-  display: none;
+.admin-menubar {
   background: #0F172A;
-  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: sticky;
+  top: 73px;
+  z-index: 95;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.menubar-dropdowns-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.menubar-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.menubar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #E2E8F0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.menubar-btn i.caret-icon {
+  font-size: 0.72rem;
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+
+.menubar-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #FFFFFF;
+}
+
+.menubar-dropdown:hover .menubar-btn i.caret-icon,
+.menubar-dropdown.open .menubar-btn i.caret-icon {
+  transform: rotate(180deg);
+}
+
+.menubar-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: #1E293B;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  min-width: 230px;
+  z-index: 500;
+  padding: 6px 0;
+  backdrop-filter: blur(10px);
+}
+
+.menubar-dropdown:hover .menubar-dropdown-menu,
+.menubar-dropdown:focus-within .menubar-dropdown-menu,
+.menubar-dropdown.open .menubar-dropdown-menu {
+  display: block;
+  animation: fadeInDown 0.15s ease-out;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.menubar-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  color: #CBD5E1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.menubar-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  padding-left: 20px;
+}
+
+.menubar-dropdown-item.active {
+  background: rgba(220, 38, 38, 0.2);
+  color: #FCA5A5;
+  font-weight: 700;
+  border-left: 3px solid #DC2626;
+}
+
+/* Quick-Switch Pills Bar */
+.admin-quick-tabs-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   overflow-x: auto;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: sticky;
-  top: 56px;
-  z-index: 1050;
-  gap: 8px;
+  padding: 4px 0 2px;
 }
 
-.admin-mobile-quick-tabs::-webkit-scrollbar {
+.admin-quick-tabs-container::-webkit-scrollbar {
   display: none;
 }
 
-.admin-mobile-quick-tabs .quick-tab-btn {
+.admin-quick-tabs-container .quick-tab-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 6px 13px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.07);
   color: #94A3B8;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s ease;
@@ -679,16 +878,48 @@ body.admin-body {
   touch-action: manipulation;
 }
 
-.admin-mobile-quick-tabs .quick-tab-btn:hover {
-  background: rgba(255, 255, 255, 0.16);
+.admin-quick-tabs-container .quick-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
   color: #FFFFFF;
 }
 
-.admin-mobile-quick-tabs .quick-tab-btn.active {
+.admin-quick-tabs-container .quick-tab-btn.active {
   background: #DC2626;
   color: #FFFFFF;
   border-color: #DC2626;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.4);
+}
+
+/* Mobile Quick Jump Selector */
+.admin-mobile-jump-wrap {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.admin-mobile-jump-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #94A3B8;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-mobile-jump-select {
+  flex: 1;
+  min-height: 42px;
+  background: #1E293B;
+  color: #F8FAFC;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
 }
 
 /* ==========================================================================
@@ -707,7 +938,16 @@ body.admin-body {
     z-index: 1060;
   }
 
-  .admin-mobile-quick-tabs {
+  .admin-menubar {
+    top: 64px;
+    padding: 8px 14px;
+  }
+
+  .menubar-dropdowns-strip {
+    display: none;
+  }
+
+  .admin-mobile-jump-wrap {
     display: flex;
   }
 

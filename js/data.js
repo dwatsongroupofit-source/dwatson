@@ -1830,22 +1830,19 @@ function getSiteData() {
           return d;
         }) : DEFAULT_SITE_DATA.departments,
         categories: (Array.isArray(parsed.categories) && parsed.categories.length) ? parsed.categories : DEFAULT_SITE_DATA.categories,
+        deletedProductIds: Array.isArray(parsed.deletedProductIds) ? parsed.deletedProductIds : [],
         products: (() => {
-          const userProds = (Array.isArray(parsed.products) && parsed.products.length > 0) ? parsed.products : [];
-          const existingIds = new Set(userProds.map(p => p.id));
-          const merged = [...userProds];
-          // Ensure all official default department products are present so every department has live items
-          for (const defP of DEFAULT_SITE_DATA.products) {
-            if (!existingIds.has(defP.id)) {
-              merged.push(defP);
-              existingIds.add(defP.id);
-            }
+          if (Array.isArray(parsed.products)) {
+            const deletedIds = new Set(Array.isArray(parsed.deletedProductIds) ? parsed.deletedProductIds : []);
+            return parsed.products
+              .filter(p => !deletedIds.has(p.id))
+              .map(p => {
+                if (p.image && p.image.includes("Aptamil Gold+")) p.image = "assets/images/aptamil-gold-plus-stage-1.jpg";
+                if (p.image && p.image.includes("Seven Seas Cod Liver Oil +")) p.image = "assets/images/seven-seas-cod-liver-oil-omega-3.jpg";
+                return p;
+              });
           }
-          return merged.map(p => {
-            if (p.image && p.image.includes("Aptamil Gold+")) p.image = "assets/images/aptamil-gold-plus-stage-1.jpg";
-            if (p.image && p.image.includes("Seven Seas Cod Liver Oil +")) p.image = "assets/images/seven-seas-cod-liver-oil-omega-3.jpg";
-            return p;
-          });
+          return DEFAULT_SITE_DATA.products;
         })(),
         branches: Array.isArray(parsed.branches) && parsed.branches.length ? parsed.branches.map(b => {
           const def = DEFAULT_SITE_DATA.branches.find(db => db.id === b.id);
