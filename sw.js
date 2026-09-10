@@ -3,7 +3,7 @@
  * Mobile bottom bar z-index & Crisp messenger clean elevation
  */
 
-const CACHE_NAME = "dwatson-cache-v17.0";
+const CACHE_NAME = "dwatson-cache-v18.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -14,11 +14,11 @@ const STATIC_ASSETS = [
   "./contact.html",
   "./privacy.html",
   "./terms.html",
-  "./css/style.css?v=8.7",
+  "./css/style.css?v=8.8",
   "./css/responsive.css?v=9.0",
   "./js/config.js?v=1.3",
   "./js/data.js?v=8.8",
-  "./js/main.js?v=9.3",
+  "./js/main.js?v=9.4",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",

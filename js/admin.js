@@ -1370,8 +1370,19 @@ function renderProductsList() {
     return;
   }
 
-  container.innerHTML = adminData.products.map((prod, idx) => `
+  const countHeader = `
+    <div style="margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+      <span style="font-size:0.85rem; font-weight:700; color:#475569;">
+        <i class="fa-solid fa-layer-group" style="color:var(--dw-red);"></i> Showing all <strong>${adminData.products.length}</strong> products in catalog (no limit). Reorder below to change slider sequence:
+      </span>
+    </div>
+  `;
+
+  container.innerHTML = countHeader + adminData.products.map((prod, idx) => `
     <div class="editable-item-card">
+      <div style="position:absolute; top:8px; left:8px; background:rgba(15,23,42,0.85); color:#FFFFFF; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:4px; z-index:2;">
+        #${idx + 1}
+      </div>
       <img src="${prod.image || 'assets/images/pharmacy.jpg'}" class="item-thumbnail" alt="${escapeAdminHtml(prod.name)}">
       <div class="item-info">
         <div class="item-title">${escapeAdminHtml(prod.name)} <span style="font-weight:700; color:var(--dw-blue); font-size:0.82rem;">(${escapeAdminHtml(prod.price || 'Inquire')})</span></div>
@@ -1391,6 +1402,12 @@ function renderProductsList() {
         </div>
       </div>
       <div class="item-actions">
+        <button type="button" class="btn btn-outline btn-sm" onclick="moveProductUp(${idx})" ${idx === 0 ? 'disabled style="opacity:0.35; cursor:not-allowed;"' : 'title="Move Up in Carousel"'}>
+          <i class="fa-solid fa-arrow-up"></i>
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="moveProductDown(${idx})" ${idx === adminData.products.length - 1 ? 'disabled style="opacity:0.35; cursor:not-allowed;"' : 'title="Move Down in Carousel"'}>
+          <i class="fa-solid fa-arrow-down"></i>
+        </button>
         <button class="btn btn-outline btn-sm" onclick="openProductModal(${idx})">
           <i class="fa-solid fa-pen-to-square"></i> Edit
         </button>
@@ -1541,7 +1558,8 @@ window.saveProductModal = function(e) {
 
   if (editItemIndex === -1) {
     if (!adminData.products) adminData.products = [];
-    adminData.products.push(newProd);
+    // Place new products at the top (#1) so they immediately lead the carousel
+    adminData.products.unshift(newProd);
   } else {
     adminData.products[editItemIndex] = newProd;
   }
@@ -1549,7 +1567,27 @@ window.saveProductModal = function(e) {
   saveSiteData(adminData);
   closeAdminModal();
   renderProductsList();
-  showToast("Product saved successfully!");
+  showToast("Product saved successfully and featured in carousel!");
+};
+
+window.moveProductUp = function(idx) {
+  if (idx <= 0 || !adminData.products || !adminData.products[idx]) return;
+  const temp = adminData.products[idx];
+  adminData.products[idx] = adminData.products[idx - 1];
+  adminData.products[idx - 1] = temp;
+  saveSiteData(adminData);
+  renderProductsList();
+  showToast(`Moved "${temp.name}" up to position #${idx}.`);
+};
+
+window.moveProductDown = function(idx) {
+  if (!adminData.products || idx >= adminData.products.length - 1 || !adminData.products[idx]) return;
+  const temp = adminData.products[idx];
+  adminData.products[idx] = adminData.products[idx + 1];
+  adminData.products[idx + 1] = temp;
+  saveSiteData(adminData);
+  renderProductsList();
+  showToast(`Moved "${temp.name}" down to position #${idx + 2}.`);
 };
 
 window.deleteProduct = function(idx) {

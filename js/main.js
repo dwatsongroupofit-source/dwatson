@@ -666,6 +666,9 @@ function initProductAutoSlider() {
     track.addEventListener("touchend", () => {
       setTimeout(() => { isProductCarouselHovered = false; }, 2000);
     }, { passive: true });
+    track.addEventListener("touchcancel", () => {
+      setTimeout(() => { isProductCarouselHovered = false; }, 1500);
+    }, { passive: true });
     isProductCarouselControlsInit = true;
   }
 
@@ -674,10 +677,15 @@ function initProductAutoSlider() {
     const maxScroll = track.scrollWidth - track.clientWidth;
     if (maxScroll <= 10) return;
 
-    if (track.scrollLeft >= maxScroll - 15) {
+    // Calculate step based on actual product card width + gap (260px card + 16px gap = 276px)
+    const firstCard = track.querySelector(".home-product-card");
+    const cardStep = firstCard ? (firstCard.offsetWidth + 16) : 276;
+    const scrollStep = Math.max(cardStep, Math.floor(track.clientWidth * 0.75));
+
+    // When near the end of all products, smoothly rewind to the start
+    if (track.scrollLeft >= maxScroll - 20) {
       track.scrollTo({ left: 0, behavior: "smooth" });
     } else {
-      const scrollStep = Math.max(260, Math.floor(track.clientWidth * 0.7));
       track.scrollBy({ left: scrollStep, behavior: "smooth" });
     }
   }, 3500);
