@@ -81,6 +81,7 @@ function initWebsite() {
   initPrescriptionUploader(data.company.whatsapp);
   initProductZoomEvents();
   initBranchZoomEvents();
+  initChipDragScroll();
   initHeaderScroll();
   initMobileMenu();
   initGlobalSearch();
@@ -672,39 +673,42 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
       // Department-specific keyword and alias matches
       if (filterKey === "pharmacy" && (cat.includes("pharma") || cat.includes("med") || catName.includes("medicine") || name.includes("vitamin") || name.includes("capsule") || name.includes("tablet") || name.includes("syrup") || name.includes("centrum") || name.includes("supplement"))) return true;
       if (filterKey === "cosmetics" && (cat.includes("cosmetic") || cat.includes("skin") || catName.includes("cosmetic") || catName.includes("skincare") || name.includes("cream") || name.includes("serum") || name.includes("lotion") || name.includes("cerave") || name.includes("bioderma") || name.includes("purest"))) return true;
-      if (filterKey === "perfumes" && (cat.includes("perfume") || cat.includes("fragrance") || catName.includes("perfume") || catName.includes("fragrance") || name.includes("perfume") || name.includes("fragrance") || name.includes("eau de") || name.includes("oud") || name.includes("scent"))) return true;
-      if (filterKey === "color_cosmetics" && (cat.includes("color") || cat.includes("makeup") || catName.includes("makeup") || name.includes("lipstick") || name.includes("palette") || name.includes("mascara") || name.includes("foundation") || name.includes("primer") || name.includes("blush") || name.includes("flormar"))) return true;
+      if (filterKey === "perfumes" && (cat.includes("perfume") || cat.includes("fragrance") || catName.includes("perfume") || catName.includes("fragrance") || name.includes("perfume") || name.includes("fragrance") || name.includes("eau de") || name.includes("oud") || name.includes("scent") || name.includes("sauvage") || name.includes("chanel") || name.includes("parfum"))) return true;
+      if (filterKey === "color_cosmetics" && (cat.includes("color") || cat.includes("makeup") || catName.includes("makeup") || name.includes("lipstick") || name.includes("palette") || name.includes("mascara") || name.includes("foundation") || name.includes("primer") || name.includes("blush") || name.includes("flormar") || name.includes("golden rose"))) return true;
       if (filterKey === "haircare" && (cat.includes("hair") || catName.includes("hair") || name.includes("shampoo") || name.includes("conditioner") || name.includes("serum") || name.includes("masque") || name.includes("bioblas") || name.includes("keratin"))) return true;
-      if (filterKey === "surgical" && (cat.includes("surg") || catName.includes("surgical") || catName.includes("device") || name.includes("monitor") || name.includes("meter") || name.includes("bp") || name.includes("omron") || name.includes("accu") || name.includes("wheelchair") || name.includes("nebulizer"))) return true;
-      if (filterKey === "optics" && (cat.includes("optic") || catName.includes("eyewear") || catName.includes("optics") || name.includes("ray-ban") || name.includes("glasses") || name.includes("aviator") || name.includes("frame") || name.includes("lens"))) return true;
-      if (filterKey === "babycare" && (cat.includes("baby") || catName.includes("baby") || catName.includes("infant") || name.includes("formula") || name.includes("aptamil") || name.includes("infant") || name.includes("diaper") || name.includes("feeder") || desc.includes("baby"))) return true;
-      if (filterKey === "grocery" && (cat.includes("groc") || cat.includes("superstore") || catName.includes("grocery") || name.includes("grocery") || name.includes("food") || name.includes("snack") || name.includes("organic") || desc.includes("grocery"))) return true;
-      if (filterKey === "homeo" && (cat.includes("homeo") || cat.includes("herbal") || catName.includes("homeo") || name.includes("schwabe") || name.includes("reckeweg") || name.includes("herbal") || name.includes("natural"))) return true;
-      if (filterKey === "hearing_aid" && (cat.includes("hearing") || catName.includes("hearing") || cat.includes("diagnostic") || name.includes("hearing") || name.includes("amplifier") || name.includes("diagnostic") || name.includes("pulse oximeter"))) return true;
-      if (filterKey === "crockery" && (cat.includes("crock") || cat.includes("home") || catName.includes("crockery") || name.includes("dinner") || name.includes("glass") || name.includes("cookware") || name.includes("flask"))) return true;
-      if (filterKey === "toys" && (cat.includes("toy") || cat.includes("game") || catName.includes("toy") || name.includes("toy") || name.includes("game") || name.includes("puzzle"))) return true;
-      if (filterKey === "undergarments" && (cat.includes("garment") || catName.includes("garment") || name.includes("innerwear") || name.includes("thermal") || name.includes("cotton"))) return true;
+      if (filterKey === "surgical" && (cat.includes("surg") || catName.includes("surgical") || catName.includes("device") || name.includes("monitor") || name.includes("meter") || name.includes("bp") || name.includes("omron") || name.includes("accu") || name.includes("wheelchair") || name.includes("nebulizer") || name.includes("thermometer"))) return true;
+      if (filterKey === "optics" && (cat.includes("optic") || catName.includes("eyewear") || catName.includes("optics") || name.includes("ray-ban") || name.includes("glasses") || name.includes("aviator") || name.includes("frame") || name.includes("lens") || name.includes("oakley") || name.includes("gucci"))) return true;
+      if (filterKey === "babycare" && (cat.includes("baby") || catName.includes("baby") || catName.includes("infant") || name.includes("formula") || name.includes("aptamil") || name.includes("infant") || name.includes("diaper") || name.includes("feeder") || name.includes("pampers") || name.includes("mustela") || name.includes("sudocrem") || name.includes("avent") || desc.includes("baby"))) return true;
+      if (filterKey === "grocery" && (cat.includes("groc") || cat.includes("superstore") || catName.includes("grocery") || name.includes("grocery") || name.includes("food") || name.includes("snack") || name.includes("organic") || name.includes("ferrero") || name.includes("tea") || name.includes("nutella") || desc.includes("grocery"))) return true;
+      if (filterKey === "homeo" && (cat.includes("homeo") || cat.includes("herbal") || catName.includes("homeo") || name.includes("schwabe") || name.includes("reckeweg") || name.includes("herbal") || name.includes("natural") || name.includes("drops") || name.includes("kali phos"))) return true;
+      if (filterKey === "hearing_aid" && (cat.includes("hearing") || catName.includes("hearing") || cat.includes("diagnostic") || name.includes("hearing") || name.includes("amplifier") || name.includes("diagnostic") || name.includes("pulse oximeter") || name.includes("nebulizer"))) return true;
+      if (filterKey === "crockery" && (cat.includes("crock") || cat.includes("home") || catName.includes("crockery") || name.includes("dinner") || name.includes("glass") || name.includes("cookware") || name.includes("flask") || name.includes("luminarc") || name.includes("thermos"))) return true;
+      if (filterKey === "toys" && (cat.includes("toy") || cat.includes("game") || catName.includes("toy") || name.includes("toy") || name.includes("game") || name.includes("puzzle") || name.includes("lego") || name.includes("fisher-price"))) return true;
+      if (filterKey === "undergarments" && (cat.includes("garment") || catName.includes("garment") || name.includes("innerwear") || name.includes("thermal") || name.includes("cotton") || name.includes("bra") || name.includes("jockey") || name.includes("ifg"))) return true;
 
       return false;
     });
-
-    // Fallback if no specific products matched filter
-    if (!displayList.length) displayList = allProds;
   }
+
+  // Find department label for badge
+  const allDepts = (data.departments && data.departments.length)
+    ? data.departments
+    : ((typeof DEFAULT_SITE_DATA !== "undefined" && Array.isArray(DEFAULT_SITE_DATA.departments)) ? DEFAULT_SITE_DATA.departments : []);
+  const matchedDept = allDepts.find(d => d.id === currentHomeProductCategory);
+  const label = matchedDept ? matchedDept.name : (currentHomeProductCategory === "all" ? "All Products" : currentHomeProductCategory);
 
   // Update live count badge
   const countBadge = document.getElementById("homeProductCountBadge");
   if (countBadge) {
-    const allDepts = (data.departments && data.departments.length)
-      ? data.departments
-      : ((typeof DEFAULT_SITE_DATA !== "undefined" && Array.isArray(DEFAULT_SITE_DATA.departments)) ? DEFAULT_SITE_DATA.departments : []);
-    const matchedDept = allDepts.find(d => d.id === currentHomeProductCategory);
-    const label = matchedDept ? matchedDept.name : (currentHomeProductCategory === "all" ? "All Products" : (currentHomeProductCategory === "haircare" ? "Hair Care & Therapy" : currentHomeProductCategory));
-    countBadge.innerHTML = `<span class="live-dot-green"></span> Showing ${displayList.length} ${label} (Infinite Live Stream)`;
+    if (currentHomeProductCategory === "all") {
+      countBadge.innerHTML = `<span class="live-dot-green"></span> Showing All ${displayList.length} Products (Infinite Live Stream)`;
+    } else {
+      countBadge.innerHTML = `<span class="live-dot-green"></span> Showing ${displayList.length} in ${label}`;
+    }
   }
 
   // Set zoom list for product zoom modal
-  currentProductZoomList = displayList;
+  currentProductZoomList = displayList.length ? displayList : allProds;
 
   const renderCard = (p) => {
     const fullImgUrl = (typeof getFullImageUrl === "function") ? getFullImageUrl(p.image) : (p.image || "");
@@ -738,32 +742,268 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
     `;
   };
 
+  const wrap = document.getElementById("homeProductsMarqueeWrap");
+
+  // Zero Duplicate Rendering Rule:
+  // When viewing a specific department, NEVER duplicate cards. Render each matching product strictly once!
+  if (currentHomeProductCategory !== "all") {
+    track.classList.add("category-filtered");
+    track.style.animation = "none";
+    track.style.transform = "none";
+    isHomeProductPaused = true;
+
+    if (!displayList.length) {
+      track.innerHTML = `
+        <div class="home-product-empty-state" style="padding:32px 20px; text-align:center; width:100%; background:#F8FAFC; border-radius:16px; border:1px dashed #CBD5E1; margin:10px 0;">
+          <div style="font-size:2rem; color:#64748B; margin-bottom:10px;"><i class="fa-solid fa-boxes-stacked"></i></div>
+          <h4 style="font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:6px;">Looking for ${escapeHtml(label)}?</h4>
+          <p style="font-size:0.9rem; color:#64748B; max-width:480px; margin:0 auto 16px;">We carry extensive ${escapeHtml(label)} inventory across all D. Watson 24/7 branches. Connect directly with our department pharmacist via WhatsApp for instant stock check &amp; doorstep delivery.</p>
+          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <a href="https://wa.me/${waNum}?text=${encodeURIComponent('Hi D.Watson Chemist, I would like to inquire about available ' + label + ' items.')}" target="_blank" class="home-product-buy-btn" style="padding:10px 20px; font-size:0.9rem;">
+              <i class="fa-brands fa-whatsapp"></i> Inquire via WhatsApp
+            </a>
+            <button type="button" class="btn-zoom-trigger" onclick="filterHomeProductsCategory('all')" style="padding:10px 18px; font-size:0.9rem;">
+              <i class="fa-solid fa-layer-group"></i> View All Products
+            </button>
+          </div>
+        </div>
+      `;
+      if (wrap) wrap.scrollLeft = 0;
+      return;
+    }
+
+    // Render each card strictly once - zero duplicates!
+    track.innerHTML = displayList.map(renderCard).join("");
+    if (wrap) wrap.scrollLeft = 0;
+    initHomeProductSliderEvents();
+    return;
+  }
+
+  // ALL PRODUCTS: Continuous seamless infinite glide stream with manual arrow/drag support
+  track.classList.remove("category-filtered");
+  track.style.animation = "none";
+  track.style.transform = "none";
+
   const cardsHtml = displayList.map(renderCard).join("");
+  // Seamless loop with 2 halves for continuous infinite gliding
+  track.innerHTML = cardsHtml + cardsHtml;
 
-  // Seamless infinite loop: duplicate cards so the track has identical halves for 0% -> -50% translation
-  let repeatCount = 2;
-  if (displayList.length <= 4) repeatCount = 4;
-  else if (displayList.length <= 8) repeatCount = 3;
+  initHomeProductSliderEvents();
+  startHomeProductAutoGlide();
+}
 
-  track.innerHTML = cardsHtml.repeat(repeatCount);
+/**
+ * Trending Products Manual Arrow & Auto-Glide Controller
+ */
+let homeProductAutoScrollAnimId = null;
+let isHomeProductPaused = false;
+let homeProductResumeTimeout = null;
+const HOME_PRODUCT_SCROLL_SPEED = 0.85;
 
-  // Calculate dynamic duration based on total card count for consistent smooth speed
-  const totalCards = displayList.length * repeatCount;
-  const durationSec = Math.max(28, totalCards * 2.8);
-  track.style.animationDuration = `${durationSec}s`;
+window.manualScrollHomeProducts = function(direction) {
+  const wrap = document.getElementById("homeProductsMarqueeWrap");
+  if (!wrap) return;
+
+  isHomeProductPaused = true;
+  if (homeProductResumeTimeout) clearTimeout(homeProductResumeTimeout);
+
+  const scrollDistance = 320 * direction;
+
+  // Seamless wrap around check for backward scroll on All Products
+  if (direction < 0 && wrap.scrollLeft <= 25 && currentHomeProductCategory === "all") {
+    const halfWidth = wrap.scrollWidth / 2;
+    if (halfWidth > 0) wrap.scrollLeft += halfWidth;
+  }
+
+  wrap.scrollBy({ left: scrollDistance, behavior: "smooth" });
+
+  // Resume auto-glide after 3.5 seconds of user inactivity if on "all"
+  if (currentHomeProductCategory === "all") {
+    homeProductResumeTimeout = setTimeout(() => {
+      isHomeProductPaused = false;
+    }, 3500);
+  }
+};
+
+function startHomeProductAutoGlide() {
+  const wrap = document.getElementById("homeProductsMarqueeWrap");
+  if (!wrap) return;
+
+  if (homeProductAutoScrollAnimId) {
+    cancelAnimationFrame(homeProductAutoScrollAnimId);
+  }
+
+  function glideLoop() {
+    if (currentHomeProductCategory === "all" && !isHomeProductPaused && wrap) {
+      wrap.scrollLeft += HOME_PRODUCT_SCROLL_SPEED;
+      const halfWidth = wrap.scrollWidth / 2;
+      if (halfWidth > 100 && wrap.scrollLeft >= halfWidth) {
+        wrap.scrollLeft -= halfWidth;
+      }
+    }
+    homeProductAutoScrollAnimId = requestAnimationFrame(glideLoop);
+  }
+
+  homeProductAutoScrollAnimId = requestAnimationFrame(glideLoop);
+}
+
+function initHomeProductSliderEvents() {
+  const wrap = document.getElementById("homeProductsMarqueeWrap");
+  if (!wrap || wrap.dataset.eventsInit) return;
+  wrap.dataset.eventsInit = "true";
+
+  wrap.addEventListener("mouseenter", () => {
+    isHomeProductPaused = true;
+  });
+
+  wrap.addEventListener("mouseleave", () => {
+    if (currentHomeProductCategory === "all") {
+      isHomeProductPaused = false;
+    }
+  });
+
+  wrap.addEventListener("touchstart", () => {
+    isHomeProductPaused = true;
+    if (homeProductResumeTimeout) clearTimeout(homeProductResumeTimeout);
+  }, { passive: true });
+
+  wrap.addEventListener("touchend", () => {
+    if (currentHomeProductCategory === "all") {
+      homeProductResumeTimeout = setTimeout(() => {
+        isHomeProductPaused = false;
+      }, 3000);
+    }
+  }, { passive: true });
+
+  // Mouse click-and-drag manual slide
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  wrap.addEventListener("mousedown", (e) => {
+    if (e.target.closest("button") || e.target.closest("a")) return;
+    isDown = true;
+    isHomeProductPaused = true;
+    wrap.classList.add("is-dragging");
+    startX = e.pageX - wrap.offsetLeft;
+    scrollLeft = wrap.scrollLeft;
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (isDown) {
+      isDown = false;
+      wrap.classList.remove("is-dragging");
+      if (currentHomeProductCategory === "all") {
+        homeProductResumeTimeout = setTimeout(() => {
+          isHomeProductPaused = false;
+        }, 3000);
+      }
+    }
+  });
+
+  wrap.addEventListener("mousemove", (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - wrap.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    wrap.scrollLeft = scrollLeft - walk;
+  });
 }
 
 window.filterHomeProductsCategory = function(catKey, btnEl) {
-  if (btnEl) {
-    const parent = btnEl.closest(".mockup-filter-chips");
-    if (parent) {
-      parent.querySelectorAll(".mockup-chip").forEach(c => c.classList.remove("active"));
+  const chipsContainer = document.getElementById("homeProductFilterChips");
+  if (chipsContainer) {
+    chipsContainer.querySelectorAll(".mockup-chip").forEach(c => c.classList.remove("active"));
+    if (btnEl) {
       btnEl.classList.add("active");
+    } else {
+      const matchBtn = chipsContainer.querySelector(`[onclick*="'${catKey}'"]`);
+      if (matchBtn) matchBtn.classList.add("active");
     }
   }
+
   const data = getSiteData();
   renderHomeProducts(data.products, data.company.whatsapp, catKey);
+
+  // Smoothly center the active chip within the horizontal scrollable chips container
+  const activeBtn = chipsContainer ? chipsContainer.querySelector(".mockup-chip.active") : null;
+  if (activeBtn && chipsContainer) {
+    const btnLeft = activeBtn.offsetLeft;
+    const btnWidth = activeBtn.offsetWidth;
+    const containerWidth = chipsContainer.offsetWidth;
+    chipsContainer.scrollTo({
+      left: btnLeft - (containerWidth / 2) + (btnWidth / 2),
+      behavior: "smooth"
+    });
+    setTimeout(updateChipScrollButtons, 300);
+  }
 };
+
+/**
+ * Category Chips Horizontal Scroll & Drag Navigation
+ */
+window.scrollProductFilterChips = function(offset) {
+  const container = document.getElementById("homeProductFilterChips");
+  if (!container) return;
+  container.scrollBy({ left: offset, behavior: "smooth" });
+  setTimeout(updateChipScrollButtons, 350);
+};
+
+function updateChipScrollButtons() {
+  const container = document.getElementById("homeProductFilterChips");
+  const leftBtn = document.getElementById("chipScrollLeftBtn");
+  const rightBtn = document.getElementById("chipScrollRightBtn");
+  if (!container) return;
+
+  const maxScroll = container.scrollWidth - container.clientWidth;
+  if (leftBtn) {
+    const isAtStart = container.scrollLeft <= 10;
+    leftBtn.style.opacity = isAtStart ? "0.35" : "1";
+    leftBtn.style.pointerEvents = isAtStart ? "none" : "auto";
+  }
+  if (rightBtn) {
+    const isAtEnd = container.scrollLeft >= maxScroll - 10;
+    rightBtn.style.opacity = isAtEnd ? "0.35" : "1";
+    rightBtn.style.pointerEvents = isAtEnd ? "none" : "auto";
+  }
+}
+
+function initChipDragScroll() {
+  const slider = document.getElementById("homeProductFilterChips");
+  if (!slider) return;
+
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  slider.addEventListener("mousedown", (e) => {
+    isDown = true;
+    slider.classList.add("is-dragging");
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (isDown) {
+      isDown = false;
+      slider.classList.remove("is-dragging");
+      updateChipScrollButtons();
+    }
+  });
+
+  slider.addEventListener("mousemove", (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 1.6;
+    slider.scrollLeft = scrollLeft - walk;
+    updateChipScrollButtons();
+  });
+
+  slider.addEventListener("scroll", updateChipScrollButtons, { passive: true });
+  window.addEventListener("resize", updateChipScrollButtons, { passive: true });
+  updateChipScrollButtons();
+}
 
 /**
  * Carousel Horizontal Scrolling Controller

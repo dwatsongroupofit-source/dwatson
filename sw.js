@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v20.0)
- * All-Department Product Mapping & Mobile Admin Studio
+ * D. Watson Chemist & Superstore - Service Worker (v21.0)
+ * Infinite Catalog (All Departments), Zero Duplicates & Arrow Slider Navigation
  */
 
-const CACHE_NAME = "dwatson-cache-v20.0";
+const CACHE_NAME = "dwatson-cache-v21.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",

@@ -1685,14 +1685,14 @@ section, header, footer, nav, main, .container {
 
   /* Continuous Product Marquee on Mobile */
   .home-product-card {
-    flex: 0 0 225px;
-    width: 225px;
-    border-radius: 14px;
+    flex: 0 0 250px;
+    width: 250px;
+    border-radius: 16px;
   }
 
   .home-product-img-wrap {
-    height: 155px;
-    padding: 8px;
+    height: 175px;
+    padding: 10px;
   }
 
   .home-product-title {
@@ -2104,24 +2104,24 @@ section, header, footer, nav, main, .container {
     line-height: 1.2 !important;
   }
 
-  /* Generous Mobile Product Cards (Matching dwatson.pk) */
+  /* Generous Mobile Product Cards (Comfortable Width for Easy Viewing) */
   .home-product-card {
-    flex: 0 0 190px !important;
-    width: 190px !important;
+    flex: 0 0 250px !important;
+    width: 250px !important;
     padding: 12px !important;
-    border-radius: 14px !important;
+    border-radius: 16px !important;
   }
 
   .home-product-img-wrap {
-    height: 125px !important;
+    height: 175px !important;
     width: 100% !important;
-    margin-bottom: 8px !important;
-    padding: 6px !important;
+    margin-bottom: 10px !important;
+    padding: 10px !important;
   }
 
   .home-product-img-wrap img {
-    max-height: 115px !important;
-    max-width: 100% !important;
+    max-height: 155px !important;
+    max-width: 90% !important;
   }
 
   .home-product-brand {
@@ -2184,10 +2184,36 @@ section, header, footer, nav, main, .container {
     padding: 0 16px !important;
   }
 
+  .home-category-chips-nav-wrapper {
+    gap: 4px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .chip-scroll-btn {
+    flex: 0 0 32px !important;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 0.75rem !important;
+  }
+
+  .product-side-arrow-btn {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.85rem !important;
+  }
+
+  .product-arrow-prev {
+    left: -4px !important;
+  }
+
+  .product-arrow-next {
+    right: -4px !important;
+  }
+
   .mockup-filter-chips {
     gap: 8px !important;
-    padding-bottom: 10px !important;
-    margin-bottom: 14px !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 0 !important;
   }
 
   .mockup-chip {
@@ -2317,8 +2343,8 @@ section, header, footer, nav, main, .container {
   }
 
   .home-product-card {
-    flex: 0 0 180px !important;
-    width: 180px !important;
+    flex: 0 0 240px !important;
+    width: 240px !important;
   }
 
   .home-dept-card {
@@ -2356,6 +2382,10 @@ section, header, footer, nav, main, .container {
     height: 38px !important;
     font-size: 0.76rem !important;
     gap: 4px !important;
+  }
+
+  .product-side-arrow-btn {
+    display: none !important;
   }
 }
 
