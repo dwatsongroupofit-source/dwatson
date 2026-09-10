@@ -1819,40 +1819,101 @@ function getSiteData() {
       }
     }
 
-    // Comprehensive custom product harvester across all storage slots
-    // Ensures any product created with Cloudinary CDN or custom admin edits is never lost!
+    // Universal Custom & Cloudinary Asset Harvester across all storage versions (v1..v18, dwatson_site_data, etc.)
+    // Guarantees that any branch, department, hero slide, management photo or product uploaded via Cloudinary is NEVER lost!
+    const harvestedBranchImages = new Map();
+    const harvestedDeptImages = new Map();
+    const harvestedSlideImages = new Map();
+    const harvestedManagementImages = new Map();
     const harvestedCustomProducts = [];
     const harvestedCustomIds = new Set();
 
-    function harvestCustomItems(list) {
-      if (!Array.isArray(list)) return;
-      for (const p of list) {
-        if (!p || !p.name) continue;
-        const isDefaultId = typeof p.id === "string" && /^p([1-9]|[1-4][0-9])$/.test(p.id);
-        const isCloudinary = typeof p.image === "string" && (p.image.includes("cloudinary.com") || p.image.includes("iili.io") || p.image.includes("imgur.com"));
-        const isCustom = !isDefaultId || isCloudinary || Boolean(p.isCustom);
-        if (isCustom && !harvestedCustomIds.has(p.id)) {
-          harvestedCustomIds.add(p.id);
-          harvestedCustomProducts.push(p);
-        }
+    function harvestAllCustomAssets(dataObj) {
+      if (!dataObj || typeof dataObj !== "object") return;
+
+      // 1. Branches: Cloudinary or custom images
+      if (Array.isArray(dataObj.branches)) {
+        dataObj.branches.forEach(b => {
+          if (b && b.image && (b.image.includes("cloudinary.com") || b.image.includes("iili.io") || b.image.includes("imgur.com") || b.image.startsWith("http"))) {
+            if (b.id) harvestedBranchImages.set(b.id, b.image);
+            if (b.name) harvestedBranchImages.set(b.name, b.image);
+          }
+        });
+      }
+
+      // 2. Departments: Cloudinary or custom images
+      if (Array.isArray(dataObj.departments)) {
+        dataObj.departments.forEach(d => {
+          if (d && d.image && (d.image.includes("cloudinary.com") || d.image.includes("iili.io") || d.image.includes("imgur.com") || d.image.startsWith("http"))) {
+            if (d.id) harvestedDeptImages.set(d.id, d.image);
+            if (d.name) harvestedDeptImages.set(d.name, d.image);
+          }
+        });
+      }
+
+      // 3. Hero Slides: Cloudinary or custom images
+      if (Array.isArray(dataObj.heroSlides)) {
+        dataObj.heroSlides.forEach((s, sIdx) => {
+          if (s && s.image && (s.image.includes("cloudinary.com") || s.image.includes("iili.io") || s.image.includes("imgur.com") || s.image.startsWith("http"))) {
+            if (s.id) harvestedSlideImages.set(s.id, s.image);
+            harvestedSlideImages.set(`slide_${sIdx}`, s.image);
+            if (s.title) harvestedSlideImages.set(s.title, s.image);
+          }
+        });
+      }
+
+      // 4. Management: Cloudinary or custom images
+      if (Array.isArray(dataObj.management)) {
+        dataObj.management.forEach(m => {
+          if (m && m.image && (m.image.includes("cloudinary.com") || m.image.includes("iili.io") || m.image.includes("imgur.com") || m.image.startsWith("http"))) {
+            if (m.id) harvestedManagementImages.set(m.id, m.image);
+            if (m.name) harvestedManagementImages.set(m.name, m.image);
+          }
+        });
+      }
+
+      // 5. Products: Cloudinary or custom items
+      if (Array.isArray(dataObj.products)) {
+        dataObj.products.forEach(p => {
+          if (!p || !p.name) return;
+          const isDefaultId = typeof p.id === "string" && /^p([1-9]|[1-4][0-9])$/.test(p.id);
+          const isCloudinary = typeof p.image === "string" && (p.image.includes("cloudinary.com") || p.image.includes("iili.io") || p.image.includes("imgur.com") || p.image.startsWith("http"));
+          const isCustom = !isDefaultId || isCloudinary || Boolean(p.isCustom);
+          if (isCustom && !harvestedCustomIds.has(p.id)) {
+            harvestedCustomIds.add(p.id);
+            harvestedCustomProducts.push(p);
+          }
+        });
       }
     }
 
     try {
+      // Scan all localStorage slots
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
-        if (k && (k.startsWith("dwatson_site_data") || k.includes("custom_product"))) {
+        if (k && (k.startsWith("dwatson") || k.includes("site_data") || k.includes("custom_product"))) {
           try {
             const rawVal = localStorage.getItem(k);
             if (rawVal) {
               const parsedVal = JSON.parse(rawVal);
-              if (parsedVal && Array.isArray(parsedVal.products)) {
-                harvestCustomItems(parsedVal.products);
-              } else if (Array.isArray(parsedVal)) {
-                harvestCustomItems(parsedVal);
-              }
+              harvestAllCustomAssets(parsedVal);
             }
           } catch (e) {}
+        }
+      }
+      // Scan sessionStorage slots if present
+      if (typeof sessionStorage !== "undefined") {
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const k = sessionStorage.key(i);
+          if (k && k.startsWith("dwatson")) {
+            try {
+              const rawVal = sessionStorage.getItem(k);
+              if (rawVal) {
+                const parsedVal = JSON.parse(rawVal);
+                harvestAllCustomAssets(parsedVal);
+              }
+            } catch (e) {}
+          }
         }
       }
     } catch (e) {}
@@ -1879,21 +1940,53 @@ function getSiteData() {
             ...((parsed.company && parsed.company.adminAuth) || {})
           }
         },
-        heroSlides: (Array.isArray(parsed.heroSlides) && parsed.heroSlides.length) ? parsed.heroSlides : DEFAULT_SITE_DATA.heroSlides,
-        management: (Array.isArray(parsed.management) && parsed.management.length) ? parsed.management.map(m => {
-          const def = DEFAULT_SITE_DATA.management.find(dm => dm.id === m.id || dm.name === m.name);
-          if (def && (!m.image || (!m.image.includes('management/') && !m.image.startsWith('http')))) {
-            m.image = def.image;
-          }
-          return m;
-        }) : DEFAULT_SITE_DATA.management,
-        departments: (Array.isArray(parsed.departments) && parsed.departments.length) ? parsed.departments.map(d => {
-          const def = DEFAULT_SITE_DATA.departments.find(dd => dd.id === d.id);
-          if (def && (!d.image || d.image === 'assets/images/pharmacy.jpg' || d.image === 'assets/images/cosmetics.jpg' || d.image === 'assets/images/grocery.jpg' || d.image === 'assets/images/apparel.jpg')) {
-            d.image = def.image;
-          }
-          return d;
-        }) : DEFAULT_SITE_DATA.departments,
+        heroSlides: (() => {
+          const baseSlides = (Array.isArray(parsed.heroSlides) && parsed.heroSlides.length)
+            ? parsed.heroSlides
+            : DEFAULT_SITE_DATA.heroSlides;
+          return baseSlides.map((s, idx) => {
+            let img = s.image;
+            const slideKey = s.id || `slide_${idx}`;
+            if (harvestedSlideImages.has(slideKey)) {
+              img = harvestedSlideImages.get(slideKey);
+            } else if (s.title && harvestedSlideImages.has(s.title)) {
+              img = harvestedSlideImages.get(s.title);
+            }
+            return { ...s, image: img || s.image };
+          });
+        })(),
+        management: (() => {
+          const baseMgmt = (Array.isArray(parsed.management) && parsed.management.length)
+            ? parsed.management
+            : DEFAULT_SITE_DATA.management;
+          return baseMgmt.map(m => {
+            let img = m.image;
+            if (harvestedManagementImages.has(m.id)) {
+              img = harvestedManagementImages.get(m.id);
+            } else if (harvestedManagementImages.has(m.name)) {
+              img = harvestedManagementImages.get(m.name);
+            }
+            const def = DEFAULT_SITE_DATA.management.find(dm => dm.id === m.id || dm.name === m.name);
+            if (!img && def) img = def.image;
+            return { ...m, image: img || (def ? def.image : m.image) };
+          });
+        })(),
+        departments: (() => {
+          const baseDepts = (Array.isArray(parsed.departments) && parsed.departments.length)
+            ? parsed.departments
+            : DEFAULT_SITE_DATA.departments;
+          return baseDepts.map(d => {
+            let img = d.image;
+            if (harvestedDeptImages.has(d.id)) {
+              img = harvestedDeptImages.get(d.id);
+            } else if (harvestedDeptImages.has(d.name)) {
+              img = harvestedDeptImages.get(d.name);
+            }
+            const def = DEFAULT_SITE_DATA.departments.find(dd => dd.id === d.id);
+            if (!img && def) img = def.image;
+            return { ...d, image: img || (def ? def.image : d.image) };
+          });
+        })(),
         categories: (Array.isArray(parsed.categories) && parsed.categories.length) ? parsed.categories : DEFAULT_SITE_DATA.categories,
         deletedProductIds: Array.isArray(parsed.deletedProductIds) ? parsed.deletedProductIds : [],
         products: (() => {
@@ -1945,22 +2038,34 @@ function getSiteData() {
           // Custom products (Cloudinary / custom additions) always lead at the front (#1)
           return [...customProds, ...defaultCatalog];
         })(),
-        branches: Array.isArray(parsed.branches) && parsed.branches.length ? parsed.branches.map(b => {
-          const def = DEFAULT_SITE_DATA.branches.find(db => db.id === b.id);
-          if (def && (!b.image || b.image === 'assets/images/store_flagship.jpg' || b.image === 'assets/images/pharmacy.jpg' || b.image === 'assets/images/grocery.jpg' || b.image === 'assets/images/surgical.jpg' || b.image === 'assets/images/optics.jpg' || b.image === 'assets/images/cosmetics.jpg')) {
-            b.image = def.image;
-          }
-          if (b.expressDelivery === undefined) {
-            b.expressDelivery = def ? def.expressDelivery : Boolean(b.isFlagship);
-          }
-          if (b.deliveryFee === undefined) {
-            b.deliveryFee = def?.deliveryFee || 200;
-          }
-          if (b.minOrderAmount === undefined) {
-            b.minOrderAmount = def?.minOrderAmount || 1000;
-          }
-          return b;
-        }) : DEFAULT_SITE_DATA.branches,
+        branches: (() => {
+          const baseBranches = (Array.isArray(parsed.branches) && parsed.branches.length)
+            ? parsed.branches
+            : DEFAULT_SITE_DATA.branches;
+
+          return baseBranches.map(b => {
+            let img = b.image;
+            // Check if a custom / Cloudinary image was harvested for this branch
+            if (harvestedBranchImages.has(b.id)) {
+              img = harvestedBranchImages.get(b.id);
+            } else if (b.name && harvestedBranchImages.has(b.name)) {
+              img = harvestedBranchImages.get(b.name);
+            }
+
+            const def = DEFAULT_SITE_DATA.branches.find(db => db.id === b.id);
+            if (!img && def) {
+              img = def.image;
+            }
+
+            return {
+              ...b,
+              image: img || (def ? def.image : b.image),
+              expressDelivery: b.expressDelivery !== undefined ? b.expressDelivery : (def ? def.expressDelivery : Boolean(b.isFlagship)),
+              deliveryFee: b.deliveryFee !== undefined ? b.deliveryFee : (def?.deliveryFee || 200),
+              minOrderAmount: b.minOrderAmount !== undefined ? b.minOrderAmount : (def?.minOrderAmount || 1000)
+            };
+          });
+        })(),
         gallery: (Array.isArray(parsed.gallery) && parsed.gallery.length) ? parsed.gallery : DEFAULT_SITE_DATA.gallery,
         faqs: Array.isArray(parsed.faqs) && parsed.faqs.length ? parsed.faqs : DEFAULT_SITE_DATA.faqs
       };
