@@ -277,11 +277,12 @@ const finalAdminHtml = `<!DOCTYPE html>
       async function mountStudio(decryptedHtml) {
         mountEl.innerHTML = decryptedHtml;
 
-        // Load dependencies in exact sequence from root
+        // Load dependencies in exact sequence with cache-busting
         try {
-          if (!window.DW_CONFIG) await loadScript("/js/config.js?v=1.3");
-          if (!window.getSiteData) await loadScript("/js/data.js?v=8.8");
-          await loadScript("/js/admin.js?v=9.6");
+          const t = Date.now();
+          if (!window.DW_CONFIG) await loadScript("js/config.js?v=" + t);
+          if (!window.getSiteData) await loadScript("js/data.js?v=" + t);
+          await loadScript("js/admin.js?v=" + t);
         } catch (err) {
           console.error("Error loading studio dependencies:", err);
         }
@@ -289,12 +290,6 @@ const finalAdminHtml = `<!DOCTYPE html>
         // Initialize state, tab navigation and render all modules
         if (typeof window.bootAdminApp === "function") {
           window.bootAdminApp();
-        }
-        if (typeof window.initTabNavigation === "function") {
-          window.initTabNavigation();
-        }
-        if (typeof window.renderAllSections === "function") {
-          window.renderAllSections();
         }
 
         // Hide login overlay
