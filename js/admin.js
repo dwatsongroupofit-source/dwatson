@@ -319,7 +319,27 @@ window.handleAdminImageUpload = async function(inputEl, targetInputId, previewIm
     if (uploadedLiveUrl) {
       if (targetInput) targetInput.value = uploadedLiveUrl;
       if (previewImg) previewImg.src = uploadedLiveUrl;
-      showToast("Photo uploaded live to Cloud CDN! Permanent link saved.", "success");
+
+      // Update dedicated Cloudinary input column
+      const cldInput = document.getElementById(targetInputId + "CloudinaryUrl");
+      if (cldInput) {
+        cldInput.value = uploadedLiveUrl;
+      }
+      // Update Cloudinary status pill
+      const cldStatus = document.getElementById(targetInputId + "CloudStatus");
+      if (cldStatus) {
+        cldStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> ✓ Live on Cloudinary';
+        cldStatus.style.background = "#DCFCE7";
+        cldStatus.style.color = "#15803D";
+      }
+      // Update View Link button
+      const cldVisit = document.getElementById(targetInputId + "CloudinaryVisitBtn");
+      if (cldVisit) {
+        cldVisit.href = uploadedLiveUrl;
+        cldVisit.style.display = "inline-flex";
+      }
+
+      showToast("Photo uploaded to Cloudinary! Link returned & populated.", "success");
     } else {
       // Fallback: save compressed dataUrl so user's photo is not lost
       if (targetInput) targetInput.value = dataUrl;
@@ -352,6 +372,18 @@ window.copyInputLink = function(inputId) {
     el.select();
     document.execCommand("copy");
     showToast("Image link copied!", "success");
+  });
+};
+
+/**
+ * 1-Tap Copy Helper for arbitrary text/URLs
+ */
+window.copyArbitraryText = function(text) {
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("Cloudinary URL copied to clipboard!", "success");
+  }).catch(() => {
+    showToast("Link copied!", "success");
   });
 };
 
@@ -502,21 +534,42 @@ window.openSlideModal = function(index = -1) {
         <label>Subtitle / Description</label>
         <textarea class="admin-form-input" id="slideSubtitle" rows="3" required>${escapeAdminHtml(slide.subtitle)}</textarea>
       </div>
+      <!-- DEDICATED CLOUDINARY LIVE CDN URL COLUMN -->
+      <div class="admin-form-group" style="background:#F0F9FF; border:1.5px solid #BAE6FD; border-radius:8px; padding:12px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <label style="color:#0369A1; font-weight:700; margin-bottom:0; font-size:0.88rem;">
+            <i class="fa-solid fa-cloud"></i> Cloudinary CDN Link Column
+          </label>
+          <span id="slideImageCloudStatus" style="font-size:0.75rem; font-weight:700; padding:3px 8px; border-radius:4px; ${slide.image && slide.image.includes('cloudinary.com') ? 'background:#DCFCE7; color:#15803D;' : 'background:#E0F2FE; color:#0284C7;'}">
+            ${slide.image && slide.image.includes('cloudinary.com') ? '✓ Live on Cloudinary' : 'Upload photo below to generate link'}
+          </span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" class="admin-form-input" id="slideImageCloudinaryUrl" value="${slide.image && slide.image.includes('cloudinary.com') ? escapeAdminHtml(slide.image) : ''}" placeholder="When you click 'Upload to Cloudinary' below, your live link appears here..." readonly style="flex:1; background:#FFFFFF; border-color:#93C5FD; color:#0284C7; font-weight:600; font-family:monospace; font-size:0.82rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('slideImageCloudinaryUrl')" title="Copy Cloudinary Link" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700;">
+            <i class="fa-regular fa-copy"></i> Copy
+          </button>
+          <a id="slideImageCloudinaryVisitBtn" href="${slide.image && slide.image.includes('cloudinary.com') ? slide.image : '#'}" target="_blank" class="btn btn-outline btn-sm" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700; display:${slide.image && slide.image.includes('cloudinary.com') ? 'inline-flex' : 'none'}; align-items:center; gap:4px;">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open
+          </a>
+        </div>
+      </div>
+
       <div class="admin-form-group">
-        <label>Slide Image (Upload Photo or Enter Path/URL)</label>
+        <label>Slide Image Source (Upload Photo or Custom Link)</label>
         <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-          <input type="text" class="admin-form-input" id="slideImage" value="${escapeAdminHtml(slide.image)}" style="flex:1;" oninput="document.getElementById('slideImgPreview').src=this.value;">
+          <input type="text" class="admin-form-input" id="slideImage" value="${escapeAdminHtml(slide.image)}" style="flex:1;" oninput="document.getElementById('slideImgPreview').src=this.value; const cld=document.getElementById('slideImageCloudinaryUrl'); if(cld && this.value.includes('cloudinary.com')) cld.value=this.value;">
           <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('slideImage')" title="Copy Image Link" style="padding:6px 10px;">
             <i class="fa-regular fa-copy"></i>
           </button>
-          <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+          <label class="btn btn-primary btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px; background:#0284C7; border-color:#0284C7; font-weight:700;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload to Cloudinary
             <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'slideImage', 'slideImgPreview')">
           </label>
         </div>
         <div style="display:flex; align-items:center; gap:10px;">
           <img id="slideImgPreview" src="${slide.image || 'assets/images/pharmacy.jpg'}" alt="Preview" style="width:90px; height:50px; object-fit:cover; border-radius:6px; border:1px solid #CBD5E1;" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
-          <small style="color:#64748B; font-size:0.78rem;">Preview of current image. You can upload a photo or paste a URL/path.</small>
+          <small style="color:#64748B; font-size:0.78rem;">Upload photo to send to Cloudinary and return link automatically.</small>
         </div>
       </div>
       <div class="form-grid-2">
@@ -669,21 +722,42 @@ window.openDepartmentModal = function(index = -1) {
         </div>
       </div>
 
+      <!-- DEDICATED CLOUDINARY LIVE CDN URL COLUMN -->
+      <div class="admin-form-group" style="background:#F0F9FF; border:1.5px solid #BAE6FD; border-radius:8px; padding:12px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <label style="color:#0369A1; font-weight:700; margin-bottom:0; font-size:0.88rem;">
+            <i class="fa-solid fa-cloud"></i> Cloudinary CDN Link Column
+          </label>
+          <span id="deptImageCloudStatus" style="font-size:0.75rem; font-weight:700; padding:3px 8px; border-radius:4px; ${dept.image && dept.image.includes('cloudinary.com') ? 'background:#DCFCE7; color:#15803D;' : 'background:#E0F2FE; color:#0284C7;'}">
+            ${dept.image && dept.image.includes('cloudinary.com') ? '✓ Live on Cloudinary' : 'Upload photo below to generate link'}
+          </span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" class="admin-form-input" id="deptImageCloudinaryUrl" value="${dept.image && dept.image.includes('cloudinary.com') ? escapeAdminHtml(dept.image) : ''}" placeholder="When you click 'Upload to Cloudinary' below, your live link appears here..." readonly style="flex:1; background:#FFFFFF; border-color:#93C5FD; color:#0284C7; font-weight:600; font-family:monospace; font-size:0.82rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('deptImageCloudinaryUrl')" title="Copy Cloudinary Link" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700;">
+            <i class="fa-regular fa-copy"></i> Copy
+          </button>
+          <a id="deptImageCloudinaryVisitBtn" href="${dept.image && dept.image.includes('cloudinary.com') ? dept.image : '#'}" target="_blank" class="btn btn-outline btn-sm" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700; display:${dept.image && dept.image.includes('cloudinary.com') ? 'inline-flex' : 'none'}; align-items:center; gap:4px;">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open
+          </a>
+        </div>
+      </div>
+
       <div class="admin-form-group">
-        <label>Department Photo (Upload Photo or Enter Path/URL)</label>
+        <label>Department Photo (Upload Photo to Cloudinary or Enter URL)</label>
         <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-          <input type="text" class="admin-form-input" id="deptImage" value="${escapeAdminHtml(dept.image || '')}" style="flex:1;" oninput="document.getElementById('deptImgPreview').src=this.value;">
+          <input type="text" class="admin-form-input" id="deptImage" value="${escapeAdminHtml(dept.image || '')}" style="flex:1;" oninput="document.getElementById('deptImgPreview').src=this.value; const cld=document.getElementById('deptImageCloudinaryUrl'); if(cld && this.value.includes('cloudinary.com')) cld.value=this.value;">
           <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('deptImage')" title="Copy Image Link" style="padding:6px 10px;">
             <i class="fa-regular fa-copy"></i>
           </button>
-          <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+          <label class="btn btn-primary btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px; background:#0284C7; border-color:#0284C7; font-weight:700;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload to Cloudinary
             <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'deptImage', 'deptImgPreview')">
           </label>
         </div>
         <div style="display:flex; align-items:center; gap:10px;">
           <img id="deptImgPreview" src="${dept.image || 'assets/images/Shop Inside/Medicine.jpeg'}" alt="Preview" style="width:90px; height:56px; object-fit:cover; border-radius:6px; border:1px solid #CBD5E1;" onerror="this.onerror=null; this.src='assets/images/Shop Inside/Medicine.jpeg';">
-          <small style="color:#64748B; font-size:0.78rem;">Department photo for card and detail page.</small>
+          <small style="color:#64748B; font-size:0.78rem;">Upload photo to send to Cloudinary and return link automatically.</small>
         </div>
       </div>
 
@@ -1139,22 +1213,43 @@ window.openBranchModal = function(index = -1) {
         </div>
       </div>
 
+      <!-- DEDICATED CLOUDINARY LIVE CDN URL COLUMN -->
+      <div class="admin-form-group" style="background:#F0F9FF; border:1.5px solid #BAE6FD; border-radius:8px; padding:12px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <label style="color:#0369A1; font-weight:700; margin-bottom:0; font-size:0.88rem;">
+            <i class="fa-solid fa-cloud"></i> Cloudinary CDN Link Column
+          </label>
+          <span id="branchImageCloudStatus" style="font-size:0.75rem; font-weight:700; padding:3px 8px; border-radius:4px; ${branch.image && branch.image.includes('cloudinary.com') ? 'background:#DCFCE7; color:#15803D;' : 'background:#E0F2FE; color:#0284C7;'}">
+            ${branch.image && branch.image.includes('cloudinary.com') ? '✓ Live on Cloudinary' : 'Upload photo below to generate link'}
+          </span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" class="admin-form-input" id="branchImageCloudinaryUrl" value="${branch.image && branch.image.includes('cloudinary.com') ? escapeAdminHtml(branch.image) : ''}" placeholder="When you click 'Upload to Cloudinary' below, your live link appears here..." readonly style="flex:1; background:#FFFFFF; border-color:#93C5FD; color:#0284C7; font-weight:600; font-family:monospace; font-size:0.82rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('branchImageCloudinaryUrl')" title="Copy Cloudinary Link" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700;">
+            <i class="fa-regular fa-copy"></i> Copy
+          </button>
+          <a id="branchImageCloudinaryVisitBtn" href="${branch.image && branch.image.includes('cloudinary.com') ? branch.image : '#'}" target="_blank" class="btn btn-outline btn-sm" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700; display:${branch.image && branch.image.includes('cloudinary.com') ? 'inline-flex' : 'none'}; align-items:center; gap:4px;">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open
+          </a>
+        </div>
+      </div>
+
       <div class="form-grid-2">
         <div class="admin-form-group">
-          <label>Branch Image (Upload Photo or Enter Path/URL)</label>
+          <label>Branch Image Source (Upload Photo or Custom Link)</label>
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-            <input type="text" class="admin-form-input" id="branchImage" value="${escapeAdminHtml(branch.image || '')}" placeholder="assets/images/branches/f6-supermarket.jpg" style="flex:1;" oninput="document.getElementById('branchImgPreview').src=this.value;">
+            <input type="text" class="admin-form-input" id="branchImage" value="${escapeAdminHtml(branch.image || '')}" placeholder="assets/images/branches/f6-supermarket.jpg" style="flex:1;" oninput="document.getElementById('branchImgPreview').src=this.value; const cld=document.getElementById('branchImageCloudinaryUrl'); if(cld && this.value.includes('cloudinary.com')) cld.value=this.value;">
             <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('branchImage')" title="Copy Image Link" style="padding:6px 10px;">
               <i class="fa-regular fa-copy"></i>
             </button>
-            <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
-              <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+            <label class="btn btn-primary btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px; background:#0284C7; border-color:#0284C7; font-weight:700;">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Upload to Cloudinary
               <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'branchImage', 'branchImgPreview')">
             </label>
           </div>
           <div style="display:flex; align-items:center; gap:10px;">
             <img id="branchImgPreview" src="${branch.image || 'assets/images/store_flagship.jpg'}" alt="Preview" style="width:90px; height:52px; object-fit:cover; border-radius:6px; border:1px solid #CBD5E1;" onerror="this.onerror=null; this.src='assets/images/store_flagship.jpg';">
-            <small style="color:#64748B; font-size:0.78rem;">Real photo for ${escapeAdminHtml(branch.name)}</small>
+            <small style="color:#64748B; font-size:0.78rem;">Upload photo to send to Cloudinary and return link automatically.</small>
           </div>
         </div>
         <div class="admin-form-group">
@@ -1282,6 +1377,18 @@ function renderProductsList() {
         <div class="item-title">${escapeAdminHtml(prod.name)} <span style="font-weight:700; color:var(--dw-blue); font-size:0.82rem;">(${escapeAdminHtml(prod.price || 'Inquire')})</span></div>
         <div class="item-sub"><strong>Brand:</strong> ${escapeAdminHtml(prod.brand || 'D. Watson')} • <strong>Category:</strong> ${escapeAdminHtml(prod.categoryName || prod.category)}</div>
         <div style="font-size:0.78rem; color:#64748B;">${escapeAdminHtml(prod.description || '')}</div>
+        
+        <!-- Dedicated Cloudinary URL Column on Product Card -->
+        <div style="margin-top:6px; font-size:0.75rem; background:#F0F9FF; border:1px solid #BAE6FD; padding:5px 10px; border-radius:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <strong style="color:#0369A1;"><i class="fa-solid fa-cloud"></i> Cloudinary URL:</strong>
+          ${prod.image && prod.image.includes('cloudinary.com')
+            ? `<a href="${escapeAdminHtml(prod.image)}" target="_blank" style="color:#0284C7; font-weight:600; text-decoration:underline; font-family:monospace; word-break:break-all;" title="Click to view live on Cloudinary">${escapeAdminHtml(prod.image)}</a>
+               <button type="button" class="btn btn-outline btn-sm" onclick="copyArbitraryText('${escapeAdminHtml(prod.image)}')" style="padding:2px 8px; font-size:0.7rem; background:#FFFFFF; border-color:#0284C7; color:#0284C7; font-weight:700;">
+                 <i class="fa-regular fa-copy"></i> Copy
+               </button>`
+            : `<span style="color:#64748B; font-style:italic;">Not uploaded to Cloudinary yet (${escapeAdminHtml(prod.image || 'Local default')})</span>`
+          }
+        </div>
       </div>
       <div class="item-actions">
         <button class="btn btn-outline btn-sm" onclick="openProductModal(${idx})">
@@ -1348,22 +1455,43 @@ window.openProductModal = function(index = -1) {
         </div>
       </div>
 
+      <!-- DEDICATED CLOUDINARY LIVE CDN URL COLUMN -->
+      <div class="admin-form-group" style="background:#F0F9FF; border:1.5px solid #BAE6FD; border-radius:8px; padding:12px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <label style="color:#0369A1; font-weight:700; margin-bottom:0; font-size:0.88rem;">
+            <i class="fa-solid fa-cloud"></i> Cloudinary CDN Link Column
+          </label>
+          <span id="prodImageCloudStatus" style="font-size:0.75rem; font-weight:700; padding:3px 8px; border-radius:4px; ${prod.image && prod.image.includes('cloudinary.com') ? 'background:#DCFCE7; color:#15803D;' : 'background:#E0F2FE; color:#0284C7;'}">
+            ${prod.image && prod.image.includes('cloudinary.com') ? '✓ Live on Cloudinary' : 'Upload photo below to generate link'}
+          </span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" class="admin-form-input" id="prodImageCloudinaryUrl" value="${prod.image && prod.image.includes('cloudinary.com') ? escapeAdminHtml(prod.image) : ''}" placeholder="When you click 'Upload to Cloudinary' below, your live link appears here..." readonly style="flex:1; background:#FFFFFF; border-color:#93C5FD; color:#0284C7; font-weight:600; font-family:monospace; font-size:0.82rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('prodImageCloudinaryUrl')" title="Copy Cloudinary Link" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700;">
+            <i class="fa-regular fa-copy"></i> Copy
+          </button>
+          <a id="prodImageCloudinaryVisitBtn" href="${prod.image && prod.image.includes('cloudinary.com') ? prod.image : '#'}" target="_blank" class="btn btn-outline btn-sm" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700; display:${prod.image && prod.image.includes('cloudinary.com') ? 'inline-flex' : 'none'}; align-items:center; gap:4px;">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open
+          </a>
+        </div>
+      </div>
+
       <div class="form-grid-2">
         <div class="admin-form-group">
-          <label>Product Image (Upload Photo or Enter Path/URL)</label>
+          <label>Product Image Source (Upload Photo or Custom Link)</label>
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-            <input type="text" class="admin-form-input" id="prodImage" value="${escapeAdminHtml(prod.image)}" style="flex:1;" oninput="document.getElementById('prodImgPreview').src=this.value;">
+            <input type="text" class="admin-form-input" id="prodImage" value="${escapeAdminHtml(prod.image)}" style="flex:1;" oninput="document.getElementById('prodImgPreview').src=this.value; const cld=document.getElementById('prodImageCloudinaryUrl'); if(cld && this.value.includes('cloudinary.com')) cld.value=this.value;">
             <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('prodImage')" title="Copy Image Link" style="padding:6px 10px;">
               <i class="fa-regular fa-copy"></i>
             </button>
-            <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
-              <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+            <label class="btn btn-primary btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px; background:#0284C7; border-color:#0284C7; font-weight:700;">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Upload to Cloudinary
               <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'prodImage', 'prodImgPreview')">
             </label>
           </div>
           <div style="display:flex; align-items:center; gap:10px;">
             <img id="prodImgPreview" src="${prod.image || 'assets/images/cosmetics.jpg'}" alt="Preview" style="width:70px; height:50px; object-fit:cover; border-radius:6px; border:1px solid #CBD5E1;" onerror="this.onerror=null; this.src='assets/images/cosmetics.jpg';">
-            <small style="color:#64748B; font-size:0.78rem;">Product package or bottle shot.</small>
+            <small style="color:#64748B; font-size:0.78rem;">Upload photo to send to Cloudinary and return link automatically.</small>
           </div>
         </div>
         <div class="admin-form-group">
@@ -1489,21 +1617,42 @@ window.openGalleryModal = function(index = -1) {
         <label>Photo Title</label>
         <input type="text" class="admin-form-input" id="galTitle" placeholder="e.g. Ramadan Offer, New Fragrance Arrival, F-6 Branch" value="${escapeAdminHtml(item.title || '')}">
       </div>
+      <!-- DEDICATED CLOUDINARY LIVE CDN URL COLUMN -->
+      <div class="admin-form-group" style="background:#F0F9FF; border:1.5px solid #BAE6FD; border-radius:8px; padding:12px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <label style="color:#0369A1; font-weight:700; margin-bottom:0; font-size:0.88rem;">
+            <i class="fa-solid fa-cloud"></i> Cloudinary CDN Link Column
+          </label>
+          <span id="galImageCloudStatus" style="font-size:0.75rem; font-weight:700; padding:3px 8px; border-radius:4px; ${item.image && item.image.includes('cloudinary.com') ? 'background:#DCFCE7; color:#15803D;' : 'background:#E0F2FE; color:#0284C7;'}">
+            ${item.image && item.image.includes('cloudinary.com') ? '✓ Live on Cloudinary' : 'Upload photo below to generate link'}
+          </span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" class="admin-form-input" id="galImageCloudinaryUrl" value="${item.image && item.image.includes('cloudinary.com') ? escapeAdminHtml(item.image) : ''}" placeholder="When you click 'Upload to Cloudinary' below, your live link appears here..." readonly style="flex:1; background:#FFFFFF; border-color:#93C5FD; color:#0284C7; font-weight:600; font-family:monospace; font-size:0.82rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('galImageCloudinaryUrl')" title="Copy Cloudinary Link" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700;">
+            <i class="fa-regular fa-copy"></i> Copy
+          </button>
+          <a id="galImageCloudinaryVisitBtn" href="${item.image && item.image.includes('cloudinary.com') ? item.image : '#'}" target="_blank" class="btn btn-outline btn-sm" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700; display:${item.image && item.image.includes('cloudinary.com') ? 'inline-flex' : 'none'}; align-items:center; gap:4px;">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open
+          </a>
+        </div>
+      </div>
+
       <div class="admin-form-group">
-        <label>Gallery Photo (Upload from Computer or Enter Path/URL)</label>
+        <label>Gallery Photo Source (Upload Photo or Custom Link)</label>
         <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-          <input type="text" class="admin-form-input" id="galImage" placeholder="assets/images/Shop Inside/... or paste image URL" value="${escapeAdminHtml(item.image || '')}" required style="flex:1;" oninput="document.getElementById('galImgPreview').src=this.value;">
+          <input type="text" class="admin-form-input" id="galImage" placeholder="assets/images/Shop Inside/... or paste image URL" value="${escapeAdminHtml(item.image || '')}" required style="flex:1;" oninput="document.getElementById('galImgPreview').src=this.value; const cld=document.getElementById('galImageCloudinaryUrl'); if(cld && this.value.includes('cloudinary.com')) cld.value=this.value;">
           <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('galImage')" title="Copy Image Link" style="padding:6px 10px;">
             <i class="fa-regular fa-copy"></i>
           </button>
-          <label class="btn btn-outline btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px;">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Upload from PC
+          <label class="btn btn-primary btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px; background:#0284C7; border-color:#0284C7; font-weight:700;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload to Cloudinary
             <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'galImage', 'galImgPreview')">
           </label>
         </div>
         <div style="display:flex; align-items:center; gap:10px;">
           <img id="galImgPreview" src="${encodeURI(item.image || 'assets/images/pharmacy.jpg')}" alt="Preview" style="width:90px; height:60px; object-fit:cover; border-radius:6px; border:1px solid #CBD5E1;" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
-          <small style="color:#64748B; font-size:0.78rem;">Live preview. You can upload any image format (.jpg, .png, .webp).</small>
+          <small style="color:#64748B; font-size:0.78rem;">Upload photo to send to Cloudinary and return link automatically.</small>
         </div>
       </div>
       <div class="admin-form-group">
