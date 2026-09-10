@@ -1421,7 +1421,21 @@ function renderProductsList() {
   if (!container) return;
 
   if (!adminData.products || !adminData.products.length) {
-    container.innerHTML = `<p style="color: #64748B;">No featured products configured. Click "+ Add New Product".</p>`;
+    container.innerHTML = `
+      <div style="text-align:center; padding:45px 20px; background:#F8FAFC; border-radius:12px; border:1.5px dashed #CBD5E1; margin:10px 0;">
+        <i class="fa-solid fa-box-open" style="font-size:2.8rem; color:#94A3B8; margin-bottom:12px; display:block;"></i>
+        <h3 style="font-size:1.15rem; color:#1E293B; margin-bottom:6px; font-weight:700;">Catalog is Currently Empty</h3>
+        <p style="color:#64748B; font-size:0.88rem; max-width:440px; margin:0 auto 18px;">All products were deleted. You can start fresh by adding new products, or restore previous Cloudinary products from browser history.</p>
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="openProductModal(-1)">
+            <i class="fa-solid fa-plus"></i> Add New Product
+          </button>
+          <button class="btn btn-outline btn-sm" style="border-color:#38BDF8; color:#0284C7; font-weight:700;" onclick="openCloudinaryRecoveryModal()">
+            <i class="fa-solid fa-cloud-arrow-down"></i> Recover Cloudinary Products
+          </button>
+        </div>
+      </div>
+    `;
     return;
   }
 
@@ -1759,6 +1773,164 @@ window.deleteProduct = function(idx) {
     renderProductsList();
     showToast(`Product "${prod.name}" deleted permanently.`);
   }
+};
+
+window.clearAllProducts = function() {
+  if (confirm("Are you sure you want to delete ALL products from the catalog?\n\nThis will completely empty the catalog so you can add only your own items. It will NOT restore the 46 default products.")) {
+    adminData.products = [];
+    adminData.deletedProductIds = ["all_cleared"];
+    saveSiteData(adminData);
+    renderProductsList();
+    showToast("All products have been deleted. Catalog is now empty.", "info");
+  }
+};
+
+window.openCloudinaryRecoveryModal = function() {
+  const modal = document.getElementById("adminEditModal");
+  const modalTitle = document.getElementById("adminModalTitle");
+  const modalBody = document.getElementById("adminModalBody");
+  if (!modal || !modalTitle || !modalBody) return;
+
+  modalTitle.innerHTML = `<i class="fa-solid fa-cloud-arrow-down" style="color:#0284C7;"></i> Recover Lost Cloudinary Data`;
+
+  const recovered = (typeof scanAllStorageForCloudinaryAssets === "function")
+    ? scanAllStorageForCloudinaryAssets()
+    : { products: [], branches: [], heroSlides: [], departments: [] };
+
+  const totalFound = (recovered.products ? recovered.products.length : 0) +
+                     (recovered.branches ? recovered.branches.length : 0) +
+                     (recovered.heroSlides ? recovered.heroSlides.length : 0) +
+                     (recovered.departments ? recovered.departments.length : 0);
+
+  if (totalFound === 0) {
+    modalBody.innerHTML = `
+      <div style="text-align:center; padding:35px 20px;">
+        <i class="fa-solid fa-circle-info" style="font-size:2.5rem; color:#94A3B8; margin-bottom:12px; display:block;"></i>
+        <h3 style="font-size:1.1rem; color:#1E293B; margin-bottom:6px; font-weight:700;">No Historical Cloudinary Data Found</h3>
+        <p style="color:#64748B; font-size:0.88rem; max-width:440px; margin:0 auto 16px;">We scanned all previous browser storage slots (v1..v18). No previous Cloudinary items were detected. Your current active studio data is clean and ready.</p>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeAdminModal()">Close</button>
+      </div>
+    `;
+    modal.classList.add("active");
+    return;
+  }
+
+  window._lastRecoveredAssets = recovered;
+
+  modalBody.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <p style="font-size:0.88rem; color:#475569; margin-bottom:12px;">
+        We scanned your browser storage history and found <strong>${recovered.products.length}</strong> Cloudinary/custom products and <strong>${recovered.branches.length}</strong> branch photos!
+      </p>
+      
+      ${recovered.products.length > 0 ? `
+        <div style="margin-bottom:14px;">
+          <h4 style="font-size:0.9rem; color:#0369A1; font-weight:700; margin-bottom:8px;"><i class="fa-solid fa-box-open"></i> Recovered Products (${recovered.products.length})</h4>
+          <div style="max-height:220px; overflow-y:auto; border:1px solid #E2E8F0; border-radius:8px; padding:8px; background:#F8FAFC;">
+            ${recovered.products.map((p, i) => `
+              <div style="display:flex; align-items:center; gap:10px; padding:6px 8px; background:#FFFFFF; border-radius:6px; border:1px solid #E2E8F0; margin-bottom:6px;">
+                <img src="${p.image || 'assets/images/pharmacy.jpg'}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid #CBD5E1;" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+                <div style="flex:1; min-width:0;">
+                  <div style="font-weight:700; font-size:0.82rem; color:#0F172A; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeAdminHtml(p.name)}</div>
+                  <div style="font-size:0.72rem; color:#0284C7; font-family:monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeAdminHtml(p.image)}</div>
+                </div>
+                <span style="font-size:0.75rem; font-weight:700; color:var(--dw-blue); white-space:nowrap;">${escapeAdminHtml(p.price || '')}</span>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      ` : ''}
+
+      ${recovered.branches.length > 0 ? `
+        <div style="margin-bottom:14px;">
+          <h4 style="font-size:0.9rem; color:#0369A1; font-weight:700; margin-bottom:8px;"><i class="fa-solid fa-location-dot"></i> Recovered Branch Photos (${recovered.branches.length})</h4>
+          <div style="max-height:160px; overflow-y:auto; border:1px solid #E2E8F0; border-radius:8px; padding:8px; background:#F8FAFC;">
+            ${recovered.branches.map(b => `
+              <div style="display:flex; align-items:center; gap:10px; padding:6px 8px; background:#FFFFFF; border-radius:6px; border:1px solid #E2E8F0; margin-bottom:6px;">
+                <img src="${b.image}" style="width:50px; height:32px; object-fit:cover; border-radius:4px; border:1px solid #CBD5E1;" onerror="this.onerror=null; this.src='assets/images/store_flagship.jpg';">
+                <div style="flex:1; min-width:0;">
+                  <div style="font-weight:700; font-size:0.82rem; color:#0F172A;">${escapeAdminHtml(b.name || b.id)}</div>
+                  <div style="font-size:0.72rem; color:#0284C7; font-family:monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeAdminHtml(b.image)}</div>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      ` : ''}
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; border-top:1px solid #E2E8F0; padding-top:14px;">
+      <button type="button" class="btn btn-outline btn-sm" onclick="downloadRecoveredAssetsJSON()">
+        <i class="fa-solid fa-download"></i> Export Recovered JSON
+      </button>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeAdminModal()">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" style="background:#0284C7; border-color:#0284C7;" onclick="applyRecoveredCloudinaryAssets()">
+          <i class="fa-solid fa-cloud-arrow-down"></i> Restore All Recovered Data
+        </button>
+      </div>
+    </div>
+  `;
+  modal.classList.add("active");
+};
+
+window.applyRecoveredCloudinaryAssets = function() {
+  const recovered = window._lastRecoveredAssets;
+  if (!recovered) return;
+
+  let restoredProdCount = 0;
+  let restoredBranchCount = 0;
+
+  // 1. Restore products
+  if (Array.isArray(recovered.products) && recovered.products.length) {
+    adminData.products = adminData.products || [];
+    const existingIds = new Set(adminData.products.map(p => p.id));
+    const existingImages = new Set(adminData.products.map(p => p.image));
+
+    recovered.products.forEach(p => {
+      if (!existingIds.has(p.id) && (!p.image || !existingImages.has(p.image))) {
+        const cleanProd = { ...p };
+        delete cleanProd.sourceKey;
+        adminData.products.unshift(cleanProd);
+        existingIds.add(cleanProd.id);
+        if (cleanProd.image) existingImages.add(cleanProd.image);
+        restoredProdCount++;
+      }
+    });
+  }
+
+  // 2. Restore branch images
+  if (Array.isArray(recovered.branches) && recovered.branches.length && Array.isArray(adminData.branches)) {
+    recovered.branches.forEach(rb => {
+      const match = adminData.branches.find(b => b.id === rb.id || b.name === rb.name);
+      if (match && rb.image) {
+        match.image = rb.image;
+        restoredBranchCount++;
+      }
+    });
+  }
+
+  saveSiteData(adminData);
+  closeAdminModal();
+  renderProductsList();
+  renderBranchesList();
+  showToast(`Restored ${restoredProdCount} Cloudinary products and ${restoredBranchCount} branch photos!`, "success");
+};
+
+window.downloadRecoveredAssetsJSON = function() {
+  const recovered = window._lastRecoveredAssets;
+  if (!recovered) return;
+  const jsonStr = JSON.stringify(recovered, null, 2);
+  const blob = new Blob([jsonStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `dwatson-cloudinary-recovered-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Recovered assets JSON downloaded to your computer.", "success");
 };
 
 /* ==========================================================================

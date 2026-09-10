@@ -37,9 +37,39 @@
   <meta name="apple-mobile-web-app-title" content="D. Watson">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon-180.png">
 
-  <!-- Stylesheets (v9.7) -->
-  <link rel="stylesheet" href="css/style.css?v=9.7">
-  <link rel="stylesheet" href="css/responsive.css?v=9.7">
+  <!-- Cache Control (Zero Stale Assets) -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- Active Cache Controller & Stale Cache Eviction (v25.0) -->
+  <script>
+    (function() {
+      var CURRENT_CACHE_VER = "25.0";
+      var stored = localStorage.getItem("dw_cache_version");
+      if (stored !== CURRENT_CACHE_VER) {
+        localStorage.setItem("dw_cache_version", CURRENT_CACHE_VER);
+        if (window.caches) {
+          caches.keys().then(function(keys) {
+            keys.forEach(function(k) {
+              if (k !== "dwatson-cache-v" + CURRENT_CACHE_VER) {
+                caches.delete(k);
+              }
+            });
+          });
+        }
+        if (navigator.serviceWorker) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var r of regs) r.update();
+          });
+        }
+      }
+    })();
+  </script>
+
+  <!-- Stylesheets (v25.0) -->
+  <link rel="stylesheet" href="css/style.css?v=25.0">
+  <link rel="stylesheet" href="css/responsive.css?v=25.0">
 </head>
 <body class="page-departments">
 
@@ -534,9 +564,9 @@
     </div>
   </div>
 
-  <!-- Scripts (v10.0) -->
-  <script src="js/config.js?v=10.0"></script>
-  <script src="js/data.js?v=10.0"></script>
-  <script src="js/main.js?v=10.0"></script>
+  <!-- Scripts (v25.0) -->
+  <script src="js/config.js?v=25.0"></script>
+  <script src="js/data.js?v=25.0"></script>
+  <script src="js/main.js?v=25.0"></script>
 </body>
 </html>

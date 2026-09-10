@@ -18,9 +18,14 @@
   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <link rel="shortcut icon" href="favicon.ico">
 
-  <!-- Stylesheets (v9.7 - Official Brand Layout & Mobile Studio) -->
-  <link rel="stylesheet" href="css/style.css?v=9.7">
-  <link rel="stylesheet" href="css/admin.css?v=9.7">
+  <!-- Cache Control (Zero Stale Assets) -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- Stylesheets (v25.0 - Official Brand Layout & Mobile Studio) -->
+  <link rel="stylesheet" href="css/style.css?v=25.0">
+  <link rel="stylesheet" href="css/admin.css?v=25.0">
 </head>
 <body class="admin-body">
 
@@ -186,6 +191,9 @@
       </div>
 
       <div class="admin-actions">
+        <button class="btn btn-outline btn-sm" onclick="openCloudinaryRecoveryModal()" style="border-color:#38BDF8; color:#0284C7; font-weight:700;" title="Scan browser storage history for lost Cloudinary data">
+          <i class="fa-solid fa-cloud-arrow-down"></i> Recover Cloudinary Data
+        </button>
         <button class="btn btn-outline btn-sm" onclick="syncSiteDataCloud()" title="Sync across all devices">
           <i class="fa-solid fa-rotate"></i> Cloud Sync
         </button>
@@ -288,9 +296,14 @@
               <h2 class="card-title">Store Branches &amp; Locations (24+ Network)</h2>
               <p style="font-size:0.85rem; color:#64748B;">Official locations across Islamabad, Rawalpindi, Lahore, and regional hubs from dwatson.co.</p>
             </div>
-            <button class="btn btn-primary btn-sm" onclick="openBranchModal(-1)">
-              <i class="fa-solid fa-plus"></i> Add New Branch
-            </button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <button class="btn btn-outline btn-sm" style="border-color:#38BDF8; color:#0284C7; font-weight:700;" onclick="openCloudinaryRecoveryModal()" title="Scan & restore previous Cloudinary branch photos">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Recover Cloudinary Photos
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="openBranchModal(-1)">
+                <i class="fa-solid fa-plus"></i> Add New Branch
+              </button>
+            </div>
           </div>
 
           <div class="items-list-grid" id="adminBranchesList">
@@ -307,9 +320,17 @@
               <h2 class="card-title">Featured Products &amp; Catalog Showcase</h2>
               <p style="font-size:0.85rem; color:#64748B;">Manage showcased items from Facebook official posts, prices, stock badges, and descriptions.</p>
             </div>
-            <button class="btn btn-primary btn-sm" onclick="openProductModal(-1)">
-              <i class="fa-solid fa-plus"></i> Add New Product
-            </button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <button class="btn btn-outline btn-sm" style="border-color:#FCA5A5; color:#DC2626; font-weight:700;" onclick="clearAllProducts()" title="Delete all products from the catalog">
+                <i class="fa-solid fa-trash-can"></i> Delete All Products
+              </button>
+              <button class="btn btn-outline btn-sm" style="border-color:#38BDF8; color:#0284C7; font-weight:700;" onclick="openCloudinaryRecoveryModal()" title="Scan & restore previous Cloudinary products">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Recover Cloudinary Products
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="openProductModal(-1)">
+                <i class="fa-solid fa-plus"></i> Add New Product
+              </button>
+            </div>
           </div>
 
           <div class="items-list-grid" id="adminProductsList">
@@ -611,9 +632,9 @@
   </div>
   <!-- === PROTECTED STUDIO CONTENT END === -->
 
-  <!-- Scripts (v10.0) -->
-  <script src="js/config.js?v=10.0"></script>
-  <script src="js/data.js?v=10.0"></script>
-  <script src="js/admin.js?v=10.0"></script>
+  <!-- Scripts (v25.0) -->
+  <script src="js/config.js?v=25.0"></script>
+  <script src="js/data.js?v=25.0"></script>
+  <script src="js/admin.js?v=25.0"></script>
 </body>
 </html>

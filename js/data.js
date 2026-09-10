@@ -1783,7 +1783,7 @@ const DEFAULT_SITE_DATA = {
   ]
 };
 
-// LocalStorage Storage Key (v19 - Express Delivery & Dynamic Categories / Brands)
+// LocalStorage Storage Key (v19 - Master Stable Storage Key)
 const STORAGE_KEY = "dwatson_site_data_v19";
 
 /**
@@ -1793,7 +1793,7 @@ function getSiteData() {
   try {
     let saved = localStorage.getItem(STORAGE_KEY);
     
-    // Automatic migration: if current key is empty, check all prior storage versions
+    // One-time safe migration: only if active STORAGE_KEY has never been initialized on this browser
     if (!saved) {
       const prevVersions = [
         "dwatson_site_data_v18", "dwatson_site_data_v17", "dwatson_site_data_v16",
@@ -1819,112 +1819,15 @@ function getSiteData() {
       }
     }
 
-    // Universal Custom & Cloudinary Asset Harvester across all storage versions (v1..v18, dwatson_site_data, etc.)
-    // Guarantees that any branch, department, hero slide, management photo or product uploaded via Cloudinary is NEVER lost!
-    const harvestedBranchImages = new Map();
-    const harvestedDeptImages = new Map();
-    const harvestedSlideImages = new Map();
-    const harvestedManagementImages = new Map();
-    const harvestedCustomProducts = [];
-    const harvestedCustomIds = new Set();
-
-    function harvestAllCustomAssets(dataObj) {
-      if (!dataObj || typeof dataObj !== "object") return;
-
-      // 1. Branches: Cloudinary or custom images
-      if (Array.isArray(dataObj.branches)) {
-        dataObj.branches.forEach(b => {
-          if (b && b.image && (b.image.includes("cloudinary.com") || b.image.includes("iili.io") || b.image.includes("imgur.com") || b.image.startsWith("http"))) {
-            if (b.id) harvestedBranchImages.set(b.id, b.image);
-            if (b.name) harvestedBranchImages.set(b.name, b.image);
-          }
-        });
-      }
-
-      // 2. Departments: Cloudinary or custom images
-      if (Array.isArray(dataObj.departments)) {
-        dataObj.departments.forEach(d => {
-          if (d && d.image && (d.image.includes("cloudinary.com") || d.image.includes("iili.io") || d.image.includes("imgur.com") || d.image.startsWith("http"))) {
-            if (d.id) harvestedDeptImages.set(d.id, d.image);
-            if (d.name) harvestedDeptImages.set(d.name, d.image);
-          }
-        });
-      }
-
-      // 3. Hero Slides: Cloudinary or custom images
-      if (Array.isArray(dataObj.heroSlides)) {
-        dataObj.heroSlides.forEach((s, sIdx) => {
-          if (s && s.image && (s.image.includes("cloudinary.com") || s.image.includes("iili.io") || s.image.includes("imgur.com") || s.image.startsWith("http"))) {
-            if (s.id) harvestedSlideImages.set(s.id, s.image);
-            harvestedSlideImages.set(`slide_${sIdx}`, s.image);
-            if (s.title) harvestedSlideImages.set(s.title, s.image);
-          }
-        });
-      }
-
-      // 4. Management: Cloudinary or custom images
-      if (Array.isArray(dataObj.management)) {
-        dataObj.management.forEach(m => {
-          if (m && m.image && (m.image.includes("cloudinary.com") || m.image.includes("iili.io") || m.image.includes("imgur.com") || m.image.startsWith("http"))) {
-            if (m.id) harvestedManagementImages.set(m.id, m.image);
-            if (m.name) harvestedManagementImages.set(m.name, m.image);
-          }
-        });
-      }
-
-      // 5. Products: Cloudinary or custom items
-      if (Array.isArray(dataObj.products)) {
-        dataObj.products.forEach(p => {
-          if (!p || !p.name) return;
-          const isDefaultId = typeof p.id === "string" && /^p([1-9]|[1-4][0-9])$/.test(p.id);
-          const isCloudinary = typeof p.image === "string" && (p.image.includes("cloudinary.com") || p.image.includes("iili.io") || p.image.includes("imgur.com") || p.image.startsWith("http"));
-          const isCustom = !isDefaultId || isCloudinary || Boolean(p.isCustom);
-          if (isCustom && !harvestedCustomIds.has(p.id)) {
-            harvestedCustomIds.add(p.id);
-            harvestedCustomProducts.push(p);
-          }
-        });
-      }
-    }
-
-    try {
-      // Scan all localStorage slots
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k && (k.startsWith("dwatson") || k.includes("site_data") || k.includes("custom_product"))) {
-          try {
-            const rawVal = localStorage.getItem(k);
-            if (rawVal) {
-              const parsedVal = JSON.parse(rawVal);
-              harvestAllCustomAssets(parsedVal);
-            }
-          } catch (e) {}
-        }
-      }
-      // Scan sessionStorage slots if present
-      if (typeof sessionStorage !== "undefined") {
-        for (let i = 0; i < sessionStorage.length; i++) {
-          const k = sessionStorage.key(i);
-          if (k && k.startsWith("dwatson")) {
-            try {
-              const rawVal = sessionStorage.getItem(k);
-              if (rawVal) {
-                const parsedVal = JSON.parse(rawVal);
-                harvestAllCustomAssets(parsedVal);
-              }
-            } catch (e) {}
-          }
-        }
-      }
-    } catch (e) {}
-
     if (saved) {
       const parsed = JSON.parse(saved);
+
       // Auto-heal any stale whatsapp numbers if present
       if (parsed.company && parsed.company.whatsapp && (parsed.company.whatsapp.includes("9716666") || !parsed.company.whatsapp)) {
         parsed.company.whatsapp = DEFAULT_SITE_DATA.company.whatsapp;
         parsed.company.whatsappDisplay = DEFAULT_SITE_DATA.company.whatsappDisplay;
       }
+
       return {
         ...DEFAULT_SITE_DATA,
         ...parsed,
@@ -1940,133 +1843,27 @@ function getSiteData() {
             ...((parsed.company && parsed.company.adminAuth) || {})
           }
         },
-        heroSlides: (() => {
-          const baseSlides = (Array.isArray(parsed.heroSlides) && parsed.heroSlides.length)
-            ? parsed.heroSlides
-            : DEFAULT_SITE_DATA.heroSlides;
-          return baseSlides.map((s, idx) => {
-            let img = s.image;
-            const slideKey = s.id || `slide_${idx}`;
-            if (harvestedSlideImages.has(slideKey)) {
-              img = harvestedSlideImages.get(slideKey);
-            } else if (s.title && harvestedSlideImages.has(s.title)) {
-              img = harvestedSlideImages.get(s.title);
-            }
-            return { ...s, image: img || s.image };
-          });
-        })(),
-        management: (() => {
-          const baseMgmt = (Array.isArray(parsed.management) && parsed.management.length)
-            ? parsed.management
-            : DEFAULT_SITE_DATA.management;
-          return baseMgmt.map(m => {
-            let img = m.image;
-            if (harvestedManagementImages.has(m.id)) {
-              img = harvestedManagementImages.get(m.id);
-            } else if (harvestedManagementImages.has(m.name)) {
-              img = harvestedManagementImages.get(m.name);
-            }
-            const def = DEFAULT_SITE_DATA.management.find(dm => dm.id === m.id || dm.name === m.name);
-            if (!img && def) img = def.image;
-            return { ...m, image: img || (def ? def.image : m.image) };
-          });
-        })(),
-        departments: (() => {
-          const baseDepts = (Array.isArray(parsed.departments) && parsed.departments.length)
-            ? parsed.departments
-            : DEFAULT_SITE_DATA.departments;
-          return baseDepts.map(d => {
-            let img = d.image;
-            if (harvestedDeptImages.has(d.id)) {
-              img = harvestedDeptImages.get(d.id);
-            } else if (harvestedDeptImages.has(d.name)) {
-              img = harvestedDeptImages.get(d.name);
-            }
-            const def = DEFAULT_SITE_DATA.departments.find(dd => dd.id === d.id);
-            if (!img && def) img = def.image;
-            return { ...d, image: img || (def ? def.image : d.image) };
-          });
-        })(),
+        heroSlides: (Array.isArray(parsed.heroSlides) && parsed.heroSlides.length) ? parsed.heroSlides : DEFAULT_SITE_DATA.heroSlides,
+        management: (Array.isArray(parsed.management) && parsed.management.length) ? parsed.management : DEFAULT_SITE_DATA.management,
+        departments: (Array.isArray(parsed.departments) && parsed.departments.length) ? parsed.departments : DEFAULT_SITE_DATA.departments,
         categories: (Array.isArray(parsed.categories) && parsed.categories.length) ? parsed.categories : DEFAULT_SITE_DATA.categories,
-        deletedProductIds: Array.isArray(parsed.deletedProductIds) ? parsed.deletedProductIds : [],
-        products: (() => {
-          const deletedIds = new Set(Array.isArray(parsed.deletedProductIds) ? parsed.deletedProductIds : []);
-          
-          // 1. Collect all custom products (from current storage + older harvested storage)
-          const customProds = [];
-          const seenIds = new Set();
-
-          harvestedCustomProducts.forEach(p => {
-            if (!deletedIds.has(p.id) && !seenIds.has(p.id)) {
-              seenIds.add(p.id);
-              customProds.push(p);
-            }
-          });
-
-          if (Array.isArray(parsed.products)) {
-            parsed.products.forEach(p => {
-              if (p && !deletedIds.has(p.id) && !seenIds.has(p.id)) {
-                const isDefaultId = typeof p.id === "string" && /^p([1-9]|[1-4][0-9])$/.test(p.id);
-                const isCloudinary = typeof p.image === "string" && (p.image.includes("cloudinary.com") || p.image.includes("iili.io") || p.image.includes("imgur.com"));
-                if (!isDefaultId || isCloudinary || p.isCustom) {
-                  seenIds.add(p.id);
-                  customProds.push(p);
-                }
-              }
-            });
-          }
-
-          // 2. Collect default catalog products, using any user-customized versions if saved
-          const userSavedMap = new Map();
-          if (Array.isArray(parsed.products)) {
-            parsed.products.forEach(p => {
-              if (p && p.id) userSavedMap.set(p.id, p);
-            });
-          }
-
-          const defaultCatalog = DEFAULT_SITE_DATA.products
-            .filter(defP => !deletedIds.has(defP.id))
-            .map(defP => {
-              const savedVersion = userSavedMap.get(defP.id);
-              const activeProd = savedVersion ? { ...defP, ...savedVersion } : { ...defP };
-              if (activeProd.image && activeProd.image.includes("Aptamil Gold+")) activeProd.image = "assets/images/aptamil-gold-plus-stage-1.jpg";
-              if (activeProd.image && activeProd.image.includes("Seven Seas Cod Liver Oil +")) activeProd.image = "assets/images/seven-seas-cod-liver-oil-omega-3.jpg";
-              seenIds.add(activeProd.id);
-              return activeProd;
-            });
-
-          // Custom products (Cloudinary / custom additions) always lead at the front (#1)
-          return [...customProds, ...defaultCatalog];
-        })(),
-        branches: (() => {
-          const baseBranches = (Array.isArray(parsed.branches) && parsed.branches.length)
-            ? parsed.branches
-            : DEFAULT_SITE_DATA.branches;
-
-          return baseBranches.map(b => {
-            let img = b.image;
-            // Check if a custom / Cloudinary image was harvested for this branch
-            if (harvestedBranchImages.has(b.id)) {
-              img = harvestedBranchImages.get(b.id);
-            } else if (b.name && harvestedBranchImages.has(b.name)) {
-              img = harvestedBranchImages.get(b.name);
-            }
-
-            const def = DEFAULT_SITE_DATA.branches.find(db => db.id === b.id);
-            if (!img && def) {
-              img = def.image;
-            }
-
-            return {
-              ...b,
-              image: img || (def ? def.image : b.image),
-              expressDelivery: b.expressDelivery !== undefined ? b.expressDelivery : (def ? def.expressDelivery : Boolean(b.isFlagship)),
-              deliveryFee: b.deliveryFee !== undefined ? b.deliveryFee : (def?.deliveryFee || 200),
-              minOrderAmount: b.minOrderAmount !== undefined ? b.minOrderAmount : (def?.minOrderAmount || 1000)
-            };
-          });
-        })(),
-        gallery: (Array.isArray(parsed.gallery) && parsed.gallery.length) ? parsed.gallery : DEFAULT_SITE_DATA.gallery,
+        brands: (Array.isArray(parsed.brands) && parsed.brands.length) ? parsed.brands : (DEFAULT_SITE_DATA.brands || []),
+        // STRICT USER AUTHORITY FOR PRODUCTS:
+        // If parsed.products is an array (even empty []), strictly return it! Never resurrect defaults if user deleted products.
+        products: Array.isArray(parsed.products) ? parsed.products : DEFAULT_SITE_DATA.products,
+        // STRICT USER AUTHORITY FOR BRANCHES:
+        // Strictly honor the saved image and branch properties without any overriding harvester.
+        branches: Array.isArray(parsed.branches) && parsed.branches.length ? parsed.branches.map(b => {
+          const def = DEFAULT_SITE_DATA.branches.find(db => db.id === b.id);
+          return {
+            ...b,
+            image: b.image || (def ? def.image : "assets/images/store_flagship.jpg"),
+            expressDelivery: b.expressDelivery !== undefined ? b.expressDelivery : (def ? def.expressDelivery : Boolean(b.isFlagship)),
+            deliveryFee: b.deliveryFee !== undefined ? b.deliveryFee : (def?.deliveryFee || 200),
+            minOrderAmount: b.minOrderAmount !== undefined ? b.minOrderAmount : (def?.minOrderAmount || 1000)
+          };
+        }) : DEFAULT_SITE_DATA.branches,
+        gallery: Array.isArray(parsed.gallery) && parsed.gallery.length ? parsed.gallery : DEFAULT_SITE_DATA.gallery,
         faqs: Array.isArray(parsed.faqs) && parsed.faqs.length ? parsed.faqs : DEFAULT_SITE_DATA.faqs
       };
     }
@@ -2082,6 +1879,7 @@ function getSiteData() {
  */
 function saveSiteData(data) {
   try {
+    data.lastModified = Date.now();
     const jsonStr = JSON.stringify(data);
     localStorage.setItem(STORAGE_KEY, jsonStr);
     window.dispatchEvent(new Event("siteDataUpdated"));
@@ -2113,7 +1911,7 @@ async function syncSiteDataToCloud(data) {
     await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data: data }),
+      body: JSON.stringify({ data: data, lastUpdated: data.lastModified || Date.now() }),
       keepalive: true
     }).catch(() => null);
   } catch (err) {
@@ -2122,9 +1920,14 @@ async function syncSiteDataToCloud(data) {
 }
 
 /**
- * Fetch latest synchronized site data from cloud on startup
+ * Fetch latest synchronized site data from cloud on startup.
+ * SAFE: NEVER automatically overwrites active admin workspace in the background!
  */
 async function fetchSiteDataFromCloud() {
+  if (typeof window !== "undefined" && window.location && window.location.pathname.includes("admin")) {
+    return; // Don't auto-reset while admin is actively editing!
+  }
+
   try {
     const endpoint = (window.DW_CONFIG && typeof window.DW_CONFIG.getBackendUrl === "function")
       ? (window.DW_CONFIG.getBackendUrl() + "/api/site-data")
@@ -2134,13 +1937,21 @@ async function fetchSiteDataFromCloud() {
     if (res && res.ok) {
       const json = await res.json().catch(() => null);
       if (json && json.success && json.data) {
-        const localData = localStorage.getItem(STORAGE_KEY);
-        const cloudDataStr = JSON.stringify(json.data);
-        if (localData !== cloudDataStr) {
-          localStorage.setItem(STORAGE_KEY, cloudDataStr);
-          window.dispatchEvent(new Event("siteDataUpdated"));
-          console.log("☁️ Synchronized latest site data from cloud!");
+        const localRaw = localStorage.getItem(STORAGE_KEY);
+        if (localRaw) {
+          try {
+            const localData = JSON.parse(localRaw);
+            const localTime = localData.lastModified || 0;
+            const cloudTime = json.lastUpdated || json.data.lastModified || 0;
+            if (cloudTime <= localTime) {
+              return; // Local data is newer, keep it!
+            }
+          } catch (e) {}
         }
+        const cloudDataStr = JSON.stringify(json.data);
+        localStorage.setItem(STORAGE_KEY, cloudDataStr);
+        window.dispatchEvent(new Event("siteDataUpdated"));
+        console.log("☁️ Synchronized latest site data from cloud!");
       }
     }
   } catch (e) {
@@ -2148,13 +1959,119 @@ async function fetchSiteDataFromCloud() {
   }
 }
 
-// Auto-check for fresh cloud-synced site data
+// Auto-check for fresh cloud-synced site data (public visitor pages only)
 if (typeof window !== "undefined") {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", fetchSiteDataFromCloud);
   } else {
     fetchSiteDataFromCloud();
   }
+}
+
+/**
+ * Universal Cloudinary & Custom Storage Scanner
+ * Scans all historical localStorage & sessionStorage slots to recover ANY lost products,
+ * branch photos, hero slides, or departments uploaded to Cloudinary.
+ */
+function scanAllStorageForCloudinaryAssets() {
+  const recovered = {
+    products: [],
+    branches: [],
+    heroSlides: [],
+    departments: []
+  };
+
+  const seenProdIds = new Set();
+  const seenProdImages = new Set();
+  const seenBranchImages = new Map();
+
+  function inspectCandidate(obj, keyName) {
+    if (!obj || typeof obj !== "object") return;
+
+    // Check products
+    if (Array.isArray(obj.products)) {
+      obj.products.forEach(p => {
+        if (!p || !p.name) return;
+        const img = p.image || "";
+        const isCloudinary = typeof img === "string" && (img.includes("cloudinary.com") || img.includes("iili.io") || img.includes("imgur.com"));
+        const isCustom = !/^p([1-9]|[1-4][0-9])$/.test(p.id) || p.isCustom;
+        if ((isCloudinary || isCustom) && !seenProdIds.has(p.id) && !seenProdImages.has(img)) {
+          seenProdIds.add(p.id);
+          if (img) seenProdImages.add(img);
+          recovered.products.push({ ...p, sourceKey: keyName });
+        }
+      });
+    }
+
+    // Check branches
+    if (Array.isArray(obj.branches)) {
+      obj.branches.forEach(b => {
+        if (!b || !b.id) return;
+        const img = b.image || "";
+        const isCloudinary = typeof img === "string" && (img.includes("cloudinary.com") || img.includes("iili.io") || img.includes("imgur.com"));
+        if (isCloudinary && !seenBranchImages.has(b.id)) {
+          seenBranchImages.set(b.id, img);
+          recovered.branches.push({ id: b.id, name: b.name, image: img, sourceKey: keyName });
+        }
+      });
+    }
+
+    // Check hero slides
+    if (Array.isArray(obj.heroSlides)) {
+      obj.heroSlides.forEach((s, idx) => {
+        if (!s) return;
+        const img = s.image || "";
+        if (typeof img === "string" && img.includes("cloudinary.com")) {
+          recovered.heroSlides.push({ ...s, sourceKey: keyName });
+        }
+      });
+    }
+
+    // Check departments
+    if (Array.isArray(obj.departments)) {
+      obj.departments.forEach(d => {
+        if (!d) return;
+        const img = d.image || "";
+        if (typeof img === "string" && img.includes("cloudinary.com")) {
+          recovered.departments.push({ ...d, sourceKey: keyName });
+        }
+      });
+    }
+  }
+
+  try {
+    // Scan localStorage
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && (k.startsWith("dwatson") || k.includes("site_data") || k.includes("custom"))) {
+        try {
+          const raw = localStorage.getItem(k);
+          if (raw) inspectCandidate(JSON.parse(raw), k);
+        } catch (e) {}
+      }
+    }
+
+    // Scan sessionStorage
+    if (typeof sessionStorage !== "undefined") {
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const k = sessionStorage.key(i);
+        if (k && (k.startsWith("dwatson") || k.includes("site_data"))) {
+          try {
+            const raw = sessionStorage.getItem(k);
+            if (raw) inspectCandidate(JSON.parse(raw), "sessionStorage:" + k);
+          } catch (e) {}
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Storage scan notice:", err);
+  }
+
+  return recovered;
+}
+
+if (typeof window !== "undefined") {
+  window.scanAllStorageForCloudinaryAssets = scanAllStorageForCloudinaryAssets;
 }
 
 /**
@@ -2165,9 +2082,6 @@ function resetSiteData() {
   window.dispatchEvent(new Event("siteDataUpdated"));
 }
 
-/**
- * Export clean JS code ready to paste into js/data.js (Permanent Git Commit)
- */
 function exportSiteDataAsCode() {
   const data = getSiteData();
   const code = `/**\n * D. Watson Chemist & Superstore - Central Data Store\n * Auto-generated from Admin Studio on ${new Date().toLocaleString("en-US", { timeZone: "Asia/Karachi" })}\n */\n\nconst DEFAULT_SITE_DATA = ${JSON.stringify(data, null, 2)};\n`;

@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v21.0)
- * Infinite Catalog (All Departments), Zero Duplicates & Arrow Slider Navigation
+ * D. Watson Chemist & Superstore - Service Worker (v25.0)
+ * Ultra-Fresh Cache Architecture, Zero Stale Assets & Auto-Eviction
  */
 
-const CACHE_NAME = "dwatson-cache-v22.0";
+const CACHE_NAME = "dwatson-cache-v25.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -14,11 +14,11 @@ const STATIC_ASSETS = [
   "./contact.html",
   "./privacy.html",
   "./terms.html",
-  "./css/style.css?v=8.9",
-  "./css/responsive.css?v=9.1",
-  "./js/config.js?v=10.0",
-  "./js/data.js?v=10.0",
-  "./js/main.js?v=10.0",
+  "./css/style.css?v=25.0",
+  "./css/responsive.css?v=25.0",
+  "./js/config.js?v=25.0",
+  "./js/data.js?v=25.0",
+  "./js/main.js?v=25.0",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",
@@ -32,7 +32,7 @@ const STATIC_ASSETS = [
   "./favicon.ico"
 ];
 
-// Install Event - Pre-cache core shell safely
+// Install Event - Pre-cache core shell safely and skip waiting immediately
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -44,7 +44,7 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
-// Activate Event - Clean up all stale v1..v7 caches immediately
+// Activate Event - Clean up all stale caches immediately and take control
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -62,6 +62,11 @@ self.addEventListener("fetch", (event) => {
   // Only handle http/https requests belonging to our same origin
   const requestUrl = new URL(event.request.url);
   if (requestUrl.origin !== self.location.origin) {
+    return;
+  }
+
+  // Never intercept or cache Admin Studio or API endpoints!
+  if (requestUrl.pathname.includes("admin") || requestUrl.pathname.includes("/api/")) {
     return;
   }
 

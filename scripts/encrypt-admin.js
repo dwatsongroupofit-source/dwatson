@@ -88,13 +88,18 @@ const finalAdminHtml = `<!DOCTYPE html>
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+  <!-- Cache Control (Zero Stale Assets) -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
-  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" href="assets/images/favicon.png">
+  <link rel="shortcut icon" href="favicon.ico">
 
   <!-- Stylesheets (Dynamic Cache-Busting) -->
-  <link rel="stylesheet" href="/css/style.css?v=8.9">
-  <link rel="stylesheet" href="/css/admin.css?v=${Date.now()}">
+  <link rel="stylesheet" href="css/style.css?v=25.0">
+  <link rel="stylesheet" href="css/admin.css?v=${Date.now()}">
 
   <style>
     /* Preserve seamless flexbox layout */
@@ -320,11 +325,11 @@ const finalAdminHtml = `<!DOCTYPE html>
       async function mountStudio(decryptedHtml) {
         mountEl.innerHTML = decryptedHtml;
 
-        // Load dependencies in exact sequence with cache-busting
+        // Load dependencies in exact sequence with cache-busting timestamp
         try {
           const t = Date.now();
-          if (!window.DW_CONFIG) await loadScript("js/config.js?v=" + t);
-          if (!window.getSiteData) await loadScript("js/data.js?v=" + t);
+          await loadScript("js/config.js?v=" + t);
+          await loadScript("js/data.js?v=" + t);
           await loadScript("js/admin.js?v=" + t);
         } catch (err) {
           console.error("Error loading studio dependencies:", err);

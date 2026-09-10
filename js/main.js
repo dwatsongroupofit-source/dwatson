@@ -648,8 +648,22 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
   if (!track) return;
 
   const data = getSiteData();
-  const allProds = (products && products.length) ? products : (data.products || []);
-  if (!allProds.length) return;
+  const allProds = Array.isArray(products) ? products : (Array.isArray(data.products) ? data.products : []);
+  if (!allProds.length) {
+    track.innerHTML = `
+      <div class="home-product-empty-state" style="padding:40px 20px; text-align:center; width:100%; background:#F8FAFC; border-radius:16px; border:1px dashed #CBD5E1; margin:10px 0;">
+        <div style="font-size:2rem; color:#64748B; margin-bottom:10px;"><i class="fa-solid fa-boxes-stacked"></i></div>
+        <h4 style="font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:6px;">No Products Currently Featured</h4>
+        <p style="font-size:0.9rem; color:#64748B; max-width:480px; margin:0 auto 16px;">Browse our 13 specialized departments or contact our 24/7 helpline via WhatsApp.</p>
+        <a href="https://wa.me/${defaultWhatsApp || (data.company && data.company.whatsapp) || '923329716666'}?text=${encodeURIComponent('Hi D.Watson Chemist, I would like to inquire about product availability.')}" target="_blank" class="home-product-buy-btn" style="padding:10px 20px; font-size:0.9rem; display:inline-flex;">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp Helpline
+        </a>
+      </div>
+    `;
+    const countBadge = document.getElementById("homeProductCountBadge");
+    if (countBadge) countBadge.innerHTML = `<span class="live-dot-green"></span> 0 Products in Catalog`;
+    return;
+  }
 
   if (filterCategory) currentHomeProductCategory = filterCategory;
 
@@ -745,12 +759,17 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
   const wrap = document.getElementById("homeProductsMarqueeWrap");
 
   // Zero Duplicate Rendering Rule:
-  // When viewing a specific department, NEVER duplicate cards. Render each matching product strictly once!
-  if (currentHomeProductCategory !== "all") {
+  // When category is filtered OR when there are fewer than 5 items (e.g. 1 product):
+  // NEVER duplicate cards. Render each product STRICTLY ONCE!
+  if (currentHomeProductCategory !== "all" || displayList.length < 5) {
     track.classList.add("category-filtered");
     track.style.animation = "none";
     track.style.transform = "none";
     isHomeProductPaused = true;
+    if (homeProductAutoScrollAnimId) {
+      cancelAnimationFrame(homeProductAutoScrollAnimId);
+      homeProductAutoScrollAnimId = null;
+    }
 
     if (!displayList.length) {
       track.innerHTML = `
@@ -779,7 +798,7 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
     return;
   }
 
-  // ALL PRODUCTS: Continuous seamless infinite glide stream with manual arrow/drag support
+  // ALL PRODUCTS (when catalog has 5+ items): Continuous seamless infinite glide stream with manual arrow/drag support
   track.classList.remove("category-filtered");
   track.style.animation = "none";
   track.style.transform = "none";
@@ -3970,7 +3989,7 @@ function initPWAInstall() {
     }
 
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js")
+      navigator.serviceWorker.register("./sw.js?v=25.0", { updateViaCache: 'none' })
         .then((reg) => {
           console.log("🟢 D. Watson PWA Service Worker Registered", reg.scope);
           if (reg.update) reg.update();
