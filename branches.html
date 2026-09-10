@@ -38,8 +38,8 @@
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon-180.png">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=8.1">
-  <link rel="stylesheet" href="css/responsive.css?v=9.0">
+  <link rel="stylesheet" href="css/style.css?v=8.9">
+  <link rel="stylesheet" href="css/responsive.css?v=9.1">
 </head>
 <body class="page-branches">
 
@@ -393,8 +393,162 @@
     </div>
   </div>
 
+  <!-- High-End Interactive Flagship Branch Zoom & Concierge Details Lightbox Modal -->
+  <div class="branch-zoom-modal" id="branchZoomModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="branch-zoom-backdrop" onclick="closeBranchZoomModal()"></div>
+    
+    <div class="branch-zoom-dialog">
+      <!-- Modal Top Header & Action Controls Bar -->
+      <div class="zoom-modal-header branch-zoom-header">
+        <div class="zoom-modal-badge-group">
+          <span class="zoom-badge-pill branch-badge-pill" id="branchZoomCityBadge">Islamabad</span>
+          <span class="branch-flagship-pill" id="branchZoomFlagshipTag"><i class="fa-solid fa-star"></i> Flagship Branch</span>
+          <span class="zoom-counter" id="branchZoomCounter">1 / 7</span>
+        </div>
+
+        <div class="zoom-toolbar">
+          <button type="button" class="zoom-tool-btn" id="branchZoomInBtn" onclick="zoomInBranch()" title="Zoom In (+)" aria-label="Zoom In">
+            <i class="fa-solid fa-magnifying-glass-plus"></i>
+          </button>
+          <button type="button" class="zoom-tool-btn" id="branchZoomOutBtn" onclick="zoomOutBranch()" title="Zoom Out (-)" aria-label="Zoom Out">
+            <i class="fa-solid fa-magnifying-glass-minus"></i>
+          </button>
+          <button type="button" class="zoom-tool-btn" id="branchZoomResetBtn" onclick="resetBranchZoom()" title="Reset Zoom (100%)" aria-label="Reset Zoom">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+          <button type="button" class="zoom-tool-btn" id="branchZoomFullscreenBtn" onclick="toggleBranchZoomFullscreen()" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+          <button type="button" class="zoom-tool-btn zoom-close-btn" onclick="closeBranchZoomModal()" title="Close (Esc)" aria-label="Close Modal">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Stage: Interactive Branch Viewer + Concierge Sidebar -->
+      <div class="zoom-modal-body branch-zoom-body">
+        <!-- Interactive Deep-Zoom Stage -->
+        <div class="zoom-stage branch-zoom-stage" id="branchZoomStage">
+          <!-- Navigation Arrows -->
+          <button type="button" class="zoom-nav-arrow zoom-prev-btn" onclick="prevBranchZoom()" aria-label="Previous Branch" title="Previous Branch">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button type="button" class="zoom-nav-arrow zoom-next-btn" onclick="nextBranchZoom()" aria-label="Next Branch" title="Next Branch">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+
+          <!-- Zoom Viewport -->
+          <div class="zoom-viewport branch-zoom-viewport" id="branchZoomViewport">
+            <img id="branchZoomImg" src="" alt="D. Watson Branch Photo" draggable="false">
+            <div class="zoom-level-badge branch-zoom-level-badge" id="branchZoomLevelBadge">100%</div>
+          </div>
+
+          <!-- Interaction Hint -->
+          <div class="zoom-hint-banner">
+            <span><i class="fa-solid fa-arrows-up-down-left-right"></i> Drag to Pan &bull; Mouse Wheel to Zoom &bull; Double-Click to Enlarge</span>
+          </div>
+        </div>
+
+        <!-- Branch Concierge & Direct Action Sidebar -->
+        <div class="zoom-sidebar branch-zoom-sidebar" id="branchZoomSidebar">
+          <div class="zoom-sidebar-scroll">
+            <div class="branch-zoom-meta-row">
+              <span class="branch-zoom-area-tag" id="branchZoomArea"><i class="fa-solid fa-location-dot"></i> Sector F-6</span>
+              <span class="zoom-genuine-badge branch-live-badge" id="branchZoomLiveStatus">
+                <span class="zoom-live-dot"></span> <span id="branchZoomLiveText">Open 24/7</span>
+              </span>
+            </div>
+
+            <h3 class="zoom-product-title branch-zoom-title" id="branchZoomTitle">D. Watson F-6 Super Market (Flagship)</h3>
+
+            <!-- Address Card with Google Maps Pin & Copy Address -->
+            <div class="branch-zoom-info-card">
+              <div class="branch-zoom-card-icon" style="color:#EF4444; background:rgba(239,68,68,0.12);"><i class="fa-solid fa-map-location-dot"></i></div>
+              <div class="branch-zoom-card-body">
+                <span class="branch-zoom-card-label">Official Store Location</span>
+                <p class="branch-zoom-card-text" id="branchZoomAddress">School Road, Super Market, F-6 Markaz, Islamabad</p>
+              </div>
+              <button type="button" class="branch-zoom-copy-btn" onclick="copyBranchAddress()" id="branchZoomCopyBtn" title="Copy Address">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            </div>
+
+            <!-- Timings Card -->
+            <div class="branch-zoom-info-card">
+              <div class="branch-zoom-card-icon" style="color:#38BDF8; background:rgba(56,189,248,0.12);"><i class="fa-regular fa-clock"></i></div>
+              <div class="branch-zoom-card-body">
+                <span class="branch-zoom-card-label">Operating Hours</span>
+                <p class="branch-zoom-card-text" id="branchZoomTimings">08:00 AM - 01:00 AM Daily</p>
+              </div>
+            </div>
+
+            <!-- Direct Contact Phone Card -->
+            <div class="branch-zoom-info-card">
+              <div class="branch-zoom-card-icon" style="color:#22C55E; background:rgba(34,197,94,0.12);"><i class="fa-solid fa-phone"></i></div>
+              <div class="branch-zoom-card-body">
+                <span class="branch-zoom-card-label">Direct Line / Helpline</span>
+                <p class="branch-zoom-card-text">
+                  <a href="#" id="branchZoomPhoneLink" style="color:#F8FAFC; text-decoration:none; font-weight:700;">051-8438111</a>
+                </p>
+              </div>
+            </div>
+
+            <!-- Departments & Services Block -->
+            <div class="branch-zoom-services-block">
+              <h5>Departments &amp; Specialized Services</h5>
+              <div class="branch-zoom-tags-wrapper" id="branchZoomServices">
+                <!-- Chips populated dynamically -->
+              </div>
+            </div>
+
+            <!-- Assurance Perks -->
+            <div class="zoom-perks-list">
+              <div class="zoom-perk">
+                <i class="fa-solid fa-truck-bolt"></i>
+                <span id="branchZoomDeliveryInfo">Express Delivery within 2-4 Hours across Twin Cities</span>
+              </div>
+              <div class="zoom-perk">
+                <i class="fa-solid fa-temperature-arrow-down"></i>
+                <span>Strict Temperature-Controlled Cold Chain Storage</span>
+              </div>
+              <div class="zoom-perk">
+                <i class="fa-solid fa-user-doctor"></i>
+                <span>Qualified Clinical Pharmacists Available for In-Store Consultation</span>
+              </div>
+            </div>
+
+            <!-- Action Buttons: Directions, WhatsApp, Direct Call, Upload Rx -->
+            <div class="branch-zoom-actions">
+              <a href="#" id="branchZoomDirBtn" target="_blank" class="btn btn-primary branch-btn-dir">
+                <i class="fa-solid fa-location-arrow"></i> Get Directions (Google Maps)
+              </a>
+              <div class="branch-zoom-btn-row">
+                <a href="#" id="branchZoomWaBtn" target="_blank" class="btn btn-whatsapp" style="flex:1;">
+                  <i class="fa-brands fa-whatsapp"></i> WhatsApp Order
+                </a>
+                <a href="#" id="branchZoomCallBtn" class="btn btn-outline" style="flex:1;">
+                  <i class="fa-solid fa-phone"></i> Call Branch
+                </a>
+              </div>
+              <a href="prescription.html" id="branchZoomRxBtn" class="btn branch-btn-rx">
+                <i class="fa-solid fa-file-prescription"></i> Upload Prescription to this Branch
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Rapid Flagship Navigation Thumbnails Strip -->
+      <div class="zoom-thumbs-container">
+        <div class="zoom-thumbs-strip" id="branchZoomThumbsStrip">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
-  <script src="js/data.js?v=8.7"></script>
-  <script src="js/main.js?v=9.4"></script>
+  <script src="js/data.js?v=8.8"></script>
+  <script src="js/main.js?v=9.6"></script>
 </body>
 </html>

@@ -639,7 +639,61 @@ body.admin-body {
   pointer-events: auto;
 }
 
-/* Responsive Breakpoints for Admin Studio (Tablets & Mobile Phones) */
+/* ==========================================================================
+   Mobile Quick-Tabs Bar (Fast 1-Tap Switching across all Content Modules)
+   ========================================================================== */
+.admin-mobile-quick-tabs {
+  display: none;
+  background: #0F172A;
+  padding: 8px 12px;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 56px;
+  z-index: 1050;
+  gap: 8px;
+}
+
+.admin-mobile-quick-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-mobile-quick-tabs .quick-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #94A3B8;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  touch-action: manipulation;
+}
+
+.admin-mobile-quick-tabs .quick-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #FFFFFF;
+}
+
+.admin-mobile-quick-tabs .quick-tab-btn.active {
+  background: #DC2626;
+  color: #FFFFFF;
+  border-color: #DC2626;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints for Admin Studio (Tablets & Mobile Phones)
+   ========================================================================== */
 @media (max-width: 992px) {
   body.admin-body {
     flex-direction: column;
@@ -647,6 +701,13 @@ body.admin-body {
   }
 
   .admin-mobile-header {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 1060;
+  }
+
+  .admin-mobile-quick-tabs {
     display: flex;
   }
 
@@ -671,8 +732,8 @@ body.admin-body {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 290px;
-    max-width: 85vw;
+    width: 300px;
+    max-width: 86vw;
     height: 100vh;
     z-index: 2000;
     transform: translateX(-100%);
@@ -687,22 +748,22 @@ body.admin-body {
 
   .admin-main {
     width: 100%;
-    min-height: calc(100vh - 64px);
+    min-height: calc(100vh - 110px);
   }
 
   .admin-topbar {
-    padding: 16px 20px;
+    padding: 14px 16px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 10px;
   }
 
   .admin-title-wrap h1 {
-    font-size: 1.35rem;
+    font-size: 1.25rem;
   }
 
   .admin-title-wrap p {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
   }
 
   .admin-actions {
@@ -717,26 +778,39 @@ body.admin-body {
     min-width: 110px;
     text-align: center;
     justify-content: center;
+    min-height: 42px;
   }
 
   .admin-content-area {
-    padding: 16px 14px 40px;
+    padding: 14px 12px 40px;
   }
 
   .admin-card {
-    padding: 20px 16px;
+    padding: 16px 14px;
     border-radius: 14px;
+    margin-bottom: 16px;
   }
 
   .card-header-flex {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 12px;
   }
 
   .card-header-flex .btn {
     width: 100%;
     justify-content: center;
+    min-height: 44px;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  /* Form & Input Optimization for Mobile (Zero Safari Auto-Zoom) */
+  .admin-form-input,
+  select.admin-form-input,
+  textarea.admin-form-input {
+    font-size: 16px !important; /* Prevents iOS Safari auto-zoom on focus */
+    min-height: 44px;
   }
 
   .form-grid-2 {
@@ -744,17 +818,20 @@ body.admin-body {
     gap: 12px;
   }
 
+  /* Item Cards Optimization */
   .editable-item-card {
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
+    gap: 12px;
     padding: 16px 14px;
+    border-radius: 12px;
   }
 
   .item-thumbnail {
     width: 100%;
     height: 140px;
     object-fit: cover;
+    border-radius: 8px;
   }
 
   .item-info {
@@ -763,44 +840,83 @@ body.admin-body {
 
   .item-actions {
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
+    margin-top: 4px;
   }
 
   .item-actions .btn,
   .item-actions a {
-    flex: 1;
-    min-width: 90px;
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
     text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
   }
 
+  /* Modal Optimization for Mobile Devices */
   .admin-modal-box {
-    width: 95%;
-    max-height: 94vh;
-    padding: 20px 16px;
+    width: 96%;
+    max-width: 580px;
+    max-height: 92vh;
+    padding: 18px 14px;
     border-radius: 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-modal-title {
+    font-size: 1.15rem;
+  }
+
+  .admin-modal-box form button[type="submit"],
+  .admin-modal-box form button[type="button"] {
+    min-height: 44px;
+    font-size: 0.92rem;
+    font-weight: 700;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 576px) {
+  .admin-topbar {
+    padding: 12px;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+  }
+
+  .admin-actions .btn {
+    width: 100%;
+  }
+
   .auth-card {
-    padding: 28px 18px;
+    padding: 26px 16px;
     border-radius: 16px;
   }
 
   .auth-title {
-    font-size: 1.25rem;
+    font-size: 1.22rem;
   }
 
   .admin-toast {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
     width: auto;
     font-size: 0.85rem;
-    padding: 12px 16px;
+    padding: 12px 14px;
     border-radius: 12px;
+  }
+
+  .item-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .item-thumbnail {
+    height: 125px;
   }
 }

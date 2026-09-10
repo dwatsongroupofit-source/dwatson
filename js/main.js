@@ -80,6 +80,7 @@ function initWebsite() {
   initPrescriptionBranchSelector();
   initPrescriptionUploader(data.company.whatsapp);
   initProductZoomEvents();
+  initBranchZoomEvents();
   initHeaderScroll();
   initMobileMenu();
   initGlobalSearch();
@@ -438,13 +439,15 @@ let deptAutoSlideTimer = null;
 let isDeptCarouselHovered = false;
 let isDeptCarouselControlsInit = false;
 
+let currentHomeProductCategory = "all";
+
 function renderHomeDepartments(departments) {
   const container = document.getElementById("homeDeptCarousel");
   if (!container || !departments || !departments.length) return;
 
   container.innerHTML = departments.map((dept) => {
     return `
-      <a href="departments.html?dept=${dept.id}" class="home-dept-card" title="Explore ${escapeHtml(dept.name)}">
+      <div class="home-dept-card" onclick="selectHomeDepartmentProducts('${dept.id}', event)" title="Click to view ${escapeHtml(dept.name)} products downside" style="cursor:pointer;">
         <div class="home-dept-img-wrap">
           <img src="${encodeURI(dept.image)}" alt="${escapeHtml(dept.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
           <span class="home-dept-badge">${escapeHtml(dept.badge || "Featured")}</span>
@@ -452,14 +455,56 @@ function renderHomeDepartments(departments) {
         <div class="home-dept-body">
           <h4 class="home-dept-name">${escapeHtml(dept.name)}</h4>
           <p class="home-dept-sub">${escapeHtml(dept.tagline || "Official D. Watson Healthcare & Retail")}</p>
-          <span class="home-dept-link">Explore Department <i class="fa-solid fa-arrow-right"></i></span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+            <span class="home-dept-link" style="color:var(--dw-red); font-weight:700; font-size:0.82rem;"><i class="fa-solid fa-arrow-down"></i> View Products</span>
+            <a href="departments.html?dept=${dept.id}" onclick="event.stopPropagation();" class="home-dept-ext-link" title="Explore full department page" style="font-size:0.75rem; color:#64748B; text-decoration:underline;">Full Page &rarr;</a>
+          </div>
         </div>
-      </a>
+      </div>
     `;
   }).join("");
 
   initDepartmentAutoSlider();
 }
+
+/**
+ * Handle clicking a department card on Homepage to dynamically filter downside products
+ */
+/**
+ * Handle clicking a department card on Homepage to dynamically filter downside products
+ */
+window.selectHomeDepartmentProducts = function(deptId, e) {
+  if (e && e.preventDefault) e.preventDefault();
+
+  const cleanDeptId = (deptId || "all").toLowerCase().trim();
+
+  // Activate chip in UI if a matching chip exists
+  const chipsContainer = document.getElementById("homeProductFilterChips");
+  if (chipsContainer) {
+    let matchedChip = null;
+    chipsContainer.querySelectorAll(".mockup-chip").forEach(chip => {
+      const onclickAttr = (chip.getAttribute("onclick") || "").toLowerCase();
+      if (onclickAttr.includes(`'${cleanDeptId}'`)) {
+        matchedChip = chip;
+      }
+    });
+
+    if (matchedChip) {
+      chipsContainer.querySelectorAll(".mockup-chip").forEach(c => c.classList.remove("active"));
+      matchedChip.classList.add("active");
+      matchedChip.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
+  }
+
+  const data = getSiteData();
+  renderHomeProducts(data.products, data.company.whatsapp, cleanDeptId);
+
+  // Smooth scroll down to trending products section
+  const targetSection = document.getElementById("trendingProducts");
+  if (targetSection) {
+    targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
 
 /**
  * Auto-Slide Controller for Homepage Featured Departments
@@ -498,7 +543,7 @@ function initDepartmentAutoSlider() {
 }
 
 /**
- * Render Homepage Interactive Flagship Outlets (Full Width Grid & Filterable)
+ * Render Homepage Interactive Flagship Outlets (Clickable to open Branch Zoom Modal)
  */
 function renderHomeFlagshipBranches(branches, filter = "all") {
   const container = document.getElementById("homeFlagshipBranchesContainer");
@@ -529,11 +574,12 @@ function renderHomeFlagshipBranches(branches, filter = "all") {
     const mapUrl = b.mapUrl || `https://maps.google.com/?q=${encodeURIComponent("D. Watson " + b.name)}`;
 
     return `
-      <div class="home-flagship-item">
+      <div class="home-flagship-item" onclick="openBranchZoomModal('${b.id}')" title="Click to View &amp; Zoom ${escapeHtml(b.name)} Store Photos &amp; Directions">
         <div class="home-flagship-thumb">
           <img src="${encodeURI(b.image || 'assets/images/store_flagship.jpg')}" alt="${escapeHtml(b.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
           <span class="mockup-flagship-badge">${escapeHtml(b.flagshipBadge || '⭐ Flagship Branch')}</span>
           <span class="home-flagship-live-status"><span class="live-dot-green"></span> ${escapeHtml(b.timings || "Open 24/7")}</span>
+          <span class="home-flagship-zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> View &amp; Zoom</span>
         </div>
         <div class="home-flagship-detail">
           <div class="home-flagship-text-wrap">
@@ -542,9 +588,9 @@ function renderHomeFlagshipBranches(branches, filter = "all") {
             <p class="home-flagship-addr"><i class="fa-solid fa-location-dot" style="color:var(--dw-red);"></i> ${escapeHtml(b.address || b.city)}</p>
           </div>
           <div class="home-flagship-btn-group">
-            <a href="tel:${rawPhone}" class="btn-flagship-call" title="Call Branch"><i class="fa-solid fa-phone"></i> Call</a>
-            <a href="${mapUrl}" target="_blank" class="btn-flagship-dir" title="Google Maps Directions"><i class="fa-solid fa-location-arrow"></i> Directions</a>
-            <a href="${waUrl}" target="_blank" class="btn-flagship-wa" title="WhatsApp Order"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+            <a href="tel:${rawPhone}" onclick="event.stopPropagation();" class="btn-flagship-call" title="Call Branch"><i class="fa-solid fa-phone"></i> Call</a>
+            <a href="${mapUrl}" target="_blank" onclick="event.stopPropagation();" class="btn-flagship-dir" title="Google Maps Directions"><i class="fa-solid fa-location-arrow"></i> Directions</a>
+            <a href="${waUrl}" target="_blank" onclick="event.stopPropagation();" class="btn-flagship-wa" title="WhatsApp Order"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
           </div>
         </div>
       </div>
@@ -593,15 +639,74 @@ window.locateHomeNearestBranch = function(btnEl) {
 };
 
 /**
- * Render Homepage Trending Products (Generous Cards with Brand, Price & WhatsApp Buy)
+ * Render Homepage Trending Products (Continuous Non-Stop Infinite Marquee Slider)
+ * Displays all products without limits with smooth non-stop glide matching trusted partner brands ticker
  */
-function renderHomeProducts(products, defaultWhatsApp) {
-  const container = document.getElementById("homeProductsCarousel");
-  if (!container || !products || !products.length) return;
+function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
+  const track = document.getElementById("homeProductsMarqueeTrack") || document.getElementById("homeProductsCarousel");
+  if (!track) return;
 
-  const waNum = defaultWhatsApp || "923329716666";
+  const data = getSiteData();
+  const allProds = (products && products.length) ? products : (data.products || []);
+  if (!allProds.length) return;
 
-  container.innerHTML = products.map((p) => {
+  if (filterCategory) currentHomeProductCategory = filterCategory;
+
+  const waNum = defaultWhatsApp || (data.company && data.company.whatsapp) || "923329716666";
+
+  let displayList = [];
+  if (currentHomeProductCategory === "all") {
+    displayList = allProds;
+  } else {
+    const filterKey = currentHomeProductCategory.toLowerCase();
+    displayList = allProds.filter(p => {
+      const cat = (p.category || "").toLowerCase();
+      const catName = (p.categoryName || "").toLowerCase();
+      const name = (p.name || "").toLowerCase();
+      const desc = (p.description || "").toLowerCase();
+
+      // Direct category or department match
+      if (cat === filterKey) return true;
+      if (catName === filterKey || catName.includes(filterKey)) return true;
+
+      // Department-specific keyword and alias matches
+      if (filterKey === "pharmacy" && (cat.includes("pharma") || cat.includes("med") || catName.includes("medicine") || name.includes("vitamin") || name.includes("capsule") || name.includes("tablet") || name.includes("syrup") || name.includes("centrum") || name.includes("supplement"))) return true;
+      if (filterKey === "cosmetics" && (cat.includes("cosmetic") || cat.includes("skin") || catName.includes("cosmetic") || catName.includes("skincare") || name.includes("cream") || name.includes("serum") || name.includes("lotion") || name.includes("cerave") || name.includes("bioderma") || name.includes("purest"))) return true;
+      if (filterKey === "perfumes" && (cat.includes("perfume") || cat.includes("fragrance") || catName.includes("perfume") || catName.includes("fragrance") || name.includes("perfume") || name.includes("fragrance") || name.includes("eau de") || name.includes("oud") || name.includes("scent"))) return true;
+      if (filterKey === "color_cosmetics" && (cat.includes("color") || cat.includes("makeup") || catName.includes("makeup") || name.includes("lipstick") || name.includes("palette") || name.includes("mascara") || name.includes("foundation") || name.includes("primer") || name.includes("blush") || name.includes("flormar"))) return true;
+      if (filterKey === "haircare" && (cat.includes("hair") || catName.includes("hair") || name.includes("shampoo") || name.includes("conditioner") || name.includes("serum") || name.includes("masque") || name.includes("bioblas") || name.includes("keratin"))) return true;
+      if (filterKey === "surgical" && (cat.includes("surg") || catName.includes("surgical") || catName.includes("device") || name.includes("monitor") || name.includes("meter") || name.includes("bp") || name.includes("omron") || name.includes("accu") || name.includes("wheelchair") || name.includes("nebulizer"))) return true;
+      if (filterKey === "optics" && (cat.includes("optic") || catName.includes("eyewear") || catName.includes("optics") || name.includes("ray-ban") || name.includes("glasses") || name.includes("aviator") || name.includes("frame") || name.includes("lens"))) return true;
+      if (filterKey === "babycare" && (cat.includes("baby") || catName.includes("baby") || catName.includes("infant") || name.includes("formula") || name.includes("aptamil") || name.includes("infant") || name.includes("diaper") || name.includes("feeder") || desc.includes("baby"))) return true;
+      if (filterKey === "grocery" && (cat.includes("groc") || cat.includes("superstore") || catName.includes("grocery") || name.includes("grocery") || name.includes("food") || name.includes("snack") || name.includes("organic") || desc.includes("grocery"))) return true;
+      if (filterKey === "homeo" && (cat.includes("homeo") || cat.includes("herbal") || catName.includes("homeo") || name.includes("schwabe") || name.includes("reckeweg") || name.includes("herbal") || name.includes("natural"))) return true;
+      if (filterKey === "hearing_aid" && (cat.includes("hearing") || catName.includes("hearing") || cat.includes("diagnostic") || name.includes("hearing") || name.includes("amplifier") || name.includes("diagnostic") || name.includes("pulse oximeter"))) return true;
+      if (filterKey === "crockery" && (cat.includes("crock") || cat.includes("home") || catName.includes("crockery") || name.includes("dinner") || name.includes("glass") || name.includes("cookware") || name.includes("flask"))) return true;
+      if (filterKey === "toys" && (cat.includes("toy") || cat.includes("game") || catName.includes("toy") || name.includes("toy") || name.includes("game") || name.includes("puzzle"))) return true;
+      if (filterKey === "undergarments" && (cat.includes("garment") || catName.includes("garment") || name.includes("innerwear") || name.includes("thermal") || name.includes("cotton"))) return true;
+
+      return false;
+    });
+
+    // Fallback if no specific products matched filter
+    if (!displayList.length) displayList = allProds;
+  }
+
+  // Update live count badge
+  const countBadge = document.getElementById("homeProductCountBadge");
+  if (countBadge) {
+    const allDepts = (data.departments && data.departments.length)
+      ? data.departments
+      : ((typeof DEFAULT_SITE_DATA !== "undefined" && Array.isArray(DEFAULT_SITE_DATA.departments)) ? DEFAULT_SITE_DATA.departments : []);
+    const matchedDept = allDepts.find(d => d.id === currentHomeProductCategory);
+    const label = matchedDept ? matchedDept.name : (currentHomeProductCategory === "all" ? "All Products" : (currentHomeProductCategory === "haircare" ? "Hair Care & Therapy" : currentHomeProductCategory));
+    countBadge.innerHTML = `<span class="live-dot-green"></span> Showing ${displayList.length} ${label} (Infinite Live Stream)`;
+  }
+
+  // Set zoom list for product zoom modal
+  currentProductZoomList = displayList;
+
+  const renderCard = (p) => {
     const fullImgUrl = (typeof getFullImageUrl === "function") ? getFullImageUrl(p.image) : (p.image || "");
     let waText = `*--- D. WATSON QUICK ORDER ---*\n🛍️ *Product:* ${p.name}\n💰 *Price:* ${p.price || 'Inquire'}\n🏷️ *Brand:* ${p.brand || 'D. Watson'}\n`;
     if (fullImgUrl) {
@@ -631,11 +736,34 @@ function renderHomeProducts(products, defaultWhatsApp) {
         </div>
       </div>
     `;
-  }).join("");
+  };
 
-  // Start auto-slider
-  initProductAutoSlider();
+  const cardsHtml = displayList.map(renderCard).join("");
+
+  // Seamless infinite loop: duplicate cards so the track has identical halves for 0% -> -50% translation
+  let repeatCount = 2;
+  if (displayList.length <= 4) repeatCount = 4;
+  else if (displayList.length <= 8) repeatCount = 3;
+
+  track.innerHTML = cardsHtml.repeat(repeatCount);
+
+  // Calculate dynamic duration based on total card count for consistent smooth speed
+  const totalCards = displayList.length * repeatCount;
+  const durationSec = Math.max(28, totalCards * 2.8);
+  track.style.animationDuration = `${durationSec}s`;
 }
+
+window.filterHomeProductsCategory = function(catKey, btnEl) {
+  if (btnEl) {
+    const parent = btnEl.closest(".mockup-filter-chips");
+    if (parent) {
+      parent.querySelectorAll(".mockup-chip").forEach(c => c.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+  }
+  const data = getSiteData();
+  renderHomeProducts(data.products, data.company.whatsapp, catKey);
+};
 
 /**
  * Carousel Horizontal Scrolling Controller
@@ -767,10 +895,12 @@ function spotlightDepartment(rawDeptId) {
   const waUrl = `https://wa.me/${allDepartmentsWhatsApp}?text=${encodeURIComponent(waMsg)}`;
   const isPharmacy = selectedDept.id === "pharmacy";
 
-  // Product Matching for Current Department
-  const allProds = (typeof DEFAULT_SITE_DATA !== "undefined" && Array.isArray(DEFAULT_SITE_DATA.products))
-    ? DEFAULT_SITE_DATA.products
-    : ((typeof allProductsData !== "undefined" && Array.isArray(allProductsData)) ? allProductsData : []);
+  // Product Matching for Current Department (Live Catalog Support)
+  const allProds = (typeof getSiteData === "function" && getSiteData().products)
+    ? getSiteData().products
+    : ((typeof DEFAULT_SITE_DATA !== "undefined" && Array.isArray(DEFAULT_SITE_DATA.products))
+      ? DEFAULT_SITE_DATA.products
+      : ((typeof allProductsData !== "undefined" && Array.isArray(allProductsData)) ? allProductsData : []));
 
   let matchingProducts = allProds.filter(p => {
     const cat = (p.category || "").toLowerCase();
@@ -779,29 +909,45 @@ function spotlightDepartment(rawDeptId) {
     const desc = (p.description || "").toLowerCase();
     const deptId = selectedDept.id.toLowerCase();
 
+    // Direct match against department ID or department name
+    if (cat === deptId) return true;
+    if (catName === selectedDept.name.toLowerCase() || catName.includes(selectedDept.name.toLowerCase())) return true;
+
     if (deptId === "babycare") {
       return cat === "baby" || cat === "babycare" || catName.includes("baby") || name.includes("aptamil") || name.includes("baby") || name.includes("infant") || desc.includes("infant");
     }
     if (deptId === "cosmetics") {
-      return cat === "cosmetics" || catName.includes("cosmetic") || catName.includes("skincare");
+      return cat === "cosmetics" || catName.includes("cosmetic") || catName.includes("skincare") || name.includes("cerave") || name.includes("purest");
     }
     if (deptId === "color_cosmetics") {
-      return cat === "cosmetics" && (name.includes("primer") || name.includes("blush") || name.includes("flormar") || name.includes("golden rose"));
+      return (cat === "cosmetics" || cat === "color_cosmetics") && (name.includes("primer") || name.includes("blush") || name.includes("flormar") || name.includes("golden rose") || name.includes("lipstick") || name.includes("makeup"));
     }
     if (deptId === "perfumes") {
-      return cat === "perfumes" || catName.includes("fragrance") || name.includes("perfume");
+      return cat === "perfumes" || catName.includes("fragrance") || catName.includes("perfume") || name.includes("perfume") || name.includes("fragrance") || name.includes("oud") || name.includes("eau de");
     }
     if (deptId === "grocery") {
-      return cat === "grocery" || catName.includes("grocery") || catName.includes("superstore");
+      return cat === "grocery" || catName.includes("grocery") || catName.includes("superstore") || name.includes("grocery") || desc.includes("grocery");
     }
     if (deptId === "optics") {
-      return cat === "optics" || catName.includes("optics") || name.includes("ray-ban") || name.includes("aviator");
+      return cat === "optics" || catName.includes("optics") || catName.includes("eyewear") || name.includes("ray-ban") || name.includes("aviator") || name.includes("glasses");
     }
     if (deptId === "surgical" || deptId === "hearing_aid") {
-      return cat === "surgical" || catName.includes("surgical") || name.includes("omron") || name.includes("accu-chek") || name.includes("monitor");
+      return cat === "surgical" || cat === "hearing_aid" || catName.includes("surgical") || catName.includes("diagnostic") || name.includes("omron") || name.includes("accu-chek") || name.includes("monitor") || name.includes("pulse");
     }
     if (deptId === "pharmacy" || deptId === "homeo") {
-      return cat === "pharmacy" || catName.includes("pharmacy") || catName.includes("supplement") || name.includes("centrum") || name.includes("seven seas");
+      return cat === "pharmacy" || cat === "homeo" || catName.includes("pharmacy") || catName.includes("supplement") || catName.includes("homeo") || name.includes("centrum") || name.includes("seven seas") || name.includes("reckeweg") || name.includes("schwabe");
+    }
+    if (deptId === "haircare") {
+      return cat === "haircare" || catName.includes("hair") || name.includes("shampoo") || name.includes("bioblas");
+    }
+    if (deptId === "crockery") {
+      return cat === "crockery" || catName.includes("crockery") || name.includes("dinner") || name.includes("glass");
+    }
+    if (deptId === "toys") {
+      return cat === "toys" || catName.includes("toy") || name.includes("toy") || name.includes("game");
+    }
+    if (deptId === "undergarments") {
+      return cat === "undergarments" || catName.includes("garment") || name.includes("innerwear");
     }
     return false;
   });
@@ -1651,6 +1797,338 @@ window.closeProductZoomModal = function() {
 
 /**
  * ==========================================================================
+ * Flagship Branch Zoom Modal Controller & Interactive Concierge Lightbox
+ * ==========================================================================
+ */
+let currentBranchZoomList = [];
+let currentBranchZoomIndex = 0;
+let currentBranchZoomScale = 1;
+let isBranchPanning = false;
+let branchPanStartX = 0;
+let branchPanStartY = 0;
+let branchPanOffsetX = 0;
+let branchPanOffsetY = 0;
+let isBranchZoomEventsInit = false;
+
+function initBranchZoomEvents() {
+  if (isBranchZoomEventsInit) return;
+  const viewport = document.getElementById("branchZoomViewport");
+  if (!viewport) return;
+  isBranchZoomEventsInit = true;
+
+  // Drag & Pan with Mouse
+  viewport.addEventListener("mousedown", (e) => {
+    if (e.button !== 0 || currentBranchZoomScale <= 1) return;
+    isBranchPanning = true;
+    branchPanStartX = e.clientX - branchPanOffsetX;
+    branchPanStartY = e.clientY - branchPanOffsetY;
+    viewport.classList.add("dragging");
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!isBranchPanning || currentBranchZoomScale <= 1) return;
+    branchPanOffsetX = e.clientX - branchPanStartX;
+    branchPanOffsetY = e.clientY - branchPanStartY;
+    applyBranchZoomTransform();
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (isBranchPanning) {
+      isBranchPanning = false;
+      viewport.classList.remove("dragging");
+    }
+  });
+
+  // Touch Panning for Mobile
+  viewport.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1 && currentBranchZoomScale > 1) {
+      isBranchPanning = true;
+      branchPanStartX = e.touches[0].clientX - branchPanOffsetX;
+      branchPanStartY = e.touches[0].clientY - branchPanOffsetY;
+    }
+  }, { passive: true });
+
+  viewport.addEventListener("touchmove", (e) => {
+    if (isBranchPanning && e.touches.length === 1 && currentBranchZoomScale > 1) {
+      e.preventDefault();
+      branchPanOffsetX = e.touches[0].clientX - branchPanStartX;
+      branchPanOffsetY = e.touches[0].clientY - branchPanOffsetY;
+      applyBranchZoomTransform();
+    }
+  }, { passive: false });
+
+  viewport.addEventListener("touchend", () => {
+    isBranchPanning = false;
+  });
+
+  // Mouse Wheel to Zoom
+  viewport.addEventListener("wheel", (e) => {
+    const modal = document.getElementById("branchZoomModal");
+    if (!modal || !modal.classList.contains("active")) return;
+    e.preventDefault();
+    if (e.deltaY < 0) {
+      zoomInBranch();
+    } else {
+      zoomOutBranch();
+    }
+  }, { passive: false });
+
+  // Double Click / Tap to Toggle Zoom
+  viewport.addEventListener("dblclick", (e) => {
+    const modal = document.getElementById("branchZoomModal");
+    if (!modal || !modal.classList.contains("active")) return;
+    e.preventDefault();
+    if (currentBranchZoomScale > 1) {
+      resetBranchZoom();
+    } else {
+      currentBranchZoomScale = 2.2;
+      applyBranchZoomTransform();
+    }
+  });
+
+  // Keyboard Navigation
+  document.addEventListener("keydown", (e) => {
+    const modal = document.getElementById("branchZoomModal");
+    if (!modal || !modal.classList.contains("active")) return;
+
+    if (e.key === "Escape") closeBranchZoomModal();
+    if (e.key === "ArrowRight") nextBranchZoom();
+    if (e.key === "ArrowLeft") prevBranchZoom();
+    if (e.key === "+" || e.key === "=") zoomInBranch();
+    if (e.key === "-" || e.key === "_") zoomOutBranch();
+    if (e.key === "0" || e.key === "r" || e.key === "R") resetBranchZoom();
+    if (e.key === "f" || e.key === "F") toggleBranchZoomFullscreen();
+  });
+}
+
+function applyBranchZoomTransform() {
+  const img = document.getElementById("branchZoomImg");
+  const badge = document.getElementById("branchZoomLevelBadge");
+  if (!img) return;
+
+  if (currentBranchZoomScale <= 1) {
+    branchPanOffsetX = 0;
+    branchPanOffsetY = 0;
+  } else {
+    const maxOffset = (currentBranchZoomScale - 1) * 320;
+    branchPanOffsetX = Math.max(-maxOffset, Math.min(maxOffset, branchPanOffsetX));
+    branchPanOffsetY = Math.max(-maxOffset, Math.min(maxOffset, branchPanOffsetY));
+  }
+
+  img.style.transform = `translate(${branchPanOffsetX}px, ${branchPanOffsetY}px) scale(${currentBranchZoomScale})`;
+  if (badge) {
+    badge.textContent = `${Math.round(currentBranchZoomScale * 100)}%`;
+  }
+}
+
+window.openBranchZoomModal = function(branchIdOrIndex) {
+  initBranchZoomEvents();
+
+  const data = getSiteData();
+  const allBranches = data.branches || [];
+
+  // Default to flagship branches first, or all branches if not enough flagships
+  let flagships = allBranches.filter(b => b.isFlagship);
+  if (!flagships.length) flagships = allBranches;
+
+  currentBranchZoomList = flagships;
+
+  let index = 0;
+  if (typeof branchIdOrIndex === "number") {
+    index = branchIdOrIndex;
+  } else if (typeof branchIdOrIndex === "string") {
+    let foundIdx = currentBranchZoomList.findIndex(b => b.id === branchIdOrIndex);
+    if (foundIdx === -1) {
+      const foundInAll = allBranches.findIndex(b => b.id === branchIdOrIndex);
+      if (foundInAll !== -1) {
+        currentBranchZoomList = allBranches;
+        foundIdx = foundInAll;
+      }
+    }
+    index = foundIdx !== -1 ? foundIdx : 0;
+  }
+
+  currentBranchZoomIndex = Math.max(0, Math.min(currentBranchZoomList.length - 1, index));
+  updateBranchZoomDisplay();
+
+  const modal = document.getElementById("branchZoomModal");
+  if (modal) {
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+  }
+  document.body.style.overflow = "hidden";
+};
+
+function updateBranchZoomDisplay() {
+  if (!currentBranchZoomList || !currentBranchZoomList.length) return;
+  const b = currentBranchZoomList[currentBranchZoomIndex];
+  if (!b) return;
+
+  const rawPhone = (b.phone || "051-8438111").split("/")[0].replace(/[^0-9]/g, "");
+  const waNum = b.whatsapp || "923329716666";
+  const waText = `Hi D.Watson Chemist (${b.name}), I am inquiring about medicine stock and express delivery to my location.`;
+  const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waText)}`;
+  const mapUrl = b.mapUrl || `https://maps.google.com/?q=${encodeURIComponent("D. Watson " + b.name)}`;
+
+  const cityBadge = document.getElementById("branchZoomCityBadge");
+  const flagshipTag = document.getElementById("branchZoomFlagshipTag");
+  const counterEl = document.getElementById("branchZoomCounter");
+  const imgEl = document.getElementById("branchZoomImg");
+  const areaEl = document.getElementById("branchZoomArea");
+  const liveText = document.getElementById("branchZoomLiveText");
+  const titleEl = document.getElementById("branchZoomTitle");
+  const addrEl = document.getElementById("branchZoomAddress");
+  const timingsEl = document.getElementById("branchZoomTimings");
+  const phoneLink = document.getElementById("branchZoomPhoneLink");
+  const servicesContainer = document.getElementById("branchZoomServices");
+  const dirBtn = document.getElementById("branchZoomDirBtn");
+  const waBtn = document.getElementById("branchZoomWaBtn");
+  const callBtn = document.getElementById("branchZoomCallBtn");
+  const rxBtn = document.getElementById("branchZoomRxBtn");
+
+  if (cityBadge) cityBadge.textContent = b.city || "Twin Cities";
+  if (flagshipTag) {
+    flagshipTag.innerHTML = b.isFlagship 
+      ? `<i class="fa-solid fa-star"></i> ${escapeHtml(b.flagshipBadge || 'Flagship Branch')}`
+      : `<i class="fa-solid fa-store"></i> Verified Branch`;
+  }
+  if (counterEl) counterEl.textContent = `${currentBranchZoomIndex + 1} / ${currentBranchZoomList.length}`;
+  if (imgEl) {
+    imgEl.src = encodeURI(b.image || "assets/images/store_flagship.jpg");
+    imgEl.alt = b.name;
+    imgEl.onerror = function() {
+      this.onerror = null;
+      this.src = "assets/images/pharmacy.jpg";
+    };
+  }
+  if (areaEl) areaEl.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${escapeHtml(b.area || b.city || "Islamabad")}`;
+  if (liveText) liveText.textContent = b.timings || "Open 24/7";
+  if (titleEl) titleEl.textContent = b.name;
+  if (addrEl) addrEl.textContent = b.address || "D. Watson Pharmacy & Superstore, Twin Cities";
+  if (timingsEl) timingsEl.textContent = b.timings || "08:00 AM - 01:00 AM Daily";
+
+  if (phoneLink) {
+    phoneLink.href = `tel:${rawPhone}`;
+    phoneLink.textContent = b.phone || "051-8438111";
+  }
+
+  if (servicesContainer) {
+    const services = Array.isArray(b.services) && b.services.length 
+      ? b.services 
+      : ["Pharmacy", "Luxury Cosmetics", "Superstore", "Cold Chain", "Surgical", "Baby Care"];
+    servicesContainer.innerHTML = services.map(s => `
+      <span class="branch-service-chip"><i class="fa-solid fa-check"></i> ${escapeHtml(s)}</span>
+    `).join("");
+  }
+
+  if (dirBtn) dirBtn.href = mapUrl;
+  if (waBtn) waBtn.href = waUrl;
+  if (callBtn) callBtn.href = `tel:${rawPhone}`;
+  if (rxBtn) rxBtn.href = `prescription.html?branch=${encodeURIComponent(b.id)}`;
+
+  resetBranchZoom();
+  renderBranchZoomThumbs();
+}
+
+function renderBranchZoomThumbs() {
+  const container = document.getElementById("branchZoomThumbsStrip");
+  if (!container || !currentBranchZoomList.length) return;
+
+  container.innerHTML = currentBranchZoomList.map((item, idx) => `
+    <div class="zoom-thumb-item ${idx === currentBranchZoomIndex ? 'active' : ''}" onclick="goToBranchZoom(${idx})" title="${escapeHtml(item.name)}">
+      <img src="${encodeURI(item.image || 'assets/images/store_flagship.jpg')}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+    </div>
+  `).join("");
+}
+
+window.goToBranchZoom = function(index) {
+  if (index < 0 || index >= currentBranchZoomList.length) return;
+  currentBranchZoomIndex = index;
+  updateBranchZoomDisplay();
+};
+
+window.nextBranchZoom = function() {
+  if (!currentBranchZoomList.length) return;
+  currentBranchZoomIndex = (currentBranchZoomIndex + 1) % currentBranchZoomList.length;
+  updateBranchZoomDisplay();
+};
+
+window.prevBranchZoom = function() {
+  if (!currentBranchZoomList.length) return;
+  currentBranchZoomIndex = (currentBranchZoomIndex - 1 + currentBranchZoomList.length) % currentBranchZoomList.length;
+  updateBranchZoomDisplay();
+};
+
+window.zoomInBranch = function() {
+  currentBranchZoomScale = Math.min(4, Math.round((currentBranchZoomScale + 0.35) * 100) / 100);
+  applyBranchZoomTransform();
+};
+
+window.zoomOutBranch = function() {
+  currentBranchZoomScale = Math.max(1, Math.round((currentBranchZoomScale - 0.35) * 100) / 100);
+  if (currentBranchZoomScale === 1) {
+    branchPanOffsetX = 0;
+    branchPanOffsetY = 0;
+  }
+  applyBranchZoomTransform();
+};
+
+window.resetBranchZoom = function() {
+  currentBranchZoomScale = 1;
+  branchPanOffsetX = 0;
+  branchPanOffsetY = 0;
+  applyBranchZoomTransform();
+};
+
+window.toggleBranchZoomFullscreen = function() {
+  const modal = document.getElementById("branchZoomModal");
+  if (!modal) return;
+
+  if (!document.fullscreenElement) {
+    if (modal.requestFullscreen) {
+      modal.requestFullscreen();
+    } else if (modal.webkitRequestFullscreen) {
+      modal.webkitRequestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+};
+
+window.closeBranchZoomModal = function() {
+  const modal = document.getElementById("branchZoomModal");
+  if (modal) {
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+  }
+  document.body.style.overflow = "";
+  resetBranchZoom();
+  if (document.fullscreenElement && document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {});
+  }
+};
+
+window.copyBranchAddress = function() {
+  const addrEl = document.getElementById("branchZoomAddress");
+  if (!addrEl) return;
+  const text = addrEl.textContent.trim();
+  navigator.clipboard.writeText(text).then(() => {
+    if (typeof showToast === "function") {
+      showToast("📍 Branch address copied to clipboard!", "success");
+    } else {
+      alert("Address copied: " + text);
+    }
+  }).catch(() => {
+    if (typeof showToast === "function") {
+      showToast("Address: " + text, "info");
+    }
+  });
+};
+
+/**
+ * ==========================================================================
  * Real-Time Branch Operating Status & GPS Branch Locator Engine
  * ==========================================================================
  */
@@ -1998,8 +2476,9 @@ function renderActiveBranchDetail(b) {
   ` : '';
 
   detailPane.innerHTML = `
-    <div class="branch-detail-hero">
+    <div class="branch-detail-hero" onclick="openBranchZoomModal('${b.id}')" style="cursor:pointer; position:relative;" title="Click to View &amp; Zoom Photos &amp; Directions">
       <img src="${encodeURI(b.image || 'assets/images/store_flagship.jpg')}" alt="${escapeHtml(b.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/store_flagship.jpg';">
+      <span style="position:absolute; bottom:14px; right:14px; background:rgba(15,23,42,0.88); backdrop-filter:blur(6px); color:white; font-size:0.75rem; font-weight:700; padding:5px 12px; border-radius:9999px; border:1px solid rgba(255,255,255,0.25); display:inline-flex; align-items:center; gap:6px; z-index:5;"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom Photos</span>
       <div class="branch-detail-hero-overlay">
         <div>
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
@@ -2173,13 +2652,14 @@ function renderBranchCards(branches) {
     const liveStatus = getBranchLiveStatus(b.timings, b.is24Hours);
     const distBadge = (typeof b.distanceKm === "number") ? `<span class="branch-gps-distance-badge"><i class="fa-solid fa-location-arrow"></i> ${b.distanceKm.toFixed(1)} km</span>` : '';
     return `
-    <div class="branch-card" style="position:relative;">
+    <div class="branch-card" style="position:relative; cursor:pointer;" onclick="openBranchZoomModal('${b.id}')" title="Click to View Store Photos &amp; Directions">
       <div class="branch-card-header">
         <img src="${encodeURI(b.image || 'assets/images/store_flagship.jpg')}" alt="${escapeHtml(b.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/store_flagship.jpg';">
         ${b.isFlagship ? '<span style="position:absolute; top:12px; left:12px; background:linear-gradient(135deg, #F59E0B, #D97706); color:white; font-weight:800; font-size:0.72rem; padding:3px 8px; border-radius:6px; z-index:2; box-shadow:0 2px 6px rgba(0,0,0,0.2);"><i class="fa-solid fa-star"></i> Flagship</span>' : ''}
         ${distBadge}
         ${liveStatus.badge}
         <span class="branch-city-badge">${escapeHtml(b.city)}</span>
+        <span style="position:absolute; bottom:8px; right:8px; background:rgba(15,23,42,0.85); color:white; font-size:0.68rem; font-weight:700; padding:3px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.2); z-index:2;"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom</span>
       </div>
       <div class="branch-card-body">
         <h3 class="branch-card-name">${escapeHtml(b.name)}</h3>
@@ -2190,10 +2670,10 @@ function renderBranchCards(branches) {
         </div>
       </div>
       <div class="branch-card-footer">
-        <a href="${b.mapUrl || `https://maps.google.com/?q=D.+Watson+${encodeURIComponent(b.name)}`}" target="_blank" class="btn btn-outline btn-sm">
+        <a href="${b.mapUrl || `https://maps.google.com/?q=D.+Watson+${encodeURIComponent(b.name)}`}" target="_blank" onclick="event.stopPropagation();" class="btn btn-outline btn-sm">
           <i class="fa-solid fa-location-arrow"></i> Map
         </a>
-        <a href="tel:${getBranchPhone(b.phone)}" class="btn btn-primary btn-sm">
+        <a href="tel:${getBranchPhone(b.phone)}" onclick="event.stopPropagation();" class="btn btn-primary btn-sm">
           <i class="fa-solid fa-phone"></i> Call
         </a>
       </div>

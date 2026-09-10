@@ -410,25 +410,57 @@ function resetInactivityTimer() {
 /**
  * Tab Navigation & Mobile Drawer
  */
+function switchAdminTab(targetPaneId) {
+  if (!targetPaneId) return;
+
+  // Sync sidebar items
+  document.querySelectorAll(".admin-nav-item").forEach(t => {
+    if (t.getAttribute("data-tab") === targetPaneId) t.classList.add("active");
+    else t.classList.remove("active");
+  });
+
+  // Sync mobile quick tabs
+  document.querySelectorAll(".quick-tab-btn").forEach(btn => {
+    if (btn.getAttribute("data-tab") === targetPaneId) {
+      btn.classList.add("active");
+      btn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
+  // Switch active pane
+  document.querySelectorAll(".admin-tab-pane").forEach(pane => {
+    pane.classList.remove("active");
+  });
+
+  const targetPane = document.getElementById(targetPaneId);
+  if (targetPane) targetPane.classList.add("active");
+
+  // Auto-close mobile sidebar drawer on tap
+  if (window.innerWidth <= 992) {
+    closeAdminDrawer();
+  }
+}
+window.switchAdminTab = switchAdminTab;
+
+/**
+ * Tab Navigation & Mobile Drawer
+ */
 function initTabNavigation() {
-  const tabs = document.querySelectorAll(".admin-nav-item");
-  tabs.forEach(tab => {
+  // Sidebar nav items
+  document.querySelectorAll(".admin-nav-item").forEach(tab => {
     tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-
       const targetPaneId = tab.getAttribute("data-tab");
-      document.querySelectorAll(".admin-tab-pane").forEach(pane => {
-        pane.classList.remove("active");
-      });
+      switchAdminTab(targetPaneId);
+    });
+  });
 
-      const targetPane = document.getElementById(targetPaneId);
-      if (targetPane) targetPane.classList.add("active");
-
-      // Auto-close mobile sidebar drawer on tap
-      if (window.innerWidth <= 992) {
-        closeAdminDrawer();
-      }
+  // Mobile quick-tab buttons
+  document.querySelectorAll(".quick-tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const targetPaneId = btn.getAttribute("data-tab");
+      switchAdminTab(targetPaneId);
     });
   });
 }
@@ -1358,6 +1390,13 @@ window.deleteBranch = function(idx) {
   }
 };
 
+let activeAdminProductDeptFilter = "all";
+
+window.filterAdminProductsByDept = function(deptId) {
+  activeAdminProductDeptFilter = deptId || "all";
+  renderProductsList();
+};
+
 /* ==========================================================================
    3. FEATURED PRODUCTS SHOWCASE MANAGER
    ========================================================================== */
@@ -1370,15 +1409,54 @@ function renderProductsList() {
     return;
   }
 
+  const allDepts = (adminData.departments && adminData.departments.length)
+    ? adminData.departments
+    : ((typeof DEFAULT_SITE_DATA !== "undefined" && Array.isArray(DEFAULT_SITE_DATA.departments)) ? DEFAULT_SITE_DATA.departments : []);
+
+  // Filter products if active filter != 'all'
+  let displayedProducts = adminData.products.map((p, originalIdx) => ({ ...p, originalIdx }));
+  if (activeAdminProductDeptFilter !== "all") {
+    displayedProducts = displayedProducts.filter(p => {
+      const cat = (p.category || "").toLowerCase();
+      const target = activeAdminProductDeptFilter.toLowerCase();
+      return cat === target || (p.categoryName && p.categoryName.toLowerCase().includes(target));
+    });
+  }
+
   const countHeader = `
-    <div style="margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+    <div style="margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:#FFFFFF; padding:10px 14px; border-radius:10px; border:1px solid #E2E8F0;">
       <span style="font-size:0.85rem; font-weight:700; color:#475569;">
-        <i class="fa-solid fa-layer-group" style="color:var(--dw-red);"></i> Showing all <strong>${adminData.products.length}</strong> products in catalog (no limit). Reorder below to change slider sequence:
+        <i class="fa-solid fa-layer-group" style="color:var(--dw-red);"></i> Showing <strong>${displayedProducts.length}</strong> of <strong>${adminData.products.length}</strong> products in catalog
       </span>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <label for="adminProductDeptFilterSelect" style="font-size:0.82rem; font-weight:700; color:#64748B; margin:0;"><i class="fa-solid fa-filter"></i> Filter Department:</label>
+        <select id="adminProductDeptFilterSelect" class="admin-form-input" style="padding:6px 12px; font-size:0.85rem; min-width:180px; width:auto; border-color:#CBD5E1;" onchange="filterAdminProductsByDept(this.value)">
+          <option value="all" ${activeAdminProductDeptFilter === "all" ? "selected" : ""}>All Departments (${adminData.products.length})</option>
+          ${allDepts.map(d => {
+            const count = adminData.products.filter(p => (p.category || "").toLowerCase() === d.id.toLowerCase() || (p.categoryName && p.categoryName.toLowerCase().includes(d.name.toLowerCase()))).length;
+            return `<option value="${d.id}" ${activeAdminProductDeptFilter === d.id ? "selected" : ""}>${d.name} (${count})</option>`;
+          }).join("")}
+          <option value="haircare" ${activeAdminProductDeptFilter === "haircare" ? "selected" : ""}>Hair Care & Therapy (${adminData.products.filter(p => (p.category || "").toLowerCase() === "haircare").length})</option>
+        </select>
+      </div>
     </div>
   `;
 
-  container.innerHTML = countHeader + adminData.products.map((prod, idx) => `
+  if (!displayedProducts.length) {
+    container.innerHTML = countHeader + `
+      <div style="text-align:center; padding:35px 20px; background:#F8FAFC; border-radius:12px; border:1px dashed #CBD5E1;">
+        <p style="color:#64748B; margin:0 0 10px;">No products currently assigned to this department.</p>
+        <button type="button" class="btn btn-primary btn-sm" onclick="openProductModal(-1)">
+          <i class="fa-solid fa-plus"></i> Add Product to this Department
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = countHeader + displayedProducts.map((prod) => {
+    const idx = prod.originalIdx;
+    return `
     <div class="editable-item-card">
       <div style="position:absolute; top:8px; left:8px; background:rgba(15,23,42,0.85); color:#FFFFFF; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:4px; z-index:2;">
         #${idx + 1}
@@ -1386,11 +1464,11 @@ function renderProductsList() {
       <img src="${prod.image || 'assets/images/pharmacy.jpg'}" class="item-thumbnail" alt="${escapeAdminHtml(prod.name)}">
       <div class="item-info">
         <div class="item-title">${escapeAdminHtml(prod.name)} <span style="font-weight:700; color:var(--dw-blue); font-size:0.82rem;">(${escapeAdminHtml(prod.price || 'Inquire')})</span></div>
-        <div class="item-sub"><strong>Brand:</strong> ${escapeAdminHtml(prod.brand || 'D. Watson')} • <strong>Category:</strong> ${escapeAdminHtml(prod.categoryName || prod.category)}</div>
+        <div class="item-sub"><strong>Brand:</strong> ${escapeAdminHtml(prod.brand || 'D. Watson')} • <strong>Department:</strong> <span style="color:var(--dw-red); font-weight:700;">${escapeAdminHtml(prod.categoryName || prod.category)}</span></div>
         <div style="font-size:0.78rem; color:#64748B;">${escapeAdminHtml(prod.description || '')}</div>
         
         <!-- Dedicated Cloudinary URL Column on Product Card -->
-        <div style="margin-top:6px; font-size:0.75rem; background:#F0F9FF; border:1px solid #BAE6FD; padding:5px 10px; border-radius:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <div style="margin-top:6px; font-size:0.75rem; background:#F0F9FF; border:1px solid #BAE6FD; padding:6px 10px; border-radius:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <strong style="color:#0369A1;"><i class="fa-solid fa-cloud"></i> Cloudinary URL:</strong>
           ${prod.image && prod.image.includes('cloudinary.com')
             ? `<a href="${escapeAdminHtml(prod.image)}" target="_blank" style="color:#0284C7; font-weight:600; text-decoration:underline; font-family:monospace; word-break:break-all;" title="Click to view live on Cloudinary">${escapeAdminHtml(prod.image)}</a>
@@ -1416,7 +1494,8 @@ function renderProductsList() {
         </button>
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 }
 
 window.openProductModal = function(index = -1) {
@@ -1431,15 +1510,48 @@ window.openProductModal = function(index = -1) {
   const isNew = index === -1;
   const prod = isNew ? {
     name: "New Product Name",
-    category: "cosmetics",
-    categoryName: "Cosmetics & Skincare",
+    category: activeAdminProductDeptFilter !== "all" ? activeAdminProductDeptFilter : "pharmacy",
+    categoryName: "Pharmacy & Medicines",
     brand: "Original Brand",
     price: "PKR 3,500",
     tag: "Genuine Guaranteed",
-    image: "assets/images/cosmetics.jpg",
+    image: "assets/images/pharmacy.jpg",
     description: "Authentic imported product available at D. Watson branches and express delivery.",
     inStock: true
   } : adminData.products[index];
+
+  // Retrieve all official departments dynamically from current site data
+  const defaultDepts = (typeof DEFAULT_SITE_DATA !== "undefined" && Array.isArray(DEFAULT_SITE_DATA.departments))
+    ? DEFAULT_SITE_DATA.departments
+    : [];
+  const currentDepts = (adminData.departments && adminData.departments.length)
+    ? adminData.departments
+    : defaultDepts;
+
+  // Build department options map, ensuring all departments & specialty categories are represented
+  const deptOptionsMap = new Map();
+  currentDepts.forEach(d => {
+    deptOptionsMap.set(d.id, {
+      id: d.id,
+      name: d.name,
+      badge: d.badge || "Department"
+    });
+  });
+
+  // Guarantee standard specialty categories like haircare
+  if (!deptOptionsMap.has("haircare")) {
+    deptOptionsMap.set("haircare", {
+      id: "haircare",
+      name: "Hair Care & Therapy",
+      badge: "Specialty Care"
+    });
+  }
+
+  const deptOptionsHtml = Array.from(deptOptionsMap.values()).map(dept => {
+    const isSelected = (prod.category === dept.id) ||
+      (prod.categoryName && prod.categoryName.toLowerCase().includes(dept.name.toLowerCase()));
+    return `<option value="${escapeAdminHtml(dept.id)}" ${isSelected ? 'selected' : ''}>${escapeAdminHtml(dept.name)} (${escapeAdminHtml(dept.badge)})</option>`;
+  }).join("");
 
   modalTitle.textContent = isNew ? "Add New Featured Product" : `Edit: ${prod.name}`;
   modalBody.innerHTML = `
@@ -1451,12 +1563,8 @@ window.openProductModal = function(index = -1) {
         </div>
         <div class="admin-form-group">
           <label>Department Category</label>
-          <select class="admin-form-input" id="prodCategory">
-            <option value="pharmacy" ${prod.category === 'pharmacy' ? 'selected' : ''}>Medicines & Supplements</option>
-            <option value="cosmetics" ${prod.category === 'cosmetics' ? 'selected' : ''}>Cosmetics & Skincare</option>
-            <option value="optics" ${prod.category === 'optics' ? 'selected' : ''}>Optics & Eyewear</option>
-            <option value="surgical" ${prod.category === 'surgical' ? 'selected' : ''}>Surgical & Health Devices</option>
-            <option value="grocery" ${prod.category === 'grocery' ? 'selected' : ''}>Baby Care & Supermarket</option>
+          <select class="admin-form-input" id="prodCategory" style="font-weight:600;">
+            ${deptOptionsHtml}
           </select>
         </div>
       </div>
@@ -1472,9 +1580,9 @@ window.openProductModal = function(index = -1) {
         </div>
       </div>
 
-      <!-- DEDICATED CLOUDINARY LIVE CDN URL COLUMN -->
-      <div class="admin-form-group" style="background:#F0F9FF; border:1.5px solid #BAE6FD; border-radius:8px; padding:12px; margin-bottom:16px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <!-- DEDICATED CLOUDINARY LIVE CDN URL COLUMN (Responsive Wrap) -->
+      <div class="admin-form-group admin-cloudinary-box" style="background:#F0F9FF; border:1.5px solid #BAE6FD; border-radius:10px; padding:12px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
           <label style="color:#0369A1; font-weight:700; margin-bottom:0; font-size:0.88rem;">
             <i class="fa-solid fa-cloud"></i> Cloudinary CDN Link Column
           </label>
@@ -1482,29 +1590,33 @@ window.openProductModal = function(index = -1) {
             ${prod.image && prod.image.includes('cloudinary.com') ? '✓ Live on Cloudinary' : 'Upload photo below to generate link'}
           </span>
         </div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <input type="text" class="admin-form-input" id="prodImageCloudinaryUrl" value="${prod.image && prod.image.includes('cloudinary.com') ? escapeAdminHtml(prod.image) : ''}" placeholder="When you click 'Upload to Cloudinary' below, your live link appears here..." readonly style="flex:1; background:#FFFFFF; border-color:#93C5FD; color:#0284C7; font-weight:600; font-family:monospace; font-size:0.82rem;">
-          <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('prodImageCloudinaryUrl')" title="Copy Cloudinary Link" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700;">
-            <i class="fa-regular fa-copy"></i> Copy
-          </button>
-          <a id="prodImageCloudinaryVisitBtn" href="${prod.image && prod.image.includes('cloudinary.com') ? prod.image : '#'}" target="_blank" class="btn btn-outline btn-sm" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:6px 12px; font-weight:700; display:${prod.image && prod.image.includes('cloudinary.com') ? 'inline-flex' : 'none'}; align-items:center; gap:4px;">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open
-          </a>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <input type="text" class="admin-form-input" id="prodImageCloudinaryUrl" value="${prod.image && prod.image.includes('cloudinary.com') ? escapeAdminHtml(prod.image) : ''}" placeholder="When you click 'Upload to Cloudinary' below, your live link appears here..." readonly style="flex:1; min-width:200px; background:#FFFFFF; border-color:#93C5FD; color:#0284C7; font-weight:600; font-family:monospace; font-size:0.82rem;">
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('prodImageCloudinaryUrl')" title="Copy Cloudinary Link" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:8px 14px; font-weight:700;">
+              <i class="fa-regular fa-copy"></i> Copy
+            </button>
+            <a id="prodImageCloudinaryVisitBtn" href="${prod.image && prod.image.includes('cloudinary.com') ? prod.image : '#'}" target="_blank" class="btn btn-outline btn-sm" style="background:#FFFFFF; border-color:#93C5FD; color:#0284C7; padding:8px 14px; font-weight:700; display:${prod.image && prod.image.includes('cloudinary.com') ? 'inline-flex' : 'none'}; align-items:center; gap:4px;">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Open
+            </a>
+          </div>
         </div>
       </div>
 
       <div class="form-grid-2">
         <div class="admin-form-group">
           <label>Product Image Source (Upload Photo or Custom Link)</label>
-          <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-            <input type="text" class="admin-form-input" id="prodImage" value="${escapeAdminHtml(prod.image)}" style="flex:1;" oninput="document.getElementById('prodImgPreview').src=this.value; const cld=document.getElementById('prodImageCloudinaryUrl'); if(cld && this.value.includes('cloudinary.com')) cld.value=this.value;">
-            <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('prodImage')" title="Copy Image Link" style="padding:6px 10px;">
-              <i class="fa-regular fa-copy"></i>
-            </button>
-            <label class="btn btn-primary btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px; background:#0284C7; border-color:#0284C7; font-weight:700;">
-              <i class="fa-solid fa-cloud-arrow-up"></i> Upload to Cloudinary
-              <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'prodImage', 'prodImgPreview')">
-            </label>
+          <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px; flex-wrap:wrap;">
+            <input type="text" class="admin-form-input" id="prodImage" value="${escapeAdminHtml(prod.image)}" style="flex:1; min-width:180px;" oninput="document.getElementById('prodImgPreview').src=this.value; const cld=document.getElementById('prodImageCloudinaryUrl'); if(cld && this.value.includes('cloudinary.com')) cld.value=this.value;">
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="copyInputLink('prodImage')" title="Copy Image Link" style="padding:8px 12px;">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+              <label class="btn btn-primary btn-sm" style="cursor:pointer; white-space:nowrap; margin-bottom:0; display:inline-flex; align-items:center; gap:6px; background:#0284C7; border-color:#0284C7; font-weight:700; padding:8px 14px;">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload to Cloudinary
+                <input type="file" accept="image/*" style="display:none;" onchange="handleAdminImageUpload(this, 'prodImage', 'prodImgPreview')">
+              </label>
+            </div>
           </div>
           <div style="display:flex; align-items:center; gap:10px;">
             <img id="prodImgPreview" src="${prod.image || 'assets/images/cosmetics.jpg'}" alt="Preview" style="width:70px; height:50px; object-fit:cover; border-radius:6px; border:1px solid #CBD5E1;" onerror="this.onerror=null; this.src='assets/images/cosmetics.jpg';">
@@ -1522,7 +1634,7 @@ window.openProductModal = function(index = -1) {
         <textarea class="admin-form-input" id="prodDesc" rows="2" required>${escapeAdminHtml(prod.description)}</textarea>
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px; flex-wrap:wrap;">
         <button type="button" class="btn btn-outline btn-sm" onclick="closeAdminModal()">Cancel</button>
         <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Save Product</button>
       </div>
@@ -1535,19 +1647,24 @@ window.openProductModal = function(index = -1) {
 window.saveProductModal = function(e) {
   e.preventDefault();
   const catKey = document.getElementById("prodCategory").value;
-  const catNames = {
-    pharmacy: "Medicines & Supplements",
-    cosmetics: "Cosmetics & Skincare",
-    optics: "Optics & Eyewear",
-    surgical: "Surgical & Health Devices",
-    grocery: "Baby Care & Supermarket"
-  };
+
+  // Find department to resolve full title
+  const allDepts = (adminData.departments && adminData.departments.length)
+    ? adminData.departments
+    : ((typeof DEFAULT_SITE_DATA !== "undefined" && Array.isArray(DEFAULT_SITE_DATA.departments)) ? DEFAULT_SITE_DATA.departments : []);
+
+  const matchedDept = allDepts.find(d => d.id === catKey);
+  let resolvedCategoryName = matchedDept ? matchedDept.name : "";
+  if (!resolvedCategoryName) {
+    if (catKey === "haircare") resolvedCategoryName = "Hair Care & Therapy";
+    else resolvedCategoryName = catKey.charAt(0).toUpperCase() + catKey.slice(1);
+  }
 
   const newProd = {
     id: editItemIndex === -1 ? `p_${Date.now()}` : adminData.products[editItemIndex].id,
     name: document.getElementById("prodName").value.trim(),
     category: catKey,
-    categoryName: catNames[catKey] || "Retail",
+    categoryName: resolvedCategoryName,
     brand: document.getElementById("prodBrand").value.trim(),
     price: document.getElementById("prodPrice").value.trim() || "Inquire Price",
     tag: document.getElementById("prodTag").value.trim() || "Verified Genuine",
@@ -1567,7 +1684,7 @@ window.saveProductModal = function(e) {
   saveSiteData(adminData);
   closeAdminModal();
   renderProductsList();
-  showToast("Product saved successfully and featured in carousel!");
+  showToast("Product saved successfully and featured in catalog!");
 };
 
 window.moveProductUp = function(idx) {

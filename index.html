@@ -50,9 +50,9 @@
     }
   </script>
 
-  <!-- Stylesheets (v8.8 - Carousel & Mobile Match) -->
-  <link rel="stylesheet" href="css/style.css?v=8.8">
-  <link rel="stylesheet" href="css/responsive.css?v=9.0">
+  <!-- Stylesheets (v8.9 - Branch Zoom & Product Marquee) -->
+  <link rel="stylesheet" href="css/style.css?v=8.9">
+  <link rel="stylesheet" href="css/responsive.css?v=9.1">
 </head>
 <body class="page-home">
 
@@ -241,21 +241,39 @@
       </div>
     </section>
 
-    <!-- ================= TRENDING PRODUCTS (AUTO-SLIDING CAROUSEL) ================= -->
+    <!-- ================= TRENDING PRODUCTS (CONTINUOUS NON-STOP MARQUEE SLIDER) ================= -->
     <section class="dwatson-carousel-section" id="trendingProducts">
       <div class="container">
         <div class="dwatson-carousel-header">
           <div>
             <h3 class="dwatson-section-title" style="margin-bottom:2px;">Trending Products</h3>
-            <span class="dwatson-section-sub">100% genuine guaranteed medicines, wellness &amp; beauty</span>
+            <span class="dwatson-section-sub">100% genuine guaranteed medicines, wellness &amp; beauty &bull; Infinite Live Catalog</span>
           </div>
-          <div class="dwatson-carousel-controls">
-            <button class="dwatson-arrow-btn" onclick="scrollCarouselTrack('homeProductsCarousel', -1)" aria-label="Previous Products"><i class="fa-solid fa-chevron-left"></i></button>
-            <button class="dwatson-arrow-btn" onclick="scrollCarouselTrack('homeProductsCarousel', 1)" aria-label="Next Products"><i class="fa-solid fa-chevron-right"></i></button>
+          <div class="home-product-header-badge" id="homeProductCountBadge">
+            <span class="live-dot-green"></span> Showing All Products
           </div>
         </div>
-        <div class="dwatson-horizontal-track" id="homeProductsCarousel">
-          <!-- Populated & auto-sliding via renderHomeProducts() in main.js -->
+
+        <!-- Interactive Department / Category Filter Chips -->
+        <div class="mockup-filter-chips home-product-filter-chips" id="homeProductFilterChips">
+          <button type="button" class="mockup-chip active" onclick="filterHomeProductsCategory('all', this)"><i class="fa-solid fa-layer-group"></i> All Products</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeProductsCategory('pharmacy', this)"><i class="fa-solid fa-pills"></i> Pharmacy &amp; Medicines</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeProductsCategory('cosmetics', this)"><i class="fa-solid fa-wand-magic-sparkles"></i> Cosmetics &amp; Skincare</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeProductsCategory('perfumes', this)"><i class="fa-solid fa-spray-can-sparkles"></i> Luxury Perfumes</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeProductsCategory('haircare', this)"><i class="fa-solid fa-pump-soap"></i> Hair Care &amp; Therapy</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeProductsCategory('surgical', this)"><i class="fa-solid fa-heart-pulse"></i> Surgical &amp; Devices</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeProductsCategory('optics', this)"><i class="fa-solid fa-glasses"></i> Optics &amp; Eyewear</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeProductsCategory('babycare', this)"><i class="fa-solid fa-baby"></i> Baby Care &amp; Nutrition</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeProductsCategory('grocery', this)"><i class="fa-solid fa-cart-shopping"></i> Superstore &amp; Grocery</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeProductsCategory('homeo', this)"><i class="fa-solid fa-leaf"></i> Homeopathic Care</button>
+          <button type="button" class="mockup-chip" onclick="filterHomeProductsCategory('hearing_aid', this)"><i class="fa-solid fa-ear-listen"></i> Hearing &amp; Diagnostics</button>
+        </div>
+
+        <!-- Continuous Non-Stop Product Marquee (Smooth Infinite Loop) -->
+        <div class="home-products-marquee-wrap" id="homeProductsMarqueeWrap">
+          <div class="home-products-marquee-track" id="homeProductsMarqueeTrack">
+            <!-- Populated dynamically via renderHomeProducts() in main.js with continuous infinite motion -->
+          </div>
         </div>
       </div>
     </section>
@@ -843,6 +861,160 @@
     </div>
   </div>
 
+  <!-- High-End Interactive Flagship Branch Zoom & Concierge Details Lightbox Modal -->
+  <div class="branch-zoom-modal" id="branchZoomModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="branch-zoom-backdrop" onclick="closeBranchZoomModal()"></div>
+    
+    <div class="branch-zoom-dialog">
+      <!-- Modal Top Header & Action Controls Bar -->
+      <div class="zoom-modal-header branch-zoom-header">
+        <div class="zoom-modal-badge-group">
+          <span class="zoom-badge-pill branch-badge-pill" id="branchZoomCityBadge">Islamabad</span>
+          <span class="branch-flagship-pill" id="branchZoomFlagshipTag"><i class="fa-solid fa-star"></i> Flagship Branch</span>
+          <span class="zoom-counter" id="branchZoomCounter">1 / 7</span>
+        </div>
+
+        <div class="zoom-toolbar">
+          <button type="button" class="zoom-tool-btn" id="branchZoomInBtn" onclick="zoomInBranch()" title="Zoom In (+)" aria-label="Zoom In">
+            <i class="fa-solid fa-magnifying-glass-plus"></i>
+          </button>
+          <button type="button" class="zoom-tool-btn" id="branchZoomOutBtn" onclick="zoomOutBranch()" title="Zoom Out (-)" aria-label="Zoom Out">
+            <i class="fa-solid fa-magnifying-glass-minus"></i>
+          </button>
+          <button type="button" class="zoom-tool-btn" id="branchZoomResetBtn" onclick="resetBranchZoom()" title="Reset Zoom (100%)" aria-label="Reset Zoom">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+          <button type="button" class="zoom-tool-btn" id="branchZoomFullscreenBtn" onclick="toggleBranchZoomFullscreen()" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+          <button type="button" class="zoom-tool-btn zoom-close-btn" onclick="closeBranchZoomModal()" title="Close (Esc)" aria-label="Close Modal">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Stage: Interactive Branch Viewer + Concierge Sidebar -->
+      <div class="zoom-modal-body branch-zoom-body">
+        <!-- Interactive Deep-Zoom Stage -->
+        <div class="zoom-stage branch-zoom-stage" id="branchZoomStage">
+          <!-- Navigation Arrows -->
+          <button type="button" class="zoom-nav-arrow zoom-prev-btn" onclick="prevBranchZoom()" aria-label="Previous Branch" title="Previous Branch">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button type="button" class="zoom-nav-arrow zoom-next-btn" onclick="nextBranchZoom()" aria-label="Next Branch" title="Next Branch">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+
+          <!-- Zoom Viewport -->
+          <div class="zoom-viewport branch-zoom-viewport" id="branchZoomViewport">
+            <img id="branchZoomImg" src="" alt="D. Watson Branch Photo" draggable="false">
+            <div class="zoom-level-badge branch-zoom-level-badge" id="branchZoomLevelBadge">100%</div>
+          </div>
+
+          <!-- Interaction Hint -->
+          <div class="zoom-hint-banner">
+            <span><i class="fa-solid fa-arrows-up-down-left-right"></i> Drag to Pan &bull; Mouse Wheel to Zoom &bull; Double-Click to Enlarge</span>
+          </div>
+        </div>
+
+        <!-- Branch Concierge & Direct Action Sidebar -->
+        <div class="zoom-sidebar branch-zoom-sidebar" id="branchZoomSidebar">
+          <div class="zoom-sidebar-scroll">
+            <div class="branch-zoom-meta-row">
+              <span class="branch-zoom-area-tag" id="branchZoomArea"><i class="fa-solid fa-location-dot"></i> Sector F-6</span>
+              <span class="zoom-genuine-badge branch-live-badge" id="branchZoomLiveStatus">
+                <span class="zoom-live-dot"></span> <span id="branchZoomLiveText">Open 24/7</span>
+              </span>
+            </div>
+
+            <h3 class="zoom-product-title branch-zoom-title" id="branchZoomTitle">D. Watson F-6 Super Market (Flagship)</h3>
+
+            <!-- Address Card with Google Maps Pin & Copy Address -->
+            <div class="branch-zoom-info-card">
+              <div class="branch-zoom-card-icon" style="color:#EF4444; background:rgba(239,68,68,0.12);"><i class="fa-solid fa-map-location-dot"></i></div>
+              <div class="branch-zoom-card-body">
+                <span class="branch-zoom-card-label">Official Store Location</span>
+                <p class="branch-zoom-card-text" id="branchZoomAddress">School Road, Super Market, F-6 Markaz, Islamabad</p>
+              </div>
+              <button type="button" class="branch-zoom-copy-btn" onclick="copyBranchAddress()" id="branchZoomCopyBtn" title="Copy Address">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            </div>
+
+            <!-- Timings Card -->
+            <div class="branch-zoom-info-card">
+              <div class="branch-zoom-card-icon" style="color:#38BDF8; background:rgba(56,189,248,0.12);"><i class="fa-regular fa-clock"></i></div>
+              <div class="branch-zoom-card-body">
+                <span class="branch-zoom-card-label">Operating Hours</span>
+                <p class="branch-zoom-card-text" id="branchZoomTimings">08:00 AM - 01:00 AM Daily</p>
+              </div>
+            </div>
+
+            <!-- Direct Contact Phone Card -->
+            <div class="branch-zoom-info-card">
+              <div class="branch-zoom-card-icon" style="color:#22C55E; background:rgba(34,197,94,0.12);"><i class="fa-solid fa-phone"></i></div>
+              <div class="branch-zoom-card-body">
+                <span class="branch-zoom-card-label">Direct Line / Helpline</span>
+                <p class="branch-zoom-card-text">
+                  <a href="#" id="branchZoomPhoneLink" style="color:#F8FAFC; text-decoration:none; font-weight:700;">051-8438111</a>
+                </p>
+              </div>
+            </div>
+
+            <!-- Departments & Services Block -->
+            <div class="branch-zoom-services-block">
+              <h5>Departments &amp; Specialized Services</h5>
+              <div class="branch-zoom-tags-wrapper" id="branchZoomServices">
+                <!-- Chips populated dynamically -->
+              </div>
+            </div>
+
+            <!-- Assurance Perks -->
+            <div class="zoom-perks-list">
+              <div class="zoom-perk">
+                <i class="fa-solid fa-truck-bolt"></i>
+                <span id="branchZoomDeliveryInfo">Express Delivery within 2-4 Hours across Twin Cities</span>
+              </div>
+              <div class="zoom-perk">
+                <i class="fa-solid fa-temperature-arrow-down"></i>
+                <span>Strict Temperature-Controlled Cold Chain Storage</span>
+              </div>
+              <div class="zoom-perk">
+                <i class="fa-solid fa-user-doctor"></i>
+                <span>Qualified Clinical Pharmacists Available for In-Store Consultation</span>
+              </div>
+            </div>
+
+            <!-- Action Buttons: Directions, WhatsApp, Direct Call, Upload Rx -->
+            <div class="branch-zoom-actions">
+              <a href="#" id="branchZoomDirBtn" target="_blank" class="btn btn-primary branch-btn-dir">
+                <i class="fa-solid fa-location-arrow"></i> Get Directions (Google Maps)
+              </a>
+              <div class="branch-zoom-btn-row">
+                <a href="#" id="branchZoomWaBtn" target="_blank" class="btn btn-whatsapp" style="flex:1;">
+                  <i class="fa-brands fa-whatsapp"></i> WhatsApp Order
+                </a>
+                <a href="#" id="branchZoomCallBtn" class="btn btn-outline" style="flex:1;">
+                  <i class="fa-solid fa-phone"></i> Call Branch
+                </a>
+              </div>
+              <a href="prescription.html" id="branchZoomRxBtn" class="btn branch-btn-rx">
+                <i class="fa-solid fa-file-prescription"></i> Upload Prescription to this Branch
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Rapid Flagship Navigation Thumbnails Strip -->
+      <div class="zoom-thumbs-container">
+        <div class="zoom-thumbs-strip" id="branchZoomThumbsStrip">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Dynamic Branch Selector Modal for Product Orders -->
   <div class="product-zoom-modal" id="branchSelectorModal" role="dialog" aria-modal="true" aria-hidden="true" style="z-index: 10050;">
     <div class="product-zoom-backdrop" onclick="closeBranchSelectorModal()"></div>
@@ -934,6 +1106,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="js/config.js?v=1.3"></script>
   <script src="js/data.js?v=8.8"></script>
-  <script src="js/main.js?v=9.4"></script>
+  <script src="js/main.js?v=9.6"></script>
 </body>
 </html>

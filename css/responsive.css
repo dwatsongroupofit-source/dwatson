@@ -1580,20 +1580,23 @@ section, header, footer, nav, main, .container {
    5. PRODUCT ZOOM & LIGHTBOX MODAL RESPONSIVE STYLES
    ========================================================================== */
 @media (max-width: 992px) {
-  .product-zoom-dialog {
+  .product-zoom-dialog,
+  .branch-zoom-dialog {
     max-height: 94vh;
     border-radius: 20px;
   }
 
-  .zoom-modal-body {
+  .zoom-modal-body,
+  .branch-zoom-body {
     grid-template-columns: 1fr;
     max-height: calc(94vh - 130px);
     overflow-y: auto;
   }
 
-  .zoom-stage {
-    min-height: 300px;
-    height: 320px;
+  .zoom-stage,
+  .branch-zoom-stage {
+    min-height: 280px;
+    height: 300px;
     border-right: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
@@ -1604,22 +1607,27 @@ section, header, footer, nav, main, .container {
 }
 
 @media (max-width: 576px) {
-  .product-zoom-modal {
+  .product-zoom-modal,
+  .branch-zoom-modal {
     padding: 6px;
   }
 
-  .product-zoom-dialog {
+  .product-zoom-dialog,
+  .branch-zoom-dialog {
     max-height: 96vh;
     border-radius: 16px;
   }
 
-  .zoom-modal-header {
+  .zoom-modal-header,
+  .branch-zoom-header {
     padding: 10px 14px;
   }
 
-  .zoom-badge-pill {
+  .zoom-badge-pill,
+  .branch-badge-pill,
+  .branch-flagship-pill {
     padding: 3px 8px;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
   }
 
   .zoom-toolbar {
@@ -1632,7 +1640,8 @@ section, header, footer, nav, main, .container {
     font-size: 0.8rem;
   }
 
-  .zoom-stage {
+  .zoom-stage,
+  .branch-zoom-stage {
     min-height: 230px;
     height: 250px;
   }
@@ -1655,7 +1664,8 @@ section, header, footer, nav, main, .container {
     display: none;
   }
 
-  .zoom-product-title {
+  .zoom-product-title,
+  .branch-zoom-title {
     font-size: 1.15rem;
   }
 
@@ -1671,6 +1681,26 @@ section, header, footer, nav, main, .container {
     width: 42px;
     height: 42px;
     border-radius: 8px;
+  }
+
+  /* Continuous Product Marquee on Mobile */
+  .home-product-card {
+    flex: 0 0 225px;
+    width: 225px;
+    border-radius: 14px;
+  }
+
+  .home-product-img-wrap {
+    height: 155px;
+    padding: 8px;
+  }
+
+  .home-product-title {
+    font-size: 0.88rem;
+  }
+
+  .home-product-price {
+    font-size: 0.98rem;
   }
 }
 

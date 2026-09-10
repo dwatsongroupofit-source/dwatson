@@ -92,9 +92,9 @@ const finalAdminHtml = `<!DOCTYPE html>
   <link rel="icon" type="image/png" href="/assets/images/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
 
-  <!-- Stylesheets (v5.6) -->
-  <link rel="stylesheet" href="/css/style.css?v=5.6">
-  <link rel="stylesheet" href="/css/admin.css?v=5.6">
+  <!-- Stylesheets (v8.9) -->
+  <link rel="stylesheet" href="/css/style.css?v=8.9">
+  <link rel="stylesheet" href="/css/admin.css?v=9.2">
 
   <style>
     /* Preserve seamless flexbox layout */
@@ -279,9 +279,9 @@ const finalAdminHtml = `<!DOCTYPE html>
 
         // Load dependencies in exact sequence from root
         try {
-          if (!window.DW_CONFIG) await loadScript("/js/config.js?v=1.1");
-          if (!window.getSiteData) await loadScript("/js/data.js?v=5.6");
-          await loadScript("/js/admin.js?v=5.6");
+          if (!window.DW_CONFIG) await loadScript("/js/config.js?v=1.3");
+          if (!window.getSiteData) await loadScript("/js/data.js?v=8.8");
+          await loadScript("/js/admin.js?v=9.6");
         } catch (err) {
           console.error("Error loading studio dependencies:", err);
         }
