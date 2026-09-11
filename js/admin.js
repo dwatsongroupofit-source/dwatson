@@ -1199,7 +1199,7 @@ function renderBranchesList() {
           ${escapeAdminHtml(branch.name)} 
           ${branch.is24Hours ? '<span style="color:#DC2626; font-size:0.75rem; font-weight:800; margin-left:5px;">[24/7 OPEN]</span>' : ''}
           ${branch.isFlagship ? '<span style="color:#2563EB; font-size:0.75rem; font-weight:800; margin-left:5px;">[⭐ FLAGSHIP]</span>' : ''}
-          ${branch.expressDelivery ? `<span style="color:#16A34A; font-size:0.75rem; font-weight:800; margin-left:5px;"><i class="fa-solid fa-truck-fast"></i> EXPRESS (Rs. ${branch.deliveryFee || 200}, Min Rs. ${branch.minOrderAmount || 1000})</span>` : `<span style="color:#94A3B8; font-size:0.75rem; font-weight:700; margin-left:5px;"><i class="fa-solid fa-store"></i> IN-STORE PICKUP ONLY</span>`}
+          ${branch.expressDelivery ? `<span style="color:#16A34A; font-size:0.75rem; font-weight:800; margin-left:5px;"><i class="fa-solid fa-truck-fast"></i> EXPRESS (Rs. ${branch.deliveryFee !== undefined ? branch.deliveryFee : 200}, Min Rs. ${branch.minOrderAmount !== undefined ? branch.minOrderAmount : 1000})</span>` : `<span style="color:#94A3B8; font-size:0.75rem; font-weight:700; margin-left:5px;"><i class="fa-solid fa-store"></i> IN-STORE PICKUP ONLY</span>`}
         </div>
         <div class="item-sub">
           <strong>City:</strong> ${escapeAdminHtml(branch.city)} • 
@@ -1399,8 +1399,16 @@ window.saveBranchModal = function(e) {
     is24Hours: document.getElementById("branch24").checked,
     isFlagship: document.getElementById("branchFlagship").checked,
     expressDelivery: document.getElementById("branchExpressDelivery") ? document.getElementById("branchExpressDelivery").checked : true,
-    deliveryFee: parseInt(document.getElementById("branchDeliveryFee")?.value, 10) || 200,
-    minOrderAmount: parseInt(document.getElementById("branchMinOrder")?.value, 10) || 1000,
+    deliveryFee: (() => {
+      const raw = document.getElementById("branchDeliveryFee")?.value;
+      const val = parseInt(raw, 10);
+      return isNaN(val) ? 200 : val;
+    })(),
+    minOrderAmount: (() => {
+      const raw = document.getElementById("branchMinOrder")?.value;
+      const val = parseInt(raw, 10);
+      return isNaN(val) ? 1000 : val;
+    })(),
     image: document.getElementById("branchImage").value.trim() || "assets/images/store_flagship.jpg",
     services: ["Pharmacy", "Superstore", "Cosmetics", "Optics"],
     mapUrl: document.getElementById("branchMap").value.trim() || `https://maps.google.com/?q=${encodeURIComponent(document.getElementById("branchName").value)}`,
@@ -2370,9 +2378,18 @@ window.saveCompanySettings = function(e) {
   const minOrderEl = document.getElementById("setDeliveryMinOrder");
   const freeThreshEl = document.getElementById("setDeliveryFreeThreshold");
 
-  if (delFeeEl) adminData.company.deliveryDefaultFee = parseInt(delFeeEl.value, 10) || 200;
-  if (minOrderEl) adminData.company.deliveryMinOrder = parseInt(minOrderEl.value, 10) || 1000;
-  if (freeThreshEl) adminData.company.deliveryFreeThreshold = parseInt(freeThreshEl.value, 10) || 3000;
+  if (delFeeEl) {
+    const val = parseInt(delFeeEl.value, 10);
+    adminData.company.deliveryDefaultFee = isNaN(val) ? 200 : val;
+  }
+  if (minOrderEl) {
+    const val = parseInt(minOrderEl.value, 10);
+    adminData.company.deliveryMinOrder = isNaN(val) ? 1000 : val;
+  }
+  if (freeThreshEl) {
+    const val = parseInt(freeThreshEl.value, 10);
+    adminData.company.deliveryFreeThreshold = isNaN(val) ? 3000 : val;
+  }
 
   saveSiteData(adminData);
   if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveCompanyInfo === "function") {

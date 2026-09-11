@@ -1512,8 +1512,8 @@ function getSiteData() {
             ...b,
             image: b.image || (def ? def.image : "assets/images/store_flagship.jpg"),
             expressDelivery: b.expressDelivery !== undefined ? b.expressDelivery : (def ? def.expressDelivery : Boolean(b.isFlagship)),
-            deliveryFee: b.deliveryFee !== undefined ? b.deliveryFee : (def?.deliveryFee || 200),
-            minOrderAmount: b.minOrderAmount !== undefined ? b.minOrderAmount : (def?.minOrderAmount || 1000)
+            deliveryFee: b.deliveryFee !== undefined ? b.deliveryFee : (def?.deliveryFee !== undefined ? def.deliveryFee : 200),
+            minOrderAmount: b.minOrderAmount !== undefined ? b.minOrderAmount : (def?.minOrderAmount !== undefined ? def.minOrderAmount : 1000)
           };
         }) : DEFAULT_SITE_DATA.branches,
         gallery: Array.isArray(parsed.gallery) && parsed.gallery.length ? parsed.gallery : DEFAULT_SITE_DATA.gallery,

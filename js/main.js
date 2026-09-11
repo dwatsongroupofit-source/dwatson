@@ -4082,7 +4082,7 @@ function initPrescriptionBranchSelector() {
   html += displayList.map((b, i) => {
     const isSelected = prevSelected ? (b.id === prevSelected || b.name === prevSelected) : (i === 0);
     return `
-      <option value="${escapeHtml(b.id || b.name)}" data-express="${b.expressDelivery !== false ? '1' : '0'}" data-fee="${b.deliveryFee || 200}" data-min="${b.minOrderAmount || 1000}" ${isSelected ? 'selected' : ''}>
+      <option value="${escapeHtml(b.id || b.name)}" data-express="${b.expressDelivery !== false ? '1' : '0'}" data-fee="${b.deliveryFee !== undefined ? b.deliveryFee : 200}" data-min="${b.minOrderAmount !== undefined ? b.minOrderAmount : 1000}" ${isSelected ? 'selected' : ''}>
         ${escapeHtml(b.name)} ${tagText}
       </option>
     `;
@@ -4209,7 +4209,7 @@ function handleOrderAmountInput() {
   const data = typeof getSiteData === "function" ? getSiteData() : null;
   const company = data?.company || {};
   const defaultFee = company.deliveryDefaultFee !== undefined ? company.deliveryDefaultFee : 200;
-  const minOrder = (branch && branch.minOrderAmount !== undefined) ? branch.minOrderAmount : (company.deliveryMinOrder || 1000);
+  const minOrder = (branch && branch.minOrderAmount !== undefined) ? branch.minOrderAmount : (company.deliveryMinOrder !== undefined ? company.deliveryMinOrder : 1000);
   const freeThreshold = company.deliveryFreeThreshold !== undefined ? company.deliveryFreeThreshold : 3000;
   const fee = (branch && branch.deliveryFee !== undefined) ? branch.deliveryFee : defaultFee;
 
