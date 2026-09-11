@@ -2855,6 +2855,25 @@ textarea.form-control {
   user-select: none;
 }
 
+/* Crisp Complete Hard Suppression */
+.crisp-client, #crisp-chatbox, [id*="crisp-"], .crisp-k-theme {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  left: -99999px !important;
+  top: -99999px !important;
+}
+
+/* Inline floating dropdown suppressed in favor of clean Flagship modal */
+.floating-wa-dropdown {
+  display: none !important;
+}
+
 /* ==========================================================================
    Floating WhatsApp & Quick Action Button
    ========================================================================== */
@@ -2862,11 +2881,12 @@ textarea.form-control {
   position: fixed;
   bottom: 28px;
   right: 28px;
-  z-index: 9999;
+  z-index: 99999;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
+  pointer-events: auto !important;
 }
 
 .floating-wa-dropdown {
@@ -3050,7 +3070,7 @@ textarea.form-control {
   background: #25D366;
   color: white;
   border: none;
-  cursor: pointer;
+  cursor: pointer !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3058,6 +3078,9 @@ textarea.form-control {
   box-shadow: 0 10px 25px rgba(37, 211, 102, 0.5);
   transition: var(--transition);
   animation: pulseWa 2.5s infinite;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 99999;
 }
 
 .floating-btn-main:hover {

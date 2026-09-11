@@ -17,8 +17,7 @@ const DEFAULT_SITE_DATA = {
     messenger: "https://m.me/DWatsonChemist",
     email: "dwatsonconsultation@gmail.com",
     website: "https://dwatson.co",
-    address: "Head Office: School Road, Super Market, F-6 Markaz, Islamabad",
-    announcement: "✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • WhatsApp Express Delivery Available",
+    announcement: "✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • Express Delivery Available Across Pakistan",
     
     // Heritage, Founders & Family Leadership
     aboutShort: "For nearly five decades, D. Watson has stood as Pakistan's premier healthcare and retail legacy, established by the Bakhtawari family with an unwavering commitment to 100% authentic medicines, global luxury beauty, optics, surgical care, and supermarket convenience.",

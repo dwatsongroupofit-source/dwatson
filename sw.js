@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v25.0)
+ * D. Watson Chemist & Superstore - Service Worker (v27.0)
  * Ultra-Fresh Cache Architecture, Zero Stale Assets & Auto-Eviction
  */
 
-const CACHE_NAME = "dwatson-cache-v25.0";
+const CACHE_NAME = "dwatson-cache-v27.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -14,11 +14,11 @@ const STATIC_ASSETS = [
   "./contact.html",
   "./privacy.html",
   "./terms.html",
-  "./css/style.css?v=25.0",
-  "./css/responsive.css?v=25.0",
-  "./js/config.js?v=25.0",
-  "./js/data.js?v=25.0",
-  "./js/main.js?v=25.0",
+  "./css/style.css?v=27.0",
+  "./css/responsive.css?v=27.0",
+  "./js/config.js?v=27.0",
+  "./js/data.js?v=27.0",
+  "./js/main.js?v=27.0",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",

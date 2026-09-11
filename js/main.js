@@ -126,8 +126,9 @@ function renderHeaderAndCompanyInfo(company) {
   const announcementEl = document.getElementById("topAnnouncement");
   if (announcementEl) {
     let ann = company.announcement || "";
-    // Clean up any old hardcoded WhatsApp number from express delivery text
-    ann = ann.replace(/WhatsApp\s+Express\s+Delivery\s*:\s*[0-9\-\+\s]+/gi, "WhatsApp Express Delivery Available");
+    // Clean up WhatsApp mentions from header announcement ribbon
+    ann = ann.replace(/WhatsApp\s+Express\s+Delivery\s*:\s*[0-9\-\+\s]+/gi, "Express Delivery Available Across Pakistan");
+    ann = ann.replace(/WhatsApp\s+Express\s+Delivery\s+Available/gi, "Express Delivery Available Across Pakistan");
     announcementEl.textContent = ann;
   }
 
@@ -137,22 +138,14 @@ function renderHeaderAndCompanyInfo(company) {
     phoneTopEl.innerHTML = `<i class="fa-solid fa-phone"></i> Helpline: ${company.helpline}`;
   }
 
-  // Top corner WhatsApp - remove phone number and display just WhatsApp with branch selector
+  // Remove any leftover top WhatsApp element from header
   const waTopEl = document.getElementById("topWhatsApp");
   if (waTopEl) {
-    waTopEl.innerHTML = `<i class="fa-brands fa-whatsapp"></i> WhatsApp <i class="fa-solid fa-chevron-down" style="font-size:0.75rem; margin-left:4px;"></i>`;
-    waTopEl.removeAttribute("href");
-    waTopEl.style.cursor = "pointer";
-    waTopEl.setAttribute("role", "button");
-    waTopEl.onclick = function(e) {
-      if (e) e.preventDefault();
-      const dropdownWrap = document.getElementById("topWhatsAppDropdownWrap");
-      if (dropdownWrap) {
-        dropdownWrap.classList.toggle("open");
-      } else {
-        openFlagshipWhatsAppModal();
-      }
-    };
+    waTopEl.remove();
+  }
+  const topWaWrap = document.getElementById("topWhatsAppDropdownWrap");
+  if (topWaWrap) {
+    topWaWrap.remove();
   }
 
   // Mobile bottom bar links
@@ -4829,18 +4822,34 @@ function filterBranchesSearch(query) {
    ========================================================================== */
 
 /**
- * Clean up any legacy Crisp scripts or DOM traces
+ * Aggressively eradicate any legacy Crisp scripts, iframes, or DOM elements
  */
 function cleanupLegacyCrisp() {
   try {
-    const s = document.getElementById("crispScriptEmbed");
-    if (s) s.remove();
-    const c = document.querySelector(".crisp-client");
-    if (c) c.remove();
+    document.querySelectorAll('.crisp-client, #crisp-chatbox, [id*="crisp-"], iframe[src*="crisp.chat"], script[src*="crisp.chat"], link[href*="crisp.chat"]').forEach(el => el.remove());
     if (window.$crisp) {
+      try { window.$crisp.push(["do", "chat:hide"]); } catch (e) {}
       delete window.$crisp;
-      delete window.CRISP_WEBSITE_ID;
     }
+    delete window.CRISP_WEBSITE_ID;
+    delete window.CRISP_TOKEN_ID;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.toLowerCase().includes('crisp')) localStorage.removeItem(k);
+      }
+    } catch (e) {}
+  } catch (e) {}
+}
+
+// Observe and destroy Crisp if any cached script tries to inject it
+if (typeof MutationObserver !== "undefined") {
+  try {
+    const crispObserver = new MutationObserver(function() {
+      const c = document.querySelector(".crisp-client, #crisp-chatbox, iframe[src*='crisp.chat']");
+      if (c) cleanupLegacyCrisp();
+    });
+    crispObserver.observe(document.documentElement, { childList: true, subtree: true });
   } catch (e) {}
 }
 
@@ -4868,74 +4877,17 @@ function launchBranchLiveChat(branch) {
 }
 
 /**
- * Interactive Topbar WhatsApp Dropdown with Flagship ("Flash Tag") Branches
+ * Interactive WhatsApp Concierge (Removed from header, active on floating button and mobile modals)
  */
 function initWhatsAppDropdown() {
   const dropdownWrap = document.getElementById("topWhatsAppDropdownWrap");
-  const dropdownList = document.getElementById("topWhatsAppDropdownList");
-
-  const siteData = typeof getSiteData === "function" ? getSiteData() : null;
-  const branches = (siteData && siteData.branches) ? siteData.branches : (allBranchesData || []);
-  // Filter ONLY Flash Tag (Flagship) branches as requested: "only flash tag branches"
-  const flagshipList = branches.filter(b => b.isFlagship);
-  const displayList = flagshipList.length ? flagshipList : branches.slice(0, 7);
-
-  if (dropdownList) {
-    dropdownList.innerHTML = displayList.map(b => {
-      const cleanWa = String(b.whatsapp || "923329716666").replace(/[^0-9]/g, "");
-      const waLink = `https://wa.me/${cleanWa}?text=${encodeURIComponent('Hello D.Watson ' + b.name + ', I would like to inquire about medicine availability.')}`;
-      return `
-        <a href="${waLink}" target="_blank" class="whatsapp-dropdown-item" data-branch="${b.id}">
-          <div class="whatsapp-branch-info">
-            <div style="display:flex; align-items:center; gap:5px; margin-bottom:2px;">
-              <span class="wa-flash-badge"><i class="fa-solid fa-bolt"></i> Flagship</span>
-              <span class="wa-city-badge">${escapeHtml(b.city || "Islamabad")}</span>
-            </div>
-            <strong class="whatsapp-branch-name">${escapeHtml(b.name)}</strong>
-            <small class="whatsapp-branch-time"><i class="fa-regular fa-clock"></i> ${escapeHtml(b.timings || "Open Daily")}</small>
-          </div>
-          <span class="whatsapp-connect-pill"><i class="fa-brands fa-whatsapp"></i> Chat</span>
-        </a>
-      `;
-    }).join("");
-  }
-
-  const toggleBtn = document.getElementById("topWhatsAppBtn");
-  if (toggleBtn && dropdownWrap) {
-    toggleBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      dropdownWrap.classList.toggle("open");
-    });
-  }
-
-  if (dropdownWrap) {
-    document.addEventListener("click", (e) => {
-      if (!dropdownWrap.contains(e.target)) {
-        dropdownWrap.classList.remove("open");
-      }
-    });
-  }
-
-  // Handle #topWhatsApp link if present (remove hardcoded phone number and wire up dropdown/modal)
+  if (dropdownWrap) dropdownWrap.remove();
   const oldTopWa = document.getElementById("topWhatsApp");
-  if (oldTopWa) {
-    oldTopWa.innerHTML = `<i class="fa-brands fa-whatsapp"></i> WhatsApp <i class="fa-solid fa-chevron-down" style="font-size:0.75rem; margin-left:4px;"></i>`;
-    oldTopWa.removeAttribute("href");
-    oldTopWa.style.cursor = "pointer";
-    oldTopWa.setAttribute("role", "button");
-    oldTopWa.onclick = function(e) {
-      if (e) e.preventDefault();
-      if (dropdownWrap) {
-        dropdownWrap.classList.toggle("open");
-      } else {
-        openFlagshipWhatsAppModal();
-      }
-    };
-  }
+  if (oldTopWa) oldTopWa.remove();
 }
 
 /**
- * Ensure Floating WhatsApp Widget displays interactive Flagship Branches dropdown
+ * Ensure Floating WhatsApp Widget connects cleanly to Flagship WhatsApp Modal
  */
 function ensureFloatingWhatsAppWidget(whatsappNum) {
   cleanupLegacyCrisp();
@@ -4945,88 +4897,39 @@ function ensureFloatingWhatsAppWidget(whatsappNum) {
     wrapper = document.createElement("div");
     wrapper.className = "floating-widget-wrapper";
     wrapper.id = "floatingWidgetWrapper";
-    wrapper.innerHTML = `
-      <div class="floating-wa-dropdown" id="floatingWaDropdown">
-        <div class="floating-wa-header">
-          <div>
-            <h4><i class="fa-brands fa-whatsapp" style="color:#25D366; font-size:1.15rem;"></i> WhatsApp Flagship Desks</h4>
-            <p>Select a branch to chat directly with our pharmacist</p>
-          </div>
-          <button type="button" class="floating-wa-close-btn" onclick="toggleFloatingWhatsAppDropdown(false)" aria-label="Close">&times;</button>
-        </div>
-        <div class="floating-wa-list" id="floatingWaList"></div>
-      </div>
-      <button type="button" id="floatingWaBtn" class="floating-btn-main" aria-label="WhatsApp Flagship Branches" title="Chat on WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-      </button>
-    `;
     document.body.appendChild(wrapper);
   }
 
-  // Populate floating dropdown with ONLY flash tag (flagship) branches
-  const listEl = document.getElementById("floatingWaList");
-  if (listEl) {
-    const siteData = typeof getSiteData === "function" ? getSiteData() : null;
-    const branches = (siteData && siteData.branches) ? siteData.branches : (allBranchesData || []);
-    // ONLY flash tag (flagship) branches as requested: "only flash tag branches"
-    const flagshipList = branches.filter(b => b.isFlagship);
-    const displayList = flagshipList.length ? flagshipList : branches.slice(0, 7);
+  // Remove any stale inline dropdowns that were rendering in the document
+  const staleDropdowns = document.querySelectorAll(".floating-wa-dropdown, #floatingWaDropdown");
+  staleDropdowns.forEach(d => d.remove());
 
-    listEl.innerHTML = displayList.map(b => {
-      const cleanWa = String(b.whatsapp || "923329716666").replace(/[^0-9]/g, "");
-      const waLink = `https://wa.me/${cleanWa}?text=${encodeURIComponent('Hello D.Watson ' + b.name + ', I would like to inquire about medicines & order.')}`;
-      return `
-        <a href="${waLink}" target="_blank" class="floating-wa-item">
-          <div class="floating-wa-item-info">
-            <div style="display:flex; align-items:center; gap:5px; margin-bottom:2px;">
-              <span class="wa-flash-badge"><i class="fa-solid fa-bolt"></i> Flagship</span>
-              <span class="wa-city-badge">${escapeHtml(b.city || "Islamabad")}</span>
-            </div>
-            <strong>${escapeHtml(b.name)}</strong>
-            <small><i class="fa-regular fa-clock"></i> ${escapeHtml(b.timings || "Open Daily")}</small>
-          </div>
-          <span class="floating-wa-item-btn"><i class="fa-brands fa-whatsapp"></i> Chat</span>
-        </a>
-      `;
-    }).join("");
+  let btn = document.getElementById("floatingWaBtn");
+  if (!btn) {
+    wrapper.innerHTML = `
+      <button type="button" id="floatingWaBtn" class="floating-btn-main" onclick="openFlagshipWhatsAppModal()" aria-label="WhatsApp Flagship Branches" title="Chat on WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+      </button>
+    `;
+    btn = document.getElementById("floatingWaBtn");
   }
 
-  // Toggle dropdown on button click
-  const btn = document.getElementById("floatingWaBtn");
   if (btn) {
     btn.onclick = function(e) {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
       }
-      if (window.innerWidth <= 768) {
-        openFlagshipWhatsAppModal();
-      } else {
-        toggleFloatingWhatsAppDropdown();
-      }
+      openFlagshipWhatsAppModal();
     };
   }
-
-  // Close floating dropdown when clicking outside
-  document.addEventListener("click", function(e) {
-    if (wrapper && !wrapper.contains(e.target)) {
-      wrapper.classList.remove("open");
-    }
-  });
 }
 
 /**
- * Toggle the floating WhatsApp dropdown
+ * Toggle the floating WhatsApp dropdown (Forwards directly to Flagship modal)
  */
 window.toggleFloatingWhatsAppDropdown = function(forceState) {
-  const wrapper = document.querySelector(".floating-widget-wrapper");
-  if (!wrapper) return;
-  if (typeof forceState === "boolean") {
-    if (forceState) wrapper.classList.add("open");
-    else wrapper.classList.remove("open");
-  } else {
-    wrapper.classList.toggle("open");
-  }
+  openFlagshipWhatsAppModal();
 };
 
 /**

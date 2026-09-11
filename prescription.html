@@ -42,25 +42,45 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <!-- Active Cache Controller & Stale Cache Eviction (v25.0) -->
+    <!-- Crisp Elimination & Active Cache Controller (v27.0) -->
   <script>
     (function() {
-      var CURRENT_CACHE_VER = "25.0";
+      function killCrispNow() {
+        document.querySelectorAll(".crisp-client, #crisp-chatbox, [id*=\"crisp-\"], iframe[src*=\"crisp.chat\"], script[src*=\"crisp.chat\"], link[href*=\"crisp.chat\"]").forEach(function(el) { el.remove(); });
+      }
+      killCrispNow();
+      window.$crisp = [];
+      window.CRISP_WEBSITE_ID = "";
+      try {
+        for (var i = localStorage.length - 1; i >= 0; i--) {
+          var k = localStorage.key(i);
+          if (k && k.toLowerCase().indexOf("crisp") !== -1) localStorage.removeItem(k);
+        }
+      } catch (e) {}
+
+      var CURRENT_CACHE_VER = "27.0";
       var stored = localStorage.getItem("dw_cache_version");
       if (stored !== CURRENT_CACHE_VER) {
         localStorage.setItem("dw_cache_version", CURRENT_CACHE_VER);
         if (window.caches) {
           caches.keys().then(function(keys) {
             keys.forEach(function(k) {
-              if (k !== "dwatson-cache-v" + CURRENT_CACHE_VER) {
-                caches.delete(k);
-              }
+              caches.delete(k);
             });
           });
         }
         if (navigator.serviceWorker) {
           navigator.serviceWorker.getRegistrations().then(function(regs) {
-            for (var r of regs) r.update();
+            for (var r of regs) {
+              r.unregister();
+            }
+          });
+        }
+      }
+      if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var r of regs) r.unregister();
           });
         }
       }
@@ -68,8 +88,8 @@
   </script>
 
   <!-- Stylesheets (v25.0) -->
-  <link rel="stylesheet" href="css/style.css?v=25.0">
-  <link rel="stylesheet" href="css/responsive.css?v=25.0">
+  <link rel="stylesheet" href="css/style.css?v=27.0">
+  <link rel="stylesheet" href="css/responsive.css?v=27.0">
 </head>
 <body class="page-prescription">
 
@@ -98,7 +118,7 @@
       <div class="container top-bar-inner">
         <div class="announcement-text">
           <span class="badge-live">24/7 Live Service</span>
-          <span id="topAnnouncement">✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • WhatsApp Express Delivery Available</span>
+          <span id="topAnnouncement">✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • Express Delivery Available Across Pakistan</span>
         </div>
         <div class="top-bar-links">
           <div class="topbar-helpline-wrap" id="topHelplineDropdownWrap">
@@ -113,20 +133,7 @@
               <div class="helpline-dropdown-list" id="helplineDropdownList"></div>
             </div>
           </div>
-          <div class="topbar-whatsapp-wrap" id="topWhatsAppDropdownWrap">
-            <button type="button" class="topbar-whatsapp-btn" id="topWhatsAppBtn" aria-label="Flagship Branch WhatsApp">
-              <i class="fa-brands fa-whatsapp"></i> WhatsApp <i class="fa-solid fa-chevron-down" style="font-size:0.75rem; margin-left:4px;"></i>
-            </button>
-            <div class="topbar-whatsapp-dropdown" id="topWhatsAppDropdown">
-              <div class="whatsapp-dropdown-header">
-                <strong><i class="fa-brands fa-whatsapp"></i> Flagship WhatsApp Desks</strong>
-                <small>Click a branch to connect on WhatsApp</small>
-              </div>
-              <div class="whatsapp-dropdown-list" id="topWhatsAppDropdownList"></div>
-            </div>
           </div>
-        </div>
-      </div>
     </div>
 
     <!-- Main Navigation Bar -->
@@ -560,9 +567,9 @@
 
   <!-- Scripts (v26.0) -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/config.js?v=26.0"></script>
+  <script src="js/config.js?v=27.0"></script>
   <script src="js/cloud-db.js?v=2.0"></script>
-  <script src="js/data.js?v=26.0"></script>
-  <script src="js/main.js?v=26.0"></script>
+  <script src="js/data.js?v=27.0"></script>
+  <script src="js/main.js?v=27.0"></script>
 </body>
 </html>
