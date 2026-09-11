@@ -16,7 +16,8 @@
   const JSONBIN_API_KEY = "$2a$10$3OV2e0QeSmF5lqIVlImrHu3OrK7U8JprhYQe3gAdQN2qZsv5Ojarq";
   const JSONBIN_BASE    = "https://api.jsonbin.io/v3/b";
   const CACHE_KEY       = "dwatson_cloud_cache_v1";
-  const CACHE_TTL_MS    = 30 * 1000; // 30 seconds — refresh if older than this
+  const CACHE_TTL_MS    = 5 * 1000; // 5 seconds — fast propagation across devices
+  const STORAGE_KEY     = "dwatson_site_data_v19";
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -36,34 +37,61 @@
     try {
       localStorage.setItem(CACHE_KEY, JSON.stringify({ data, fetchedAt: Date.now() }));
     } catch (e) {
-      // Storage quota — ignore, we still push to cloud
+      // Storage quota — ignore
     }
   }
 
   // ── Core API ──────────────────────────────────────────────────────────────
 
   /**
-   * Fetch all site data from JSONBin cloud.
+   * Fetch all site data from JSONBin cloud (with API proxy fallback).
    * Returns the full data object, or null on failure.
    */
   async function fetchFromCloud() {
     try {
-      const res = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}/latest`, {
-        method: "GET",
-        headers: {
-          "X-Master-Key": JSONBIN_API_KEY,
-          "X-Bin-Meta":   "false"
+      let data = null;
+
+      // 1. Direct JSONBin fetch with cache-busting timestamp
+      try {
+        const res = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}/latest?t=${Date.now()}`, {
+          method: "GET",
+          headers: {
+            "X-Master-Key": JSONBIN_API_KEY,
+            "X-Bin-Meta":   "false"
+          },
+          cache: "no-store"
+        });
+        if (res.ok) {
+          const json = await res.json();
+          data = json.record || json;
         }
-      });
-      if (!res.ok) {
-        console.warn("☁️ Cloud DB fetch failed:", res.status);
-        return null;
+      } catch (directErr) {
+        console.warn("☁️ Direct JSONBin fetch failed, trying proxy:", directErr.message);
       }
-      const json = await res.json();
-      // JSONBin returns the bin content directly when X-Bin-Meta: false
-      const data = json.record || json;
-      writeCache(data);
-      return data;
+
+      // 2. Fallback to /api/site-data serverless proxy if direct fetch failed
+      if (!data) {
+        try {
+          const proxyRes = await fetch(`/api/site-data?t=${Date.now()}`, {
+            cache: "no-store"
+          });
+          if (proxyRes.ok) {
+            const json = await proxyRes.json();
+            data = json.data || json;
+          }
+        } catch (proxyErr) {
+          console.warn("☁️ API proxy fetch failed:", proxyErr.message);
+        }
+      }
+
+      if (data && typeof data === "object") {
+        writeCache(data);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {}
+        return data;
+      }
+      return null;
     } catch (err) {
       console.warn("☁️ Cloud DB unreachable:", err.message);
       return null;
@@ -72,27 +100,60 @@
 
   /**
    * Push the full site data object to JSONBin cloud.
+   * Dual-redundant: tries direct JSONBin PUT first, falls back to /api/site-data proxy.
    * Call this after every admin save action.
    * Returns true on success, false on failure.
    */
   async function pushToCloud(data) {
     try {
       data.lastModified = Date.now();
-      const res = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Master-Key": JSONBIN_API_KEY
-        },
-        body: JSON.stringify(data)
-      });
-      if (!res.ok) {
-        console.error("☁️ Cloud DB push failed:", res.status, await res.text());
-        return false;
+      let ok = false;
+
+      // 1. Try direct JSONBin PUT
+      try {
+        const res = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": JSONBIN_API_KEY
+          },
+          body: JSON.stringify(data)
+        });
+        if (res.ok) {
+          ok = true;
+        } else {
+          console.warn("☁️ Direct JSONBin PUT returned status:", res.status);
+        }
+      } catch (directErr) {
+        console.warn("☁️ Direct JSONBin PUT error, trying proxy:", directErr.message);
       }
-      writeCache(data);
-      console.log("☁️ Cloud DB updated successfully.");
-      return true;
+
+      // 2. Fallback to /api/site-data proxy if direct PUT failed
+      if (!ok) {
+        try {
+          const proxyRes = await fetch("/api/site-data", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ data: data })
+          });
+          if (proxyRes.ok) {
+            ok = true;
+          }
+        } catch (proxyErr) {
+          console.warn("☁️ API proxy push failed:", proxyErr.message);
+        }
+      }
+
+      if (ok) {
+        writeCache(data);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {}
+        window.dispatchEvent(new Event("siteDataUpdated"));
+        console.log("☁️ Cloud DB updated & synced to local state successfully.");
+        return true;
+      }
+      return false;
     } catch (err) {
       console.error("☁️ Cloud DB push error:", err.message);
       return false;
@@ -103,7 +164,6 @@
 
   /**
    * Get site data — tries cache first, then cloud.
-   * On public pages: refreshes from cloud silently in the background.
    * Always returns data synchronously from cache if available.
    */
   async function loadSiteData() {
@@ -124,7 +184,12 @@
       return cached.data;
     }
 
-    // Nothing in cache or cloud — caller should use DEFAULT_SITE_DATA
+    // Nothing in cache or cloud — check localStorage
+    try {
+      const ls = localStorage.getItem(STORAGE_KEY);
+      if (ls) return JSON.parse(ls);
+    } catch (e) {}
+
     return null;
   }
 
@@ -132,21 +197,24 @@
   // Each of these loads current cloud data, updates one section, then pushes back.
 
   async function saveProducts(products) {
-    const data = await loadSiteData() || {};
-    data.products = products;
-    return pushToCloud(data);
+    const cloudLatest = await fetchFromCloud() || await loadSiteData() || {};
+    cloudLatest.products = products;
+    cloudLatest.lastModified = Date.now();
+    return pushToCloud(cloudLatest);
   }
 
   async function saveBranches(branches) {
-    const data = await loadSiteData() || {};
-    data.branches = branches;
-    return pushToCloud(data);
+    const cloudLatest = await fetchFromCloud() || await loadSiteData() || {};
+    cloudLatest.branches = branches;
+    cloudLatest.lastModified = Date.now();
+    return pushToCloud(cloudLatest);
   }
 
   async function saveGallery(gallery) {
-    const data = await loadSiteData() || {};
-    data.gallery = gallery;
-    return pushToCloud(data);
+    const cloudLatest = await fetchFromCloud() || await loadSiteData() || {};
+    cloudLatest.gallery = gallery;
+    cloudLatest.lastModified = Date.now();
+    return pushToCloud(cloudLatest);
   }
 
   async function saveDepartments(departments) {
@@ -172,7 +240,7 @@
 
   async function saveCompanyInfo(company) {
     const cloudLatest = await fetchFromCloud() || await loadSiteData() || {};
-    cloudLatest.company = company;
+    cloudLatest.company = { ...(cloudLatest.company || {}), ...(company || {}) };
     cloudLatest.lastModified = Date.now();
     return pushToCloud(cloudLatest);
   }
@@ -195,14 +263,14 @@
         const merged = {
           ...latest,
           ...data,
-          departments: (Array.isArray(data.departments) && data.departments.length) ? data.departments : (latest.departments || []),
-          products: (Array.isArray(data.products) && data.products.length) ? data.products : (latest.products || []),
-          branches: (Array.isArray(data.branches) && data.branches.length) ? data.branches : (latest.branches || []),
-          heroSlides: (Array.isArray(data.heroSlides) && data.heroSlides.length) ? data.heroSlides : (latest.heroSlides || []),
-          management: (Array.isArray(data.management) && data.management.length) ? data.management : (latest.management || []),
-          gallery: (Array.isArray(data.gallery) && data.gallery.length) ? data.gallery : (latest.gallery || []),
-          categories: (Array.isArray(data.categories) && data.categories.length) ? data.categories : (latest.categories || []),
-          faqs: (Array.isArray(data.faqs) && data.faqs.length) ? data.faqs : (latest.faqs || []),
+          departments: Array.isArray(data.departments) ? data.departments : (latest.departments || []),
+          products: Array.isArray(data.products) ? data.products : (latest.products || []),
+          branches: Array.isArray(data.branches) ? data.branches : (latest.branches || []),
+          heroSlides: Array.isArray(data.heroSlides) ? data.heroSlides : (latest.heroSlides || []),
+          management: Array.isArray(data.management) ? data.management : (latest.management || []),
+          gallery: Array.isArray(data.gallery) ? data.gallery : (latest.gallery || []),
+          categories: Array.isArray(data.categories) ? data.categories : (latest.categories || []),
+          faqs: Array.isArray(data.faqs) ? data.faqs : (latest.faqs || []),
           company: { ...(latest.company || {}), ...(data.company || {}) },
           lastModified: Date.now()
         };
@@ -224,12 +292,11 @@
       const cloudData = await fetchFromCloud();
       if (!cloudData || typeof cloudData !== "object") return null;
 
-      const STORAGE_KEY = "dwatson_site_data_v19";
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
 
       // Always notify the page that cloud data is fresh
       window.dispatchEvent(new Event("siteDataUpdated"));
-      console.log("☁️ Site data synced from cloud (departments: " + (cloudData.departments || []).length + ", modified: " + new Date(cloudData.lastModified || Date.now()).toLocaleTimeString() + ")");
+      console.log("☁️ Site data synced from cloud (departments: " + (cloudData.departments || []).length + ", branches: " + (cloudData.branches || []).length + ", modified: " + new Date(cloudData.lastModified || Date.now()).toLocaleTimeString() + ")");
       return cloudData;
     } catch (err) {
       console.warn("☁️ Cloud sync notice:", err);

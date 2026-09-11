@@ -96,14 +96,14 @@ module.exports = async (req, res) => {
       const mergedData = {
         ...currentData,
         ...siteData,
-        departments: (Array.isArray(siteData.departments) && siteData.departments.length > 0) ? siteData.departments : (currentData.departments || []),
-        products: (Array.isArray(siteData.products) && siteData.products.length > 0) ? siteData.products : (currentData.products || []),
-        branches: (Array.isArray(siteData.branches) && siteData.branches.length > 0) ? siteData.branches : (currentData.branches || []),
-        heroSlides: (Array.isArray(siteData.heroSlides) && siteData.heroSlides.length > 0) ? siteData.heroSlides : (currentData.heroSlides || []),
-        management: (Array.isArray(siteData.management) && siteData.management.length > 0) ? siteData.management : (currentData.management || []),
-        gallery: (Array.isArray(siteData.gallery) && siteData.gallery.length > 0) ? siteData.gallery : (currentData.gallery || []),
-        categories: (Array.isArray(siteData.categories) && siteData.categories.length > 0) ? siteData.categories : (currentData.categories || []),
-        faqs: (Array.isArray(siteData.faqs) && siteData.faqs.length > 0) ? siteData.faqs : (currentData.faqs || []),
+        departments: Array.isArray(siteData.departments) ? siteData.departments : (currentData.departments || []),
+        products: Array.isArray(siteData.products) ? siteData.products : (currentData.products || []),
+        branches: Array.isArray(siteData.branches) ? siteData.branches : (currentData.branches || []),
+        heroSlides: Array.isArray(siteData.heroSlides) ? siteData.heroSlides : (currentData.heroSlides || []),
+        management: Array.isArray(siteData.management) ? siteData.management : (currentData.management || []),
+        gallery: Array.isArray(siteData.gallery) ? siteData.gallery : (currentData.gallery || []),
+        categories: Array.isArray(siteData.categories) ? siteData.categories : (currentData.categories || []),
+        faqs: Array.isArray(siteData.faqs) ? siteData.faqs : (currentData.faqs || []),
         company: { ...(currentData.company || {}), ...(siteData.company || {}) },
         lastModified: Date.now()
       };

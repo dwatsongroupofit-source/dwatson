@@ -1451,15 +1451,21 @@ function getSiteData() {
     } catch (evictErr) {}
 
     let saved = (typeof localStorage !== "undefined") ? localStorage.getItem(STORAGE_KEY) : null;
+    if (!saved && typeof localStorage !== "undefined") {
+      try {
+        const cc = localStorage.getItem("dwatson_cloud_cache_v1");
+        if (cc) {
+          const parsedCc = JSON.parse(cc);
+          if (parsedCc && parsedCc.data) {
+            saved = JSON.stringify(parsedCc.data);
+            localStorage.setItem(STORAGE_KEY, saved);
+          }
+        }
+      } catch (e) {}
+    }
 
     if (saved) {
       const parsed = JSON.parse(saved);
-
-      // Auto-heal any stale whatsapp numbers if present
-      if (parsed.company && parsed.company.whatsapp && (parsed.company.whatsapp.includes("9716666") || !parsed.company.whatsapp)) {
-        parsed.company.whatsapp = DEFAULT_SITE_DATA.company.whatsapp;
-        parsed.company.whatsappDisplay = DEFAULT_SITE_DATA.company.whatsappDisplay;
-      }
 
       // Products: use saved products if they exist, otherwise always fall back to the hardcoded defaults.
       // Admin-deleted products are honoured only when localStorage actually has a non-empty products array.

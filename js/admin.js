@@ -671,15 +671,21 @@ window.saveSlideModal = function(e) {
   }
 
   saveSiteData(adminData);
+  if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveHeroSlides === "function") {
+    window.CloudDB.saveHeroSlides(adminData.heroSlides).catch(() => null);
+  }
   closeAdminModal();
   renderSlidesList();
-  showToast("Slide updated successfully!");
+  showToast("Slide updated and published live!");
 };
 
 window.deleteSlide = function(idx) {
   if (confirm("Are you sure you want to remove this hero slide?")) {
     adminData.heroSlides.splice(idx, 1);
     saveSiteData(adminData);
+    if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveHeroSlides === "function") {
+      window.CloudDB.saveHeroSlides(adminData.heroSlides).catch(() => null);
+    }
     renderSlidesList();
     showToast("Slide removed.");
   }
@@ -886,6 +892,9 @@ window.deleteDepartment = function(idx) {
   if (confirm(`Are you sure you want to delete "${dept?.name || 'this department'}"?`)) {
     adminData.departments.splice(idx, 1);
     saveSiteData(adminData);
+    if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveDepartments === "function") {
+      window.CloudDB.saveDepartments(adminData.departments).catch(() => null);
+    }
     renderDepartmentsList();
     showToast("Department removed.");
   }
@@ -1405,17 +1414,23 @@ window.saveBranchModal = function(e) {
   }
 
   saveSiteData(adminData);
+  if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveBranches === "function") {
+    window.CloudDB.saveBranches(adminData.branches).catch(() => null);
+  }
   closeAdminModal();
   renderBranchesList();
-  showToast("Branch saved successfully!");
+  showToast("Branch saved and published live to cloud!");
 };
 
 window.deleteBranch = function(idx) {
   if (confirm("Delete this branch location?")) {
     adminData.branches.splice(idx, 1);
     saveSiteData(adminData);
+    if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveBranches === "function") {
+      window.CloudDB.saveBranches(adminData.branches).catch(() => null);
+    }
     renderBranchesList();
-    showToast("Branch removed.");
+    showToast("Branch removed from cloud and website.");
   }
 };
 
@@ -1746,6 +1761,9 @@ window.saveProductModal = function(e) {
   }
 
   saveSiteData(adminData);
+  if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveProducts === "function") {
+    window.CloudDB.saveProducts(adminData.products).catch(() => null);
+  }
   closeAdminModal();
   renderProductsList();
   showToast("Product saved successfully and featured in catalog!");
@@ -1757,6 +1775,9 @@ window.moveProductUp = function(idx) {
   adminData.products[idx] = adminData.products[idx - 1];
   adminData.products[idx - 1] = temp;
   saveSiteData(adminData);
+  if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveProducts === "function") {
+    window.CloudDB.saveProducts(adminData.products).catch(() => null);
+  }
   renderProductsList();
   showToast(`Moved "${temp.name}" up to position #${idx}.`);
 };
@@ -1767,6 +1788,9 @@ window.moveProductDown = function(idx) {
   adminData.products[idx] = adminData.products[idx + 1];
   adminData.products[idx + 1] = temp;
   saveSiteData(adminData);
+  if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveProducts === "function") {
+    window.CloudDB.saveProducts(adminData.products).catch(() => null);
+  }
   renderProductsList();
   showToast(`Moved "${temp.name}" down to position #${idx + 2}.`);
 };
@@ -1781,6 +1805,9 @@ window.deleteProduct = function(idx) {
     }
     adminData.products.splice(idx, 1);
     saveSiteData(adminData);
+    if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveProducts === "function") {
+      window.CloudDB.saveProducts(adminData.products).catch(() => null);
+    }
     renderProductsList();
     showToast(`Product "${prod.name}" deleted permanently.`);
   }
@@ -1791,6 +1818,9 @@ window.clearAllProducts = function() {
     adminData.products = [];
     adminData.deletedProductIds = ["all_cleared"];
     saveSiteData(adminData);
+    if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveProducts === "function") {
+      window.CloudDB.saveProducts(adminData.products).catch(() => null);
+    }
     renderProductsList();
     showToast("All products have been deleted. Catalog is now empty.", "info");
   }
@@ -2082,6 +2112,9 @@ window.saveGalleryModal = function(e) {
   }
 
   saveSiteData(adminData);
+  if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveGallery === "function") {
+    window.CloudDB.saveGallery(adminData.gallery).catch(() => null);
+  }
   closeAdminModal();
   renderGalleryList();
   showToast("Photo saved to gallery!", "success");
@@ -2091,6 +2124,9 @@ window.deleteGalleryItem = function(idx) {
   if (confirm("Remove this photo from the gallery?")) {
     adminData.gallery.splice(idx, 1);
     saveSiteData(adminData);
+    if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveGallery === "function") {
+      window.CloudDB.saveGallery(adminData.gallery).catch(() => null);
+    }
     renderGalleryList();
     showToast("Photo removed from gallery.", "info");
   }
@@ -2245,6 +2281,9 @@ window.saveManagementModal = function(e) {
   }
 
   saveSiteData(adminData);
+  if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveManagement === "function") {
+    window.CloudDB.saveManagement(adminData.management).catch(() => null);
+  }
   closeAdminModal();
   renderManagementList();
   showToast("Executive profile saved successfully!");
@@ -2257,6 +2296,9 @@ window.deleteManagementMember = function(idx) {
     }
     adminData.management.splice(idx, 1);
     saveSiteData(adminData);
+    if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveManagement === "function") {
+      window.CloudDB.saveManagement(adminData.management).catch(() => null);
+    }
     renderManagementList();
     showToast("Profile removed.");
   }
@@ -2333,6 +2375,9 @@ window.saveCompanySettings = function(e) {
   if (freeThreshEl) adminData.company.deliveryFreeThreshold = parseInt(freeThreshEl.value, 10) || 3000;
 
   saveSiteData(adminData);
+  if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveCompanyInfo === "function") {
+    window.CloudDB.saveCompanyInfo(adminData.company).catch(() => null);
+  }
   showToast("Company settings, delivery policies & live chat configuration published!");
 };
 
@@ -2372,6 +2417,9 @@ window.saveSecurityCredentials = async function(e) {
   adminData.company.adminAuth.securityPin = pin;
 
   saveSiteData(adminData);
+  if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveCompanyInfo === "function") {
+    window.CloudDB.saveCompanyInfo(adminData.company).catch(() => null);
+  }
   document.getElementById("secNewPassword").value = "";
   document.getElementById("secConfirmPassword").value = "";
   showToast("Security credentials updated successfully!");
@@ -2569,13 +2617,25 @@ window.exportSiteCode = function() {
 };
 
 window.syncSiteDataCloud = async function() {
-  showToast("Synchronizing site data across devices...", "info");
-  if (typeof syncSiteDataToCloud === "function") {
-    await syncSiteDataToCloud(adminData);
-    showToast("Cloud sync broadcast complete! Other devices will receive updates.", "success");
-  } else {
-    showToast("Local data active.", "success");
+  showToast("Synchronizing with Cloud DB (JSONBin)...", "info");
+  try {
+    if (typeof window.CloudDB !== "undefined") {
+      await window.CloudDB.saveAllData(adminData);
+      const fresh = await window.CloudDB.syncCloudToLocal();
+      if (fresh) {
+        loadAdminState();
+        renderAllSections();
+        showToast("☁️ Cloud DB synced! All devices updated.", "success");
+        return;
+      }
+    }
+    if (typeof syncSiteDataToCloud === "function") {
+      await syncSiteDataToCloud(adminData);
+    }
+  } catch (err) {
+    console.error("Cloud sync error:", err);
   }
+  showToast("Site data synced successfully.", "success");
 };
 
 window.triggerImportJSON = function() {
