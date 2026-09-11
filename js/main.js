@@ -86,14 +86,14 @@ function initWebsite() {
   initMobileMenu();
   initGlobalSearch();
   initHelplineDropdown();
+  initWhatsAppDropdown();
   initPWAInstall();
-  initCrispLiveChat();
   ensureFloatingWhatsAppWidget(data.company.whatsapp);
   setupCustomerInfoAutoSync();
 }
 
 /**
- * Auto-persist and prefill customer contact info across forms and chat
+ * Auto-persist and prefill customer contact info across forms
  */
 function setupCustomerInfoAutoSync() {
   const fields = [
@@ -112,9 +112,6 @@ function setupCustomerInfoAutoSync() {
       const val = el.value.trim();
       if (val) {
         localStorage.setItem(f.key, val);
-        if (typeof syncCustomerInfoWithCrisp === "function") {
-          syncCustomerInfoWithCrisp();
-        }
       }
     };
     el.addEventListener("change", persist);
@@ -127,7 +124,12 @@ function setupCustomerInfoAutoSync() {
  */
 function renderHeaderAndCompanyInfo(company) {
   const announcementEl = document.getElementById("topAnnouncement");
-  if (announcementEl) announcementEl.textContent = company.announcement;
+  if (announcementEl) {
+    let ann = company.announcement || "";
+    // Clean up any old hardcoded WhatsApp number from express delivery text
+    ann = ann.replace(/WhatsApp\s+Express\s+Delivery\s*:\s*[0-9\-\+\s]+/gi, "WhatsApp Express Delivery Available");
+    announcementEl.textContent = ann;
+  }
 
   const phoneTopEl = document.getElementById("topPhone");
   if (phoneTopEl) {
@@ -135,10 +137,22 @@ function renderHeaderAndCompanyInfo(company) {
     phoneTopEl.innerHTML = `<i class="fa-solid fa-phone"></i> Helpline: ${company.helpline}`;
   }
 
+  // Top corner WhatsApp - remove phone number and display just WhatsApp with branch selector
   const waTopEl = document.getElementById("topWhatsApp");
   if (waTopEl) {
-    waTopEl.href = `https://wa.me/${company.whatsapp}`;
-    waTopEl.innerHTML = `<i class="fa-brands fa-whatsapp"></i> WhatsApp: ${company.whatsappDisplay}`;
+    waTopEl.innerHTML = `<i class="fa-brands fa-whatsapp"></i> WhatsApp <i class="fa-solid fa-chevron-down" style="font-size:0.75rem; margin-left:4px;"></i>`;
+    waTopEl.removeAttribute("href");
+    waTopEl.style.cursor = "pointer";
+    waTopEl.setAttribute("role", "button");
+    waTopEl.onclick = function(e) {
+      if (e) e.preventDefault();
+      const dropdownWrap = document.getElementById("topWhatsAppDropdownWrap");
+      if (dropdownWrap) {
+        dropdownWrap.classList.toggle("open");
+      } else {
+        openFlagshipWhatsAppModal();
+      }
+    };
   }
 
   // Mobile bottom bar links
@@ -156,18 +170,31 @@ function renderHeaderAndCompanyInfo(company) {
   }
   const mobWa = document.getElementById("mobTabWa");
   if (mobWa) {
-    const cleanWa = (company.whatsapp || "923329716666").replace(/[^0-9]/g, "");
-    mobWa.href = `https://wa.me/${cleanWa}?text=${encodeURIComponent("Hi D.Watson Chemist, I need assistance.")}`;
-    mobWa.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
+    mobWa.onclick = function(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (typeof openFlagshipWhatsAppModal === "function") {
+        openFlagshipWhatsAppModal();
+      }
+    };
   }
 
   // Floating CTA WhatsApp link
   const floatWaBtn = document.getElementById("floatingWaBtn");
   if (floatWaBtn) {
-    const cleanWa = (company.whatsapp || "923329716666").replace(/[^0-9]/g, "");
-    floatWaBtn.href = `https://wa.me/${cleanWa}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}`;
+    floatWaBtn.onclick = function(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (window.innerWidth <= 768) {
+        openFlagshipWhatsAppModal();
+      } else {
+        toggleFloatingWhatsAppDropdown();
+      }
+    };
   }
 }
 
@@ -4798,225 +4825,296 @@ function filterBranchesSearch(query) {
 }
 
 /* ==========================================================================
-   MULTI-BRANCH LIVE CHAT & MESSENGER SYSTEM (CRISP + BRANCH WHATSAPP)
+   FLAGSHIP BRANCHES WHATSAPP MESSENGER SYSTEM (FLASH TAG BRANCHES ONLY)
    ========================================================================== */
 
 /**
- * Initialize Crisp Live Chat Embed with Full Multi-Agent Support
+ * Clean up any legacy Crisp scripts or DOM traces
+ */
+function cleanupLegacyCrisp() {
+  try {
+    const s = document.getElementById("crispScriptEmbed");
+    if (s) s.remove();
+    const c = document.querySelector(".crisp-client");
+    if (c) c.remove();
+    if (window.$crisp) {
+      delete window.$crisp;
+      delete window.CRISP_WEBSITE_ID;
+    }
+  } catch (e) {}
+}
+
+/**
+ * Crisp Live Chat Disabled in favor of Flagship WhatsApp direct connections
  */
 function initCrispLiveChat() {
-  if (!window.DW_CONFIG || !window.DW_CONFIG.isCrispEnabled()) return;
-  const websiteId = window.DW_CONFIG.getCrispWebsiteId() || "4ea9bb45-b036-4468-bb27-09fe93c30b3f";
+  cleanupLegacyCrisp();
+}
 
-  if (!websiteId || !websiteId.trim()) return;
+function syncCustomerInfoWithCrisp() {}
+function sendCustomerInfoToCrisp() {}
 
-  // Prevent duplicate script injection
-  if (document.getElementById("crispScriptEmbed")) return;
-
-  window.$crisp = window.$crisp || [];
-  window.CRISP_WEBSITE_ID = websiteId.trim();
-
-  // Pre-load known customer profile into Crisp session if available
-  const savedName = localStorage.getItem("dw_customer_name");
-  const savedPhone = localStorage.getItem("dw_customer_phone");
-  const savedEmail = localStorage.getItem("dw_customer_email");
-
-  if (savedName) {
-    window.$crisp.push(["set", "user:nickname", [savedName]]);
+/**
+ * Open Flagship Branch WhatsApp connection or selector
+ */
+function launchBranchLiveChat(branch) {
+  if (branch && branch.whatsapp) {
+    const cleanWa = String(branch.whatsapp).replace(/[^0-9]/g, "");
+    const msg = encodeURIComponent(`Hello D.Watson ${branch.name}, I would like to inquire about medicines & prescription order.`);
+    window.open(`https://wa.me/${cleanWa}?text=${msg}`, "_blank");
+  } else {
+    openFlagshipWhatsAppModal();
   }
-  if (savedPhone) {
-    window.$crisp.push(["set", "user:phone", [savedPhone]]);
+}
+
+/**
+ * Interactive Topbar WhatsApp Dropdown with Flagship ("Flash Tag") Branches
+ */
+function initWhatsAppDropdown() {
+  const dropdownWrap = document.getElementById("topWhatsAppDropdownWrap");
+  const dropdownList = document.getElementById("topWhatsAppDropdownList");
+
+  const siteData = typeof getSiteData === "function" ? getSiteData() : null;
+  const branches = (siteData && siteData.branches) ? siteData.branches : (allBranchesData || []);
+  // Filter ONLY Flash Tag (Flagship) branches as requested: "only flash tag branches"
+  const flagshipList = branches.filter(b => b.isFlagship);
+  const displayList = flagshipList.length ? flagshipList : branches.slice(0, 7);
+
+  if (dropdownList) {
+    dropdownList.innerHTML = displayList.map(b => {
+      const cleanWa = String(b.whatsapp || "923329716666").replace(/[^0-9]/g, "");
+      const waLink = `https://wa.me/${cleanWa}?text=${encodeURIComponent('Hello D.Watson ' + b.name + ', I would like to inquire about medicine availability.')}`;
+      return `
+        <a href="${waLink}" target="_blank" class="whatsapp-dropdown-item" data-branch="${b.id}">
+          <div class="whatsapp-branch-info">
+            <div style="display:flex; align-items:center; gap:5px; margin-bottom:2px;">
+              <span class="wa-flash-badge"><i class="fa-solid fa-bolt"></i> Flagship</span>
+              <span class="wa-city-badge">${escapeHtml(b.city || "Islamabad")}</span>
+            </div>
+            <strong class="whatsapp-branch-name">${escapeHtml(b.name)}</strong>
+            <small class="whatsapp-branch-time"><i class="fa-regular fa-clock"></i> ${escapeHtml(b.timings || "Open Daily")}</small>
+          </div>
+          <span class="whatsapp-connect-pill"><i class="fa-brands fa-whatsapp"></i> Chat</span>
+        </a>
+      `;
+    }).join("");
   }
-  if (savedEmail) {
-    window.$crisp.push(["set", "user:email", [savedEmail]]);
+
+  const toggleBtn = document.getElementById("topWhatsAppBtn");
+  if (toggleBtn && dropdownWrap) {
+    toggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdownWrap.classList.toggle("open");
+    });
   }
 
-  // Pre-load session data into Crisp so operators see page, URL, platform
-  const pageTitle = document.title ? document.title.split(" - ")[0].trim() : "Store Page";
-  window.$crisp.push(["set", "session:data", [[
-    ["page_title", pageTitle],
-    ["page_url", window.location.href],
-    ["customer_name", savedName || "Guest User"],
-    ["customer_phone", savedPhone || "Not provided"],
-    ["country", "Pakistan"],
-    ["platform", /Mobi|Android/i.test(navigator.userAgent) ? "Mobile Web" : "Desktop Web"]
-  ]]]);
-
-  window.$crisp.push(["set", "session:segments", [["Pakistan", "D.Watson Web"]]]);
-
-  // Ensure Crisp chat bubble is explicitly shown and visible!
-  window.$crisp.push(["do", "chat:show"]);
-
-  // On mobile screens (<= 992px), elevate Crisp bubble above the fixed mobile bottom bar (height 64px)
-  // so it never overlaps or blocks the WhatsApp tab (#mobTabWa) in the footer
-  function applyCrispElevation() {
-    if (window.innerWidth <= 992) {
-      const offset = "calc(78px + env(safe-area-inset-bottom, 0px))";
-      document.documentElement.style.setProperty("--crisp-customization-mobile-button-vertical", offset, "important");
-      document.documentElement.style.setProperty("--crisp-customization-button-vertical", offset, "important");
-      document.documentElement.style.setProperty("--crisp-customization-default-button-vertical", offset, "important");
-      const client = document.querySelector(".crisp-client");
-      if (client) {
-        client.style.setProperty("--crisp-customization-mobile-button-vertical", offset, "important");
-        client.style.setProperty("--crisp-customization-button-vertical", offset, "important");
+  if (dropdownWrap) {
+    document.addEventListener("click", (e) => {
+      if (!dropdownWrap.contains(e.target)) {
+        dropdownWrap.classList.remove("open");
       }
-    } else {
-      document.documentElement.style.removeProperty("--crisp-customization-mobile-button-vertical");
-      document.documentElement.style.removeProperty("--crisp-customization-button-vertical");
-      document.documentElement.style.removeProperty("--crisp-customization-default-button-vertical");
-      const client = document.querySelector(".crisp-client");
-      if (client) {
-        client.style.removeProperty("--crisp-customization-mobile-button-vertical");
-        client.style.removeProperty("--crisp-customization-button-vertical");
+    });
+  }
+
+  // Handle #topWhatsApp link if present (remove hardcoded phone number and wire up dropdown/modal)
+  const oldTopWa = document.getElementById("topWhatsApp");
+  if (oldTopWa) {
+    oldTopWa.innerHTML = `<i class="fa-brands fa-whatsapp"></i> WhatsApp <i class="fa-solid fa-chevron-down" style="font-size:0.75rem; margin-left:4px;"></i>`;
+    oldTopWa.removeAttribute("href");
+    oldTopWa.style.cursor = "pointer";
+    oldTopWa.setAttribute("role", "button");
+    oldTopWa.onclick = function(e) {
+      if (e) e.preventDefault();
+      if (dropdownWrap) {
+        dropdownWrap.classList.toggle("open");
+      } else {
+        openFlagshipWhatsAppModal();
       }
-    }
-  }
-
-  applyCrispElevation();
-  window.addEventListener("resize", applyCrispElevation, { passive: true });
-  window.$crisp.push(["on", "session:loaded", applyCrispElevation]);
-
-  // When chat window is opened, hide WhatsApp floating button to prevent overlap
-  window.$crisp.push(["on", "chat:opened", function() {
-    const wa = document.querySelector(".floating-widget-wrapper");
-    if (wa) wa.style.display = "none";
-  }]);
-
-  // When customer minimizes / closes the chatbox, restore WhatsApp floating button on desktop
-  window.$crisp.push(["on", "chat:closed", function() {
-    const wa = document.querySelector(".floating-widget-wrapper");
-    if (wa && window.innerWidth > 768) wa.style.display = "flex";
-  }]);
-
-  const s = document.createElement("script");
-  s.id = "crispScriptEmbed";
-  s.async = true;
-  s.src = "https://client.crisp.chat/l.js";
-  document.head.appendChild(s);
-}
-
-/**
- * Sync saved customer profile to active Crisp session
- */
-function syncCustomerInfoWithCrisp() {
-  if (!window.$crisp || typeof window.$crisp.push !== "function") return;
-  const name = localStorage.getItem("dw_customer_name");
-  const phone = localStorage.getItem("dw_customer_phone");
-  const email = localStorage.getItem("dw_customer_email");
-
-  if (name) window.$crisp.push(["set", "user:nickname", [name]]);
-  if (phone) window.$crisp.push(["set", "user:phone", [phone]]);
-  if (email) window.$crisp.push(["set", "user:email", [email]]);
-}
-
-/**
- * Synchronize full customer profile, branch, page and context with Crisp
- */
-function sendCustomerInfoToCrisp(branch, customerInfo) {
-  if (!window.$crisp || typeof window.$crisp.push !== "function") return;
-
-  const finalName = (customerInfo && customerInfo.name) || localStorage.getItem("dw_customer_name") || "";
-  const finalPhone = (customerInfo && customerInfo.phone) || localStorage.getItem("dw_customer_phone") || "";
-  const finalEmail = (customerInfo && customerInfo.email) || localStorage.getItem("dw_customer_email") || "";
-
-  if (finalName) {
-    window.$crisp.push(["set", "user:nickname", [finalName]]);
-  }
-  if (finalPhone) {
-    window.$crisp.push(["set", "user:phone", [finalPhone]]);
-  }
-  if (finalEmail) {
-    window.$crisp.push(["set", "user:email", [finalEmail]]);
-  }
-
-  const bName = (branch && branch.name) ? branch.name : "D. Watson Chemist";
-  const bCity = (branch && branch.city) ? branch.city : "Islamabad";
-  const bPhone = (branch && branch.phone) ? branch.phone : "";
-  const bWa = (branch && branch.whatsapp) ? branch.whatsapp : "923329716666";
-  const pageTitle = document.title ? document.title.split(" - ")[0].trim() : "Store Page";
-
-  const sessionData = [
-    ["branch_name", bName],
-    ["branch_city", bCity],
-    ["branch_phone", bPhone],
-    ["branch_whatsapp", bWa],
-    ["customer_name", finalName || "Guest User"],
-    ["customer_phone", finalPhone || "Not provided"],
-    ["page_title", pageTitle],
-    ["page_url", window.location.href],
-    ["country", "Pakistan"],
-    ["platform", /Mobi|Android/i.test(navigator.userAgent) ? "Mobile Web" : "Desktop Web"]
-  ];
-
-  try {
-    window.$crisp.push(["set", "session:data", [sessionData]]);
-  } catch (e) {
-    console.warn("Crisp session:data error:", e);
-  }
-
-  try {
-    const cleanBranch = bName.replace(/^D\.\s*Watson\s*/i, "");
-    const segments = [bCity, cleanBranch, "D.Watson Web"];
-    window.$crisp.push(["set", "session:segments", [segments]]);
-  } catch (e) {
-    console.warn("Crisp session:segments error:", e);
+    };
   }
 }
 
 /**
- * Open Crisp Live Chat and sync branch details
- */
-function launchBranchLiveChat(branch, customerInfo) {
-  if (window.$crisp && typeof window.$crisp.push === "function") {
-    sendCustomerInfoToCrisp(branch, customerInfo);
-    window.$crisp.push(["do", "chat:show"]);
-    window.$crisp.push(["do", "chat:open"]);
-    return;
-  }
-  const waNum = (branch && branch.whatsapp) || "923329716666";
-  window.open(`https://wa.me/${waNum.replace(/[^0-9]/g, "")}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}`, "_blank");
-}
-
-/**
- * Ensure Floating WhatsApp Widget is present on all pages (stacked directly above Crisp chat icon)
+ * Ensure Floating WhatsApp Widget displays interactive Flagship Branches dropdown
  */
 function ensureFloatingWhatsAppWidget(whatsappNum) {
-  let waNum = (whatsappNum || (window.DW_CONFIG && window.DW_CONFIG.WHATSAPP_NUMBER) || "923329716666").replace(/[^0-9]/g, "");
-  let wrapper = document.querySelector(".floating-widget-wrapper");
+  cleanupLegacyCrisp();
 
+  let wrapper = document.querySelector(".floating-widget-wrapper");
   if (!wrapper) {
     wrapper = document.createElement("div");
     wrapper.className = "floating-widget-wrapper";
+    wrapper.id = "floatingWidgetWrapper";
     wrapper.innerHTML = `
-      <div class="floating-popup" id="floatingPopup">
-        <div class="floating-popup-header">
-          <i class="fa-brands fa-whatsapp" style="color:#25D366; font-size:1.3rem;"></i>
-          <span>D. Watson Pharmacy Desk</span>
+      <div class="floating-wa-dropdown" id="floatingWaDropdown">
+        <div class="floating-wa-header">
+          <div>
+            <h4><i class="fa-brands fa-whatsapp" style="color:#25D366; font-size:1.15rem;"></i> WhatsApp Flagship Desks</h4>
+            <p>Select a branch to chat directly with our pharmacist</p>
+          </div>
+          <button type="button" class="floating-wa-close-btn" onclick="toggleFloatingWhatsAppDropdown(false)" aria-label="Close">&times;</button>
         </div>
-        <p class="floating-popup-text">Chat directly with our pharmacist on WhatsApp for prescription &amp; medicine inquiries.</p>
-        <a href="https://wa.me/${waNum}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}" target="_blank" class="btn btn-whatsapp btn-sm" style="width:100%;">
-          Start WhatsApp Chat
-        </a>
+        <div class="floating-wa-list" id="floatingWaList"></div>
       </div>
-      <a href="https://wa.me/${waNum}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}" id="floatingWaBtn" target="_blank" class="floating-btn-main" aria-label="Chat on WhatsApp" title="Chat on WhatsApp">
+      <button type="button" id="floatingWaBtn" class="floating-btn-main" aria-label="WhatsApp Flagship Branches" title="Chat on WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
-      </a>
+      </button>
     `;
     document.body.appendChild(wrapper);
   }
 
-  // Ensure button links directly to WhatsApp
-  const btn = wrapper.querySelector(".floating-btn-main") || document.getElementById("floatingWaBtn");
-  if (btn) {
-    btn.href = `https://wa.me/${waNum}?text=${encodeURIComponent("Hello D.Watson, I need assistance.")}`;
+  // Populate floating dropdown with ONLY flash tag (flagship) branches
+  const listEl = document.getElementById("floatingWaList");
+  if (listEl) {
+    const siteData = typeof getSiteData === "function" ? getSiteData() : null;
+    const branches = (siteData && siteData.branches) ? siteData.branches : (allBranchesData || []);
+    // ONLY flash tag (flagship) branches as requested: "only flash tag branches"
+    const flagshipList = branches.filter(b => b.isFlagship);
+    const displayList = flagshipList.length ? flagshipList : branches.slice(0, 7);
+
+    listEl.innerHTML = displayList.map(b => {
+      const cleanWa = String(b.whatsapp || "923329716666").replace(/[^0-9]/g, "");
+      const waLink = `https://wa.me/${cleanWa}?text=${encodeURIComponent('Hello D.Watson ' + b.name + ', I would like to inquire about medicines & order.')}`;
+      return `
+        <a href="${waLink}" target="_blank" class="floating-wa-item">
+          <div class="floating-wa-item-info">
+            <div style="display:flex; align-items:center; gap:5px; margin-bottom:2px;">
+              <span class="wa-flash-badge"><i class="fa-solid fa-bolt"></i> Flagship</span>
+              <span class="wa-city-badge">${escapeHtml(b.city || "Islamabad")}</span>
+            </div>
+            <strong>${escapeHtml(b.name)}</strong>
+            <small><i class="fa-regular fa-clock"></i> ${escapeHtml(b.timings || "Open Daily")}</small>
+          </div>
+          <span class="floating-wa-item-btn"><i class="fa-brands fa-whatsapp"></i> Chat</span>
+        </a>
+      `;
+    }).join("");
   }
+
+  // Toggle dropdown on button click
+  const btn = document.getElementById("floatingWaBtn");
+  if (btn) {
+    btn.onclick = function(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (window.innerWidth <= 768) {
+        openFlagshipWhatsAppModal();
+      } else {
+        toggleFloatingWhatsAppDropdown();
+      }
+    };
+  }
+
+  // Close floating dropdown when clicking outside
+  document.addEventListener("click", function(e) {
+    if (wrapper && !wrapper.contains(e.target)) {
+      wrapper.classList.remove("open");
+    }
+  });
 }
+
+/**
+ * Toggle the floating WhatsApp dropdown
+ */
+window.toggleFloatingWhatsAppDropdown = function(forceState) {
+  const wrapper = document.querySelector(".floating-widget-wrapper");
+  if (!wrapper) return;
+  if (typeof forceState === "boolean") {
+    if (forceState) wrapper.classList.add("open");
+    else wrapper.classList.remove("open");
+  } else {
+    wrapper.classList.toggle("open");
+  }
+};
+
+/**
+ * Ensure Flagship WhatsApp Modal exists in the DOM
+ */
+function ensureFlagshipWhatsAppModal() {
+  let modal = document.getElementById("flagshipWhatsAppModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.className = "flagship-wa-modal";
+    modal.id = "flagshipWhatsAppModal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-hidden", "true");
+    modal.innerHTML = `
+      <div class="flagship-wa-backdrop" onclick="closeFlagshipWhatsAppModal()"></div>
+      <div class="flagship-wa-sheet">
+        <div class="flagship-wa-header">
+          <div class="flagship-wa-header-text">
+            <h3><i class="fa-brands fa-whatsapp"></i> WhatsApp Flagship Branches</h3>
+            <p>Select a flagship branch to connect directly on WhatsApp</p>
+          </div>
+          <button type="button" class="flagship-wa-close" onclick="closeFlagshipWhatsAppModal()" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="flagship-wa-list" id="flagshipWhatsAppList"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+  return modal;
+}
+
+/**
+ * Open Flagship Branches WhatsApp Modal (ONLY Flash Tag / Flagship Branches)
+ */
+window.openFlagshipWhatsAppModal = function(selectedBranchId) {
+  const modal = ensureFlagshipWhatsAppModal();
+  const listEl = document.getElementById("flagshipWhatsAppList");
+
+  if (listEl) {
+    const siteData = typeof getSiteData === "function" ? getSiteData() : null;
+    const branches = (siteData && siteData.branches) ? siteData.branches : (allBranchesData || []);
+    // ONLY flash tag (flagship) branches as requested: "only flash tag branches"
+    const flagshipList = branches.filter(b => b.isFlagship);
+    const displayList = flagshipList.length ? flagshipList : branches.slice(0, 7);
+
+    listEl.innerHTML = displayList.map(b => {
+      const cleanWa = String(b.whatsapp || "923329716666").replace(/[^0-9]/g, "");
+      const waLink = `https://wa.me/${cleanWa}?text=${encodeURIComponent('Hello D.Watson ' + b.name + ', I would like to inquire about medicines & order.')}`;
+      const isSelected = (selectedBranchId && b.id === selectedBranchId);
+      return `
+        <a href="${waLink}" target="_blank" class="flagship-wa-card ${isSelected ? 'selected' : ''}" onclick="closeFlagshipWhatsAppModal()">
+          <div class="flagship-wa-details">
+            <div style="display:flex; align-items:center; gap:5px; margin-bottom:4px;">
+              <span class="flagship-wa-flash-badge"><i class="fa-solid fa-bolt"></i> Flagship</span>
+              <span class="flagship-call-city-badge">${escapeHtml(b.city || "Islamabad")}</span>
+            </div>
+            <h4 class="flagship-wa-title">${escapeHtml(b.name)}</h4>
+            <p class="flagship-wa-meta"><i class="fa-regular fa-clock"></i> ${escapeHtml(b.timings || "Open Daily")}</p>
+          </div>
+          <span class="flagship-wa-connect-btn">
+            <i class="fa-brands fa-whatsapp"></i>
+            <span>Connect</span>
+          </span>
+        </a>
+      `;
+    }).join("");
+  }
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+};
+
+/**
+ * Close Flagship Branches WhatsApp Modal
+ */
+window.closeFlagshipWhatsAppModal = function() {
+  const modal = document.getElementById("flagshipWhatsAppModal");
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+};
 
 // Global hook for opening live chat from any button or card
 window.openBranchMessengerCard = function(branchId) {
-  if (window.$crisp && typeof window.$crisp.push === "function") {
-    window.$crisp.push(["do", "chat:show"]);
-    window.$crisp.push(["do", "chat:open"]);
-  }
+  openFlagshipWhatsAppModal(branchId);
 };
+
 

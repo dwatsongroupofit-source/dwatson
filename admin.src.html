@@ -473,23 +473,21 @@
               </div>
             </div>
 
-            <!-- Crisp Live Chat Configuration -->
+            <!-- Live Chat / Concierge Status -->
             <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:12px; padding:16px; margin-bottom:20px;">
-              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
                 <h4 style="margin:0; font-size:0.95rem; font-weight:800; color:#166534; display:flex; align-items:center; gap:8px;">
-                  <i class="fa-solid fa-comments"></i> Crisp Multi-Agent Live Chat &amp; Photo Messenger
+                  <i class="fa-brands fa-whatsapp" style="font-size:1.15rem; color:#16A34A;"></i> Flagship WhatsApp Concierge &amp; Direct Desks
                 </h4>
-                <label style="display:inline-flex; align-items:center; gap:6px; font-size:0.82rem; font-weight:700; color:#15803D; cursor:pointer;">
-                  <input type="checkbox" id="setCrispEnabled" checked> Enable Live Chat
-                </label>
+                <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.75rem; font-weight:700; color:#166534; background:#DCFCE7; padding:3px 10px; border-radius:20px;">
+                  <i class="fa-solid fa-bolt" style="color:#D97706;"></i> Flagships Active
+                </span>
               </div>
-              <p style="font-size:0.78rem; color:#166534; margin:0 0 12px; line-height:1.45;">
-                Advanced real-time customer messaging with multi-agent support across web, iOS &amp; Android. Operators can view visitor country, branch selection, customer phone number, and exchange medicine prescriptions &amp; photos seamlessly.
+              <p style="font-size:0.8rem; color:#166534; margin:0; line-height:1.45;">
+                Crisp Live Chat is disabled in favor of Flagship WhatsApp Concierge. Website visitors can click WhatsApp to choose any Flagship branch and connect directly with that branch's official WhatsApp desk.
               </p>
-              <div class="admin-form-group" style="margin-bottom:0;">
-                <label style="color:#166534;">Crisp Website ID</label>
-                <input type="text" class="admin-form-input" id="setCrispWebsiteId" placeholder="e.g. 4ea9bb45-b036-4468-bb27-09fe93c30b3f">
-              </div>
+              <input type="checkbox" id="setCrispEnabled" style="display:none;">
+              <input type="hidden" id="setCrispWebsiteId" value="">
             </div>
 
             <div class="form-grid-2">

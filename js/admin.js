@@ -2337,13 +2337,12 @@ function populateCompanySettingsForm() {
   setVal("setDeliveryMinOrder", c.deliveryMinOrder !== undefined ? c.deliveryMinOrder : 1000);
   setVal("setDeliveryFreeThreshold", c.deliveryFreeThreshold !== undefined ? c.deliveryFreeThreshold : 3000);
 
-  // Crisp Live Chat Settings
+  // Live Chat / Concierge Settings (Crisp disabled in favor of Flagship WhatsApp)
   const crispEnabledEl = document.getElementById("setCrispEnabled");
   if (crispEnabledEl) {
-    const savedEnabled = localStorage.getItem("dw_crisp_enabled");
-    crispEnabledEl.checked = (savedEnabled !== null) ? (savedEnabled === "true") : (c.crispEnabled !== false);
+    crispEnabledEl.checked = false;
+    localStorage.setItem("dw_crisp_enabled", "false");
   }
-  setVal("setCrispWebsiteId", localStorage.getItem("dw_crisp_website_id") || c.crispWebsiteId || "4ea9bb45-b036-4468-bb27-09fe93c30b3f");
 }
 
 window.saveCompanySettings = function(e) {

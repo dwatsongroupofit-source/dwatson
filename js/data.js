@@ -18,7 +18,7 @@ const DEFAULT_SITE_DATA = {
     email: "dwatsonconsultation@gmail.com",
     website: "https://dwatson.co",
     address: "Head Office: School Road, Super Market, F-6 Markaz, Islamabad",
-    announcement: "✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • WhatsApp Express Delivery: 0332-9716666",
+    announcement: "✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • WhatsApp Express Delivery Available",
     
     // Heritage, Founders & Family Leadership
     aboutShort: "For nearly five decades, D. Watson has stood as Pakistan's premier healthcare and retail legacy, established by the Bakhtawari family with an unwavering commitment to 100% authentic medicines, global luxury beauty, optics, surgical care, and supermarket convenience.",
@@ -77,9 +77,9 @@ const DEFAULT_SITE_DATA = {
     deliveryMinOrder: 1000,
     deliveryFreeThreshold: 3000,
 
-    // Live Chat Configuration (Crisp Advanced Live Chat)
-    crispEnabled: true,
-    crispWebsiteId: "4ea9bb45-b036-4468-bb27-09fe93c30b3f",
+    // Live Chat Configuration (Disabled in favor of Flagship WhatsApp)
+    crispEnabled: false,
+    crispWebsiteId: "",
 
     // Admin Security Credentials (Protected AES Gate)
     adminAuth: {

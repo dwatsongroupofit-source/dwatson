@@ -98,7 +98,7 @@
       <div class="container top-bar-inner">
         <div class="announcement-text">
           <span class="badge-live">24/7 Live Service</span>
-          <span id="topAnnouncement">✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • WhatsApp Express Delivery: 0332-9716666</span>
+          <span id="topAnnouncement">✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • WhatsApp Express Delivery Available</span>
         </div>
         <div class="top-bar-links">
           <div class="topbar-helpline-wrap" id="topHelplineDropdownWrap">
@@ -113,7 +113,18 @@
               <div class="helpline-dropdown-list" id="helplineDropdownList"></div>
             </div>
           </div>
-          <a href="https://wa.me/923329716666" target="_blank" id="topWhatsApp"><i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666</a>
+          <div class="topbar-whatsapp-wrap" id="topWhatsAppDropdownWrap">
+            <button type="button" class="topbar-whatsapp-btn" id="topWhatsAppBtn" aria-label="Flagship Branch WhatsApp">
+              <i class="fa-brands fa-whatsapp"></i> WhatsApp <i class="fa-solid fa-chevron-down" style="font-size:0.75rem; margin-left:4px;"></i>
+            </button>
+            <div class="topbar-whatsapp-dropdown" id="topWhatsAppDropdown">
+              <div class="whatsapp-dropdown-header">
+                <strong><i class="fa-brands fa-whatsapp"></i> Flagship WhatsApp Desks</strong>
+                <small>Click a branch to connect on WhatsApp</small>
+              </div>
+              <div class="whatsapp-dropdown-list" id="topWhatsAppDropdownList"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -448,10 +459,10 @@
       <i class="fa-solid fa-phone-volume"></i>
       <span>Call</span>
     </button>
-    <a href="https://wa.me/923329716666?text=Hi%20D.Watson%20Chemist,%20I%20need%20assistance." target="_blank" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa">
+    <button type="button" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa" onclick="openFlagshipWhatsAppModal()" aria-label="WhatsApp Flagship Branches">
       <i class="fa-brands fa-whatsapp"></i>
       <span>Chat</span>
-    </a>
+    </button>
   </nav>
 
   <!-- Global Instant Product Search Modal -->
@@ -510,9 +521,9 @@
         <button type="button" class="drawer-contact-btn btn-call" onclick="closeMobileMenu(); openFlagshipCallModal();" style="border:none; cursor:pointer; width:100%; text-align:center;">
           <i class="fa-solid fa-phone-volume"></i> Call Flagship Branches
         </button>
-        <a href="https://wa.me/923329716666?text=Hello%20D.Watson,%20I%20need%20assistance." target="_blank" class="drawer-contact-btn btn-wa">
-          <i class="fa-brands fa-whatsapp"></i> WhatsApp: 0332-9716666
-        </a>
+        <button type="button" class="drawer-contact-btn btn-wa" onclick="closeMobileMenu(); openFlagshipWhatsAppModal();" style="border:none; cursor:pointer; width:100%; text-align:center;">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp Flagship Desks
+        </button>
       </div>
     </div>
   </div>
@@ -529,6 +540,21 @@
         <button type="button" class="flagship-call-close" onclick="closeFlagshipCallModal()" aria-label="Close modal">&times;</button>
       </div>
       <div class="flagship-call-list" id="flagshipCallList"></div>
+    </div>
+  </div>
+
+  <!-- Flagship WhatsApp Modal -->
+  <div class="flagship-wa-modal" id="flagshipWhatsAppModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="flagship-wa-backdrop" onclick="closeFlagshipWhatsAppModal()"></div>
+    <div class="flagship-wa-sheet">
+      <div class="flagship-wa-header">
+        <div class="flagship-wa-header-text">
+          <h3><i class="fa-brands fa-whatsapp"></i> WhatsApp Flagship Branches</h3>
+          <p>Select a flagship branch to connect directly on WhatsApp</p>
+        </div>
+        <button type="button" class="flagship-wa-close" onclick="closeFlagshipWhatsAppModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="flagship-wa-list" id="flagshipWhatsAppList"></div>
     </div>
   </div>
 

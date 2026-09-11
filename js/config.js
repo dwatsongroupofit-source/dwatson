@@ -31,24 +31,22 @@ window.DW_CONFIG = {
   IMGBB_API_KEY: "5d369a9387210e1432e7018b92d3d0e8",
   IMGBB_UPLOAD_URL: "https://api.imgbb.com/1/upload",
 
-  // 💬 Live Chat Configuration (Crisp Advanced Multi-Agent Live Chat)
-  CRISP_ENABLED: true,
-  CRISP_WEBSITE_ID: "4ea9bb45-b036-4468-bb27-09fe93c30b3f", // User's Crisp Website ID
+  // 💬 Live Chat Configuration (Crisp Advanced Multi-Agent Live Chat - Disabled in favor of Flagship Branch WhatsApp)
+  CRISP_ENABLED: false,
+  CRISP_WEBSITE_ID: "", // User's Crisp Website ID
 
   /**
    * Resolves whether Crisp live chat is active
    */
   isCrispEnabled: function() {
-    const saved = localStorage.getItem("dw_crisp_enabled");
-    if (saved !== null) return saved === "true";
-    return Boolean(this.CRISP_ENABLED);
+    return false;
   },
 
   /**
    * Returns active Crisp Website ID
    */
   getCrispWebsiteId: function() {
-    return localStorage.getItem("dw_crisp_website_id") || this.CRISP_WEBSITE_ID || "";
+    return "";
   },
 
   /**
