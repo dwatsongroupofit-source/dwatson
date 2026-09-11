@@ -260,6 +260,15 @@ section, header, footer, nav, main, .container {
     display: none !important;
   }
 
+  /* CRITICAL FIX: mobile-bottom-bar is position:fixed but if nested inside
+     .sticky-header-wrap (which is display:none on mobile), the browser treats
+     it as hidden. Force it visible regardless of parent. */
+  .sticky-header-wrap .mobile-bottom-bar {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
   /* Header adjustments for subpages */
   .top-bar {
     display: none; /* Hide topbar to maximize mobile screen real estate */
