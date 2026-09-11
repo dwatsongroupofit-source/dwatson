@@ -1231,15 +1231,20 @@ function spotlightDepartment(rawDeptId) {
     const desc = (p.description || "").toLowerCase();
     const deptId = selectedDept.id.toLowerCase();
 
-    // Direct match against department ID or department name
-    if (cat === deptId) return true;
-    if (catName === selectedDept.name.toLowerCase() || catName.includes(selectedDept.name.toLowerCase())) return true;
+    // Identify baby/infant nutrition products
+    const isBabyProduct = name.includes("aptamil") || name.includes("infant") || name.includes("baby") || name.includes("cow & gate") || desc.includes("infant milk") || desc.includes("baby formula");
 
+    // Baby Care department gets all baby care & infant nutrition items
     if (deptId === "babycare") {
-      return cat === "baby" || cat === "babycare" || catName.includes("baby") || name.includes("aptamil") || name.includes("baby") || name.includes("infant") || desc.includes("infant");
+      if (name.includes("ramen") || name.includes("noodle") || name.includes("buldak")) return false;
+      return isBabyProduct || cat === "baby" || cat === "babycare" || catName.includes("baby");
     }
+
+    // Never let baby formulas/milks leak into other departments
+    if (isBabyProduct) return false;
+
     if (deptId === "cosmetics") {
-      return cat === "cosmetics" || catName.includes("cosmetic") || catName.includes("skincare") || name.includes("cerave") || name.includes("purest");
+      return (cat === "cosmetics" || catName.includes("cosmetic") || catName.includes("skincare") || name.includes("cerave") || name.includes("purest") || name.includes("serum")) && !name.includes("shampoo") && !name.includes("hair");
     }
     if (deptId === "color_cosmetics") {
       return (cat === "cosmetics" || cat === "color_cosmetics") && (name.includes("primer") || name.includes("blush") || name.includes("flormar") || name.includes("golden rose") || name.includes("lipstick") || name.includes("makeup"));
@@ -1248,42 +1253,37 @@ function spotlightDepartment(rawDeptId) {
       return cat === "perfumes" || catName.includes("fragrance") || catName.includes("perfume") || name.includes("perfume") || name.includes("fragrance") || name.includes("oud") || name.includes("eau de");
     }
     if (deptId === "grocery") {
-      return cat === "grocery" || catName.includes("grocery") || catName.includes("superstore") || name.includes("grocery") || desc.includes("grocery");
+      return cat === "grocery" || catName.includes("grocery") || catName.includes("superstore") || name.includes("grocery") || name.includes("ramen") || name.includes("noodles") || name.includes("buldak");
     }
     if (deptId === "optics") {
       return cat === "optics" || catName.includes("optics") || catName.includes("eyewear") || name.includes("ray-ban") || name.includes("aviator") || name.includes("glasses");
     }
-    if (deptId === "surgical" || deptId === "hearing_aid") {
-      return cat === "surgical" || cat === "hearing_aid" || catName.includes("surgical") || catName.includes("diagnostic") || name.includes("omron") || name.includes("accu-chek") || name.includes("monitor") || name.includes("pulse");
+    if (deptId === "surgical") {
+      return cat === "surgical" || catName.includes("surgical") || name.includes("surgical") || name.includes("wheelchair") || name.includes("omron") || name.includes("accu-chek") || name.includes("meter") || name.includes("monitor") || name.includes("oximeter");
+    }
+    if (deptId === "hearing_aid") {
+      return cat === "hearing_aid" || catName.includes("hearing") || catName.includes("diagnostic") || name.includes("hearing") || name.includes("accu-chek") || name.includes("glucose") || name.includes("oximeter") || name.includes("diagnostic") || name.includes("sound amplifier") || name.includes("ear");
     }
     if (deptId === "pharmacy" || deptId === "homeo") {
-      return cat === "pharmacy" || cat === "homeo" || catName.includes("pharmacy") || catName.includes("supplement") || catName.includes("homeo") || name.includes("centrum") || name.includes("seven seas") || name.includes("reckeweg") || name.includes("schwabe");
+      return cat === "pharmacy" || cat === "homeo" || catName.includes("pharmacy") || catName.includes("supplement") || catName.includes("homeo") || name.includes("centrum") || name.includes("seven seas") || name.includes("reckeweg") || name.includes("schwabe") || name.includes("omega") || name.includes("sachet") || name.includes("osteowhiz") || name.includes("avoglo") || name.includes("magnibase");
     }
     if (deptId === "haircare") {
       return cat === "haircare" || catName.includes("hair") || name.includes("shampoo") || name.includes("bioblas");
     }
     if (deptId === "crockery") {
-      return cat === "crockery" || catName.includes("crockery") || name.includes("dinner") || name.includes("glass");
+      return cat === "crockery" || catName.includes("crockery") || name.includes("dinner") || name.includes("glass") || name.includes("mug");
     }
     if (deptId === "toys") {
       return cat === "toys" || catName.includes("toy") || name.includes("toy") || name.includes("game");
     }
     if (deptId === "undergarments") {
-      return cat === "undergarments" || catName.includes("garment") || name.includes("innerwear");
+      return cat === "undergarments" || catName.includes("garment") || name.includes("innerwear") || name.includes("lingerie");
     }
+
+    // Direct match if explicitly assigned to this department
+    if (cat === deptId) return true;
     return false;
   });
-
-  // Ensure department has 3-4 featured items displayed
-  if (matchingProducts.length < 3) {
-    const fallbackIds = ["p10", "p14", "p11", "p16", "p1"]; // CeraVe, Aptamil, Omron, Centrum, Purest Solutions
-    fallbackIds.forEach(fid => {
-      if (matchingProducts.length < 4 && !matchingProducts.some(p => p.id === fid)) {
-        const found = allProds.find(p => p.id === fid);
-        if (found) matchingProducts.push(found);
-      }
-    });
-  }
 
   container.innerHTML = `
     <div class="dept-spotlight-wrap" id="deptSpotlightSection">
@@ -1405,15 +1405,15 @@ function spotlightDepartment(rawDeptId) {
       </div>
 
       <!-- Department Featured Products Showcase -->
-      ${matchingProducts.length > 0 ? `
-        <div class="dept-products-section">
-          <div class="dept-products-header">
-            <div class="dept-products-title">
-              <i class="fa-solid fa-boxes-stacked" style="color:var(--dw-red);"></i>
-              <span>Featured Products in ${escapeHtml(selectedDept.name)}</span>
-            </div>
-            <span class="dept-products-badge">Direct In-Store Stock</span>
+      <div class="dept-products-section">
+        <div class="dept-products-header">
+          <div class="dept-products-title">
+            <i class="fa-solid fa-boxes-stacked" style="color:var(--dw-red);"></i>
+            <span>Featured Products in ${escapeHtml(selectedDept.name)}</span>
           </div>
+          <span class="dept-products-badge">${matchingProducts.length > 0 ? 'Direct In-Store Stock' : 'Full In-Store Catalog'}</span>
+        </div>
+        ${matchingProducts.length > 0 ? `
           <div class="dept-products-grid">
             ${matchingProducts.map(p => {
               const pWaText = `*--- D. WATSON INQUIRY ---*\n🛍️ *Product:* ${p.name}\n💰 *Price:* ${p.price || 'Inquire'}\n🏷️ *Department:* ${selectedDept.name}\n\nHi D.Watson Chemist, please confirm stock availability and express delivery.`;
@@ -1440,8 +1440,17 @@ function spotlightDepartment(rawDeptId) {
               `;
             }).join("")}
           </div>
-        </div>
-      ` : ""}
+        ` : `
+          <div class="dept-products-empty-notice" style="background:#F8FAFC; border:1px dashed #CBD5E1; border-radius:16px; padding:32px 20px; text-align:center; margin-top:16px;">
+            <div style="font-size:2.2rem; color:#64748B; margin-bottom:10px;"><i class="${selectedDept.icon || 'fa-solid fa-boxes-stacked'}"></i></div>
+            <h4 style="font-size:1.1rem; font-weight:700; color:#0F172A; margin:0 0 6px;">Extensive In-Store Catalog at All 25+ Branches</h4>
+            <p style="font-size:0.9rem; color:#64748B; max-width:520px; margin:0 auto 16px; line-height:1.5;">We maintain complete inventories for ${escapeHtml(selectedDept.name)} across all D. Watson outlets. Inquire directly on WhatsApp with your nearest branch for instant stock check, pricing, and 2-4 hour delivery.</p>
+            <button type="button" onclick="handleDepartmentInquiryClick(event, '${selectedDept.id}')" class="btn btn-whatsapp" style="display:inline-flex; align-items:center; gap:8px; padding:10px 22px; font-weight:700; border-radius:8px; border:none; color:white; background:#16A34A; cursor:pointer;">
+              <i class="fa-brands fa-whatsapp"></i> Inquire ${escapeHtml(selectedDept.name)} on WhatsApp
+            </button>
+          </div>
+        `}
+      </div>
 
       <!-- Quick Switch Strip: All other departments accessible in 1 tap -->
       <div class="dept-spotlight-other-strip">
