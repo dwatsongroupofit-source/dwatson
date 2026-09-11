@@ -1514,8 +1514,8 @@ function getSiteData() {
 }
 
 /**
- * Save updated site data to LocalStorage with robust quota management
- * and broadcast across all devices via /api/site-data
+ * Save updated site data to LocalStorage AND push to JSONBin cloud.
+ * Cloud (JSONBin) is now the master — all devices get the update.
  */
 function saveSiteData(data) {
   try {
@@ -1524,15 +1524,26 @@ function saveSiteData(data) {
     localStorage.setItem(STORAGE_KEY, jsonStr);
     window.dispatchEvent(new Event("siteDataUpdated"));
 
-    // Broadcast update across devices via cloud sync endpoint
-    syncSiteDataToCloud(data);
+    // Push to JSONBin cloud so ALL devices get the update immediately
+    if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveAllData === "function") {
+      window.CloudDB.saveAllData(data).catch(err => {
+        console.warn("Cloud push failed (data still saved locally):", err);
+      });
+    } else {
+      // Fallback: push via /api/site-data if CloudDB not loaded yet
+      fetch("/api/site-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: data }),
+        keepalive: true
+      }).catch(() => null);
+    }
     return true;
   } catch (e) {
-    console.error("Failed to save site data to LocalStorage:", e);
+    console.error("Failed to save site data:", e);
     if (e.name === "QuotaExceededError" || e.code === 22 || e.code === 1014) {
-      console.warn("Storage quota reached. Consider using CDN image URLs instead of heavy local images.");
       if (typeof showToast === "function") {
-        showToast("Storage quota reached! Please use an image link or smaller compressed image.", "error");
+        showToast("Storage quota reached! Please use Cloudinary image URLs instead of local images.", "error");
       }
     }
     return false;
@@ -1540,66 +1551,42 @@ function saveSiteData(data) {
 }
 
 /**
- * Asynchronously sync site data to cloud API for multi-device access
- */
-async function syncSiteDataToCloud(data) {
-  try {
-    const endpoint = (window.DW_CONFIG && typeof window.DW_CONFIG.getBackendUrl === "function")
-      ? (window.DW_CONFIG.getBackendUrl() + "/api/site-data")
-      : "/api/site-data";
-
-    await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data: data, lastUpdated: data.lastModified || Date.now() }),
-      keepalive: true
-    }).catch(() => null);
-  } catch (err) {
-    // Non-blocking background sync
-  }
-}
-
-/**
- * Fetch latest synchronized site data from cloud on startup.
- * SAFE: NEVER automatically overwrites active admin workspace in the background!
+ * Fetch latest site data from JSONBin cloud and sync to localStorage.
+ * Cloud is always the master — localStorage is just a local cache.
+ * Auto-runs on all public pages (not on admin page).
  */
 async function fetchSiteDataFromCloud() {
   if (typeof window !== "undefined" && window.location && window.location.pathname.includes("admin")) {
-    return; // Don't auto-reset while admin is actively editing!
+    // On admin page: still sync FROM cloud to avoid admin seeing stale data,
+    // but only on initial load — not during active editing sessions.
+    const adminJustOpened = !sessionStorage.getItem("adminSessionActive");
+    if (!adminJustOpened) return;
+    sessionStorage.setItem("adminSessionActive", "1");
   }
 
   try {
-    const endpoint = (window.DW_CONFIG && typeof window.DW_CONFIG.getBackendUrl === "function")
-      ? (window.DW_CONFIG.getBackendUrl() + "/api/site-data")
-      : "/api/site-data";
+    // Use CloudDB if available (loaded via cloud-db.js)
+    if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.syncCloudToLocal === "function") {
+      await window.CloudDB.syncCloudToLocal();
+      return;
+    }
 
-    const res = await fetch(endpoint).catch(() => null);
+    // Fallback: fetch via /api/site-data proxy
+    const res = await fetch("/api/site-data").catch(() => null);
     if (res && res.ok) {
       const json = await res.json().catch(() => null);
       if (json && json.success && json.data) {
-        const localRaw = localStorage.getItem(STORAGE_KEY);
-        if (localRaw) {
-          try {
-            const localData = JSON.parse(localRaw);
-            const localTime = localData.lastModified || 0;
-            const cloudTime = json.lastUpdated || json.data.lastModified || 0;
-            if (cloudTime <= localTime) {
-              return; // Local data is newer, keep it!
-            }
-          } catch (e) {}
-        }
-        const cloudDataStr = JSON.stringify(json.data);
-        localStorage.setItem(STORAGE_KEY, cloudDataStr);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(json.data));
         window.dispatchEvent(new Event("siteDataUpdated"));
-        console.log("☁️ Synchronized latest site data from cloud!");
+        console.log("☁️ Site data synced from cloud.");
       }
     }
   } catch (e) {
-    // Silent fallback to local storage
+    // Silent — page still works from localStorage cache
   }
 }
 
-// Auto-check for fresh cloud-synced site data (public visitor pages only)
+// Auto-sync cloud data on every page load
 if (typeof window !== "undefined") {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", fetchSiteDataFromCloud);

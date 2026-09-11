@@ -1,22 +1,18 @@
 /**
- * D. Watson — Site Data Synchronization API (Serverless & Node Endpoint)
- * 
- * Synchronizes custom site configuration (departments, products, sliders, branches)
- * across multiple devices (mobile, desktop, and live website).
+ * D. Watson — Site Data API (JSONBin.io Cloud Proxy)
+ *
+ * GET  /api/site-data  → Fetch latest site data from JSONBin cloud
+ * POST /api/site-data  → Push updated site data to JSONBin cloud
+ *
+ * JSONBin is the permanent cloud database — no more /tmp resets.
  */
 
-const fs = require("fs");
-const path = require("path");
-
-// In-memory cache for serverless lifecycle
-let cachedSiteData = null;
-let lastUpdated = 0;
-
-const DATA_FILE_PATH = path.join(process.cwd(), "data", "site-data-custom.json");
-const TMP_DATA_FILE_PATH = path.join("/tmp", "dwatson-site-data-custom.json");
+const JSONBIN_BIN_ID  = process.env.JSONBIN_BIN_ID  || "6aa3968dffd5d16053f901ea";
+const JSONBIN_API_KEY = process.env.JSONBIN_API_KEY  || "$2a$10$3OV2e0QeSmF5lqIVlImrHu3OrK7U8JprhYQe3gAdQN2qZsv5Ojarq";
+const JSONBIN_BASE    = "https://api.jsonbin.io/v3/b";
 
 module.exports = async (req, res) => {
-  // 1. CORS Headers for cross-device support (mobile to local server / cross-origin)
+  // CORS headers — allow all origins
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,POST,PUT");
@@ -30,52 +26,48 @@ module.exports = async (req, res) => {
     return;
   }
 
-  // 2. GET: Return the latest synchronized site data
+  // ── GET: Fetch latest data from JSONBin ────────────────────────────────────
   if (req.method === "GET") {
     try {
-      if (cachedSiteData) {
-        return res.status(200).json({
-          success: true,
-          source: "memory",
-          lastUpdated: lastUpdated,
-          data: cachedSiteData
+      const response = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}/latest`, {
+        method: "GET",
+        headers: {
+          "X-Master-Key": JSONBIN_API_KEY,
+          "X-Bin-Meta":   "false"
+        }
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error("JSONBin GET error:", response.status, errText);
+        return res.status(502).json({
+          success: false,
+          error: `JSONBin error ${response.status}: ${errText}`
         });
       }
 
-      const filePathToRead = fs.existsSync(DATA_FILE_PATH) 
-        ? DATA_FILE_PATH 
-        : (fs.existsSync(TMP_DATA_FILE_PATH) ? TMP_DATA_FILE_PATH : null);
-
-      if (filePathToRead) {
-        const fileContent = fs.readFileSync(filePathToRead, "utf8");
-        const parsed = JSON.parse(fileContent);
-        cachedSiteData = parsed;
-        return res.status(200).json({
-          success: true,
-          source: filePathToRead.includes("/tmp") ? "tmp-cache" : "disk",
-          lastUpdated: lastUpdated || Date.now(),
-          data: parsed
-        });
-      }
+      const data = await response.json();
+      // JSONBin returns { record: {...} } — extract the record
+      const record = data.record || data;
 
       return res.status(200).json({
-        success: false,
-        message: "No custom site data recorded yet. Using default site data."
+        success: true,
+        source: "jsonbin-cloud",
+        lastUpdated: record.lastModified || Date.now(),
+        data: record
       });
     } catch (err) {
-      console.warn("Error reading site data:", err.message);
+      console.error("GET /api/site-data error:", err.message);
       return res.status(500).json({ success: false, error: err.message });
     }
   }
 
-  // 3. POST / PUT: Update synchronized site data
+  // ── POST / PUT: Push updated data to JSONBin ───────────────────────────────
   if (req.method === "POST" || req.method === "PUT") {
     try {
       let body = req.body;
       if (typeof body === "string") {
-        try {
-          body = JSON.parse(body);
-        } catch (e) {}
+        try { body = JSON.parse(body); } catch (e) {}
       }
 
       const siteData = (body && body.data) ? body.data : body;
@@ -83,33 +75,33 @@ module.exports = async (req, res) => {
         return res.status(400).json({ success: false, error: "Invalid site data payload." });
       }
 
-      // Update in-memory cache
-      cachedSiteData = siteData;
-      lastUpdated = Date.now();
+      siteData.lastModified = Date.now();
 
-      // Persist to disk if directory is writable (e.g. local dev / Node server)
-      try {
-        const dir = path.dirname(DATA_FILE_PATH);
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-        }
-        fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(siteData, null, 2), "utf8");
-      } catch (fsErr) {
-        // Fallback to /tmp on serverless filesystems (e.g. Vercel production)
-        try {
-          fs.writeFileSync(TMP_DATA_FILE_PATH, JSON.stringify(siteData, null, 2), "utf8");
-        } catch (tmpErr) {
-          console.warn("Disk write notice (in-memory sync active):", fsErr.message);
-        }
+      const response = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": JSONBIN_API_KEY
+        },
+        body: JSON.stringify(siteData)
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error("JSONBin PUT error:", response.status, errText);
+        return res.status(502).json({
+          success: false,
+          error: `JSONBin error ${response.status}: ${errText}`
+        });
       }
 
       return res.status(200).json({
         success: true,
-        message: "Site data synchronized successfully!",
-        lastUpdated: lastUpdated
+        message: "Site data saved to cloud successfully!",
+        lastUpdated: siteData.lastModified
       });
     } catch (err) {
-      console.error("Error saving site data:", err);
+      console.error("POST /api/site-data error:", err.message);
       return res.status(500).json({ success: false, error: err.message });
     }
   }
