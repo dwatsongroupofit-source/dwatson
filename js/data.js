@@ -432,8 +432,201 @@ const DEFAULT_SITE_DATA = {
     }
   ],
 
-  // Featured Products Showcase (Managed directly by Admin Studio - Zero Default Products)
-  products: [],
+  // Featured Products Showcase — Permanently hardcoded real product catalog
+  products: [
+    {
+      id: "p1",
+      name: "Samyang Buldak all Flav Ramen Noodles",
+      category: "grocery",
+      categoryName: "Baby Care & Supermarket",
+      brand: "Samyang Buldak",
+      price: "PKR 490",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789036124/m0k4bj9oxmhgfxwogmz2.jpg",
+      description: "Spicy Korean-style instant ramen noodles with a rich, savory hot chicken flavor and signature Buldak sauce. Perfect for spice lovers and easy to prepare in just a few minutes.",
+      inStock: true
+    },
+    {
+      id: "p2",
+      name: "CODL Omega-3 Fish Oil 1000mg",
+      category: "pharmacy",
+      categoryName: "Medicines & Supplements",
+      brand: "BIOLIFE",
+      price: "PKR 1,990",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789036146/q57j8z9ijuuw07wlo7qh.jpg",
+      description: "BIOLIFE CODL Omega-3 Fish Oil 1000mg Softgels are a dietary supplement containing omega-3 fish oil. Formulated to support cardiovascular health, brain and eye health, bones and joints, and overall wellness.",
+      inStock: true
+    },
+    {
+      id: "p3",
+      name: "Myotin Sachet",
+      category: "pharmacy",
+      categoryName: "Medicines & Supplements",
+      brand: "MEDI GREEN",
+      price: "PKR 1,150",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789036161/umu4cfnchzwmlwcepijr.jpg",
+      description: "MEDI GREEN Myotin is a dietary supplement designed specifically for women's reproductive health and wellness. Features Myo-Inositol, Folic Acid, and D-Chiro Inositol to support hormonal balance, PCOS management, and fertility.",
+      inStock: true
+    },
+    {
+      id: "p4",
+      name: "Osteowhiz",
+      category: "pharmacy",
+      categoryName: "Medicines & Supplements",
+      brand: "NutraWhiz",
+      price: "PKR 1,150",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789037342/rg9ingqxnal1skszkuna.jpg",
+      description: "NutraWhiz Osteowhiz is a comprehensive dietary supplement formulated for men and women of all ages to support strong bones, joint health, and overall skeletal strength.",
+      inStock: true
+    },
+    {
+      id: "p5",
+      name: "Avoglo",
+      category: "pharmacy",
+      categoryName: "Medicines & Supplements",
+      brand: "NutraWhiz",
+      price: "PKR 4500",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789037941/jeg1heemytrcxdfdkxil.png",
+      description: "NutraWhiz Avoglo is a revitalizing food supplement formulated to promote powerful antioxidant activity and enhance skin complexion.",
+      inStock: true
+    },
+    {
+      id: "p6",
+      name: "Magnibase Magnesium Glycinate 500mg",
+      category: "pharmacy",
+      categoryName: "Medicines & Supplements",
+      brand: "NutriBase",
+      price: "PKR 2,495",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789038344/gpnlsaigcqb4usufpkyp.png",
+      description: "NutriBase Magnibase Magnesium Glycinate 500mg is a high-absorption dietary supplement formulated to support relaxation, restful sleep, and overall bodily wellness.",
+      inStock: true
+    },
+    {
+      id: "p7",
+      name: "First Infant Milk (Stage 1)",
+      category: "grocery",
+      categoryName: "Baby Care & Supermarket",
+      brand: "Kendamil",
+      price: "PKR 9,950",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789038824/z86e3yeizdcif2p4qqxj.jpg",
+      description: "Kendamil First Infant Milk is a premium, whole-milk baby formula crafted in the UK Lake District, suitable for babies from birth.",
+      inStock: true
+    },
+    {
+      id: "p8",
+      name: "Cow & Gate First Infant Milk (Stage 1)",
+      category: "grocery",
+      categoryName: "Baby Care & Supermarket",
+      brand: "Cow & Gate",
+      price: "PKR 9,700",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789039001/m1qfr2nnciwnyvlp6a43.jpg",
+      description: "Cow & Gate First Infant Milk is a nutritionally complete breastmilk substitute, suitable from birth. Formulated with care, it features milk from grass-fed cows, contains no palm oil, and provides essential nutrients to support your baby's early development.",
+      inStock: true
+    },
+    {
+      id: "p9",
+      name: "Aptamil Advance Junior 3 (Growing Up Formula)",
+      category: "grocery",
+      categoryName: "Baby Care & Supermarket",
+      brand: "Nutricia",
+      price: "PKR 7,100",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789039356/wogso2pebwwpp9idquso.jpg",
+      description: "Aptamil Advance Junior 3 is a premium growing-up formula based on cow's milk, specifically tailored for toddlers aged 1 to 3 years. Formulated with Nutricia's Pronutra-ADVANCE combination.",
+      inStock: true
+    },
+    {
+      id: "p10",
+      name: "Aptamil Advance 1 (Infant Formula)",
+      category: "grocery",
+      categoryName: "Baby Care & Supermarket",
+      brand: "Nutricia",
+      price: "PKR 7,650",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789039555/gnuvyvl01ytjreyjpcla.jpg",
+      description: "Aptamil Advance 1 is a scientifically formulated infant milk formula based on cow's milk, specifically designed for babies from 0 to 6 months.",
+      inStock: true
+    },
+    {
+      id: "p11",
+      name: "Omron M2 Basic Digital BP Monitor",
+      category: "surgical",
+      categoryName: "Surgical & Health Devices",
+      brand: "Omron Healthcare",
+      price: "PKR 9,850",
+      tag: "Clinical Accuracy",
+      image: "assets/images/Omron M2 Basic Digital BP Monitor.jpg",
+      description: "Fully automatic upper arm blood pressure monitor with Intellisense technology and irregular heartbeat detector.",
+      inStock: true
+    },
+    {
+      id: "p12",
+      name: "Accu-Chek Instant Blood Glucose Meter",
+      category: "surgical",
+      categoryName: "Surgical & Health Devices",
+      brand: "Roche Diagnostics",
+      price: "PKR 3,950",
+      tag: "Instant Diabetes Check",
+      image: "assets/images/Accu-Chek Instant Blood Glucose Meter.jpg",
+      description: "Wireless blood glucose monitoring system with target range indicator and test strip ejector.",
+      inStock: true
+    },
+    {
+      id: "p13",
+      name: "Ray-Ban Aviator Classic Polarized",
+      category: "optics",
+      categoryName: "Optics & Eyewear",
+      brand: "Ray-Ban Official",
+      price: "PKR 8500",
+      tag: "100% UV400 Protection",
+      image: "assets/images/Ray-Ban Aviator Classic Polarized.jpg",
+      description: "Iconic gold frame with polarized green classic G-15 crystal lenses.",
+      inStock: true
+    },
+    {
+      id: "p14",
+      name: "Aptamil Advance Infant Formula 1",
+      category: "grocery",
+      categoryName: "Baby Care & Supermarket",
+      brand: "NUTRICIA",
+      price: "PKR 3,150",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789039941/w3o0qof0knr2qscc2yhj.jpg",
+      description: "Aptamil Advance 1 is a patented next-generation formula suitable for babies from birth to 6 months. This 400g pack is inspired by 40 years of pioneering research in early life nutrition.",
+      inStock: true
+    },
+    {
+      id: "p15",
+      name: "Seven Seas Cod Liver Oil + Omega 3 (500ml)",
+      category: "pharmacy",
+      categoryName: "Medicines & Supplements",
+      brand: "Seven Seas UK",
+      price: "PKR 4,800",
+      tag: "Immune & Brain Support",
+      image: "assets/images/seven-seas-cod-liver-oil-omega-3.jpg",
+      description: "Rich in natural Vitamins A, D and essential Omega-3 fatty acids EPA and DHA.",
+      inStock: true
+    },
+    {
+      id: "p16",
+      name: "Aptamil 3 Toddler Milk (Fortified Milk Drink, 1-2 Years)",
+      category: "pharmacy",
+      categoryName: "Medicines & Supplements",
+      brand: "Aptamil",
+      price: "PKR 9,950",
+      tag: "Verified Genuine",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789040179/lac0kucyt9f0x2dbkk8f.jpg",
+      description: "Aptamil 3 Toddler Milk is a fortified milk drink specially tailored for toddlers aged 1 to 2 years. Enriched with essential vitamins (A, C, D), Iron, and Calcium.",
+      inStock: true
+    }
+  ],
 
   // Complete Official D. Watson Branch Network - Focused Flagship Outlets
   branches: [
@@ -1268,10 +1461,12 @@ function getSiteData() {
         parsed.company.whatsappDisplay = DEFAULT_SITE_DATA.company.whatsappDisplay;
       }
 
-      // Filter out any legacy p1..p46 default products completely and permanently
-      const cleanedProducts = Array.isArray(parsed.products)
-        ? parsed.products.filter(p => p && p.name && !(typeof p.id === "string" && /^p([1-9]|[1-4][0-9])$/.test(p.id)))
-        : (DEFAULT_SITE_DATA.products || []);
+      // Products: use saved products if they exist, otherwise always fall back to the hardcoded defaults.
+      // Admin-deleted products are honoured only when localStorage actually has a non-empty products array.
+      const savedProducts = Array.isArray(parsed.products) ? parsed.products : null;
+      const resolvedProducts = (savedProducts && savedProducts.length > 0)
+        ? savedProducts
+        : DEFAULT_SITE_DATA.products;
 
       return {
         ...DEFAULT_SITE_DATA,
@@ -1293,9 +1488,9 @@ function getSiteData() {
         departments: (Array.isArray(parsed.departments) && parsed.departments.length) ? parsed.departments : DEFAULT_SITE_DATA.departments,
         categories: (Array.isArray(parsed.categories) && parsed.categories.length) ? parsed.categories : DEFAULT_SITE_DATA.categories,
         brands: (Array.isArray(parsed.brands) && parsed.brands.length) ? parsed.brands : (DEFAULT_SITE_DATA.brands || []),
-        // STRICT USER AUTHORITY FOR PRODUCTS:
-        // If user deleted products or added their own, zero legacy default products will EVER resurrect
-        products: cleanedProducts,
+        // PRODUCTS: Admin changes in localStorage take priority.
+        // If localStorage products array is empty/missing, always show the hardcoded defaults.
+        products: resolvedProducts,
         // STRICT USER AUTHORITY FOR BRANCHES:
         // Strictly honor the saved image and branch properties without any overriding harvester.
         branches: Array.isArray(parsed.branches) && parsed.branches.length ? parsed.branches.map(b => {
