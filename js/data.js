@@ -355,7 +355,7 @@ const DEFAULT_SITE_DATA = {
       name: "Hearing & Diagnostic Aids",
       badge: "Precision Care",
       tagline: "Advanced Hearing Devices & Home Health Monitors",
-      image: "assets/images/Shop Inside/HearingAid.jpeg",
+      image: "https://res.cloudinary.com/bempxyod/image/upload/v1789110528/vygzs1ggkgyfrafdkt60.jpg",
       icon: "fa-solid fa-ear-listen",
       description: "Modern hearing instruments, digital diagnostic monitors, diabetes care supplies, and personal health testing equipment for seniors and clinical home use.",
       features: [
@@ -1485,7 +1485,14 @@ function getSiteData() {
         },
         heroSlides: (Array.isArray(parsed.heroSlides) && parsed.heroSlides.length) ? parsed.heroSlides : DEFAULT_SITE_DATA.heroSlides,
         management: (Array.isArray(parsed.management) && parsed.management.length) ? parsed.management : DEFAULT_SITE_DATA.management,
-        departments: (Array.isArray(parsed.departments) && parsed.departments.length) ? parsed.departments : DEFAULT_SITE_DATA.departments,
+        departments: (Array.isArray(parsed.departments) && parsed.departments.length) ? parsed.departments.map(d => {
+          const def = DEFAULT_SITE_DATA.departments.find(dd => dd.id === d.id);
+          return {
+            ...(def || {}),
+            ...d,
+            image: d.image || (def ? def.image : "assets/images/Shop Inside/Medicine.jpeg")
+          };
+        }) : DEFAULT_SITE_DATA.departments,
         categories: (Array.isArray(parsed.categories) && parsed.categories.length) ? parsed.categories : DEFAULT_SITE_DATA.categories,
         brands: (Array.isArray(parsed.brands) && parsed.brands.length) ? parsed.brands : (DEFAULT_SITE_DATA.brands || []),
         // PRODUCTS: Admin changes in localStorage take priority.
@@ -1553,17 +1560,8 @@ function saveSiteData(data) {
 /**
  * Fetch latest site data from JSONBin cloud and sync to localStorage.
  * Cloud is always the master — localStorage is just a local cache.
- * Auto-runs on all public pages (not on admin page).
  */
 async function fetchSiteDataFromCloud() {
-  if (typeof window !== "undefined" && window.location && window.location.pathname.includes("admin")) {
-    // On admin page: still sync FROM cloud to avoid admin seeing stale data,
-    // but only on initial load — not during active editing sessions.
-    const adminJustOpened = !sessionStorage.getItem("adminSessionActive");
-    if (!adminJustOpened) return;
-    sessionStorage.setItem("adminSessionActive", "1");
-  }
-
   try {
     // Use CloudDB if available (loaded via cloud-db.js)
     if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.syncCloudToLocal === "function") {

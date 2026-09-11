@@ -329,6 +329,7 @@ const finalAdminHtml = `<!DOCTYPE html>
         try {
           const t = Date.now();
           await loadScript("js/config.js?v=" + t);
+          await loadScript("js/cloud-db.js?v=" + t);
           await loadScript("js/data.js?v=" + t);
           await loadScript("js/admin.js?v=" + t);
         } catch (err) {

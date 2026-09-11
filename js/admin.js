@@ -37,12 +37,19 @@ async function sha256(message) {
 
 function bootAdminApp() {
   loadAdminState();
-  if (typeof fetchSiteDataFromCloud === "function") {
-    fetchSiteDataFromCloud().catch(() => null);
-  }
   initAuthGuard();
   initTabNavigation();
   initInactivityWatcher();
+
+  // Instantly sync from cloud on admin open to ensure admin is 100% up-to-date with cloud
+  if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.syncCloudToLocal === "function") {
+    window.CloudDB.syncCloudToLocal().then(() => {
+      loadAdminState();
+      renderAllSections();
+    }).catch(() => null);
+  } else if (typeof fetchSiteDataFromCloud === "function") {
+    fetchSiteDataFromCloud().catch(() => null);
+  }
 }
 
 window.bootAdminApp = bootAdminApp;
@@ -845,13 +852,14 @@ window.saveDepartmentModal = function(e) {
   const existingDept = editItemIndex !== -1 ? adminData.departments[editItemIndex] : null;
   const nameVal = document.getElementById("deptName").value.trim();
   const idVal = existingDept?.id || nameVal.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+  const imgVal = document.getElementById("deptImage").value.trim() || existingDept?.image || "assets/images/Shop Inside/Medicine.jpeg";
 
   const newDept = {
     id: idVal,
     name: nameVal,
     badge: document.getElementById("deptBadge").value.trim() || "Specialty",
     tagline: document.getElementById("deptTagline").value.trim(),
-    image: document.getElementById("deptImage").value.trim() || "assets/images/Shop Inside/Medicine.jpeg",
+    image: imgVal,
     icon: document.getElementById("deptIcon").value.trim() || "fa-solid fa-store",
     description: document.getElementById("deptDescription").value.trim(),
     features: parsedFeatures.length ? parsedFeatures : ["100% Genuine Guaranteed", "Certified Advisors on Duty"],
@@ -865,9 +873,12 @@ window.saveDepartmentModal = function(e) {
   }
 
   saveSiteData(adminData);
+  if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveDepartments === "function") {
+    window.CloudDB.saveDepartments(adminData.departments).catch(() => null);
+  }
   closeAdminModal();
   renderDepartmentsList();
-  showToast("Department saved and published live!");
+  showToast("Department saved and published live to cloud!");
 };
 
 window.deleteDepartment = function(idx) {

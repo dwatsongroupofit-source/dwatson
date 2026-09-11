@@ -75,7 +75,38 @@ module.exports = async (req, res) => {
         return res.status(400).json({ success: false, error: "Invalid site data payload." });
       }
 
-      siteData.lastModified = Date.now();
+      // Fetch current cloud data to safely merge, preventing accidental resets of other sections
+      let currentData = {};
+      try {
+        const curRes = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}/latest`, {
+          method: "GET",
+          headers: {
+            "X-Master-Key": JSONBIN_API_KEY,
+            "X-Bin-Meta": "false"
+          }
+        });
+        if (curRes.ok) {
+          const curJson = await curRes.json();
+          currentData = curJson.record || curJson;
+        }
+      } catch (fErr) {
+        console.warn("Could not fetch current cloud data before merge:", fErr.message);
+      }
+
+      const mergedData = {
+        ...currentData,
+        ...siteData,
+        departments: (Array.isArray(siteData.departments) && siteData.departments.length > 0) ? siteData.departments : (currentData.departments || []),
+        products: (Array.isArray(siteData.products) && siteData.products.length > 0) ? siteData.products : (currentData.products || []),
+        branches: (Array.isArray(siteData.branches) && siteData.branches.length > 0) ? siteData.branches : (currentData.branches || []),
+        heroSlides: (Array.isArray(siteData.heroSlides) && siteData.heroSlides.length > 0) ? siteData.heroSlides : (currentData.heroSlides || []),
+        management: (Array.isArray(siteData.management) && siteData.management.length > 0) ? siteData.management : (currentData.management || []),
+        gallery: (Array.isArray(siteData.gallery) && siteData.gallery.length > 0) ? siteData.gallery : (currentData.gallery || []),
+        categories: (Array.isArray(siteData.categories) && siteData.categories.length > 0) ? siteData.categories : (currentData.categories || []),
+        faqs: (Array.isArray(siteData.faqs) && siteData.faqs.length > 0) ? siteData.faqs : (currentData.faqs || []),
+        company: { ...(currentData.company || {}), ...(siteData.company || {}) },
+        lastModified: Date.now()
+      };
 
       const response = await fetch(`${JSONBIN_BASE}/${JSONBIN_BIN_ID}`, {
         method: "PUT",
@@ -83,7 +114,7 @@ module.exports = async (req, res) => {
           "Content-Type": "application/json",
           "X-Master-Key": JSONBIN_API_KEY
         },
-        body: JSON.stringify(siteData)
+        body: JSON.stringify(mergedData)
       });
 
       if (!response.ok) {
@@ -98,7 +129,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "Site data saved to cloud successfully!",
-        lastUpdated: siteData.lastModified
+        lastUpdated: mergedData.lastModified
       });
     } catch (err) {
       console.error("POST /api/site-data error:", err.message);

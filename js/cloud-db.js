@@ -150,71 +150,90 @@
   }
 
   async function saveDepartments(departments) {
-    const data = await loadSiteData() || {};
-    data.departments = departments;
-    return pushToCloud(data);
+    const cloudLatest = await fetchFromCloud() || await loadSiteData() || {};
+    cloudLatest.departments = departments;
+    cloudLatest.lastModified = Date.now();
+    return pushToCloud(cloudLatest);
   }
 
   async function saveHeroSlides(heroSlides) {
-    const data = await loadSiteData() || {};
-    data.heroSlides = heroSlides;
-    return pushToCloud(data);
+    const cloudLatest = await fetchFromCloud() || await loadSiteData() || {};
+    cloudLatest.heroSlides = heroSlides;
+    cloudLatest.lastModified = Date.now();
+    return pushToCloud(cloudLatest);
   }
 
   async function saveManagement(management) {
-    const data = await loadSiteData() || {};
-    data.management = management;
-    return pushToCloud(data);
+    const cloudLatest = await fetchFromCloud() || await loadSiteData() || {};
+    cloudLatest.management = management;
+    cloudLatest.lastModified = Date.now();
+    return pushToCloud(cloudLatest);
   }
 
   async function saveCompanyInfo(company) {
-    const data = await loadSiteData() || {};
-    data.company = company;
-    return pushToCloud(data);
+    const cloudLatest = await fetchFromCloud() || await loadSiteData() || {};
+    cloudLatest.company = company;
+    cloudLatest.lastModified = Date.now();
+    return pushToCloud(cloudLatest);
   }
 
   async function saveFaqs(faqs) {
-    const data = await loadSiteData() || {};
-    data.faqs = faqs;
-    return pushToCloud(data);
+    const cloudLatest = await fetchFromCloud() || await loadSiteData() || {};
+    cloudLatest.faqs = faqs;
+    cloudLatest.lastModified = Date.now();
+    return pushToCloud(cloudLatest);
   }
 
   /**
    * Save the COMPLETE site data object at once.
-   * Used by the existing saveSiteData() in data.js.
+   * Merges safely with current cloud record so no section is ever accidentally wiped.
    */
   async function saveAllData(data) {
+    try {
+      const latest = await fetchFromCloud();
+      if (latest && typeof latest === "object") {
+        const merged = {
+          ...latest,
+          ...data,
+          departments: (Array.isArray(data.departments) && data.departments.length) ? data.departments : (latest.departments || []),
+          products: (Array.isArray(data.products) && data.products.length) ? data.products : (latest.products || []),
+          branches: (Array.isArray(data.branches) && data.branches.length) ? data.branches : (latest.branches || []),
+          heroSlides: (Array.isArray(data.heroSlides) && data.heroSlides.length) ? data.heroSlides : (latest.heroSlides || []),
+          management: (Array.isArray(data.management) && data.management.length) ? data.management : (latest.management || []),
+          gallery: (Array.isArray(data.gallery) && data.gallery.length) ? data.gallery : (latest.gallery || []),
+          categories: (Array.isArray(data.categories) && data.categories.length) ? data.categories : (latest.categories || []),
+          faqs: (Array.isArray(data.faqs) && data.faqs.length) ? data.faqs : (latest.faqs || []),
+          company: { ...(latest.company || {}), ...(data.company || {}) },
+          lastModified: Date.now()
+        };
+        return pushToCloud(merged);
+      }
+    } catch (e) {
+      console.warn("Cloud merge notice, saving directly:", e);
+    }
     return pushToCloud(data);
   }
 
   /**
-   * Sync from cloud to localStorage (used on page load for public pages).
+   * Sync from cloud to localStorage.
    * Updates localStorage STORAGE_KEY so getSiteData() picks it up.
-   * Fires siteDataUpdated event so the page re-renders.
+   * Fires siteDataUpdated event so all pages (and admin) re-render immediately.
    */
   async function syncCloudToLocal() {
     try {
       const cloudData = await fetchFromCloud();
-      if (!cloudData) return;
+      if (!cloudData || typeof cloudData !== "object") return null;
 
-      // Merge with localStorage — cloud always wins if it's newer
       const STORAGE_KEY = "dwatson_site_data_v19";
-      const localRaw = localStorage.getItem(STORAGE_KEY);
-      let localModified = 0;
-      if (localRaw) {
-        try { localModified = JSON.parse(localRaw).lastModified || 0; } catch (e) {}
-      }
-      const cloudModified = cloudData.lastModified || 0;
-
-      // Always use cloud data — cloud is the master
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
 
-      if (cloudModified >= localModified) {
-        window.dispatchEvent(new Event("siteDataUpdated"));
-        console.log("☁️ Site data synced from cloud (modified:", new Date(cloudModified).toLocaleTimeString(), ")");
-      }
+      // Always notify the page that cloud data is fresh
+      window.dispatchEvent(new Event("siteDataUpdated"));
+      console.log("☁️ Site data synced from cloud (departments: " + (cloudData.departments || []).length + ", modified: " + new Date(cloudData.lastModified || Date.now()).toLocaleTimeString() + ")");
+      return cloudData;
     } catch (err) {
-      // Silent — don't break the page if cloud is unreachable
+      console.warn("☁️ Cloud sync notice:", err);
+      return null;
     }
   }
 
@@ -260,16 +279,12 @@
     pushToCloud
   };
 
-  // ── Auto-sync on page load (public pages only) ────────────────────────────
+  // ── Auto-sync on page load (runs on ALL pages: public & admin) ────────────
   if (typeof window !== "undefined" && typeof document !== "undefined") {
-    const isAdminPage = window.location.pathname.includes("admin");
-    if (!isAdminPage) {
-      // Public page: sync cloud data silently on load
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => syncCloudToLocal());
-      } else {
-        syncCloudToLocal();
-      }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => syncCloudToLocal());
+    } else {
+      syncCloudToLocal();
     }
   }
 
