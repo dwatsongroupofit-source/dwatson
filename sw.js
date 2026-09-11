@@ -1,14 +1,15 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v28.0)
+ * D. Watson Chemist & Superstore - Service Worker (v29.0)
  * Ultra-Fresh Cache Architecture, Zero Stale Assets & Auto-Eviction
  */
 
-const CACHE_NAME = "dwatson-cache-v28.0";
+const CACHE_NAME = "dwatson-cache-v29.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
   "./departments.html",
   "./departments",
+  "./department",
   "./branches.html",
   "./branches",
   "./prescription.html",
@@ -21,11 +22,11 @@ const STATIC_ASSETS = [
   "./privacy",
   "./terms.html",
   "./terms",
-  "./css/style.css?v=28.0",
-  "./css/responsive.css?v=28.0",
-  "./js/config.js?v=28.0",
-  "./js/data.js?v=28.0",
-  "./js/main.js?v=28.0",
+  "./css/style.css?v=29.0",
+  "./css/responsive.css?v=29.0",
+  "./js/config.js?v=29.0",
+  "./js/data.js?v=29.0",
+  "./js/main.js?v=29.0",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",
@@ -105,8 +106,15 @@ self.addEventListener("fetch", (event) => {
           const cachedNoSearch = await caches.match(event.request, { ignoreSearch: true });
           if (cachedNoSearch) return cachedNoSearch;
 
-          // 3. Match normalized clean URL / .html URL
+          // 3. Match normalized clean URL / .html URL / singular alias
           const pathname = requestUrl.pathname;
+          if (pathname === "/department" || pathname === "/department.html") {
+            const deptMatch = await caches.match("./departments.html", { ignoreSearch: true }) ||
+                              await caches.match("/departments.html", { ignoreSearch: true }) ||
+                              await caches.match("./departments", { ignoreSearch: true });
+            if (deptMatch) return deptMatch;
+          }
+
           if (!pathname.endsWith(".html") && !pathname.includes(".")) {
             const htmlAlt = await caches.match(pathname + ".html", { ignoreSearch: true }) ||
                             await caches.match("." + pathname + ".html", { ignoreSearch: true });

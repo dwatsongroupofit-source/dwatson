@@ -1,3 +1,8 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/department", "destination": "/departments", "permanent": true },
+    { "source": "/department.html", "destination": "/departments", "permanent": true },
+    { "source": "/orescation", "destination": "/prescription", "permanent": true }
+  ]
 }
