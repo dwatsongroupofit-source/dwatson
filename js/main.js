@@ -62,6 +62,11 @@ let isProductCarouselControlsInit = false;
 function initWebsite() {
   const data = getSiteData();
 
+  // Populate global caches immediately so all event handlers & modals have full catalog access
+  allProductsData = data.products || [];
+  allDepartmentsData = data.departments || [];
+  allBranchesData = data.branches || [];
+
   renderHeaderAndCompanyInfo(data.company);
   renderHeroSlider(data.heroSlides);
   renderTrustStats(data.company.stats);
@@ -502,7 +507,7 @@ function renderHomeDepartments(departments) {
 
   container.innerHTML = departments.map((dept) => {
     return `
-      <div class="home-dept-card" onclick="selectHomeDepartmentProducts('${dept.id}', event)" title="Click to view ${escapeHtml(dept.name)} products downside" style="cursor:pointer;">
+      <div class="home-dept-card" onclick="window.location.href='departments.html?dept=${encodeURIComponent(dept.id)}'" title="Explore ${escapeHtml(dept.name)} Department" style="cursor:pointer;">
         <div class="home-dept-img-wrap">
           <img src="${encodeURI(dept.image)}" alt="${escapeHtml(dept.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
           <span class="home-dept-badge">${escapeHtml(dept.badge || "Featured")}</span>
@@ -510,9 +515,13 @@ function renderHomeDepartments(departments) {
         <div class="home-dept-body">
           <h4 class="home-dept-name">${escapeHtml(dept.name)}</h4>
           <p class="home-dept-sub">${escapeHtml(dept.tagline || "Official D. Watson Healthcare & Retail")}</p>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-            <span class="home-dept-link" style="color:var(--dw-red); font-weight:700; font-size:0.82rem;"><i class="fa-solid fa-arrow-down"></i> View Products</span>
-            <a href="departments.html?dept=${dept.id}" onclick="event.stopPropagation();" class="home-dept-ext-link" title="Explore full department page" style="font-size:0.75rem; color:#64748B; text-decoration:underline;">Full Page &rarr;</a>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; gap:8px;">
+            <a href="departments.html?dept=${encodeURIComponent(dept.id)}" class="home-dept-ext-link" onclick="event.stopPropagation();" title="Explore ${escapeHtml(dept.name)} page" style="flex:1; text-align:center; padding:7px 10px; font-size:0.82rem; font-weight:700; color:var(--dw-red); background:rgba(225,29,72,0.06); border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:5px;">
+              <span>Explore</span> <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            <button type="button" onclick="event.stopPropagation(); handleDepartmentInquiryClick(event, '${dept.id}');" class="btn btn-whatsapp btn-sm" title="Inquire on WhatsApp (Select Branch)" style="padding:7px 12px; font-size:0.8rem; font-weight:700; border-radius:8px; display:inline-flex; align-items:center; gap:5px; border:none; cursor:pointer; color:white; background:#16A34A;">
+              <i class="fa-brands fa-whatsapp"></i> <span>Inquire</span>
+            </button>
           </div>
         </div>
       </div>
@@ -832,7 +841,7 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
           <h4 style="font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:6px;">Looking for ${escapeHtml(label)}?</h4>
           <p style="font-size:0.9rem; color:#64748B; max-width:480px; margin:0 auto 16px;">We carry extensive ${escapeHtml(label)} inventory across all D. Watson 24/7 branches. Connect directly with our department pharmacist via WhatsApp for instant stock check &amp; doorstep delivery.</p>
           <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-            <a href="https://wa.me/${waNum}?text=${encodeURIComponent('Hi D.Watson Chemist, I would like to inquire about available ' + label + ' items.')}" target="_blank" class="home-product-buy-btn" style="padding:10px 20px; font-size:0.9rem;">
+            <a href="https://wa.me/${waNum}?text=${encodeURIComponent('Hi D.Watson Chemist, I would like to inquire about available ' + label + ' items.')}" target="_blank" onclick="handleDepartmentInquiryClick(event, '${currentHomeProductCategory}')" class="home-product-buy-btn" style="padding:10px 20px; font-size:0.9rem;" title="Inquire via WhatsApp (Select Branch)">
               <i class="fa-brands fa-whatsapp"></i> Inquire via WhatsApp
             </a>
             <button type="button" class="btn-zoom-trigger" onclick="filterHomeProductsCategory('all')" style="padding:10px 18px; font-size:0.9rem;">
@@ -3295,17 +3304,32 @@ window.closeBranchSelectorModal = function() {
  * Handle Product Order Click: Opens Branch Selector Modal for product
  */
 window.handleProductOrderClick = async function(event, productId, waUrl) {
-  if (event) event.preventDefault();
+  if (event) {
+    event.preventDefault();
+    if (event.stopPropagation) event.stopPropagation();
+  }
+  const data = (typeof getSiteData === "function") ? getSiteData() : {};
+  const prods = (data && Array.isArray(data.products) && data.products.length)
+    ? data.products
+    : ((allProductsData && allProductsData.length) ? allProductsData : (currentProductZoomList || []));
+
   let p = null;
   if (typeof productId === "object" && productId !== null) {
     p = productId;
   } else {
-    p = (allProductsData || []).find(item => item.id === productId) ||
-        (currentProductZoomList || []).find(item => item.id === productId);
+    p = prods.find(item => String(item.id).toLowerCase() === String(productId).toLowerCase());
+    if (!p) {
+      p = (currentProductZoomList || []).find(item => String(item.id).toLowerCase() === String(productId).toLowerCase());
+    }
   }
   if (!p) {
-    if (waUrl) window.open(waUrl, "_blank");
-    return;
+    p = {
+      id: productId || "custom-product",
+      name: (typeof productId === "string" && productId.length > 2) ? productId : "D. Watson Health & Wellness Product",
+      price: "Inquire for Price",
+      brand: "D. Watson Certified",
+      image: "assets/images/pharmacy.jpg"
+    };
   }
   openBranchSelectorModal(p, "product");
 };
@@ -3314,22 +3338,37 @@ window.handleProductOrderClick = async function(event, productId, waUrl) {
  * Handle Department Inquiry Click: Opens Branch Selector Modal for department
  */
 window.handleDepartmentInquiryClick = function(event, deptId) {
-  if (event) event.preventDefault();
+  if (event) {
+    event.preventDefault();
+    if (event.stopPropagation) event.stopPropagation();
+  }
+  const data = (typeof getSiteData === "function") ? getSiteData() : {};
+  const depts = (data && Array.isArray(data.departments) && data.departments.length)
+    ? data.departments
+    : (allDepartmentsData || []);
+
   let dept = null;
   if (typeof deptId === "object" && deptId !== null) {
     dept = deptId;
   } else {
-    dept = (allDepartmentsData || []).find(d => d.id === deptId);
-    if (!dept) {
-      const data = getSiteData();
-      dept = (data.departments || []).find(d => d.id === deptId);
+    const cleanId = String(deptId || "").toLowerCase().trim();
+    dept = depts.find(d => String(d.id).toLowerCase() === cleanId);
+    if (!dept && (cleanId === "all" || !cleanId || cleanId === "all-departments")) {
+      dept = {
+        id: "all-departments",
+        name: "D. Watson 13 Specialized Departments",
+        tagline: "Comprehensive Healthcare, Beauty & Retail Superstore",
+        image: "assets/images/pharmacy.jpg"
+      };
     }
   }
   if (!dept) {
-    const data = getSiteData();
-    const fallbackWa = (data.company && data.company.whatsapp) || "923329716666";
-    window.open(`https://wa.me/${fallbackWa}?text=${encodeURIComponent('Hi D.Watson Chemist, I would like to inquire about your departments.')}`, "_blank");
-    return;
+    dept = {
+      id: deptId || "general",
+      name: (typeof deptId === "string" && deptId.length > 2) ? deptId.toUpperCase() : "Specialized Department",
+      tagline: "Official D. Watson Healthcare & Retail Counter",
+      image: "assets/images/pharmacy.jpg"
+    };
   }
   openBranchSelectorModal(dept, "department");
 };
