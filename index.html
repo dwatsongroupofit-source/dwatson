@@ -60,7 +60,7 @@
         }
       } catch (e) {}
 
-      var CURRENT_CACHE_VER = "27.0";
+      var CURRENT_CACHE_VER = "30.0";
       var stored = localStorage.getItem("dw_cache_version");
       if (stored !== CURRENT_CACHE_VER) {
         localStorage.setItem("dw_cache_version", CURRENT_CACHE_VER);
@@ -89,9 +89,9 @@
     })();
   </script>
 
-  <!-- Stylesheets (v28.0 - Instant Mobile Bottom Bar Navigation & Safe PWA Navigation) -->
-  <link rel="stylesheet" href="css/style.css?v=28.0">
-  <link rel="stylesheet" href="css/responsive.css?v=28.0">
+  <!-- Stylesheets (v30.0 - Mobile Navigation Fix) -->
+  <link rel="stylesheet" href="css/style.css?v=30.0">
+  <link rel="stylesheet" href="css/responsive.css?v=30.0">
 </head>
 <body class="page-home">
 
@@ -742,15 +742,15 @@
 
   <!-- Fixed Mobile Bottom Navigation Bar (Always Visible on Mobile) -->
   <nav class="mobile-bottom-bar" aria-label="Mobile Navigation">
-    <a href="index.html" class="mobile-nav-tab active" id="mobTabHome" onclick="window.location.href='index.html'">
+    <a href="index.html" class="mobile-nav-tab active" id="mobTabHome">
       <i class="fa-solid fa-house"></i>
       <span>Home</span>
     </a>
-    <a href="departments.html" class="mobile-nav-tab" id="mobTabDepts" onclick="window.location.href='departments.html'">
+    <a href="departments.html" class="mobile-nav-tab" id="mobTabDepts">
       <i class="fa-solid fa-table-cells-large"></i>
       <span>Departments</span>
     </a>
-    <a href="prescription.html" class="mobile-nav-tab highlight-rx-mockup" id="mobTabRx" onclick="window.location.href='prescription.html'">
+    <a href="prescription.html" class="mobile-nav-tab highlight-rx-mockup" id="mobTabRx">
       <div class="mockup-gold-center-bubble">
         <i class="fa-solid fa-plus"></i>
       </div>
@@ -1175,11 +1175,11 @@
     </div>
   </div>
 
-  <!-- Scripts (v28.0) -->
+  <!-- Scripts (v30.0) -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/config.js?v=28.0"></script>
+  <script src="js/config.js?v=30.0"></script>
   <script src="js/cloud-db.js?v=2.0"></script>
-  <script src="js/data.js?v=28.0"></script>
-  <script src="js/main.js?v=28.0"></script>
+  <script src="js/data.js?v=30.0"></script>
+  <script src="js/main.js?v=30.0"></script>
 </body>
 </html>

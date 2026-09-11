@@ -1,9 +1,9 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v29.0)
- * Ultra-Fresh Cache Architecture, Zero Stale Assets & Auto-Eviction
+ * D. Watson Chemist & Superstore - Service Worker (v30.0)
+ * Fix: Handle 308/301/302 redirect responses on navigate requests (mobile white screen fix)
  */
 
-const CACHE_NAME = "dwatson-cache-v29.0";
+const CACHE_NAME = "dwatson-cache-v30.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -22,11 +22,11 @@ const STATIC_ASSETS = [
   "./privacy",
   "./terms.html",
   "./terms",
-  "./css/style.css?v=29.0",
-  "./css/responsive.css?v=29.0",
-  "./js/config.js?v=29.0",
-  "./js/data.js?v=29.0",
-  "./js/main.js?v=29.0",
+  "./css/style.css?v=30.0",
+  "./css/responsive.css?v=30.0",
+  "./js/config.js?v=30.0",
+  "./js/data.js?v=30.0",
+  "./js/main.js?v=30.0",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",
@@ -63,7 +63,7 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch Event - Network First with Safe Fallback (Guaranteed to return a valid Response)
+// Fetch Event - Network First with Redirect Resolution + Safe Offline Fallback
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
@@ -83,6 +83,45 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // ─── NAVIGATION REQUESTS (page loads) ────────────────────────────────────────
+  // Key fix: Vercel cleanUrls returns 308 redirects for .html URLs.
+  // Passing a redirected response to respondWith() causes mobile browsers to
+  // show a white/blank screen. We must follow the redirect ourselves.
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).then((response) => {
+        // If Vercel returned a redirect (308/301/302), follow it manually
+        if (response.redirected) {
+          return fetch(response.url);
+        }
+        // Cache good 200 responses
+        if (response.status === 200 && response.type === "basic") {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone).catch(() => {}));
+        }
+        return response;
+      }).catch(async () => {
+        // Offline fallback for navigation
+        try {
+          const cached =
+            await caches.match(event.request) ||
+            await caches.match(event.request, { ignoreSearch: true }) ||
+            await caches.match("./index.html") ||
+            await caches.match("/index.html") ||
+            await caches.match("./");
+          if (cached) return cached;
+        } catch (e) {}
+        return new Response("D. Watson Chemist & Superstore - Network connection unavailable.", {
+          status: 503,
+          statusText: "Service Unavailable",
+          headers: new Headers({ "Content-Type": "text/plain; charset=utf-8" })
+        });
+      })
+    );
+    return;
+  }
+
+  // ─── ASSET REQUESTS (CSS, JS, Images, Fonts) ─────────────────────────────────
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
@@ -125,13 +164,14 @@ self.addEventListener("fetch", (event) => {
             if (cleanAlt) return cleanAlt;
           }
 
-          // 4. For navigation or HTML requests, return offline app shell
-          const isHtmlRequest = event.request.mode === "navigate" || 
-            (event.request.headers && event.request.headers.get("accept") && event.request.headers.get("accept").includes("text/html"));
+          // 4. For HTML requests, return offline app shell
+          const isHtmlRequest = event.request.headers &&
+            event.request.headers.get("accept") &&
+            event.request.headers.get("accept").includes("text/html");
 
           if (isHtmlRequest) {
-            const fallbackShell = await caches.match("./index.html") || 
-                                  await caches.match("/index.html") || 
+            const fallbackShell = await caches.match("./index.html") ||
+                                  await caches.match("/index.html") ||
                                   await caches.match("./") ||
                                   await caches.match("/");
             if (fallbackShell) return fallbackShell;
@@ -140,7 +180,7 @@ self.addEventListener("fetch", (event) => {
           console.warn("Service worker cache read error:", cacheErr);
         }
 
-        // 4. Guaranteed fallback Response to avoid TypeError: Failed to convert value to 'Response'
+        // Guaranteed fallback Response
         return new Response("D. Watson Chemist & Superstore - Network connection unavailable.", {
           status: 503,
           statusText: "Service Unavailable",
