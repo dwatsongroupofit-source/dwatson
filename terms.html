@@ -133,7 +133,8 @@
               <div class="helpline-dropdown-list" id="helplineDropdownList"></div>
             </div>
           </div>
-          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Main Navigation Bar -->
@@ -372,32 +373,6 @@
     </div>
   </footer>
 
-  <!-- Fixed Mobile Bottom Navigation Bar -->
-  <nav class="mobile-bottom-bar" aria-label="Mobile Navigation">
-    <a href="index.html" class="mobile-nav-tab" id="mobTabHome">
-      <i class="fa-solid fa-house"></i>
-      <span>Home</span>
-    </a>
-    <a href="departments.html" class="mobile-nav-tab" id="mobTabDepts">
-      <i class="fa-solid fa-table-cells-large"></i>
-      <span>Departments</span>
-    </a>
-    <a href="prescription.html" class="mobile-nav-tab highlight-rx-mockup" id="mobTabRx">
-      <div class="mockup-gold-center-bubble">
-        <i class="fa-solid fa-plus"></i>
-      </div>
-      <span>Upload Rx</span>
-    </a>
-    <button type="button" class="mobile-nav-tab" id="mobTabCall" onclick="openFlagshipCallModal()" aria-label="Call Flagship Branches">
-      <i class="fa-solid fa-phone-volume"></i>
-      <span>Call</span>
-    </button>
-    <button type="button" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa" onclick="openFlagshipWhatsAppModal()" aria-label="WhatsApp Flagship Branches">
-      <i class="fa-brands fa-whatsapp"></i>
-      <span>Chat</span>
-    </button>
-  </nav>
-
   <!-- Slide-Out Mobile Navigation Drawer -->
   <div class="mobile-nav-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="mobile-drawer-backdrop" onclick="closeMobileMenu()"></div>
@@ -483,5 +458,33 @@
   <script src="js/cloud-db.js?v=2.0"></script>
   <script src="js/data.js?v=30.0"></script>
   <script src="js/main.js?v=30.0"></script>
+
+
+  <!-- Fixed Mobile Bottom Navigation Bar (Always Visible on Mobile) -->
+  <nav class="mobile-bottom-bar" aria-label="Mobile Navigation">
+    <a href="index.html" class="mobile-nav-tab" id="mobTabHome">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="departments.html" class="mobile-nav-tab" id="mobTabDepts">
+      <i class="fa-solid fa-table-cells-large"></i>
+      <span>Departments</span>
+    </a>
+    <a href="prescription.html" class="mobile-nav-tab highlight-rx-mockup" id="mobTabRx">
+      <div class="mockup-gold-center-bubble">
+        <i class="fa-solid fa-plus"></i>
+      </div>
+      <span>Upload Rx</span>
+    </a>
+    <button type="button" class="mobile-nav-tab" id="mobTabCall" onclick="openFlagshipCallModal()" aria-label="Call Flagship Branches">
+      <i class="fa-solid fa-phone-volume"></i>
+      <span>Call</span>
+    </button>
+    <button type="button" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa" onclick="openFlagshipWhatsAppModal()" aria-label="WhatsApp Flagship Branches">
+      <i class="fa-brands fa-whatsapp"></i>
+      <span>Chat</span>
+    </button>
+  </nav>
+
 </body>
 </html>
