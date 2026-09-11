@@ -801,7 +801,7 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
             <button type="button" class="btn-zoom-trigger" onclick="event.stopPropagation(); openProductZoomModal('${p.id}')" title="Zoom &amp; Details">
               <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom
             </button>
-            <a href="${waUrl}" target="_blank" onclick="event.stopPropagation();" class="home-product-buy-btn" title="Order ${escapeHtml(p.name)} via WhatsApp">
+            <a href="${waUrl}" target="_blank" onclick="event.stopPropagation(); handleProductOrderClick(event, '${p.id}', '${waUrl}');" class="home-product-buy-btn" title="Order ${escapeHtml(p.name)} via WhatsApp">
               <i class="fa-brands fa-whatsapp"></i> Buy
             </a>
           </div>
@@ -1377,7 +1377,7 @@ function spotlightDepartment(rawDeptId) {
           </div>
 
           <div class="dept-spotlight-cta-row">
-            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp btn-spotlight-wa">
+            <a href="${waUrl}" target="_blank" onclick="handleDepartmentInquiryClick(event, '${selectedDept.id}')" class="btn btn-whatsapp btn-spotlight-wa" title="Inquire on WhatsApp">
               <i class="fa-brands fa-whatsapp"></i> Inquire on WhatsApp
             </a>
             ${isPharmacy ? `
@@ -1422,7 +1422,7 @@ function spotlightDepartment(rawDeptId) {
                     <h4 class="dept-prod-title" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h4>
                     <div class="dept-prod-footer">
                       <span class="dept-prod-price">${escapeHtml(p.price || 'Inquire')}</span>
-                      <a href="${pWaUrl}" target="_blank" onclick="event.stopPropagation();" class="dept-prod-wa-btn">
+                      <a href="${pWaUrl}" target="_blank" onclick="event.stopPropagation(); handleProductOrderClick(event, '${p.id}', '${pWaUrl}')" class="dept-prod-wa-btn" title="Inquire / Order on WhatsApp">
                         <i class="fa-brands fa-whatsapp"></i> Buy
                       </a>
                     </div>
@@ -1539,7 +1539,7 @@ function renderDepartmentCards(deptList) {
             <button type="button" class="btn btn-primary btn-sm" onclick="switchSpotlightDept('${dept.id}')">
               <i class="fa-solid fa-arrow-right"></i> View Details
             </button>
-            <a href="${waUrl}" target="_blank" class="btn btn-whatsapp btn-sm">
+            <a href="${waUrl}" target="_blank" onclick="handleDepartmentInquiryClick(event, '${dept.id}')" class="btn btn-whatsapp btn-sm" title="Inquire on WhatsApp">
               <i class="fa-brands fa-whatsapp"></i> Inquire
             </a>
             <a href="branches.html" class="btn btn-outline btn-sm" title="Branches">
@@ -3161,31 +3161,122 @@ function getFullImageUrl(imagePath) {
 window.getFullImageUrl = getFullImageUrl;
 
 
-let activeOrderProduct = null;
+let activeInquiryTarget = null; // { type: 'product' | 'department', data: ... }
+let activeOrderProduct = null; // for backward compatibility
 
-window.openBranchSelectorModal = function(product) {
-  activeOrderProduct = product;
-  
+window.openBranchSelectorModal = function(target, type = "product") {
+  if (!target) return;
+  activeInquiryTarget = {
+    type: type || "product",
+    data: target
+  };
+  activeOrderProduct = (activeInquiryTarget.type === "product") ? target : null;
+
+  // Make sure modal element exists in DOM
+  let modal = document.getElementById("branchSelectorModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.className = "product-zoom-modal";
+    modal.id = "branchSelectorModal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-hidden", "true");
+    modal.style.zIndex = "10050";
+    modal.innerHTML = `
+      <div class="product-zoom-backdrop" onclick="closeBranchSelectorModal()"></div>
+      <div class="product-zoom-dialog" style="max-width: 480px; min-height: auto; height: auto; border-radius: 16px; overflow: hidden; background: #FFFFFF; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+        <div class="zoom-modal-header" style="padding: 18px 24px; border-bottom: 1px solid #E2E8F0; background: #F8FAFC; display:flex; align-items:center; justify-content:space-between;">
+          <h3 id="branchSelectorTitle" style="margin:0; font-size:1.15rem; color:#0F172A; font-weight:700;"><i class="fa-solid fa-store" style="color:var(--dw-red); margin-right:8px;"></i> Select Branch for Inquiry</h3>
+          <button class="zoom-tool-btn zoom-close-btn" onclick="closeBranchSelectorModal()" title="Close" style="color:#64748B; background:none; border:none; font-size:1.2rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="zoom-modal-body" style="padding: 24px; color:#334155; display: block;">
+          <div id="branchSelectorItemPreview" style="display: flex; align-items: center; gap: 14px; padding: 12px 14px; background: #F8FAFC; border-radius: 12px; margin-bottom: 18px; border: 1px solid #E2E8F0;">
+            <img id="branchSelectorItemImg" src="assets/images/pharmacy.jpg" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #FFF; border: 1px solid #CBD5E1;">
+            <div style="flex: 1; min-width: 0;">
+              <div id="branchSelectorItemTitle" style="font-weight: 700; color: #0F172A; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Item</div>
+              <div id="branchSelectorItemSubtitle" style="font-size: 0.82rem; color: #64748B; margin-top: 3px;">Details</div>
+            </div>
+          </div>
+          <p id="branchSelectorPrompt" style="font-size:0.9rem; margin-top:0; margin-bottom:18px; color:#475569; line-height:1.5;">Please select your nearest D. Watson branch to connect on WhatsApp.</p>
+          <div class="form-group" style="margin-bottom:20px;">
+            <label id="branchSelectorSelectLabel" style="display:block; font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#475569; margin-bottom:8px;">Select Branch</label>
+            <select id="orderBranchSelect" class="form-control" style="width:100%; padding:11px 14px; border-radius:8px; border:1px solid #CBD5E1; font-size:0.95rem; outline:none; background-color:#F8FAFC; color:#0F172A; font-weight: 500;">
+            </select>
+          </div>
+          <button id="confirmOrderBtn" class="btn btn-whatsapp" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; font-weight:700; border-radius:8px; font-size:0.98rem; border:none; color:white; background:#16A34A; cursor:pointer;">
+            <i class="fa-brands fa-whatsapp"></i> Confirm &amp; Open WhatsApp
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    initOrderBranchSelector();
+  }
+
+  // Populate branches grouped by Flagship vs Regular
   const data = getSiteData();
   const branches = data.branches || [];
   const flagshipBranches = branches.filter(b => b.isFlagship);
+  const otherBranches = branches.filter(b => !b.isFlagship);
   
   const selectEl = document.getElementById("orderBranchSelect");
   if (selectEl) {
+    let optionsHtml = "";
     if (flagshipBranches.length > 0) {
-      selectEl.innerHTML = flagshipBranches.map((b, idx) => `
-        <option value="${escapeHtml(b.name)}" ${idx === 0 ? 'selected' : ''}>${escapeHtml(b.name)}</option>
+      optionsHtml += `<optgroup label="⭐ Flagship Branches (Express 24/7 Delivery)">`;
+      optionsHtml += flagshipBranches.map((b, idx) => `
+        <option value="${escapeHtml(b.name)}" ${idx === 0 ? "selected" : ""}>⭐ ${escapeHtml(b.name)} (${escapeHtml(b.city || "Islamabad")})</option>
       `).join("");
-    } else {
-      selectEl.innerHTML = `<option value="D. Watson General Pharmacy">D. Watson General Pharmacy</option>`;
+      optionsHtml += `</optgroup>`;
     }
+    if (otherBranches.length > 0) {
+      optionsHtml += `<optgroup label="📍 All D. Watson Branches">`;
+      optionsHtml += otherBranches.map(b => `
+        <option value="${escapeHtml(b.name)}">${escapeHtml(b.name)} (${escapeHtml(b.city || "Islamabad")})</option>
+      `).join("");
+      optionsHtml += `</optgroup>`;
+    }
+    if (!optionsHtml) {
+      optionsHtml = `<option value="D. Watson General Pharmacy">D. Watson General Pharmacy (Helpline 051-8438111)</option>`;
+    }
+    selectEl.innerHTML = optionsHtml;
   }
-  
-  const modal = document.getElementById("branchSelectorModal");
-  if (modal) {
-    modal.classList.add("active");
-    modal.setAttribute("aria-hidden", "false");
+
+  // Update item preview, header title, and contextual prompt
+  const titleEl = document.getElementById("branchSelectorTitle");
+  const promptEl = document.getElementById("branchSelectorPrompt");
+  const previewImg = document.getElementById("branchSelectorItemImg");
+  const previewTitle = document.getElementById("branchSelectorItemTitle");
+  const previewSubtitle = document.getElementById("branchSelectorItemSubtitle");
+  const confirmBtn = document.getElementById("confirmOrderBtn");
+
+  if (activeInquiryTarget.type === "department") {
+    const dept = activeInquiryTarget.data;
+    if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-hospital" style="color:var(--dw-red); margin-right:8px;"></i> Select Branch for Department Inquiry`;
+    if (promptEl) promptEl.textContent = `Choose your nearest D. Watson branch to connect directly with their ${dept.name || 'specialized'} department counter on WhatsApp.`;
+    if (previewImg) {
+      previewImg.src = dept.image ? encodeURI(dept.image) : "assets/images/pharmacy.jpg";
+      previewImg.onerror = function() { this.onerror = null; this.src = "assets/images/pharmacy.jpg"; };
+    }
+    if (previewTitle) previewTitle.textContent = dept.name || "Department Inquiry";
+    if (previewSubtitle) previewSubtitle.textContent = dept.tagline || (dept.badge ? dept.badge + " Department" : "Specialized Department");
+    if (confirmBtn) confirmBtn.innerHTML = `<i class="fa-brands fa-whatsapp"></i> Inquire on WhatsApp`;
+  } else {
+    // Product
+    const p = activeInquiryTarget.data;
+    if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-store" style="color:var(--dw-red); margin-right:8px;"></i> Select Branch for Product Order`;
+    if (promptEl) promptEl.textContent = `Please select your preferred D. Watson branch to confirm stock availability and express delivery.`;
+    if (previewImg) {
+      previewImg.src = p.image ? encodeURI(p.image) : "assets/images/pharmacy.jpg";
+      previewImg.onerror = function() { this.onerror = null; this.src = "assets/images/pharmacy.jpg"; };
+    }
+    if (previewTitle) previewTitle.textContent = p.name || "Product Inquiry";
+    if (previewSubtitle) previewSubtitle.textContent = `${p.brand || 'D. Watson Certified'} • ${p.price || 'Inquire for Price'}`;
+    if (confirmBtn) confirmBtn.innerHTML = `<i class="fa-brands fa-whatsapp"></i> Confirm &amp; Inquire on WhatsApp`;
   }
+
+  modal.classList.add("active");
+  modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
 };
 
@@ -3196,22 +3287,51 @@ window.closeBranchSelectorModal = function() {
     modal.setAttribute("aria-hidden", "true");
   }
   document.body.style.overflow = "";
+  activeInquiryTarget = null;
   activeOrderProduct = null;
 };
 
 /**
- * Handle Product Order Click: Awaits Real-Time Cloud Sync & opens WhatsApp
+ * Handle Product Order Click: Opens Branch Selector Modal for product
  */
 window.handleProductOrderClick = async function(event, productId, waUrl) {
   if (event) event.preventDefault();
-
-  const p = (allProductsData || []).find(item => item.id === productId) || (currentProductZoomList || []).find(item => item.id === productId);
+  let p = null;
+  if (typeof productId === "object" && productId !== null) {
+    p = productId;
+  } else {
+    p = (allProductsData || []).find(item => item.id === productId) ||
+        (currentProductZoomList || []).find(item => item.id === productId);
+  }
   if (!p) {
     if (waUrl) window.open(waUrl, "_blank");
     return;
   }
+  openBranchSelectorModal(p, "product");
+};
 
-  openBranchSelectorModal(p);
+/**
+ * Handle Department Inquiry Click: Opens Branch Selector Modal for department
+ */
+window.handleDepartmentInquiryClick = function(event, deptId) {
+  if (event) event.preventDefault();
+  let dept = null;
+  if (typeof deptId === "object" && deptId !== null) {
+    dept = deptId;
+  } else {
+    dept = (allDepartmentsData || []).find(d => d.id === deptId);
+    if (!dept) {
+      const data = getSiteData();
+      dept = (data.departments || []).find(d => d.id === deptId);
+    }
+  }
+  if (!dept) {
+    const data = getSiteData();
+    const fallbackWa = (data.company && data.company.whatsapp) || "923329716666";
+    window.open(`https://wa.me/${fallbackWa}?text=${encodeURIComponent('Hi D.Watson Chemist, I would like to inquire about your departments.')}`, "_blank");
+    return;
+  }
+  openBranchSelectorModal(dept, "department");
 };
 
 let selectedPrescriptionBase64 = null;
@@ -3690,58 +3810,99 @@ function escapeHtml(str) {
 
 function initOrderBranchSelector() {
   const confirmBtn = document.getElementById("confirmOrderBtn");
-  if (confirmBtn) {
+  if (confirmBtn && !confirmBtn.dataset.bound) {
+    confirmBtn.dataset.bound = "true";
     confirmBtn.addEventListener("click", async () => {
-      if (!activeOrderProduct) return;
+      if (!activeInquiryTarget || !activeInquiryTarget.data) return;
       
       const selectEl = document.getElementById("orderBranchSelect");
       const selectedBranchName = selectEl ? selectEl.value : "";
       
       const data = getSiteData();
       const branches = data.branches || [];
-      const selectedBranchObj = branches.find(b => b.name === selectedBranchName);
-      const activeWa = selectedBranchObj && selectedBranchObj.whatsapp ? selectedBranchObj.whatsapp : data.company.whatsapp;
+      const selectedBranchObj = branches.find(b => b.name === selectedBranchName || b.name.includes(selectedBranchName));
+      const activeWa = (selectedBranchObj && selectedBranchObj.whatsapp) ? selectedBranchObj.whatsapp.replace(/\D/g, "") : ((data.company && data.company.whatsapp) || "923329716666").replace(/\D/g, "");
       
       const randomCode = Math.floor(1000 + Math.random() * 9000);
-      const refId = `DW-ORD-${randomCode}`;
       const timestamp = new Date().toLocaleString();
-      const fullImgUrl = getFullImageUrl(activeOrderProduct.image);
-      
-      if (typeof saveCustomerInquiry === "function") {
-        try {
-          await saveCustomerInquiry({
-            id: refId,
-            type: "product",
-            productName: activeOrderProduct.name,
-            brand: activeOrderProduct.brand || "D. Watson Certified",
-            price: activeOrderProduct.price || "Inquire",
-            category: activeOrderProduct.categoryName || activeOrderProduct.category || "General Essential",
-            photoUrl: fullImgUrl,
-            image: fullImgUrl,
-            customerName: "Online WhatsApp Customer",
-            notes: `Product inquiry for ${activeOrderProduct.name} (${activeOrderProduct.price || 'Inquire'}) via branch: ${selectedBranchName}`,
-            date: timestamp,
-            status: "New Product Order"
-          });
-        } catch (e) {
-          console.warn("Inquiry sync error:", e);
+
+      if (activeInquiryTarget.type === "department") {
+        const dept = activeInquiryTarget.data;
+        const refId = `DW-DPT-${randomCode}`;
+
+        if (typeof saveCustomerInquiry === "function") {
+          try {
+            await saveCustomerInquiry({
+              id: refId,
+              type: "department",
+              productName: dept.name,
+              brand: "D. Watson Department",
+              price: "N/A",
+              category: dept.name,
+              photoUrl: dept.image || "",
+              image: dept.image || "",
+              customerName: "Online WhatsApp Customer",
+              notes: `Department inquiry for ${dept.name} (${dept.tagline || ''}) via branch: ${selectedBranchName}`,
+              date: timestamp,
+              status: "New Department Inquiry"
+            });
+          } catch (e) {
+            console.warn("Inquiry sync error:", e);
+          }
         }
+
+        let msg = `*--- D. WATSON DEPARTMENT INQUIRY ---*\n`;
+        msg += `🏥 *Department:* ${dept.name}\n`;
+        if (dept.tagline) {
+          msg += `⭐ *Specialty:* ${dept.tagline}\n`;
+        }
+        msg += `📍 *Selected Branch:* ${selectedBranchName}\n`;
+        msg += `\n💬 *Inquiry Note:* Hi D.Watson (${selectedBranchName}), I would like to inquire about products and services available in your ${dept.name} department.`;
+
+        const waUrl = `https://wa.me/${activeWa}?text=${encodeURIComponent(msg)}`;
+        window.open(waUrl, "_blank");
+      } else {
+        // Product
+        const p = activeInquiryTarget.data;
+        const refId = `DW-ORD-${randomCode}`;
+        const fullImgUrl = getFullImageUrl(p.image);
+
+        if (typeof saveCustomerInquiry === "function") {
+          try {
+            await saveCustomerInquiry({
+              id: refId,
+              type: "product",
+              productName: p.name,
+              brand: p.brand || "D. Watson Certified",
+              price: p.price || "Inquire",
+              category: p.categoryName || p.category || "General Essential",
+              photoUrl: fullImgUrl,
+              image: fullImgUrl,
+              customerName: "Online WhatsApp Customer",
+              notes: `Product inquiry for ${p.name} (${p.price || 'Inquire'}) via branch: ${selectedBranchName}`,
+              date: timestamp,
+              status: "New Product Order"
+            });
+          } catch (e) {
+            console.warn("Inquiry sync error:", e);
+          }
+        }
+
+        let msg = `*--- D. WATSON PRODUCT INQUIRY & ORDER ---*\n`;
+        msg += `🛍️ *Product:* ${p.name}\n`;
+        msg += `🏷️ *Brand:* ${p.brand || 'D. Watson'}\n`;
+        msg += `💰 *Price:* ${p.price || 'Inquire'}\n`;
+        msg += `📂 *Category:* ${p.categoryName || p.category || 'General Essential'}\n`;
+        msg += `📍 *Selected Branch:* ${selectedBranchName}\n`;
+        if (fullImgUrl) {
+          msg += `📸 *Product Photo Link:* ${fullImgUrl}\n`;
+        }
+        msg += `\n📝 *Inquiry Note:* Hi D.Watson Chemist, please confirm stock availability and express delivery to my location.`;
+
+        const waUrl = `https://wa.me/${activeWa}?text=${encodeURIComponent(msg)}`;
+        window.open(waUrl, "_blank");
       }
-      
-      let msg = `*--- D. WATSON PRODUCT INQUIRY & ORDER ---*\n`;
-      msg += `🛍️ *Product:* ${activeOrderProduct.name}\n`;
-      msg += `🏷️ *Brand:* ${activeOrderProduct.brand || 'D. Watson'}\n`;
-      msg += `💰 *Price:* ${activeOrderProduct.price || 'Inquire'}\n`;
-      msg += `📂 *Category:* ${activeOrderProduct.categoryName || activeOrderProduct.category}\n`;
-      msg += `📍 *Selected Branch:* ${selectedBranchName}\n`;
-      if (fullImgUrl) {
-        msg += `📸 *Product Photo Link:* ${fullImgUrl}\n`;
-      }
-      msg += `\n📝 *Inquiry Note:* Hi D.Watson Chemist, please confirm stock availability and express delivery.`;
-      
-      const waUrl = `https://wa.me/${activeWa}?text=${encodeURIComponent(msg)}`;
-      window.open(waUrl, "_blank");
-      
+
       closeBranchSelectorModal();
     });
   }
@@ -3987,7 +4148,7 @@ function renderSearchResultItem(p, fallbackWa) {
         <div class="search-result-meta">${pBrand} &bull; ${pCat}</div>
         <div class="search-result-price">${pPrice}</div>
       </div>
-      <a href="${waUrl}" target="_blank" class="btn-search-wa" onclick="event.stopPropagation();" title="Order on WhatsApp">
+      <a href="${waUrl}" target="_blank" class="btn-search-wa" onclick="event.stopPropagation(); handleProductOrderClick(event, '${p.id}', '${waUrl}');" title="Order on WhatsApp">
         <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span>
       </a>
     </div>
