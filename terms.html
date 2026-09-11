@@ -58,7 +58,7 @@
         }
       } catch (e) {}
 
-      var CURRENT_CACHE_VER = "27.0";
+      var CURRENT_CACHE_VER = "28.0";
       var stored = localStorage.getItem("dw_cache_version");
       if (stored !== CURRENT_CACHE_VER) {
         localStorage.setItem("dw_cache_version", CURRENT_CACHE_VER);
@@ -87,9 +87,9 @@
     })();
   </script>
 
-  <!-- Stylesheets (v25.0) -->
-  <link rel="stylesheet" href="css/style.css?v=27.0">
-  <link rel="stylesheet" href="css/responsive.css?v=27.0">
+  <!-- Stylesheets (v28.0) -->
+  <link rel="stylesheet" href="css/style.css?v=28.0">
+  <link rel="stylesheet" href="css/responsive.css?v=28.0">
 </head>
 <body class="page-terms">
 
@@ -374,15 +374,15 @@
 
   <!-- Fixed Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-bar" aria-label="Mobile Navigation">
-    <a href="index.html" class="mobile-nav-tab" id="mobTabHome">
+    <a href="index.html" class="mobile-nav-tab" id="mobTabHome" onclick="window.location.href='index.html'">
       <i class="fa-solid fa-house"></i>
       <span>Home</span>
     </a>
-    <a href="departments.html" class="mobile-nav-tab" id="mobTabDepts">
+    <a href="departments.html" class="mobile-nav-tab" id="mobTabDepts" onclick="window.location.href='departments.html'">
       <i class="fa-solid fa-table-cells-large"></i>
       <span>Departments</span>
     </a>
-    <a href="prescription.html" class="mobile-nav-tab highlight-rx-mockup" id="mobTabRx">
+    <a href="prescription.html" class="mobile-nav-tab highlight-rx-mockup" id="mobTabRx" onclick="window.location.href='prescription.html'">
       <div class="mockup-gold-center-bubble">
         <i class="fa-solid fa-plus"></i>
       </div>
@@ -394,7 +394,7 @@
     </button>
     <button type="button" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa" onclick="openFlagshipWhatsAppModal()" aria-label="WhatsApp Flagship Branches">
       <i class="fa-brands fa-whatsapp"></i>
-      <span>WhatsApp</span>
+      <span>Chat</span>
     </button>
   </nav>
 
@@ -478,10 +478,10 @@
     </div>
   </div>
 
-  <!-- Scripts (v26.0) -->
-  <script src="js/config.js?v=27.0"></script>
+  <!-- Scripts (v28.0) -->
+  <script src="js/config.js?v=28.0"></script>
   <script src="js/cloud-db.js?v=2.0"></script>
-  <script src="js/data.js?v=27.0"></script>
-  <script src="js/main.js?v=27.0"></script>
+  <script src="js/data.js?v=28.0"></script>
+  <script src="js/main.js?v=28.0"></script>
 </body>
 </html>

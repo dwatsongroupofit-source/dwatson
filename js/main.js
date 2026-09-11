@@ -148,7 +148,41 @@ function renderHeaderAndCompanyInfo(company) {
     topWaWrap.remove();
   }
 
-  // Mobile bottom bar links
+  // Mobile bottom bar links & instant navigation
+  function bindMobNavTab(id, targetUrl) {
+    const tab = document.getElementById(id);
+    if (!tab) return;
+
+    let touchMoved = false;
+    tab.addEventListener("touchstart", function() {
+      touchMoved = false;
+    }, { passive: true });
+
+    tab.addEventListener("touchmove", function() {
+      touchMoved = true;
+    }, { passive: true });
+
+    tab.addEventListener("touchend", function(e) {
+      if (!touchMoved) {
+        if (e && e.cancelable) e.preventDefault();
+        e.stopPropagation();
+        window.location.href = targetUrl;
+      }
+    }, { passive: false });
+
+    tab.onclick = function(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      window.location.href = targetUrl;
+    };
+  }
+
+  bindMobNavTab("mobTabHome", "index.html");
+  bindMobNavTab("mobTabDepts", "departments.html");
+  bindMobNavTab("mobTabRx", "prescription.html");
+
   const mobCall = document.getElementById("mobTabCall");
   if (mobCall) {
     mobCall.onclick = function(e) {

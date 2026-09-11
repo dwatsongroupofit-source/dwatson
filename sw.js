@@ -1,24 +1,31 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v27.0)
+ * D. Watson Chemist & Superstore - Service Worker (v28.0)
  * Ultra-Fresh Cache Architecture, Zero Stale Assets & Auto-Eviction
  */
 
-const CACHE_NAME = "dwatson-cache-v27.0";
+const CACHE_NAME = "dwatson-cache-v28.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
   "./departments.html",
+  "./departments",
   "./branches.html",
+  "./branches",
   "./prescription.html",
+  "./prescription",
   "./journey.html",
+  "./journey",
   "./contact.html",
+  "./contact",
   "./privacy.html",
+  "./privacy",
   "./terms.html",
-  "./css/style.css?v=27.0",
-  "./css/responsive.css?v=27.0",
-  "./js/config.js?v=27.0",
-  "./js/data.js?v=27.0",
-  "./js/main.js?v=27.0",
+  "./terms",
+  "./css/style.css?v=28.0",
+  "./css/responsive.css?v=28.0",
+  "./js/config.js?v=28.0",
+  "./js/data.js?v=28.0",
+  "./js/main.js?v=28.0",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",
@@ -98,7 +105,19 @@ self.addEventListener("fetch", (event) => {
           const cachedNoSearch = await caches.match(event.request, { ignoreSearch: true });
           if (cachedNoSearch) return cachedNoSearch;
 
-          // 3. For navigation or HTML requests, return offline app shell
+          // 3. Match normalized clean URL / .html URL
+          const pathname = requestUrl.pathname;
+          if (!pathname.endsWith(".html") && !pathname.includes(".")) {
+            const htmlAlt = await caches.match(pathname + ".html", { ignoreSearch: true }) ||
+                            await caches.match("." + pathname + ".html", { ignoreSearch: true });
+            if (htmlAlt) return htmlAlt;
+          } else if (pathname.endsWith(".html")) {
+            const cleanAlt = await caches.match(pathname.replace(/\.html$/, ""), { ignoreSearch: true }) ||
+                             await caches.match("." + pathname.replace(/\.html$/, ""), { ignoreSearch: true });
+            if (cleanAlt) return cleanAlt;
+          }
+
+          // 4. For navigation or HTML requests, return offline app shell
           const isHtmlRequest = event.request.mode === "navigate" || 
             (event.request.headers && event.request.headers.get("accept") && event.request.headers.get("accept").includes("text/html"));
 

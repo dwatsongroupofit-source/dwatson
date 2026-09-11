@@ -8181,6 +8181,7 @@ textarea.form-control {
   transition: transform 0.2s ease;
   font-size: 1.35rem;
   font-weight: 900;
+  pointer-events: none !important;
 }
 
 .mobile-nav-tab.highlight-rx-mockup {
