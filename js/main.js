@@ -253,7 +253,7 @@ function renderHeroSlider(slides) {
           <div class="slide-tag">
             <i class="fa-solid fa-certificate"></i> ${escapeHtml(slide.tag || "D. Watson Verified")}
           </div>
-          <h1 class="slide-title">${escapeHtml(slide.title)}</h1>
+          <h2 class="slide-title">${escapeHtml(slide.title)}</h2>
           <p class="slide-subtitle">${escapeHtml(slide.subtitle)}</p>
           <div class="slide-actions hero-cta-group-mockup">
             <a href="prescription.html" class="btn-hero-gold">
