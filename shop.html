@@ -74,9 +74,33 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
+  <script>
+    (function() {
+      var CURRENT_CACHE_VER = "35.0";
+      var stored = localStorage.getItem("dw_cache_version");
+      if (stored !== CURRENT_CACHE_VER) {
+        localStorage.setItem("dw_cache_version", CURRENT_CACHE_VER);
+        if (window.caches) {
+          caches.keys().then(function(keys) {
+            keys.forEach(function(k) {
+              caches.delete(k);
+            });
+          });
+        }
+        if (navigator.serviceWorker) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var r of regs) {
+              r.unregister();
+            }
+          });
+        }
+      }
+    })();
+  </script>
+
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=32.0">
-  <link rel="stylesheet" href="css/responsive.css?v=32.0">
+  <link rel="stylesheet" href="css/style.css?v=35.0">
+  <link rel="stylesheet" href="css/responsive.css?v=35.0">
 </head>
 <body class="site-body">
 
@@ -223,11 +247,8 @@
                 </div>
                 <div class="spotlight-card-actions">
                   <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p7","name":"First Infant Milk (Stage 1)","brand":"Kendamil","price":"PKR 9,950","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789038824/z86e3yeizdcif2p4qqxj.jpg","category":"grocery"})'>
-                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
                   </button>
-                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Kendamil%20First%20Infant%20Milk%20Stage%201%20(PKR%209,950)." target="_blank" class="btn-spotlight-buy-wa">
-                    <i class="fa-brands fa-whatsapp"></i> Buy
-                  </a>
                 </div>
               </div>
             </div>
@@ -247,11 +268,8 @@
                 </div>
                 <div class="spotlight-card-actions">
                   <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p2","name":"CODL Omega-3 Fish Oil 1000mg","brand":"BIOLIFE","price":"PKR 1,990","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789036146/q57j8z9ijuuw07wlo7qh.jpg","category":"pharmacy"})'>
-                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
                   </button>
-                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20CODL%20Omega-3%20Fish%20Oil%201000mg%20(PKR%201,990)." target="_blank" class="btn-spotlight-buy-wa">
-                    <i class="fa-brands fa-whatsapp"></i> Buy
-                  </a>
                 </div>
               </div>
             </div>
@@ -271,11 +289,8 @@
                 </div>
                 <div class="spotlight-card-actions">
                   <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p12","name":"Accu-Chek Instant Blood Glucose Meter","brand":"Roche Diagnostics","price":"PKR 3,950","image":"assets/images/Accu-Chek Instant Blood Glucose Meter.jpg","category":"surgical"})'>
-                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
                   </button>
-                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Accu-Chek%20Instant%20Blood%20Glucose%20Meter%20(PKR%203,950)." target="_blank" class="btn-spotlight-buy-wa">
-                    <i class="fa-brands fa-whatsapp"></i> Buy
-                  </a>
                 </div>
               </div>
             </div>
@@ -295,11 +310,8 @@
                 </div>
                 <div class="spotlight-card-actions">
                   <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p3","name":"Myotin Sachet","brand":"MEDI GREEN","price":"PKR 1,150","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789036161/umu4cfnchzwmlwcepijr.jpg","category":"pharmacy"})'>
-                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
                   </button>
-                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Myotin%20Sachet%20(PKR%201,150)." target="_blank" class="btn-spotlight-buy-wa">
-                    <i class="fa-brands fa-whatsapp"></i> Buy
-                  </a>
                 </div>
               </div>
             </div>
@@ -319,11 +331,8 @@
                 </div>
                 <div class="spotlight-card-actions">
                   <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p11","name":"Omron M2 Basic Digital BP Monitor","brand":"Omron Healthcare","price":"PKR 9,850","image":"assets/images/Omron M2 Basic Digital BP Monitor.jpg","category":"surgical"})'>
-                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
                   </button>
-                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Omron%20M2%20Digital%20BP%20Monitor%20(PKR%209,850)." target="_blank" class="btn-spotlight-buy-wa">
-                    <i class="fa-brands fa-whatsapp"></i> Buy
-                  </a>
                 </div>
               </div>
             </div>
@@ -343,11 +352,8 @@
                 </div>
                 <div class="spotlight-card-actions">
                   <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p1","name":"Samyang Buldak all Flav Ramen Noodles","brand":"Samyang Buldak","price":"PKR 490","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789036124/m0k4bj9oxmhgfxwogmz2.jpg","category":"grocery"})'>
-                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
                   </button>
-                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Samyang%20Buldak%20Ramen%20Noodles%20(PKR%20490)." target="_blank" class="btn-spotlight-buy-wa">
-                    <i class="fa-brands fa-whatsapp"></i> Buy
-                  </a>
                 </div>
               </div>
             </div>
@@ -367,11 +373,8 @@
                 </div>
                 <div class="spotlight-card-actions">
                   <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p6","name":"Magnibase Magnesium Glycinate 500mg","brand":"NutriBase","price":"PKR 2,495","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789038344/gpnlsaigcqb4usufpkyp.png","category":"pharmacy"})'>
-                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
                   </button>
-                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Magnibase%20Magnesium%20Glycinate%20(PKR%202,495)." target="_blank" class="btn-spotlight-buy-wa">
-                    <i class="fa-brands fa-whatsapp"></i> Buy
-                  </a>
                 </div>
               </div>
             </div>
@@ -391,11 +394,8 @@
                 </div>
                 <div class="spotlight-card-actions">
                   <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p8","name":"Cow & Gate First Infant Milk (Stage 1)","brand":"Cow & Gate","price":"PKR 9,700","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789039001/m1qfr2nnciwnyvlp6a43.jpg","category":"grocery"})'>
-                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
                   </button>
-                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Cow%20and%20Gate%20Infant%20Milk%20(PKR%209,700)." target="_blank" class="btn-spotlight-buy-wa">
-                    <i class="fa-brands fa-whatsapp"></i> Buy
-                  </a>
                 </div>
               </div>
             </div>
@@ -415,11 +415,8 @@
                 </div>
                 <div class="spotlight-card-actions">
                   <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p4","name":"Osteowhiz","brand":"NutraWhiz","price":"PKR 1,150","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789037342/rg9ingqxnal1skszkuna.jpg","category":"pharmacy"})'>
-                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
                   </button>
-                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Osteowhiz%20(PKR%201,150)." target="_blank" class="btn-spotlight-buy-wa">
-                    <i class="fa-brands fa-whatsapp"></i> Buy
-                  </a>
                 </div>
               </div>
             </div>
@@ -439,11 +436,8 @@
                 </div>
                 <div class="spotlight-card-actions">
                   <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p10","name":"Aptamil Advance 1 (Infant Formula)","brand":"Nutricia","price":"PKR 7,650","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789039555/gnuvyvl01ytjreyjpcla.jpg","category":"grocery"})'>
-                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
                   </button>
-                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Aptamil%20Advance%201%20(PKR%207,650)." target="_blank" class="btn-spotlight-buy-wa">
-                    <i class="fa-brands fa-whatsapp"></i> Buy
-                  </a>
                 </div>
               </div>
             </div>
@@ -665,13 +659,10 @@
               <h5>Description &amp; Specifications</h5>
               <p id="zoomSidebarDesc">Product details...</p>
             </div>
-            <div class="zoom-action-block" style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+            <div class="zoom-action-block" style="margin-top:16px;">
               <button type="button" class="btn btn-primary" id="zoomModalAddToCartBtn" style="width:100%; justify-content:center; padding:12px; font-weight:800;">
                 <i class="fa-solid fa-bag-shopping"></i> Add to Order Bag
               </button>
-              <a href="#" target="_blank" class="btn btn-whatsapp" id="zoomModalBuyBtn" style="width:100%; justify-content:center; padding:12px; font-weight:800;">
-                <i class="fa-brands fa-whatsapp"></i> Buy via WhatsApp
-              </a>
             </div>
           </div>
         </div>
@@ -746,11 +737,11 @@
   </div>
 
   <!-- Core Scripts -->
-  <script src="js/config.js?v=32.0"></script>
+  <script src="js/config.js?v=35.0"></script>
   <script src="js/cloud-db.js?v=2.0"></script>
-  <script src="js/data.js?v=32.0"></script>
-  <script src="js/cart.js?v=1.0"></script>
-  <script src="js/main.js?v=32.0"></script>
+  <script src="js/data.js?v=35.0"></script>
+  <script src="js/cart.js?v=35.0"></script>
+  <script src="js/main.js?v=35.0"></script>
 
   <!-- Dedicated Shop Page Interactive Controller -->
   <script>
@@ -919,12 +910,9 @@
                   <h3 class="shop-card-title" onclick="openProductZoomModal('${p.id}')" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h3>
                   <div class="shop-card-price">${escapeHtml(p.price || "Inquire")}</div>
                   <div class="shop-card-actions">
-                    <button type="button" class="shop-btn-cart" onclick='handleAddToCartClick(event, ${JSON.stringify(p)})' title="Add to Order Bag">
-                      <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    <button type="button" class="shop-btn-cart" onclick='handleAddToCartClick(event, ${JSON.stringify(p)})' title="Add to Order Bag" style="width:100%; justify-content:center;">
+                      <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
                     </button>
-                    <a href="${waUrl}" target="_blank" onclick="event.stopPropagation(); if (typeof handleProductOrderClick === 'function') handleProductOrderClick(event, '${p.id}', '${waUrl}');" class="shop-btn-wa" title="Order via WhatsApp">
-                      <i class="fa-brands fa-whatsapp"></i> Buy
-                    </a>
                   </div>
                 </div>
               </div>

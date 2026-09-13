@@ -807,15 +807,9 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
           <h4 class="home-product-title" title="Click to Zoom ${escapeHtml(p.name)}">${escapeHtml(p.name)}</h4>
           <div class="home-product-price">${escapeHtml(p.price || 'Inquire')}</div>
           <div class="home-product-btn-row">
-            <button type="button" class="btn-zoom-trigger" onclick="event.stopPropagation(); openProductZoomModal('${p.id}')" title="Zoom &amp; Details">
-              <i class="fa-solid fa-magnifying-glass-plus"></i> <span>Zoom</span>
+            <button type="button" class="btn-product-cart" onclick="event.stopPropagation(); handleAddToCartById(event, '${p.id}')" title="Add ${escapeHtml(p.name)} to Order Bag">
+              <i class="fa-solid fa-bag-shopping"></i> <span>+ Add to Bag</span>
             </button>
-            <button type="button" class="btn-product-cart" onclick="event.stopPropagation(); handleAddToCartById(event, '${p.id}')" title="Add to Order Bag">
-              <i class="fa-solid fa-bag-shopping"></i> <span>+ Bag</span>
-            </button>
-            <a href="${waUrl}" target="_blank" onclick="event.stopPropagation(); handleProductOrderClick(event, '${p.id}', '${waUrl}');" class="home-product-buy-btn" title="Order ${escapeHtml(p.name)} via WhatsApp">
-              <i class="fa-brands fa-whatsapp"></i> <span>Buy</span>
-            </a>
           </div>
         </div>
       </div>

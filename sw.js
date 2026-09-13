@@ -1,12 +1,14 @@
 /**
- * D. Watson Chemist & Superstore - Service Worker (v31.0)
+ * D. Watson Chemist & Superstore - Service Worker (v35.0)
  * Fix: Handle 308/301/302 redirect responses on navigate requests (mobile white screen fix)
  */
 
-const CACHE_NAME = "dwatson-cache-v31.0";
+const CACHE_NAME = "dwatson-cache-v35.0";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
+  "./shop.html",
+  "./shop",
   "./departments.html",
   "./departments",
   "./department",
@@ -22,11 +24,12 @@ const STATIC_ASSETS = [
   "./privacy",
   "./terms.html",
   "./terms",
-  "./css/style.css?v=31.0",
-  "./css/responsive.css?v=31.0",
-  "./js/config.js?v=31.0",
-  "./js/data.js?v=31.0",
-  "./js/main.js?v=31.0",
+  "./css/style.css?v=35.0",
+  "./css/responsive.css?v=35.0",
+  "./js/config.js?v=35.0",
+  "./js/data.js?v=35.0",
+  "./js/cart.js?v=35.0",
+  "./js/main.js?v=35.0",
   "./assets/images/pwa-icon-192.png",
   "./assets/images/pwa-icon-512.png",
   "./assets/images/pwa-maskable-192.png",
