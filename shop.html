@@ -575,6 +575,32 @@
     </div>
   </main>
 
+  <!-- Fixed Mobile Bottom Navigation Bar (Always Visible on Mobile) -->
+  <nav class="mobile-bottom-bar" aria-label="Mobile Navigation">
+    <a href="index.html" class="mobile-nav-tab" id="mobTabHome">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="shop.html" class="mobile-nav-tab active" id="mobTabShop" title="Online Store">
+      <i class="fa-solid fa-bag-shopping"></i>
+      <span>Store</span>
+    </a>
+    <a href="prescription.html" class="mobile-nav-tab highlight-rx-mockup" id="mobTabRx">
+      <div class="mockup-gold-center-bubble">
+        <i class="fa-solid fa-plus"></i>
+      </div>
+      <span>Upload Rx</span>
+    </a>
+    <a href="departments.html" class="mobile-nav-tab" id="mobTabDepts">
+      <i class="fa-solid fa-table-cells-large"></i>
+      <span>Departments</span>
+    </a>
+    <button type="button" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa" onclick="if(typeof openFlagshipWhatsAppModal === 'function'){openFlagshipWhatsAppModal();}else{window.open('https://wa.me/923329716666?text=Hi%20D.Watson%20Chemist,%20I%20would%20like%20to%20place%20an%20order.','_blank');}" aria-label="WhatsApp Flagship Branches">
+      <i class="fa-brands fa-whatsapp"></i>
+      <span>Chat</span>
+    </button>
+  </nav>
+
   <!-- Global Instant Product & Medicine Search Modal -->
   <div class="global-search-modal" id="globalSearchModal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="search-modal-backdrop" onclick="closeGlobalSearch()"></div>
@@ -995,8 +1021,9 @@
       window.scrollSpotlightTrack = function(direction) {
         const viewport = document.getElementById("spotlightCardsViewport");
         if (!viewport) return;
-        const scrollAmount = Math.max(viewport.clientWidth * 0.75, 260);
-        viewport.scrollBy({ left: direction * scrollAmount, behavior: "smooth" });
+        const firstCard = viewport.querySelector(".spotlight-product-card");
+        const step = firstCard ? (firstCard.offsetWidth + 16) : Math.max(viewport.clientWidth * 0.75, 240);
+        viewport.scrollBy({ left: direction * step, behavior: "smooth" });
       };
 
       function initSpotlightCarousel() {
@@ -1004,28 +1031,57 @@
         if (!viewport) return;
 
         let autoNudgeTimer = null;
-        function startAutoNudge() {
-          if (autoNudgeTimer) clearInterval(autoNudgeTimer);
-          autoNudgeTimer = setInterval(() => {
-            if (!viewport) return;
-            const maxScroll = viewport.scrollWidth - viewport.clientWidth;
-            if (viewport.scrollLeft >= maxScroll - 15) {
-              viewport.scrollTo({ left: 0, behavior: "smooth" });
-            } else {
-              window.scrollSpotlightTrack(1);
-            }
-          }, 6000);
+        let isUserInteracting = false;
+
+        function doAutoSlide() {
+          if (!viewport || isUserInteracting) return;
+          const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+          if (maxScroll <= 8) return; // Nothing to scroll yet
+
+          const firstCard = viewport.querySelector(".spotlight-product-card");
+          const step = firstCard ? (firstCard.offsetWidth + 16) : 248;
+
+          if (viewport.scrollLeft >= maxScroll - 20) {
+            viewport.scrollTo({ left: 0, behavior: "smooth" });
+          } else {
+            viewport.scrollBy({ left: step, behavior: "smooth" });
+          }
         }
 
-        viewport.addEventListener("mouseenter", () => {
+        function startAutoNudge() {
           if (autoNudgeTimer) clearInterval(autoNudgeTimer);
+          autoNudgeTimer = setInterval(doAutoSlide, 3200);
+        }
+
+        function pauseAutoNudge() {
+          if (autoNudgeTimer) clearInterval(autoNudgeTimer);
+        }
+
+        viewport.addEventListener("mouseenter", pauseAutoNudge);
+        viewport.addEventListener("mouseleave", () => {
+          isUserInteracting = false;
+          startAutoNudge();
         });
-        viewport.addEventListener("mouseleave", () => startAutoNudge());
+
         viewport.addEventListener("touchstart", () => {
-          if (autoNudgeTimer) clearInterval(autoNudgeTimer);
+          isUserInteracting = true;
+          pauseAutoNudge();
         }, { passive: true });
 
-        startAutoNudge();
+        viewport.addEventListener("touchend", () => {
+          setTimeout(() => {
+            isUserInteracting = false;
+            startAutoNudge();
+          }, 2000);
+        }, { passive: true });
+
+        viewport.addEventListener("touchcancel", () => {
+          isUserInteracting = false;
+          startAutoNudge();
+        }, { passive: true });
+
+        // Start auto-slide after brief delay to ensure images/DOM loaded
+        setTimeout(startAutoNudge, 800);
       }
 
       // Wire zoom modal add-to-cart button and init

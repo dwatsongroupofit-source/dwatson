@@ -515,11 +515,11 @@ function renderHomeDepartments(departments) {
         <div class="home-dept-body">
           <h4 class="home-dept-name">${escapeHtml(dept.name)}</h4>
           <p class="home-dept-sub">${escapeHtml(dept.tagline || "Official D. Watson Healthcare & Retail")}</p>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; gap:8px;">
-            <a href="departments.html?dept=${encodeURIComponent(dept.id)}" class="home-dept-ext-link" onclick="event.stopPropagation();" title="Explore ${escapeHtml(dept.name)} page" style="flex:1; text-align:center; padding:7px 10px; font-size:0.82rem; font-weight:700; color:var(--dw-red); background:rgba(225,29,72,0.06); border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:5px;">
+          <div class="home-dept-btn-row">
+            <a href="departments.html?dept=${encodeURIComponent(dept.id)}" class="home-dept-ext-link" onclick="event.stopPropagation();" title="Explore ${escapeHtml(dept.name)} page">
               <span>Explore</span> <i class="fa-solid fa-arrow-right"></i>
             </a>
-            <button type="button" onclick="event.stopPropagation(); handleDepartmentInquiryClick(event, '${dept.id}');" class="btn btn-whatsapp btn-sm" title="Inquire on WhatsApp (Select Branch)" style="padding:7px 12px; font-size:0.8rem; font-weight:700; border-radius:8px; display:inline-flex; align-items:center; gap:5px; border:none; cursor:pointer; color:white; background:#16A34A;">
+            <button type="button" onclick="event.stopPropagation(); handleDepartmentInquiryClick(event, '${dept.id}');" class="btn-dept-inquire" title="Inquire on WhatsApp (Select Branch)">
               <i class="fa-brands fa-whatsapp"></i> <span>Inquire</span>
             </button>
           </div>
@@ -808,13 +808,13 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
           <div class="home-product-price">${escapeHtml(p.price || 'Inquire')}</div>
           <div class="home-product-btn-row">
             <button type="button" class="btn-zoom-trigger" onclick="event.stopPropagation(); openProductZoomModal('${p.id}')" title="Zoom &amp; Details">
-              <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom
+              <i class="fa-solid fa-magnifying-glass-plus"></i> <span>Zoom</span>
             </button>
-            <button type="button" class="btn-zoom-trigger" style="background:#0F172A; color:#FFFFFF; border-color:#0F172A;" onclick="event.stopPropagation(); handleAddToCartById(event, '${p.id}')" title="Add to Order Bag">
-              <i class="fa-solid fa-bag-shopping"></i> + Bag
+            <button type="button" class="btn-product-cart" onclick="event.stopPropagation(); handleAddToCartById(event, '${p.id}')" title="Add to Order Bag">
+              <i class="fa-solid fa-bag-shopping"></i> <span>+ Bag</span>
             </button>
             <a href="${waUrl}" target="_blank" onclick="event.stopPropagation(); handleProductOrderClick(event, '${p.id}', '${waUrl}');" class="home-product-buy-btn" title="Order ${escapeHtml(p.name)} via WhatsApp">
-              <i class="fa-brands fa-whatsapp"></i> Buy
+              <i class="fa-brands fa-whatsapp"></i> <span>Buy</span>
             </a>
           </div>
         </div>

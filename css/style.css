@@ -6706,35 +6706,73 @@ textarea.form-control {
 }
 
 .home-product-btn-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: auto;
-  width: 100%;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 4px !important;
+  margin-top: auto !important;
+  width: 100% !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
 }
 
-.btn-zoom-trigger {
-  background: #F8FAFC;
-  color: #0F172A;
-  border: 1px solid #CBD5E1;
-  font-size: 0.78rem;
-  font-weight: 700;
-  border-radius: 10px;
-  padding: 9px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  flex: 1;
+.home-product-btn-row .btn-zoom-trigger,
+.home-product-btn-row .btn-product-cart,
+.home-product-btn-row .home-product-buy-btn {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  width: 0 !important;
+  max-width: 100% !important;
+  padding: 7px 2px !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+  transition: all 0.2s ease !important;
 }
 
-.btn-zoom-trigger:hover {
-  background: #EEF2F6;
-  border-color: #94A3B8;
-  color: #A50505;
+.home-product-btn-row .btn-zoom-trigger {
+  background: #F8FAFC !important;
+  color: #334155 !important;
+  border: 1px solid #CBD5E1 !important;
+}
+
+.home-product-btn-row .btn-zoom-trigger:hover {
+  background: #EEF2F6 !important;
+  border-color: #94A3B8 !important;
+  color: #DC2626 !important;
+}
+
+.home-product-btn-row .btn-product-cart {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  border: 1px solid #0F172A !important;
+}
+
+.home-product-btn-row .btn-product-cart:hover {
+  background: #1E293B !important;
+  border-color: #1E293B !important;
+}
+
+.home-product-btn-row .home-product-buy-btn {
+  background: #16A34A !important;
+  color: #FFFFFF !important;
+  border: 1px solid #16A34A !important;
+  text-decoration: none !important;
+}
+
+.home-product-btn-row .home-product-buy-btn:hover {
+  background: #15803D !important;
+  border-color: #15803D !important;
 }
 
 .product-zoom-pill {
@@ -6764,24 +6802,25 @@ textarea.form-control {
 }
 
 .home-product-buy-btn {
-  background: #25D366;
+  background: #16A34A;
   color: #FFFFFF;
-  font-size: 0.82rem;
-  font-weight: 800;
-  border-radius: 10px;
-  padding: 9px 14px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 7px 4px;
   text-decoration: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  flex: 1.2;
-  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
   transition: background 0.2s ease, transform 0.15s ease;
 }
 
 .home-product-buy-btn:hover {
-  background: #1EBE5D;
+  background: #15803D;
   transform: translateY(-1px);
 }
 
@@ -7012,6 +7051,70 @@ textarea.form-control {
 
 .home-dept-card:hover .home-dept-link {
   gap: 10px;
+}
+
+.home-dept-btn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 10px;
+  box-sizing: border-box;
+}
+
+.home-dept-btn-row .home-dept-ext-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 8px 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--dw-red, #DC2626);
+  background: rgba(225, 29, 72, 0.08);
+  border: 1px solid rgba(225, 29, 72, 0.18);
+  border-radius: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease;
+}
+
+.home-dept-btn-row .home-dept-ext-link:hover {
+  background: var(--dw-red, #DC2626);
+  color: #FFFFFF;
+}
+
+.home-dept-btn-row .btn-dept-inquire {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 8px 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  color: #FFFFFF;
+  background: #16A34A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease;
+}
+
+.home-dept-btn-row .btn-dept-inquire:hover {
+  background: #15803D;
 }
 
 /* ==========================================================================
@@ -9935,11 +10038,13 @@ textarea.form-control {
 }
 
 .home-product-info {
-  padding: 14px 16px;
+  padding: 6px 0 0 0;
   display: flex;
   flex-direction: column;
   flex: 1;
   justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .home-product-brand {
@@ -9972,53 +10077,75 @@ textarea.form-control {
 }
 
 .home-product-btn-row {
-  display: flex;
-  gap: 8px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 4px !important;
+  width: 100% !important;
+  margin-top: auto !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
 }
 
-.btn-zoom-trigger {
-  flex: 1;
-  padding: 8px;
-  border-radius: 10px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  background: #F1F5F9;
-  border: 1px solid #E2E8F0;
-  color: #334155;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  transition: all 0.2s;
+.home-product-btn-row .btn-zoom-trigger,
+.home-product-btn-row .btn-product-cart,
+.home-product-btn-row .home-product-buy-btn {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  width: 0 !important;
+  max-width: 100% !important;
+  padding: 7px 2px !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+  transition: all 0.2s ease !important;
 }
 
-.btn-zoom-trigger:hover {
-  background: #E2E8F0;
-  color: #0F172A;
+.home-product-btn-row .btn-zoom-trigger {
+  background: #F8FAFC !important;
+  color: #334155 !important;
+  border: 1px solid #CBD5E1 !important;
 }
 
-.home-product-buy-btn {
-  flex: 1;
-  padding: 8px;
-  border-radius: 10px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  background: #25D366;
-  border: 1px solid #22C55E;
-  color: #FFFFFF;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  transition: all 0.2s;
+.home-product-btn-row .btn-zoom-trigger:hover {
+  background: #EEF2F6 !important;
+  border-color: #94A3B8 !important;
+  color: #DC2626 !important;
 }
 
-.home-product-buy-btn:hover {
-  background: #1EBE5D;
-  color: white;
+.home-product-btn-row .btn-product-cart {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  border: 1px solid #0F172A !important;
 }
+
+.home-product-btn-row .btn-product-cart:hover {
+  background: #1E293B !important;
+  border-color: #1E293B !important;
+}
+
+.home-product-btn-row .home-product-buy-btn {
+  background: #16A34A !important;
+  color: #FFFFFF !important;
+  border: 1px solid #16A34A !important;
+  text-decoration: none !important;
+}
+
+.home-product-btn-row .home-product-buy-btn:hover {
+  background: #15803D !important;
+  border-color: #15803D !important;
+}
+
 
 /* ==========================================================================
    FLAGSHIP BRANCH ZOOM & CONCIERGE LIGHTBOX MODAL STYLES

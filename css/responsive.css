@@ -89,8 +89,17 @@ section, header, footer, nav, main, .container {
   pointer-events: none !important;
 }
 
+.mobile-nav-tab span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: -0.2px;
+}
+
 .mobile-nav-tab i {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: #FFFFFF;
   transition: transform 0.2s ease, color 0.2s ease;
 }
@@ -2101,24 +2110,33 @@ section, header, footer, nav, main, .container {
     line-height: 1.2 !important;
   }
 
-  /* Generous Mobile Product Cards (Comfortable Width for Easy Viewing) */
+  /* Generous Mobile Product Cards (Comfortable Width & Perfectly Aligned Buttons) */
   .home-product-card {
-    flex: 0 0 250px !important;
-    width: 250px !important;
+    flex: 0 0 248px !important;
+    width: 248px !important;
     padding: 12px !important;
     border-radius: 16px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 
   .home-product-img-wrap {
-    height: 175px !important;
+    height: 160px !important;
     width: 100% !important;
-    margin-bottom: 10px !important;
-    padding: 10px !important;
+    margin-bottom: 8px !important;
+    padding: 8px !important;
+    box-sizing: border-box !important;
   }
 
   .home-product-img-wrap img {
-    max-height: 155px !important;
+    max-height: 140px !important;
     max-width: 90% !important;
+  }
+
+  .home-product-info {
+    padding: 4px 0 0 !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
   }
 
   .home-product-brand {
@@ -2135,26 +2153,89 @@ section, header, footer, nav, main, .container {
     margin-bottom: 8px !important;
   }
 
-  .home-product-buy-btn {
-    font-size: 0.76rem !important;
-    padding: 8px 10px !important;
-    border-radius: 8px !important;
+  .home-product-btn-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 4px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-top: auto !important;
+    padding: 0 !important;
   }
 
-  /* Generous Mobile Department Cards */
+  .home-product-btn-row .btn-zoom-trigger,
+  .home-product-btn-row .btn-product-cart,
+  .home-product-btn-row .home-product-buy-btn {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    width: 0 !important;
+    max-width: 100% !important;
+    padding: 7px 2px !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-align: center !important;
+    justify-content: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+  }
+
+  /* Generous Mobile Department Cards (Explore and Inquire Perfectly Fit) */
   .home-dept-card {
     flex: 0 0 220px !important;
     width: 220px !important;
     height: auto !important;
     border-radius: 16px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 
   .home-dept-img-wrap {
     height: 130px !important;
+    width: 100% !important;
+  }
+
+  .home-dept-body {
+    padding: 10px 8px 12px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
   }
 
   .home-dept-name {
     font-size: 0.95rem !important;
+  }
+
+  .home-dept-btn-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 4px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-top: auto !important;
+    padding-top: 8px !important;
+  }
+
+  .home-dept-btn-row .home-dept-ext-link,
+  .home-dept-btn-row .btn-dept-inquire {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 7px 2px !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-align: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
   }
 
   /* Executive Leadership 2-Column Mobile Grid */
@@ -2342,12 +2423,14 @@ section, header, footer, nav, main, .container {
   .home-product-card {
     flex: 0 0 240px !important;
     width: 240px !important;
+    box-sizing: border-box !important;
   }
 
   .home-dept-card {
-    flex: 0 0 200px !important;
-    width: 200px !important;
+    flex: 0 0 214px !important;
+    width: 214px !important;
     height: auto !important;
+    box-sizing: border-box !important;
   }
 
   .home-dept-img-wrap {
