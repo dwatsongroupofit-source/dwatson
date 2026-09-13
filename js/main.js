@@ -778,7 +778,7 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
   const countBadge = document.getElementById("homeProductCountBadge");
   if (countBadge) {
     if (currentHomeProductCategory === "all") {
-      countBadge.innerHTML = `<span class="live-dot-green"></span> Showing All ${displayList.length} Products (Infinite Live Stream)`;
+      countBadge.innerHTML = `<span class="live-dot-green"></span> Showing All ${displayList.length} Products (Featured Carousel)`;
     } else {
       countBadge.innerHTML = `<span class="live-dot-green"></span> Showing ${displayList.length} in ${label}`;
     }
@@ -810,6 +810,9 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
             <button type="button" class="btn-zoom-trigger" onclick="event.stopPropagation(); openProductZoomModal('${p.id}')" title="Zoom &amp; Details">
               <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom
             </button>
+            <button type="button" class="btn-zoom-trigger" style="background:#0F172A; color:#FFFFFF; border-color:#0F172A;" onclick="event.stopPropagation(); handleAddToCartById(event, '${p.id}')" title="Add to Order Bag">
+              <i class="fa-solid fa-bag-shopping"></i> + Bag
+            </button>
             <a href="${waUrl}" target="_blank" onclick="event.stopPropagation(); handleProductOrderClick(event, '${p.id}', '${waUrl}');" class="home-product-buy-btn" title="Order ${escapeHtml(p.name)} via WhatsApp">
               <i class="fa-brands fa-whatsapp"></i> Buy
             </a>
@@ -821,66 +824,45 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
 
   const wrap = document.getElementById("homeProductsMarqueeWrap");
 
-  // Zero Duplicate Rendering Rule:
-  // When category is filtered OR when there are fewer than 5 items (e.g. 1 product):
-  // NEVER duplicate cards. Render each product STRICTLY ONCE!
-  if (currentHomeProductCategory !== "all" || displayList.length < 5) {
-    track.classList.add("category-filtered");
-    track.style.animation = "none";
-    track.style.transform = "none";
-    isHomeProductPaused = true;
-    if (homeProductAutoScrollAnimId) {
-      cancelAnimationFrame(homeProductAutoScrollAnimId);
-      homeProductAutoScrollAnimId = null;
-    }
-
-    if (!displayList.length) {
-      track.innerHTML = `
-        <div class="home-product-empty-state" style="padding:32px 20px; text-align:center; width:100%; background:#F8FAFC; border-radius:16px; border:1px dashed #CBD5E1; margin:10px 0;">
-          <div style="font-size:2rem; color:#64748B; margin-bottom:10px;"><i class="fa-solid fa-boxes-stacked"></i></div>
-          <h4 style="font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:6px;">Looking for ${escapeHtml(label)}?</h4>
-          <p style="font-size:0.9rem; color:#64748B; max-width:480px; margin:0 auto 16px;">We carry extensive ${escapeHtml(label)} inventory across all D. Watson 24/7 branches. Connect directly with our department pharmacist via WhatsApp for instant stock check &amp; doorstep delivery.</p>
-          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-            <a href="https://wa.me/${waNum}?text=${encodeURIComponent('Hi D.Watson Chemist, I would like to inquire about available ' + label + ' items.')}" target="_blank" onclick="handleDepartmentInquiryClick(event, '${currentHomeProductCategory}')" class="home-product-buy-btn" style="padding:10px 20px; font-size:0.9rem;" title="Inquire via WhatsApp (Select Branch)">
-              <i class="fa-brands fa-whatsapp"></i> Inquire via WhatsApp
-            </a>
-            <button type="button" class="btn-zoom-trigger" onclick="filterHomeProductsCategory('all')" style="padding:10px 18px; font-size:0.9rem;">
-              <i class="fa-solid fa-layer-group"></i> View All Products
-            </button>
-          </div>
+  if (!displayList.length) {
+    track.innerHTML = `
+      <div class="home-product-empty-state" style="padding:32px 20px; text-align:center; width:100%; background:#F8FAFC; border-radius:16px; border:1px dashed #CBD5E1; margin:10px 0;">
+        <div style="font-size:2rem; color:#64748B; margin-bottom:10px;"><i class="fa-solid fa-boxes-stacked"></i></div>
+        <h4 style="font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:6px;">Looking for ${escapeHtml(label)}?</h4>
+        <p style="font-size:0.9rem; color:#64748B; max-width:480px; margin:0 auto 16px;">We carry extensive ${escapeHtml(label)} inventory across all D. Watson 24/7 branches. Connect directly with our department pharmacist via WhatsApp for instant stock check &amp; doorstep delivery.</p>
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+          <a href="https://wa.me/${waNum}?text=${encodeURIComponent('Hi D.Watson Chemist, I would like to inquire about available ' + label + ' items.')}" target="_blank" onclick="handleDepartmentInquiryClick(event, '${currentHomeProductCategory}')" class="home-product-buy-btn" style="padding:10px 20px; font-size:0.9rem;" title="Inquire via WhatsApp (Select Branch)">
+            <i class="fa-brands fa-whatsapp"></i> Inquire via WhatsApp
+          </a>
+          <button type="button" class="btn-zoom-trigger" onclick="filterHomeProductsCategory('all')" style="padding:10px 18px; font-size:0.9rem;">
+            <i class="fa-solid fa-layer-group"></i> View All Products
+          </button>
         </div>
-      `;
-      if (wrap) wrap.scrollLeft = 0;
-      return;
-    }
-
-    // Render each card strictly once - zero duplicates!
-    track.innerHTML = displayList.map(renderCard).join("");
+      </div>
+    `;
     if (wrap) wrap.scrollLeft = 0;
-    initHomeProductSliderEvents();
+    stopHomeProductSnapCarousel();
     return;
   }
 
-  // ALL PRODUCTS (when catalog has 5+ items): Continuous seamless infinite glide stream with manual arrow/drag support
-  track.classList.remove("category-filtered");
+  // Modern Snap-Page Carousel: Render each card strictly once (zero duplicates)
+  track.classList.add("category-filtered");
   track.style.animation = "none";
   track.style.transform = "none";
-
-  const cardsHtml = displayList.map(renderCard).join("");
-  // Seamless loop with 2 halves for continuous infinite gliding
-  track.innerHTML = cardsHtml + cardsHtml;
+  track.innerHTML = displayList.map(renderCard).join("");
+  if (wrap) wrap.scrollLeft = 0;
 
   initHomeProductSliderEvents();
-  startHomeProductAutoGlide();
+  startHomeProductSnapCarousel();
 }
 
 /**
- * Trending Products Manual Arrow & Auto-Glide Controller
+ * Trending Products Snap-Page Carousel Controller (Option 1: Amazon/Daraz Style)
+ * Steady stationary cards with snappy page-by-page sliding and gentle auto-advance
  */
-let homeProductAutoScrollAnimId = null;
+let homeProductCarouselTimer = null;
 let isHomeProductPaused = false;
 let homeProductResumeTimeout = null;
-const HOME_PRODUCT_SCROLL_SPEED = 3.5;
 
 window.manualScrollHomeProducts = function(direction) {
   const wrap = document.getElementById("homeProductsMarqueeWrap");
@@ -889,44 +871,54 @@ window.manualScrollHomeProducts = function(direction) {
   isHomeProductPaused = true;
   if (homeProductResumeTimeout) clearTimeout(homeProductResumeTimeout);
 
-  const scrollDistance = 320 * direction;
+  const card = wrap.querySelector(".home-product-card");
+  const cardStep = card ? (card.offsetWidth + 18) : 278;
+  const visibleCards = Math.max(1, Math.floor(wrap.clientWidth / cardStep));
+  const scrollDistance = cardStep * visibleCards * direction;
 
-  // Seamless wrap around check for backward scroll on All Products
-  if (direction < 0 && wrap.scrollLeft <= 25 && currentHomeProductCategory === "all") {
-    const halfWidth = wrap.scrollWidth / 2;
-    if (halfWidth > 0) wrap.scrollLeft += halfWidth;
+  const maxScroll = wrap.scrollWidth - wrap.clientWidth;
+  if (direction > 0 && wrap.scrollLeft >= maxScroll - 20) {
+    wrap.scrollTo({ left: 0, behavior: "smooth" });
+  } else if (direction < 0 && wrap.scrollLeft <= 20) {
+    wrap.scrollTo({ left: maxScroll, behavior: "smooth" });
+  } else {
+    wrap.scrollBy({ left: scrollDistance, behavior: "smooth" });
   }
 
-  wrap.scrollBy({ left: scrollDistance, behavior: "smooth" });
-
-  // Resume auto-glide after 3.5 seconds of user inactivity if on "all"
-  if (currentHomeProductCategory === "all") {
-    homeProductResumeTimeout = setTimeout(() => {
-      isHomeProductPaused = false;
-    }, 3500);
-  }
+  // Resume auto-advance after 3.5 seconds of user inactivity
+  homeProductResumeTimeout = setTimeout(() => {
+    isHomeProductPaused = false;
+  }, 3500);
 };
 
-function startHomeProductAutoGlide() {
+function startHomeProductSnapCarousel() {
+  stopHomeProductSnapCarousel();
   const wrap = document.getElementById("homeProductsMarqueeWrap");
   if (!wrap) return;
 
-  if (homeProductAutoScrollAnimId) {
-    cancelAnimationFrame(homeProductAutoScrollAnimId);
-  }
+  homeProductCarouselTimer = setInterval(() => {
+    if (isHomeProductPaused || !wrap) return;
+    const maxScroll = wrap.scrollWidth - wrap.clientWidth;
+    if (maxScroll <= 15) return; // All cards fit on screen, no need to scroll
 
-  function glideLoop() {
-    if (currentHomeProductCategory === "all" && !isHomeProductPaused && wrap) {
-      wrap.scrollLeft += HOME_PRODUCT_SCROLL_SPEED;
-      const halfWidth = wrap.scrollWidth / 2;
-      if (halfWidth > 100 && wrap.scrollLeft >= halfWidth) {
-        wrap.scrollLeft -= halfWidth;
-      }
+    const card = wrap.querySelector(".home-product-card");
+    const cardStep = card ? (card.offsetWidth + 18) : 278;
+    const visibleCards = Math.max(1, Math.floor(wrap.clientWidth / cardStep));
+    const step = cardStep * visibleCards;
+
+    if (wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 25) {
+      wrap.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      wrap.scrollBy({ left: step, behavior: "smooth" });
     }
-    homeProductAutoScrollAnimId = requestAnimationFrame(glideLoop);
-  }
+  }, 3200);
+}
 
-  homeProductAutoScrollAnimId = requestAnimationFrame(glideLoop);
+function stopHomeProductSnapCarousel() {
+  if (homeProductCarouselTimer) {
+    clearInterval(homeProductCarouselTimer);
+    homeProductCarouselTimer = null;
+  }
 }
 
 function initHomeProductSliderEvents() {
@@ -939,9 +931,7 @@ function initHomeProductSliderEvents() {
   });
 
   wrap.addEventListener("mouseleave", () => {
-    if (currentHomeProductCategory === "all") {
-      isHomeProductPaused = false;
-    }
+    isHomeProductPaused = false;
   });
 
   wrap.addEventListener("touchstart", () => {
@@ -950,14 +940,12 @@ function initHomeProductSliderEvents() {
   }, { passive: true });
 
   wrap.addEventListener("touchend", () => {
-    if (currentHomeProductCategory === "all") {
-      homeProductResumeTimeout = setTimeout(() => {
-        isHomeProductPaused = false;
-      }, 3000);
-    }
+    homeProductResumeTimeout = setTimeout(() => {
+      isHomeProductPaused = false;
+    }, 4000);
   }, { passive: true });
 
-  // Mouse click-and-drag manual slide
+  // Mouse drag support on desktop
   let isDown = false;
   let startX;
   let scrollLeft;
@@ -975,11 +963,9 @@ function initHomeProductSliderEvents() {
     if (isDown) {
       isDown = false;
       wrap.classList.remove("is-dragging");
-      if (currentHomeProductCategory === "all") {
-        homeProductResumeTimeout = setTimeout(() => {
-          isHomeProductPaused = false;
-        }, 3000);
-      }
+      homeProductResumeTimeout = setTimeout(() => {
+        isHomeProductPaused = false;
+      }, 4000);
     }
   });
 
@@ -2042,9 +2028,29 @@ function updateProductZoomDisplay() {
     };
   }
 
+  const zoomCartBtn = document.getElementById("zoomModalAddToCartBtn");
+  if (zoomCartBtn) {
+    zoomCartBtn.onclick = function(e) {
+      if (e) e.preventDefault();
+      if (window.DWCart) {
+        window.DWCart.addItem(p, 1);
+      }
+    };
+  }
+
   resetProductZoom();
   renderProductZoomThumbs();
 }
+
+window.handleAddToCartById = function(event, productId) {
+  if (event) event.stopPropagation();
+  const data = (typeof getSiteData === "function") ? getSiteData() : null;
+  const prods = (data && Array.isArray(data.products)) ? data.products : ((typeof DEFAULT_SITE_DATA !== "undefined" && Array.isArray(DEFAULT_SITE_DATA.products)) ? DEFAULT_SITE_DATA.products : []);
+  const p = prods.find(item => item.id === productId);
+  if (p && window.DWCart) {
+    window.DWCart.addItem(p, 1);
+  }
+};
 
 function renderProductZoomThumbs() {
   const container = document.getElementById("zoomThumbsStrip");

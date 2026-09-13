@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Shop &amp; Product Catalog | D. Watson Chemist &amp; Superstore</title>
+  <meta name="description" content="Order 100% genuine medicines, luxury cosmetics, baby milk, surgical devices, and daily healthcare essentials online from D. Watson Chemist. 1-2 hour express delivery in Twin Cities.">
+  <meta name="keywords" content="D Watson Online Store, Buy medicines online Islamabad, Pharmacy delivery Rawalpindi, genuine cosmetics Pakistan, baby formula delivery">
+  <meta name="theme-color" content="#A50505">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://dwatson.co/shop">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://dwatson.co/shop">
+  <meta property="og:site_name" content="D. Watson Chemist &amp; Superstore">
+  <meta property="og:title" content="Online Store &amp; Product Catalog | D. Watson Chemist &amp; Superstore">
+  <meta property="og:description" content="Shop 100% genuine medicines, supplements, baby nutrition, and luxury cosmetics with 1-tap WhatsApp order or Cash on Delivery.">
+  <meta property="og:image" content="https://dwatson.co/assets/images/store_flagship.jpg">
+
+  <!-- Structured Data: CollectionPage & ItemList Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://dwatson.co/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Online Shop",
+            "item": "https://dwatson.co/shop"
+          }
+        ]
+      },
+      {
+        "@type": "CollectionPage",
+        "name": "D. Watson Online Store & Product Catalog",
+        "url": "https://dwatson.co/shop",
+        "description": "Comprehensive catalog of authentic healthcare, cosmetics, baby care, surgical instruments, and supermarket items."
+      }
+    ]
+  }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" type="image/png" href="assets/images/favicon.png">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="D. Watson Shop">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon-180.png">
+
+  <!-- Cache Control -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css?v=32.0">
+  <link rel="stylesheet" href="css/responsive.css?v=32.0">
+</head>
+<body class="site-body">
+
+  <!-- Mobile App Top Bar (Sticky Header matching dwatson.pk) -->
+  <div class="mobile-app-header" id="mobileAppHeader">
+    <button type="button" class="mobile-app-menu-btn" onclick="openMobileMenu()" aria-label="Open Navigation Menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
+      <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" class="mobile-app-emblem" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
+    </a>
+    <div class="mobile-app-search-wrap" onclick="focusShopSearch()" role="button" aria-label="Search catalog">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Search catalog..." readonly>
+    </div>
+    <div class="mobile-app-live-status">
+      <span class="live-branch-label">Twin Cities</span>
+      <span class="live-branch-val"><i class="fa-solid fa-circle-check"></i> Open 24/7</span>
+    </div>
+  </div>
+
+  <!-- Sticky Header Wrapper (Desktop View) -->
+  <div class="sticky-header-wrap">
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+      <div class="container top-bar-inner">
+        <div class="announcement-text">
+          <span class="badge-live">24/7 Live Express</span>
+          <span id="topAnnouncement">✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • Express Doorstep Delivery</span>
+        </div>
+        <div class="top-bar-links">
+          <div class="topbar-helpline-wrap" id="topHelplineDropdownWrap">
+            <button type="button" class="topbar-helpline-btn" id="topPhoneBtn" aria-label="Flagship Branch Helplines">
+              <i class="fa-solid fa-phone-volume"></i> Helpline: 051-8438111 <i class="fa-solid fa-chevron-down" style="font-size:0.75rem; margin-left:4px;"></i>
+            </button>
+            <div class="topbar-helpline-dropdown" id="topHelplineDropdown">
+              <div class="helpline-dropdown-header">
+                <strong><i class="fa-solid fa-hospital"></i> Flagship Branch Helplines</strong>
+                <small>Click to call directly</small>
+              </div>
+              <div class="helpline-dropdown-list" id="helplineDropdownList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Sticky Header -->
+    <header class="site-header" id="siteHeader">
+      <div class="container">
+        <nav class="navbar">
+          <!-- Official Logo -->
+          <a href="index.html" class="brand-logo" title="D. Watson Chemist &amp; Superstore">
+            <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
+          </a>
+
+          <!-- Desktop Navigation -->
+          <ul class="nav-menu" id="navMenu">
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="shop.html" class="nav-link active" style="color:#DC2626; font-weight:800;"><i class="fa-solid fa-bag-shopping"></i> Online Store</a></li>
+            <li><a href="departments.html" class="nav-link">13 Departments</a></li>
+            <li><a href="branches.html" class="nav-link">⭐ Flagship Branches</a></li>
+            <li><a href="journey.html" class="nav-link">The Journey &amp; Board</a></li>
+            <li><a href="prescription.html" class="nav-link">Prescription</a></li>
+            <li><a href="contact.html" class="nav-link">Contact</a></li>
+          </ul>
+
+          <!-- Right Action Button -->
+          <div class="nav-actions">
+            <button class="header-search-btn" id="headerSearchBtn" onclick="openGlobalSearch()" aria-label="Search Medicines and Products">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span class="search-btn-label">Search</span>
+              <span class="search-kbd-shortcut">/</span>
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="DWCart.openDrawer()" aria-label="Open Cart Bag" style="display:inline-flex; align-items:center; gap:6px;">
+              <i class="fa-solid fa-bag-shopping" style="color:var(--dw-red);"></i>
+              <span>Bag</span>
+              <span class="header-cart-badge cart-header-count" style="display:none; font-size:0.72rem; padding:1px 6px;">0</span>
+            </button>
+            <a href="prescription.html" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-file-prescription"></i> Upload Rx
+            </a>
+            <button class="mobile-toggle" aria-label="Toggle navigation menu">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+  </div>
+
+  <main class="shop-page-wrapper">
+    <!-- Top Utility & Trust Strip -->
+    <div class="shop-top-meta-strip">
+      <div class="container shop-meta-inner">
+        <nav class="shop-breadcrumbs" aria-label="Breadcrumb">
+          <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+          <i class="fa-solid fa-chevron-right" style="font-size:0.7rem;"></i>
+          <span style="color:#FFFFFF; font-weight:700;">Online Store &amp; Products</span>
+        </nav>
+        <div class="shop-perks-row">
+          <span class="shop-perk-pill"><i class="fa-solid fa-shield-halved"></i> 100% Genuine Guaranteed</span>
+          <span class="shop-perk-pill"><i class="fa-solid fa-snowflake"></i> Certified Cold-Chain Storage</span>
+          <span class="shop-perk-pill"><i class="fa-solid fa-bolt"></i> 1-2 Hr Express Delivery (Twin Cities)</span>
+          <span class="shop-perk-pill"><i class="fa-solid fa-truck-fast"></i> FREE Delivery on Orders Over PKR 3,000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Multi-Product Trending Carousel Track (Amazon/Daraz Style Spotlight) -->
+    <section class="shop-spotlight-carousel-section" aria-label="Top Deals & Trending Products">
+      <div class="container">
+        <div class="spotlight-track-header">
+          <div>
+            <span class="spotlight-hot-badge"><i class="fa-solid fa-fire"></i> Hot Deals &amp; Best Sellers</span>
+            <h2 class="spotlight-track-title">Featured Trending Products</h2>
+            <p class="spotlight-track-sub">100% genuine guaranteed medicines, mother &amp; baby care, diagnostic devices &amp; imported treats.</p>
+          </div>
+          <div class="spotlight-track-controls">
+            <button type="button" class="spotlight-arrow-btn" id="spotlightTrackPrev" onclick="scrollSpotlightTrack(-1)" aria-label="Previous Products">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button type="button" class="spotlight-arrow-btn" id="spotlightTrackNext" onclick="scrollSpotlightTrack(1)" aria-label="Next Products">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="spotlight-cards-viewport" id="spotlightCardsViewport">
+          <div class="spotlight-cards-track">
+            
+            <!-- Card 1: Kendamil Infant Milk -->
+            <div class="spotlight-product-card" data-product-id="p7">
+              <span class="spotlight-card-badge"><i class="fa-solid fa-crown"></i> Best Seller</span>
+              <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p7')">
+                <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789038824/z86e3yeizdcif2p4qqxj.jpg" alt="Kendamil First Infant Milk Stage 1" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+              </div>
+              <div class="spotlight-card-body">
+                <span class="spotlight-card-brand">Kendamil UK</span>
+                <h3 class="spotlight-card-name" onclick="openProductZoomModal('p7')" title="Kendamil First Infant Milk (Stage 1)">Kendamil First Infant Milk (Stage 1)</h3>
+                <div class="spotlight-card-price-row">
+                  <span class="spotlight-card-price">PKR 9,950</span>
+                  <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+                </div>
+                <div class="spotlight-card-actions">
+                  <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p7","name":"First Infant Milk (Stage 1)","brand":"Kendamil","price":"PKR 9,950","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789038824/z86e3yeizdcif2p4qqxj.jpg","category":"grocery"})'>
+                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                  </button>
+                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Kendamil%20First%20Infant%20Milk%20Stage%201%20(PKR%209,950)." target="_blank" class="btn-spotlight-buy-wa">
+                    <i class="fa-brands fa-whatsapp"></i> Buy
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: CODL Omega-3 Fish Oil -->
+            <div class="spotlight-product-card" data-product-id="p2">
+              <span class="spotlight-card-badge"><i class="fa-solid fa-heart-pulse"></i> Cold-Chain</span>
+              <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p2')">
+                <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789036146/q57j8z9ijuuw07wlo7qh.jpg" alt="CODL Omega-3 Fish Oil 1000mg" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+              </div>
+              <div class="spotlight-card-body">
+                <span class="spotlight-card-brand">BIOLIFE</span>
+                <h3 class="spotlight-card-name" onclick="openProductZoomModal('p2')" title="CODL Omega-3 Fish Oil 1000mg">CODL Omega-3 Fish Oil 1000mg</h3>
+                <div class="spotlight-card-price-row">
+                  <span class="spotlight-card-price">PKR 1,990</span>
+                  <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+                </div>
+                <div class="spotlight-card-actions">
+                  <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p2","name":"CODL Omega-3 Fish Oil 1000mg","brand":"BIOLIFE","price":"PKR 1,990","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789036146/q57j8z9ijuuw07wlo7qh.jpg","category":"pharmacy"})'>
+                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                  </button>
+                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20CODL%20Omega-3%20Fish%20Oil%201000mg%20(PKR%201,990)." target="_blank" class="btn-spotlight-buy-wa">
+                    <i class="fa-brands fa-whatsapp"></i> Buy
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Accu-Chek Instant Blood Glucose Meter -->
+            <div class="spotlight-product-card" data-product-id="p12">
+              <span class="spotlight-card-badge"><i class="fa-solid fa-microchip"></i> Diagnostics</span>
+              <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p12')">
+                <img src="assets/images/Accu-Chek Instant Blood Glucose Meter.jpg" alt="Accu-Chek Instant Blood Glucose Meter" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+              </div>
+              <div class="spotlight-card-body">
+                <span class="spotlight-card-brand">Roche</span>
+                <h3 class="spotlight-card-name" onclick="openProductZoomModal('p12')" title="Accu-Chek Instant Blood Glucose Meter">Accu-Chek Instant Meter</h3>
+                <div class="spotlight-card-price-row">
+                  <span class="spotlight-card-price">PKR 3,950</span>
+                  <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+                </div>
+                <div class="spotlight-card-actions">
+                  <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p12","name":"Accu-Chek Instant Blood Glucose Meter","brand":"Roche Diagnostics","price":"PKR 3,950","image":"assets/images/Accu-Chek Instant Blood Glucose Meter.jpg","category":"surgical"})'>
+                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                  </button>
+                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Accu-Chek%20Instant%20Blood%20Glucose%20Meter%20(PKR%203,950)." target="_blank" class="btn-spotlight-buy-wa">
+                    <i class="fa-brands fa-whatsapp"></i> Buy
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4: Myotin Sachet -->
+            <div class="spotlight-product-card" data-product-id="p3">
+              <span class="spotlight-card-badge"><i class="fa-solid fa-venus"></i> Wellness</span>
+              <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p3')">
+                <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789036161/umu4cfnchzwmlwcepijr.jpg" alt="Myotin Sachet" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+              </div>
+              <div class="spotlight-card-body">
+                <span class="spotlight-card-brand">MEDI GREEN</span>
+                <h3 class="spotlight-card-name" onclick="openProductZoomModal('p3')" title="Myotin Sachet (PCOS Support)">Myotin Sachet (PCOS Support)</h3>
+                <div class="spotlight-card-price-row">
+                  <span class="spotlight-card-price">PKR 1,150</span>
+                  <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+                </div>
+                <div class="spotlight-card-actions">
+                  <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p3","name":"Myotin Sachet","brand":"MEDI GREEN","price":"PKR 1,150","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789036161/umu4cfnchzwmlwcepijr.jpg","category":"pharmacy"})'>
+                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                  </button>
+                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Myotin%20Sachet%20(PKR%201,150)." target="_blank" class="btn-spotlight-buy-wa">
+                    <i class="fa-brands fa-whatsapp"></i> Buy
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 5: Omron M2 BP Monitor -->
+            <div class="spotlight-product-card" data-product-id="p11">
+              <span class="spotlight-card-badge"><i class="fa-solid fa-heart-pulse"></i> Precision</span>
+              <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p11')">
+                <img src="assets/images/Omron M2 Basic Digital BP Monitor.jpg" alt="Omron M2 Basic Digital BP Monitor" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+              </div>
+              <div class="spotlight-card-body">
+                <span class="spotlight-card-brand">Omron Japan</span>
+                <h3 class="spotlight-card-name" onclick="openProductZoomModal('p11')" title="Omron M2 Basic Digital BP Monitor">Omron M2 Digital BP Monitor</h3>
+                <div class="spotlight-card-price-row">
+                  <span class="spotlight-card-price">PKR 9,850</span>
+                  <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+                </div>
+                <div class="spotlight-card-actions">
+                  <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p11","name":"Omron M2 Basic Digital BP Monitor","brand":"Omron Healthcare","price":"PKR 9,850","image":"assets/images/Omron M2 Basic Digital BP Monitor.jpg","category":"surgical"})'>
+                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                  </button>
+                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Omron%20M2%20Digital%20BP%20Monitor%20(PKR%209,850)." target="_blank" class="btn-spotlight-buy-wa">
+                    <i class="fa-brands fa-whatsapp"></i> Buy
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 6: Samyang Buldak Korean Ramen -->
+            <div class="spotlight-product-card" data-product-id="p1">
+              <span class="spotlight-card-badge"><i class="fa-solid fa-fire"></i> Viral Food</span>
+              <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p1')">
+                <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789036124/m0k4bj9oxmhgfxwogmz2.jpg" alt="Samyang Buldak all Flav Ramen Noodles" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+              </div>
+              <div class="spotlight-card-body">
+                <span class="spotlight-card-brand">Samyang</span>
+                <h3 class="spotlight-card-name" onclick="openProductZoomModal('p1')" title="Samyang Buldak All Flav Ramen Noodles">Samyang Buldak Ramen Noodles</h3>
+                <div class="spotlight-card-price-row">
+                  <span class="spotlight-card-price">PKR 490</span>
+                  <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+                </div>
+                <div class="spotlight-card-actions">
+                  <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p1","name":"Samyang Buldak all Flav Ramen Noodles","brand":"Samyang Buldak","price":"PKR 490","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789036124/m0k4bj9oxmhgfxwogmz2.jpg","category":"grocery"})'>
+                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                  </button>
+                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Samyang%20Buldak%20Ramen%20Noodles%20(PKR%20490)." target="_blank" class="btn-spotlight-buy-wa">
+                    <i class="fa-brands fa-whatsapp"></i> Buy
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 7: Magnibase Magnesium Glycinate -->
+            <div class="spotlight-product-card" data-product-id="p6">
+              <span class="spotlight-card-badge"><i class="fa-solid fa-shield-halved"></i> Calming</span>
+              <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p6')">
+                <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789038344/gpnlsaigcqb4usufpkyp.png" alt="Magnibase Magnesium Glycinate 500mg" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+              </div>
+              <div class="spotlight-card-body">
+                <span class="spotlight-card-brand">NutriBase</span>
+                <h3 class="spotlight-card-name" onclick="openProductZoomModal('p6')" title="Magnibase Magnesium Glycinate 500mg">Magnibase Magnesium 500mg</h3>
+                <div class="spotlight-card-price-row">
+                  <span class="spotlight-card-price">PKR 2,495</span>
+                  <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+                </div>
+                <div class="spotlight-card-actions">
+                  <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p6","name":"Magnibase Magnesium Glycinate 500mg","brand":"NutriBase","price":"PKR 2,495","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789038344/gpnlsaigcqb4usufpkyp.png","category":"pharmacy"})'>
+                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                  </button>
+                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Magnibase%20Magnesium%20Glycinate%20(PKR%202,495)." target="_blank" class="btn-spotlight-buy-wa">
+                    <i class="fa-brands fa-whatsapp"></i> Buy
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 8: Cow & Gate Infant Milk -->
+            <div class="spotlight-product-card" data-product-id="p8">
+              <span class="spotlight-card-badge"><i class="fa-solid fa-baby"></i> Infant Care</span>
+              <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p8')">
+                <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789039001/m1qfr2nnciwnyvlp6a43.jpg" alt="Cow & Gate First Infant Milk (Stage 1)" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+              </div>
+              <div class="spotlight-card-body">
+                <span class="spotlight-card-brand">Cow &amp; Gate</span>
+                <h3 class="spotlight-card-name" onclick="openProductZoomModal('p8')" title="Cow & Gate First Infant Milk (Stage 1)">Cow &amp; Gate Infant Milk (1)</h3>
+                <div class="spotlight-card-price-row">
+                  <span class="spotlight-card-price">PKR 9,700</span>
+                  <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+                </div>
+                <div class="spotlight-card-actions">
+                  <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p8","name":"Cow & Gate First Infant Milk (Stage 1)","brand":"Cow & Gate","price":"PKR 9,700","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789039001/m1qfr2nnciwnyvlp6a43.jpg","category":"grocery"})'>
+                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                  </button>
+                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Cow%20and%20Gate%20Infant%20Milk%20(PKR%209,700)." target="_blank" class="btn-spotlight-buy-wa">
+                    <i class="fa-brands fa-whatsapp"></i> Buy
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 9: Osteowhiz Bone Health -->
+            <div class="spotlight-product-card" data-product-id="p4">
+              <span class="spotlight-card-badge"><i class="fa-solid fa-bone"></i> Bone Care</span>
+              <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p4')">
+                <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789037342/rg9ingqxnal1skszkuna.jpg" alt="Osteowhiz Bone Health" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+              </div>
+              <div class="spotlight-card-body">
+                <span class="spotlight-card-brand">NutraWhiz</span>
+                <h3 class="spotlight-card-name" onclick="openProductZoomModal('p4')" title="Osteowhiz Bone Health">Osteowhiz Bone &amp; Joint</h3>
+                <div class="spotlight-card-price-row">
+                  <span class="spotlight-card-price">PKR 1,150</span>
+                  <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+                </div>
+                <div class="spotlight-card-actions">
+                  <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p4","name":"Osteowhiz","brand":"NutraWhiz","price":"PKR 1,150","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789037342/rg9ingqxnal1skszkuna.jpg","category":"pharmacy"})'>
+                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                  </button>
+                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Osteowhiz%20(PKR%201,150)." target="_blank" class="btn-spotlight-buy-wa">
+                    <i class="fa-brands fa-whatsapp"></i> Buy
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 10: Aptamil Advance 1 -->
+            <div class="spotlight-product-card" data-product-id="p10">
+              <span class="spotlight-card-badge"><i class="fa-solid fa-shield-heart"></i> Infant Formula</span>
+              <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p10')">
+                <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789039555/gnuvyvl01ytjreyjpcla.jpg" alt="Aptamil Advance 1 Infant Formula" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+              </div>
+              <div class="spotlight-card-body">
+                <span class="spotlight-card-brand">Nutricia</span>
+                <h3 class="spotlight-card-name" onclick="openProductZoomModal('p10')" title="Aptamil Advance 1 (Infant Formula)">Aptamil Advance 1 Formula</h3>
+                <div class="spotlight-card-price-row">
+                  <span class="spotlight-card-price">PKR 7,650</span>
+                  <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+                </div>
+                <div class="spotlight-card-actions">
+                  <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p10","name":"Aptamil Advance 1 (Infant Formula)","brand":"Nutricia","price":"PKR 7,650","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789039555/gnuvyvl01ytjreyjpcla.jpg","category":"grocery"})'>
+                    <i class="fa-solid fa-bag-shopping"></i> + Bag
+                  </button>
+                  <a href="https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Aptamil%20Advance%201%20(PKR%207,650)." target="_blank" class="btn-spotlight-buy-wa">
+                    <i class="fa-brands fa-whatsapp"></i> Buy
+                  </a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sticky Horizontal Department Chips (Mobile First) -->
+    <nav class="shop-sticky-filter-bar" aria-label="Department Categories">
+      <div class="container">
+        <div class="shop-chips-scroll-wrap">
+          <div class="shop-chips-track" id="shopCategoryChips">
+            <button type="button" class="shop-chip active" data-cat="all" onclick="filterShopCategory('all', this)">
+              <i class="fa-solid fa-layer-group"></i> All Products
+            </button>
+            <button type="button" class="shop-chip" data-cat="pharmacy" onclick="filterShopCategory('pharmacy', this)">
+              <i class="fa-solid fa-pills"></i> Pharmacy &amp; Medicines
+            </button>
+            <button type="button" class="shop-chip" data-cat="cosmetics" onclick="filterShopCategory('cosmetics', this)">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Cosmetics &amp; Skincare
+            </button>
+            <button type="button" class="shop-chip" data-cat="perfumes" onclick="filterShopCategory('perfumes', this)">
+              <i class="fa-solid fa-spray-can-sparkles"></i> Luxury Perfumes
+            </button>
+            <button type="button" class="shop-chip" data-cat="color_cosmetics" onclick="filterShopCategory('color_cosmetics', this)">
+              <i class="fa-solid fa-brush"></i> Color Cosmetics &amp; Makeup
+            </button>
+            <button type="button" class="shop-chip" data-cat="haircare" onclick="filterShopCategory('haircare', this)">
+              <i class="fa-solid fa-pump-soap"></i> Hair Care &amp; Therapy
+            </button>
+            <button type="button" class="shop-chip" data-cat="surgical" onclick="filterShopCategory('surgical', this)">
+              <i class="fa-solid fa-heart-pulse"></i> Surgical &amp; Devices
+            </button>
+            <button type="button" class="shop-chip" data-cat="optics" onclick="filterShopCategory('optics', this)">
+              <i class="fa-solid fa-glasses"></i> Optics &amp; Eyewear
+            </button>
+            <button type="button" class="shop-chip" data-cat="babycare" onclick="filterShopCategory('babycare', this)">
+              <i class="fa-solid fa-baby"></i> Baby Care &amp; Nutrition
+            </button>
+            <button type="button" class="shop-chip" data-cat="grocery" onclick="filterShopCategory('grocery', this)">
+              <i class="fa-solid fa-cart-shopping"></i> Superstore &amp; Grocery
+            </button>
+            <button type="button" class="shop-chip" data-cat="homeo" onclick="filterShopCategory('homeo', this)">
+              <i class="fa-solid fa-leaf"></i> Homeopathic Care
+            </button>
+            <button type="button" class="shop-chip" data-cat="hearing_aid" onclick="filterShopCategory('hearing_aid', this)">
+              <i class="fa-solid fa-ear-listen"></i> Hearing &amp; Diagnostics
+            </button>
+            <button type="button" class="shop-chip" data-cat="crockery" onclick="filterShopCategory('crockery', this)">
+              <i class="fa-solid fa-utensils"></i> Crockery &amp; Household
+            </button>
+            <button type="button" class="shop-chip" data-cat="toys" onclick="filterShopCategory('toys', this)">
+              <i class="fa-solid fa-gamepad"></i> Toys &amp; Kids
+            </button>
+            <button type="button" class="shop-chip" data-cat="undergarments" onclick="filterShopCategory('undergarments', this)">
+              <i class="fa-solid fa-shirt"></i> Undergarments
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Catalog Container -->
+    <div class="container">
+      <!-- Search, Sort & Counter Controls -->
+      <div class="shop-controls-bar">
+        <!-- Live Instant Search -->
+        <div class="shop-search-box">
+          <i class="fa-solid fa-magnifying-glass shop-search-icon"></i>
+          <input type="text" id="shopSearchInput" class="shop-search-input" placeholder="Search medicines, formula, skincare, brands..." autocomplete="off">
+          <button type="button" id="shopSearchClearBtn" class="shop-search-clear" onclick="clearShopSearch()" aria-label="Clear Search">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Sort and Counter -->
+        <div class="shop-sort-controls">
+          <div class="shop-count-indicator" id="shopCountBadge">
+            <span class="live-dot-green"></span>
+            <span id="shopCountText">Loading products...</span>
+          </div>
+
+          <select id="shopSortSelect" class="shop-sort-select" onchange="applyShopSorting()" aria-label="Sort products">
+            <option value="featured">⭐ Featured First</option>
+            <option value="price-asc">💵 Price: Low to High</option>
+            <option value="price-desc">💰 Price: High to Low</option>
+            <option value="name-asc">🔤 Name: A to Z</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Prescription Prompt Notice -->
+      <div style="background:#FEF2F2; border:1px solid #FECACA; border-radius:14px; padding:14px 18px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:#FEE2E2; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
+            <i class="fa-solid fa-file-prescription"></i>
+          </div>
+          <div>
+            <h4 style="font-size:0.92rem; font-weight:800; color:#991B1B; margin-bottom:2px;">Need Prescription Medicines?</h4>
+            <p style="font-size:0.82rem; color:#7F1D1D; margin:0;">Upload doctor's prescription directly. Our certified pharmacist will review and dispatch immediately.</p>
+          </div>
+        </div>
+        <a href="prescription.html" class="btn btn-primary btn-sm" style="padding:8px 16px; font-size:0.82rem;">
+          <i class="fa-solid fa-upload"></i> Upload Prescription
+        </a>
+      </div>
+
+      <!-- Product Grid (2-Columns on Mobile, 4-Columns on Desktop) -->
+      <div class="shop-product-grid" id="shopProductGrid">
+        <!-- Rendered dynamically via shop.js logic -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="shopEmptyState" style="display:none; text-align:center; padding:60px 20px; background:#FFFFFF; border-radius:18px; border:1px dashed #CBD5E1; margin:20px 0;">
+        <div style="font-size:3rem; color:#94A3B8; margin-bottom:14px;"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <h3 style="font-size:1.3rem; font-weight:800; color:#0F172A; margin-bottom:8px;">No Products Found</h3>
+        <p style="font-size:0.92rem; color:#64748B; max-width:450px; margin:0 auto 20px;">We couldn't find any products matching your search. Try adjusting keywords or contact our 24/7 pharmacist on WhatsApp.</p>
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="resetShopFilters()">
+            <i class="fa-solid fa-rotate-left"></i> Reset Filters
+          </button>
+          <a href="https://wa.me/923329716666?text=Hi%20D.Watson%20Chemist,%20I%20am%20looking%20for%20a%20product%20not%20listed%20online." target="_blank" class="btn btn-whatsapp btn-sm">
+            <i class="fa-brands fa-whatsapp"></i> Inquire via WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Global Instant Product & Medicine Search Modal -->
+  <div class="global-search-modal" id="globalSearchModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="search-modal-backdrop" onclick="closeGlobalSearch()"></div>
+    <div class="search-modal-content">
+      <div class="search-modal-header">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass search-icon-inside"></i>
+          <input type="search" id="globalSearchInput" placeholder="Search medicines, skincare, brands (e.g. Panadol, CeraVe, Augmentin)..." autocomplete="off" spellcheck="false">
+          <button class="search-clear-btn" id="globalSearchClear" onclick="clearGlobalSearch()" title="Clear search" style="display:none;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <button class="search-close-btn" onclick="closeGlobalSearch()" title="Close Search (Esc)"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="search-popular-tags">
+        <span class="search-tags-label"><i class="fa-solid fa-fire"></i> Popular:</span>
+        <div class="search-tags-scroll">
+          <button class="search-tag-chip" onclick="searchByChip('Panadol')">Panadol</button>
+          <button class="search-tag-chip" onclick="searchByChip('CeraVe')">CeraVe</button>
+          <button class="search-tag-chip" onclick="searchByChip('Insulin')">Insulin</button>
+          <button class="search-tag-chip" onclick="searchByChip('Anua')">Anua K-Beauty</button>
+          <button class="search-tag-chip" onclick="searchByChip('COSRX')">COSRX</button>
+          <button class="search-tag-chip" onclick="searchByChip('Golden Rose')">Golden Rose</button>
+          <button class="search-tag-chip" onclick="searchByChip('Flormar')">Flormar</button>
+          <button class="search-tag-chip" onclick="searchByChip('Surgical')">Surgical</button>
+        </div>
+      </div>
+      <div class="search-results-list" id="globalSearchResults"></div>
+    </div>
+  </div>
+
+  <!-- Product Zoom Modal -->
+  <div class="product-zoom-modal" id="productZoomModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="product-zoom-backdrop" onclick="closeProductZoomModal()"></div>
+    <div class="product-zoom-dialog">
+      <div class="product-zoom-topbar">
+        <div class="zoom-product-meta">
+          <span class="zoom-pill-dept" id="zoomModalDept">Pharmacy</span>
+          <span class="zoom-pill-brand" id="zoomModalBrand">D. Watson</span>
+        </div>
+        <div class="zoom-tools-cluster">
+          <button class="zoom-tool-btn" id="zoomInBtn" onclick="zoomInProduct()" title="Zoom In (+)" aria-label="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+          <button class="zoom-tool-btn" id="zoomOutBtn" onclick="zoomOutProduct()" title="Zoom Out (-)" aria-label="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+          <button class="zoom-tool-btn" id="zoomResetBtn" onclick="resetProductZoom()" title="Reset Zoom" aria-label="Reset Zoom"><i class="fa-solid fa-arrow-rotate-left"></i></button>
+          <button class="zoom-tool-btn zoom-close-btn" onclick="closeProductZoomModal()" title="Close (Esc)" aria-label="Close Modal">&times;</button>
+        </div>
+      </div>
+      <div class="product-zoom-stage">
+        <div class="product-zoom-viewport" id="zoomViewport">
+          <div class="zoom-pan-surface" id="zoomPanSurface">
+            <img id="zoomModalImg" src="" alt="Product Detail Zoom Preview" draggable="false">
+          </div>
+        </div>
+        <div class="product-zoom-sidebar">
+          <div class="zoom-sidebar-scroll">
+            <div class="zoom-sidebar-brand" id="zoomSidebarBrand">D. Watson</div>
+            <h3 class="zoom-sidebar-title" id="zoomSidebarTitle">Product Name</h3>
+            <div class="zoom-sidebar-price" id="zoomSidebarPrice">PKR 0</div>
+            <div class="zoom-sidebar-badge-row">
+              <span class="zoom-genuine-badge"><i class="fa-solid fa-shield-halved"></i> 100% Genuine Authentic</span>
+              <span class="zoom-stock-badge" id="zoomSidebarStock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+            </div>
+            <div class="zoom-desc-block">
+              <h5>Description &amp; Specifications</h5>
+              <p id="zoomSidebarDesc">Product details...</p>
+            </div>
+            <div class="zoom-action-block" style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+              <button type="button" class="btn btn-primary" id="zoomModalAddToCartBtn" style="width:100%; justify-content:center; padding:12px; font-weight:800;">
+                <i class="fa-solid fa-bag-shopping"></i> Add to Order Bag
+              </button>
+              <a href="#" target="_blank" class="btn btn-whatsapp" id="zoomModalBuyBtn" style="width:100%; justify-content:center; padding:12px; font-weight:800;">
+                <i class="fa-brands fa-whatsapp"></i> Buy via WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide-Out Mobile Navigation Drawer -->
+  <div class="mobile-nav-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mobile-drawer-backdrop" onclick="closeMobileMenu()"></div>
+    <div class="mobile-drawer-panel">
+      <div class="mobile-drawer-header">
+        <a href="index.html" class="mobile-drawer-logo">
+          <img src="assets/images/logo.svg" alt="D. Watson" style="height:36px; width:auto;" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
+        </a>
+        <button type="button" class="mobile-drawer-close" onclick="closeMobileMenu()" aria-label="Close menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <ul class="mobile-drawer-links">
+        <li><a href="index.html" id="drawerLinkHome"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="shop.html" class="active" id="drawerLinkShop" style="color:#DC2626; font-weight:800;"><i class="fa-solid fa-bag-shopping"></i> Online Store</a></li>
+        <li><a href="departments.html" id="drawerLinkDepts"><i class="fa-solid fa-table-cells-large"></i> 13 Departments</a></li>
+        <li><a href="branches.html" id="drawerLinkBranches"><i class="fa-solid fa-location-dot"></i> Flagship Branches</a></li>
+        <li><a href="journey.html" id="drawerLinkJourney"><i class="fa-solid fa-landmark"></i> The Journey &amp; Board</a></li>
+        <li><a href="prescription.html" id="drawerLinkRx"><i class="fa-solid fa-file-prescription"></i> Upload Prescription</a></li>
+        <li><a href="contact.html" id="drawerLinkContact"><i class="fa-solid fa-headset"></i> Contact &amp; Support</a></li>
+        <li><a href="admin.html" id="drawerLinkAdmin"><i class="fa-solid fa-lock"></i> Admin Portal</a></li>
+      </ul>
+      <div class="mobile-drawer-footer">
+        <button type="button" class="drawer-contact-btn btn-call" onclick="closeMobileMenu(); DWCart.openDrawer();" style="border:none; cursor:pointer; width:100%; text-align:center; background:#DC2626; color:#FFFFFF; margin-bottom:8px;">
+          <i class="fa-solid fa-bag-shopping"></i> View Order Bag (<span class="header-cart-badge">0</span>)
+        </button>
+        <button type="button" class="drawer-contact-btn btn-call" onclick="closeMobileMenu(); openFlagshipCallModal();" style="border:none; cursor:pointer; width:100%; text-align:center;">
+          <i class="fa-solid fa-phone-volume"></i> Call Flagship Branches
+        </button>
+        <button type="button" class="drawer-contact-btn btn-wa" onclick="closeMobileMenu(); openFlagshipWhatsAppModal();" style="border:none; cursor:pointer; width:100%; text-align:center;">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp Flagship Desks
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flagship Call Modal -->
+  <div class="flagship-call-modal" id="flagshipCallModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="flagship-call-backdrop" onclick="closeFlagshipCallModal()"></div>
+    <div class="flagship-call-sheet">
+      <div class="flagship-call-header">
+        <div class="flagship-call-header-text">
+          <h3><i class="fa-solid fa-phone-volume"></i> Call Flagship Branches</h3>
+          <p>Choose any branch below for instant telephone connection</p>
+        </div>
+        <button type="button" class="flagship-call-close" onclick="closeFlagshipCallModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="flagship-call-list" id="flagshipCallList"></div>
+    </div>
+  </div>
+
+  <!-- Flagship WhatsApp Modal -->
+  <div class="flagship-wa-modal" id="flagshipWhatsAppModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="flagship-wa-backdrop" onclick="closeFlagshipWhatsAppModal()"></div>
+    <div class="flagship-wa-sheet">
+      <div class="flagship-wa-header">
+        <div class="flagship-wa-header-text">
+          <h3><i class="fa-brands fa-whatsapp"></i> WhatsApp Flagship Branches</h3>
+          <p>Select a flagship branch to connect directly on WhatsApp</p>
+        </div>
+        <button type="button" class="flagship-wa-close" onclick="closeFlagshipWhatsAppModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="flagship-wa-list" id="flagshipWhatsAppList"></div>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="js/config.js?v=32.0"></script>
+  <script src="js/cloud-db.js?v=2.0"></script>
+  <script src="js/data.js?v=32.0"></script>
+  <script src="js/cart.js?v=1.0"></script>
+  <script src="js/main.js?v=32.0"></script>
+
+  <!-- Dedicated Shop Page Interactive Controller -->
+  <script>
+    (function () {
+      "use strict";
+
+      let allProducts = [];
+      let currentCategory = "all";
+      let currentSearch = "";
+      let currentSort = "featured";
+
+      function initShop() {
+        // Load data from centralized site data
+        let siteData = (typeof getSiteData === "function") ? getSiteData() : null;
+        if (!siteData && typeof DEFAULT_SITE_DATA !== "undefined") {
+          siteData = DEFAULT_SITE_DATA;
+        }
+
+        allProducts = (siteData && Array.isArray(siteData.products)) ? siteData.products : [];
+
+        // Check URL parameters (e.g. ?category=pharmacy or ?search=omega)
+        const urlParams = new URLSearchParams(window.location.search);
+        const catParam = urlParams.get("category");
+        const searchParam = urlParams.get("search");
+
+        if (catParam) {
+          currentCategory = catParam.toLowerCase();
+          const targetChip = document.querySelector(`.shop-chip[data-cat="${currentCategory}"]`);
+          if (targetChip) {
+            document.querySelectorAll(".shop-chip").forEach(c => c.classList.remove("active"));
+            targetChip.classList.add("active");
+            targetChip.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+          }
+        }
+
+        if (searchParam) {
+          currentSearch = searchParam.trim();
+          const searchInput = document.getElementById("shopSearchInput");
+          if (searchInput) searchInput.value = currentSearch;
+        }
+
+        // Bind Search Input
+        const searchInput = document.getElementById("shopSearchInput");
+        const clearBtn = document.getElementById("shopSearchClearBtn");
+        if (searchInput) {
+          searchInput.addEventListener("input", function (e) {
+            currentSearch = e.target.value.trim();
+            if (clearBtn) clearBtn.style.display = currentSearch ? "block" : "none";
+            renderShop();
+          });
+        }
+
+        renderShop();
+      }
+
+      function parsePrice(str) {
+        if (typeof str === "number") return str;
+        if (!str || typeof str !== "string") return 0;
+        const clean = str.replace(/[^0-9.]/g, "");
+        const num = parseFloat(clean);
+        return isNaN(num) ? 0 : num;
+      }
+
+      function filterProducts() {
+        return allProducts.filter((p) => {
+          // Category match
+          if (currentCategory !== "all") {
+            const cat = (p.category || "").toLowerCase();
+            const catName = (p.categoryName || "").toLowerCase();
+            const name = (p.name || "").toLowerCase();
+
+            let matchesCat = (cat === currentCategory || catName.includes(currentCategory));
+
+            // Department keyword matching
+            if (currentCategory === "pharmacy" && (cat.includes("pharma") || catName.includes("medicine") || name.includes("vitamin") || name.includes("sachet") || name.includes("supplement"))) matchesCat = true;
+            if (currentCategory === "cosmetics" && (cat.includes("cosmetic") || catName.includes("skincare") || name.includes("balm") || name.includes("mist") || name.includes("sunscreen"))) matchesCat = true;
+            if (currentCategory === "perfumes" && (cat.includes("perfume") || catName.includes("fragrance") || name.includes("perfume") || name.includes("eau de"))) matchesCat = true;
+            if (currentCategory === "surgical" && (cat.includes("surgical") || catName.includes("device") || name.includes("monitor") || name.includes("glucose") || name.includes("heating pad") || name.includes("vaporizer") || name.includes("wheelchair") || name.includes("omron"))) matchesCat = true;
+            if (currentCategory === "babycare" && (cat.includes("baby") || catName.includes("baby") || name.includes("milk") || name.includes("aptamil") || name.includes("infant") || name.includes("kendamil") || name.includes("cow & gate"))) matchesCat = true;
+            if (currentCategory === "grocery" && (cat.includes("grocery") || catName.includes("supermarket") || name.includes("noodles") || name.includes("ramen") || name.includes("buldak") || name.includes("milk"))) matchesCat = true;
+            if (currentCategory === "optics" && (cat.includes("optic") || catName.includes("eyewear") || name.includes("glasses") || name.includes("ray-ban"))) matchesCat = true;
+
+            if (!matchesCat) return false;
+          }
+
+          // Search query match
+          if (currentSearch) {
+            const q = currentSearch.toLowerCase();
+            const name = (p.name || "").toLowerCase();
+            const brand = (p.brand || "").toLowerCase();
+            const desc = (p.description || "").toLowerCase();
+            const cat = (p.categoryName || p.category || "").toLowerCase();
+
+            if (!name.includes(q) && !brand.includes(q) && !desc.includes(q) && !cat.includes(q)) {
+              return false;
+            }
+          }
+
+          return true;
+        });
+      }
+
+      function sortProducts(list) {
+        const sorted = [...list];
+        if (currentSort === "price-asc") {
+          sorted.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+        } else if (currentSort === "price-desc") {
+          sorted.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+        } else if (currentSort === "name-asc") {
+          sorted.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+        }
+        return sorted;
+      }
+
+      function renderShop() {
+        const grid = document.getElementById("shopProductGrid");
+        const emptyState = document.getElementById("shopEmptyState");
+        const countText = document.getElementById("shopCountText");
+        if (!grid) return;
+
+        let filtered = filterProducts();
+        let finalProducts = sortProducts(filtered);
+
+        if (countText) {
+          countText.textContent = `Showing ${finalProducts.length} ${finalProducts.length === 1 ? "Product" : "Products"}`;
+        }
+
+        if (!finalProducts.length) {
+          grid.style.display = "none";
+          if (emptyState) emptyState.style.display = "block";
+          return;
+        }
+
+        grid.style.display = "grid";
+        if (emptyState) emptyState.style.display = "none";
+
+        let defaultWa = "923329716666";
+        try {
+          const sd = (typeof getSiteData === "function") ? getSiteData() : null;
+          if (sd && sd.company && sd.company.whatsapp) defaultWa = sd.company.whatsapp;
+        } catch (e) {}
+
+        grid.innerHTML = finalProducts
+          .map((p) => {
+            const fullImg = p.image || "assets/images/pharmacy.jpg";
+            let waText = `*--- D. WATSON DIRECT ORDER ---*\n🛍️ *Product:* ${p.name}\n💰 *Price:* ${p.price || 'Inquire'}\n🏷️ *Brand:* ${p.brand || 'D. Watson'}\n📸 *Photo:* ${fullImg}\n\nHi D.Watson Chemist, please confirm stock availability and express delivery to my address.`;
+            const waUrl = `https://wa.me/${defaultWa}?text=${encodeURIComponent(waText)}`;
+
+            // Escape string for onclick handlers
+            const safeProductJson = JSON.stringify(p).replace(/'/g, "\\'");
+
+            return `
+              <div class="shop-card" data-id="${p.id}">
+                <div class="shop-card-img-wrap" onclick="openProductZoomModal('${p.id}')" title="Zoom &amp; Inspect ${escapeHtml(p.name)}">
+                  <img src="${encodeURI(fullImg)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+                  <span class="shop-card-badge">${escapeHtml(p.tag || "Verified Authentic")}</span>
+                  <button type="button" class="shop-card-zoom-btn" onclick="event.stopPropagation(); openProductZoomModal('${p.id}')" aria-label="Zoom Product">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i>
+                  </button>
+                </div>
+                <div class="shop-card-body">
+                  <div class="shop-card-meta">
+                    <span class="shop-card-brand">${escapeHtml(p.brand || "D. Watson")}</span>
+                    <span class="shop-card-stock">In Stock</span>
+                  </div>
+                  <h3 class="shop-card-title" onclick="openProductZoomModal('${p.id}')" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h3>
+                  <div class="shop-card-price">${escapeHtml(p.price || "Inquire")}</div>
+                  <div class="shop-card-actions">
+                    <button type="button" class="shop-btn-cart" onclick='handleAddToCartClick(event, ${JSON.stringify(p)})' title="Add to Order Bag">
+                      <i class="fa-solid fa-bag-shopping"></i> + Bag
+                    </button>
+                    <a href="${waUrl}" target="_blank" onclick="event.stopPropagation(); if (typeof handleProductOrderClick === 'function') handleProductOrderClick(event, '${p.id}', '${waUrl}');" class="shop-btn-wa" title="Order via WhatsApp">
+                      <i class="fa-brands fa-whatsapp"></i> Buy
+                    </a>
+                  </div>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      // Filter category chip click
+      window.filterShopCategory = function (cat, btnEl, scrollToGrid = false) {
+        currentCategory = cat;
+        document.querySelectorAll(".shop-chip").forEach(b => b.classList.remove("active"));
+        if (btnEl) {
+          btnEl.classList.add("active");
+          btnEl.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+        } else {
+          const matchingChip = document.querySelector(`.shop-chip[data-cat="${cat}"]`);
+          if (matchingChip) {
+            matchingChip.classList.add("active");
+            matchingChip.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+          }
+        }
+        renderShop();
+        if (scrollToGrid) {
+          const filterBar = document.querySelector(".shop-sticky-filter-bar");
+          if (filterBar) filterBar.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      };
+
+      // Sorting change
+      window.applyShopSorting = function () {
+        const select = document.getElementById("shopSortSelect");
+        if (select) currentSort = select.value;
+        renderShop();
+      };
+
+      // Clear search
+      window.clearShopSearch = function () {
+        const input = document.getElementById("shopSearchInput");
+        const clearBtn = document.getElementById("shopSearchClearBtn");
+        if (input) input.value = "";
+        if (clearBtn) clearBtn.style.display = "none";
+        currentSearch = "";
+        renderShop();
+      };
+
+      // Reset all filters
+      window.resetShopFilters = function () {
+        currentCategory = "all";
+        currentSearch = "";
+        currentSort = "featured";
+        const input = document.getElementById("shopSearchInput");
+        if (input) input.value = "";
+        const clearBtn = document.getElementById("shopSearchClearBtn");
+        if (clearBtn) clearBtn.style.display = "none";
+        const sortSelect = document.getElementById("shopSortSelect");
+        if (sortSelect) sortSelect.value = "featured";
+
+        document.querySelectorAll(".shop-chip").forEach(b => {
+          b.classList.toggle("active", b.getAttribute("data-cat") === "all");
+        });
+
+        renderShop();
+      };
+
+      // Focus search on mobile tap
+      window.focusShopSearch = function () {
+        const input = document.getElementById("shopSearchInput");
+        if (input) {
+          input.focus();
+          input.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      };
+
+      // Add to cart click handler
+      window.handleAddToCartClick = function (event, product) {
+        if (event) event.stopPropagation();
+        if (window.DWCart) {
+          window.DWCart.addItem(product, 1);
+        }
+      };
+
+      // Multi-Product Carousel Track Controller (Amazon/Daraz Style Spotlight)
+      window.scrollSpotlightTrack = function(direction) {
+        const viewport = document.getElementById("spotlightCardsViewport");
+        if (!viewport) return;
+        const scrollAmount = Math.max(viewport.clientWidth * 0.75, 260);
+        viewport.scrollBy({ left: direction * scrollAmount, behavior: "smooth" });
+      };
+
+      function initSpotlightCarousel() {
+        const viewport = document.getElementById("spotlightCardsViewport");
+        if (!viewport) return;
+
+        let autoNudgeTimer = null;
+        function startAutoNudge() {
+          if (autoNudgeTimer) clearInterval(autoNudgeTimer);
+          autoNudgeTimer = setInterval(() => {
+            if (!viewport) return;
+            const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+            if (viewport.scrollLeft >= maxScroll - 15) {
+              viewport.scrollTo({ left: 0, behavior: "smooth" });
+            } else {
+              window.scrollSpotlightTrack(1);
+            }
+          }, 6000);
+        }
+
+        viewport.addEventListener("mouseenter", () => {
+          if (autoNudgeTimer) clearInterval(autoNudgeTimer);
+        });
+        viewport.addEventListener("mouseleave", () => startAutoNudge());
+        viewport.addEventListener("touchstart", () => {
+          if (autoNudgeTimer) clearInterval(autoNudgeTimer);
+        }, { passive: true });
+
+        startAutoNudge();
+      }
+
+      // Wire zoom modal add-to-cart button and init
+      window.addEventListener("DOMContentLoaded", () => {
+        initShop();
+        initSpotlightCarousel();
+
+        // Connect cloud update listener
+        window.addEventListener("dwatson_cloud_synced", () => {
+          const sd = (typeof getSiteData === "function") ? getSiteData() : null;
+          if (sd && Array.isArray(sd.products)) {
+            allProducts = sd.products;
+            renderShop();
+          }
+        });
+
+        // Add to cart button inside zoom modal
+        const zoomCartBtn = document.getElementById("zoomModalAddToCartBtn");
+        if (zoomCartBtn) {
+          zoomCartBtn.addEventListener("click", () => {
+            if (typeof currentProductZoomList !== "undefined" && typeof currentZoomIndex !== "undefined") {
+              const currentProd = currentProductZoomList[currentZoomIndex];
+              if (currentProd && window.DWCart) {
+                window.DWCart.addItem(currentProd, 1);
+              }
+            }
+          });
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

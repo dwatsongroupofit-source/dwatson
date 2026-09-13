@@ -317,6 +317,7 @@
           <!-- Desktop Navigation Links -->
           <ul class="nav-menu" id="navMenu">
             <li><a href="index.html" class="nav-link active">Home</a></li>
+            <li><a href="shop.html" class="nav-link" style="color:#DC2626; font-weight:800;"><i class="fa-solid fa-bag-shopping"></i> Online Store</a></li>
             <li><a href="departments.html" class="nav-link">13 Departments</a></li>
             <li><a href="branches.html" class="nav-link">⭐ Flagship Branches</a></li>
             <li><a href="journey.html" class="nav-link">The Journey &amp; Board</a></li>
@@ -330,6 +331,11 @@
               <i class="fa-solid fa-magnifying-glass"></i>
               <span class="search-btn-label">Search</span>
               <span class="search-kbd-shortcut">/</span>
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="DWCart.openDrawer()" aria-label="Open Order Bag" style="display:inline-flex; align-items:center; gap:6px;">
+              <i class="fa-solid fa-bag-shopping" style="color:var(--dw-red);"></i>
+              <span>Bag</span>
+              <span class="header-cart-badge cart-header-count" style="display:none; font-size:0.72rem; padding:1px 6px;">0</span>
             </button>
             <a href="prescription.html" class="btn btn-primary btn-sm">
               <i class="fa-solid fa-file-prescription"></i> Upload Rx
@@ -446,15 +452,18 @@
       </div>
     </section>
 
-    <!-- ================= TRENDING PRODUCTS (CONTINUOUS NON-STOP MARQUEE SLIDER) ================= -->
+    <!-- ================= TRENDING PRODUCTS (MODERN SNAP-PAGE CAROUSEL) ================= -->
     <section class="dwatson-carousel-section" id="trendingProducts">
       <div class="container">
         <div class="dwatson-carousel-header">
           <div>
             <h3 class="dwatson-section-title" style="margin-bottom:2px;">Trending Products</h3>
-            <span class="dwatson-section-sub">100% genuine guaranteed medicines, wellness &amp; beauty &bull; Infinite Live Catalog</span>
+            <span class="dwatson-section-sub">100% genuine guaranteed medicines, wellness &amp; beauty &bull; Top Featured Picks</span>
           </div>
-          <div style="display:flex; align-items:center; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <a href="shop.html" class="btn-view-all-shop" title="Explore full product catalog">
+              <i class="fa-solid fa-boxes-stacked"></i> Browse Full Shop (20+ Items) <i class="fa-solid fa-arrow-right"></i>
+            </a>
             <div class="home-product-header-badge" id="homeProductCountBadge">
               <span class="live-dot-green"></span> Showing All Products
             </div>
@@ -1065,11 +1074,14 @@
               </div>
             </div>
 
-            <div class="zoom-cta-group">
-              <a href="#" id="zoomModalWhatsApp" target="_blank" class="btn btn-whatsapp zoom-order-btn">
+            <div class="zoom-cta-group" style="display:flex; flex-direction:column; gap:8px;">
+              <button type="button" id="zoomModalAddToCartBtn" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px; font-weight:800; font-size:0.92rem;">
+                <i class="fa-solid fa-bag-shopping"></i> Add to Order Bag
+              </button>
+              <a href="#" id="zoomModalWhatsApp" target="_blank" class="btn btn-whatsapp zoom-order-btn" style="width:100%; justify-content:center;">
                 <i class="fa-brands fa-whatsapp"></i> Inquire / Order on WhatsApp
               </a>
-              <a href="tel:0518438111" class="btn btn-outline zoom-call-btn">
+              <a href="tel:0518438111" class="btn btn-outline zoom-call-btn" style="width:100%; justify-content:center;">
                 <i class="fa-solid fa-phone"></i> Call Universal Helpline (051-8438111)
               </a>
             </div>
@@ -1303,6 +1315,7 @@
       </div>
       <ul class="mobile-drawer-links">
         <li><a href="index.html" class="active" id="drawerLinkHome"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="shop.html" id="drawerLinkShop" style="color:#DC2626; font-weight:800;"><i class="fa-solid fa-bag-shopping"></i> Online Store</a></li>
         <li><a href="departments.html" id="drawerLinkDepts"><i class="fa-solid fa-table-cells-large"></i> 13 Departments</a></li>
         <li><a href="branches.html" id="drawerLinkBranches"><i class="fa-solid fa-location-dot"></i> Flagship Branches</a></li>
         <li><a href="journey.html" id="drawerLinkJourney"><i class="fa-solid fa-landmark"></i> The Journey &amp; Board</a></li>
@@ -1311,6 +1324,9 @@
         <li><a href="admin.html" id="drawerLinkAdmin"><i class="fa-solid fa-lock"></i> Admin Portal</a></li>
       </ul>
       <div class="mobile-drawer-footer">
+        <button type="button" class="drawer-contact-btn btn-call" onclick="closeMobileMenu(); DWCart.openDrawer();" style="border:none; cursor:pointer; width:100%; text-align:center; background:#DC2626; color:#FFFFFF; margin-bottom:8px;">
+          <i class="fa-solid fa-bag-shopping"></i> View Order Bag (<span class="header-cart-badge">0</span>)
+        </button>
         <button type="button" class="drawer-contact-btn btn-call" onclick="closeMobileMenu(); openFlagshipCallModal();" style="border:none; cursor:pointer; width:100%; text-align:center;">
           <i class="fa-solid fa-phone-volume"></i> Call Flagship Branches
         </button>
@@ -1351,11 +1367,12 @@
     </div>
   </div>
 
-  <!-- Scripts (v30.0) -->
+  <!-- Scripts (v32.0) -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/config.js?v=31.0"></script>
+  <script src="js/config.js?v=32.0"></script>
   <script src="js/cloud-db.js?v=2.0"></script>
-  <script src="js/data.js?v=31.0"></script>
-  <script src="js/main.js?v=31.0"></script>
+  <script src="js/data.js?v=32.0"></script>
+  <script src="js/cart.js?v=1.0"></script>
+  <script src="js/main.js?v=32.0"></script>
 </body>
 </html>
