@@ -3625,7 +3625,10 @@ function renderFooter(company, branches) {
   if (footerEmail) footerEmail.textContent = company.email;
 
   const channelEmailLink = document.getElementById("channelEmailLink");
-  if (channelEmailLink) channelEmailLink.href = `mailto:${company.email}`;
+  if (channelEmailLink) {
+    channelEmailLink.href = `mailto:${company.email}`;
+    channelEmailLink.textContent = company.email;
+  }
 
   const channelEmailDesc = document.getElementById("channelEmailDesc");
   if (channelEmailDesc) channelEmailDesc.textContent = `${company.email} • Direct consultation & inquiries.`;
