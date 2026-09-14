@@ -1899,54 +1899,6 @@ function spotlightDepartment(rawDeptId) {
         </div>
       </div>
 
-      <!-- Department Featured Products Showcase -->
-      <div class="dept-products-section">
-        <div class="dept-products-header">
-          <div class="dept-products-title">
-            <i class="fa-solid fa-boxes-stacked" style="color:var(--dw-red);"></i>
-            <span>Featured Products in ${escapeHtml(selectedDept.name)}</span>
-          </div>
-          <span class="dept-products-badge">${matchingProducts.length > 0 ? 'Direct In-Store Stock' : 'Full In-Store Catalog'}</span>
-        </div>
-        ${matchingProducts.length > 0 ? `
-          <div class="dept-products-grid">
-            ${matchingProducts.map(p => {
-              const pWaText = `*--- D. WATSON INQUIRY ---*\n🛍️ *Product:* ${p.name}\n💰 *Price:* ${p.price || 'Inquire'}\n🏷️ *Department:* ${selectedDept.name}\n\nHi D.Watson Chemist, please confirm stock availability and express delivery.`;
-              const pWaUrl = `https://wa.me/${allDepartmentsWhatsApp}?text=${encodeURIComponent(pWaText)}`;
-              return `
-                <div class="dept-prod-card" onclick="openProductZoomModal('${p.id}')">
-                  <div class="dept-prod-img-wrap">
-                    <img src="${encodeURI(p.image || 'assets/images/pharmacy.jpg')}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
-                    <button type="button" class="dept-prod-zoom-btn" onclick="event.stopPropagation(); openProductZoomModal('${p.id}')" title="Zoom &amp; Inspect">
-                      <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom
-                    </button>
-                  </div>
-                  <div class="dept-prod-body">
-                    <span class="dept-prod-brand">${escapeHtml(p.brand || 'D. Watson')}</span>
-                    <h4 class="dept-prod-title" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h4>
-                    <div class="dept-prod-footer">
-                      <span class="dept-prod-price">${escapeHtml(p.price || 'Inquire')}</span>
-                      <a href="${pWaUrl}" target="_blank" onclick="event.stopPropagation(); handleProductOrderClick(event, '${p.id}', '${pWaUrl}')" class="dept-prod-wa-btn" title="Inquire / Order on WhatsApp">
-                        <i class="fa-brands fa-whatsapp"></i> Buy
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              `;
-            }).join("")}
-          </div>
-        ` : `
-          <div class="dept-products-empty-notice" style="background:#F8FAFC; border:1px dashed #CBD5E1; border-radius:16px; padding:32px 20px; text-align:center; margin-top:16px;">
-            <div style="font-size:2.2rem; color:#64748B; margin-bottom:10px;"><i class="${selectedDept.icon || 'fa-solid fa-boxes-stacked'}"></i></div>
-            <h4 style="font-size:1.1rem; font-weight:700; color:#0F172A; margin:0 0 6px;">Extensive In-Store Catalog at All 25+ Branches</h4>
-            <p style="font-size:0.9rem; color:#64748B; max-width:520px; margin:0 auto 16px; line-height:1.5;">We maintain complete inventories for ${escapeHtml(selectedDept.name)} across all D. Watson outlets. Inquire directly on WhatsApp with your nearest branch for instant stock check, pricing, and 2-4 hour delivery.</p>
-            <button type="button" onclick="handleDepartmentInquiryClick(event, '${selectedDept.id}')" class="btn btn-whatsapp" style="display:inline-flex; align-items:center; gap:8px; padding:10px 22px; font-weight:700; border-radius:8px; border:none; color:white; background:#16A34A; cursor:pointer;">
-              <i class="fa-brands fa-whatsapp"></i> Inquire ${escapeHtml(selectedDept.name)} on WhatsApp
-            </button>
-          </div>
-        `}
-      </div>
-
       <!-- Quick Switch Strip: All other departments accessible in 1 tap -->
       <div class="dept-spotlight-other-strip">
         <div class="dept-spotlight-other-header">
