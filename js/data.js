@@ -1405,8 +1405,8 @@ const DEFAULT_SITE_DATA = {
       cat: "Authenticity"
     },
     {
-      q: "Which D. Watson branches operate 24 Hours a day?",
-      a: "Our Blue Area Flagship, F-6 Super Market, F-10 Markaz, F-11 Markaz, DHA Phase 2 Islamabad, Saddar Rawalpindi, Chandni Chowk Rawalpindi, and Gulberg Lahore branches operate 24 hours a day, 7 days a week, including all public holidays.",
+      q: "What are the operating hours of D. Watson branches?",
+      a: "Our flagship pharmacies (including Blue Area, F-6 Super Market, Saddar Rawalpindi, and PWD) operate daily from 08:00 AM to 01:00 AM. Express Home Delivery is available daily from 09:00 AM to 05:00 PM.",
       cat: "Branches"
     },
     {
