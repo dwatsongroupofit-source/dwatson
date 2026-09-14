@@ -1215,6 +1215,419 @@ function initProductAutoSlider() {
   }, 3500);
 }
 
+/* ==========================================================================
+   DEPARTMENT HERO SLIDER CONTROLLER (1-by-1 Slide Rotator + Quick-Jump Hub)
+   ========================================================================== */
+let deptSliderInterval = null;
+let deptSliderProgressInterval = null;
+let currentDeptSlideIndex = 0;
+let deptSliderData = [];
+
+function initDeptHeroSlider(departments, initialDeptId) {
+  const wrapper = document.getElementById("deptSliderWrapper");
+  const dotsContainer = document.getElementById("deptSliderDots");
+  const quickNavScroll = document.getElementById("deptQuickNavScroll");
+  const prevBtn = document.getElementById("deptSliderPrevBtn");
+  const nextBtn = document.getElementById("deptSliderNextBtn");
+
+  if (!wrapper || !departments || !departments.length) return;
+  deptSliderData = departments;
+
+  let activeIndex = 0;
+  if (initialDeptId && initialDeptId !== "all") {
+    const foundIdx = departments.findIndex(d => d.id.toLowerCase() === initialDeptId.toLowerCase());
+    if (foundIdx >= 0) activeIndex = foundIdx;
+  }
+  currentDeptSlideIndex = activeIndex;
+
+  // 1. Render Slides
+  wrapper.innerHTML = departments.map((dept, idx) => {
+    const waMsg = dept.whatsappMsg || `Hi D.Watson, I would like to inquire about ${dept.name} products.`;
+    const waUrl = `https://wa.me/${allDepartmentsWhatsApp}?text=${encodeURIComponent(waMsg)}`;
+    const isActive = idx === activeIndex;
+    const shortName = dept.name.split("&")[0].trim();
+    const feats = (dept.features || []).slice(0, 3);
+
+    return `
+      <div class="dept-slider-slide ${isActive ? 'active' : ''}" data-dept-id="${dept.id}" data-slide-index="${idx}">
+        <div class="dept-slide-grid">
+          <div class="dept-slide-content">
+            <span class="dept-slide-badge">
+              <i class="${dept.icon || 'fa-solid fa-boxes-stacked'}"></i> ${escapeHtml(dept.badge || 'Verified Department')}
+            </span>
+            <h2 class="dept-slide-title">${escapeHtml(dept.name)}</h2>
+            <div class="dept-slide-tagline">${escapeHtml(dept.tagline || 'Specialized Health & Retail Specialty')}</div>
+            <p class="dept-slide-desc">${escapeHtml(dept.description)}</p>
+
+            <div class="dept-slide-features">
+              ${feats.map(f => `
+                <span class="dept-slide-feat-pill">
+                  <i class="fa-solid fa-circle-check"></i> ${escapeHtml(f)}
+                </span>
+              `).join("")}
+            </div>
+
+            <div class="dept-slide-actions">
+              <button type="button" class="btn-dept-slide-explore" onclick="jumpToDeptProducts('${dept.id}')" title="View all ${escapeHtml(dept.name)} products">
+                <i class="fa-solid fa-arrow-down"></i> Explore ${escapeHtml(shortName)} Products
+              </button>
+              <a href="${waUrl}" target="_blank" onclick="handleDepartmentInquiryClick(event, '${dept.id}')" class="btn-dept-slide-wa" title="Inquire on WhatsApp">
+                <i class="fa-brands fa-whatsapp"></i> Inquire on WhatsApp
+              </a>
+            </div>
+          </div>
+
+          <div class="dept-slide-media" onclick="jumpToDeptProducts('${dept.id}')" style="cursor:pointer;" title="Click to view products">
+            <img src="${encodeURI(dept.image || 'assets/images/pharmacy.jpg')}" alt="${escapeHtml(dept.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+            <div class="dept-slide-media-badge">
+              <span class="live-dot"></span> Available at 25+ Branches
+            </div>
+            <div class="dept-slide-media-footer">
+              <i class="fa-solid fa-location-dot"></i> Islamabad • Rawalpindi • Lahore • Abbottabad
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // 2. Render Dots
+  if (dotsContainer) {
+    dotsContainer.innerHTML = departments.map((d, idx) => `
+      <button type="button" class="dept-slider-dot ${idx === activeIndex ? 'active' : ''}" onclick="goToDeptSlide(${idx})" aria-label="Go to ${escapeHtml(d.name)} slide"></button>
+    `).join("");
+  }
+
+  // 3. Render Quick-Jump Bar
+  if (quickNavScroll) {
+    let pillsHtml = `
+      <button type="button" class="dept-quick-nav-pill ${activeIndex === 0 && (!initialDeptId || initialDeptId === 'all') ? 'active' : ''}" id="quickPill-all" onclick="selectQuickDept('all')">
+        <i class="fa-solid fa-border-all"></i> <span>All Departments</span>
+      </button>
+    `;
+    pillsHtml += departments.map((d) => {
+      const isPillActive = initialDeptId && initialDeptId.toLowerCase() === d.id.toLowerCase();
+      const shortTitle = d.name.split("&")[0].trim();
+      return `
+        <button type="button" class="dept-quick-nav-pill ${isPillActive ? 'active' : ''}" id="quickPill-${d.id}" onclick="selectQuickDept('${d.id}')">
+          <i class="${d.icon || 'fa-solid fa-boxes-stacked'}"></i> <span>${escapeHtml(shortTitle)}</span>
+        </button>
+      `;
+    }).join("");
+    quickNavScroll.innerHTML = pillsHtml;
+  }
+
+  // 4. Arrow Listeners
+  if (prevBtn) {
+    prevBtn.onclick = () => prevDeptSlide();
+  }
+  if (nextBtn) {
+    nextBtn.onclick = () => nextDeptSlide();
+  }
+
+  // 5. Autoplay Timer (every 4.5 seconds)
+  startDeptSliderAutoplay();
+
+  // 6. Pause on Hover
+  const sliderOuter = document.querySelector(".dept-slider-outer");
+  if (sliderOuter) {
+    sliderOuter.onmouseenter = () => pauseDeptSliderAutoplay();
+    sliderOuter.onmouseleave = () => startDeptSliderAutoplay();
+  }
+
+  // 7. Mobile Touch Swipe
+  let touchStartX = 0;
+  wrapper.addEventListener("touchstart", (e) => {
+    if (e.changedTouches && e.changedTouches.length) {
+      touchStartX = e.changedTouches[0].screenX;
+    }
+  }, { passive: true });
+
+  wrapper.addEventListener("touchend", (e) => {
+    if (e.changedTouches && e.changedTouches.length) {
+      const diff = touchStartX - e.changedTouches[0].screenX;
+      if (diff > 50) nextDeptSlide();
+      else if (diff < -50) prevDeptSlide();
+    }
+  }, { passive: true });
+}
+
+function goToDeptSlide(index) {
+  if (!deptSliderData || !deptSliderData.length) return;
+  currentDeptSlideIndex = (index + deptSliderData.length) % deptSliderData.length;
+
+  const slides = document.querySelectorAll(".dept-slider-slide");
+  const dots = document.querySelectorAll(".dept-slider-dot");
+
+  slides.forEach((s, idx) => {
+    if (idx === currentDeptSlideIndex) {
+      s.classList.add("active");
+    } else {
+      s.classList.remove("active");
+    }
+  });
+
+  dots.forEach((d, idx) => {
+    if (idx === currentDeptSlideIndex) {
+      d.classList.add("active");
+    } else {
+      d.classList.remove("active");
+    }
+  });
+
+  const activeDept = deptSliderData[currentDeptSlideIndex];
+  if (activeDept) {
+    document.querySelectorAll(".dept-quick-nav-pill").forEach(p => p.classList.remove("active"));
+    const activePill = document.getElementById(`quickPill-${activeDept.id}`);
+    if (activePill) {
+      activePill.classList.add("active");
+      activePill.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  }
+
+  resetDeptProgressBar();
+}
+
+function nextDeptSlide() {
+  goToDeptSlide(currentDeptSlideIndex + 1);
+}
+
+function prevDeptSlide() {
+  goToDeptSlide(currentDeptSlideIndex - 1);
+}
+
+function focusDeptInSlider(deptId) {
+  if (!deptSliderData || !deptSliderData.length) return;
+  if (!deptId || deptId === "all") {
+    document.querySelectorAll(".dept-quick-nav-pill").forEach(p => p.classList.remove("active"));
+    const allPill = document.getElementById("quickPill-all");
+    if (allPill) allPill.classList.add("active");
+    return;
+  }
+  const idx = deptSliderData.findIndex(d => d.id.toLowerCase() === deptId.toLowerCase());
+  if (idx >= 0) {
+    goToDeptSlide(idx);
+  }
+}
+
+function selectQuickDept(deptId) {
+  if (deptId === "all") {
+    showAllDepartments();
+    goToDeptSlide(0);
+  } else {
+    switchSpotlightDept(deptId);
+    focusDeptInSlider(deptId);
+  }
+}
+
+function jumpToDeptProducts(deptId) {
+  focusDeptInSlider(deptId);
+  renderDeptBottomProducts(deptId);
+  const target = document.getElementById("deptBottomProductsSection");
+  if (target) {
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function startDeptSliderAutoplay() {
+  pauseDeptSliderAutoplay();
+  resetDeptProgressBar();
+  deptSliderInterval = setInterval(() => {
+    nextDeptSlide();
+  }, 4800);
+}
+
+function pauseDeptSliderAutoplay() {
+  if (deptSliderInterval) {
+    clearInterval(deptSliderInterval);
+    deptSliderInterval = null;
+  }
+  if (deptSliderProgressInterval) {
+    clearInterval(deptSliderProgressInterval);
+    deptSliderProgressInterval = null;
+  }
+}
+
+function resetDeptProgressBar() {
+  const progressBar = document.getElementById("deptSliderProgressBar");
+  if (!progressBar) return;
+  if (deptSliderProgressInterval) clearInterval(deptSliderProgressInterval);
+  progressBar.style.width = "0%";
+  let progress = 0;
+  const duration = 4800;
+  const step = 50;
+  deptSliderProgressInterval = setInterval(() => {
+    progress += (step / duration) * 100;
+    if (progress >= 100) {
+      progressBar.style.width = "100%";
+      clearInterval(deptSliderProgressInterval);
+    } else {
+      progressBar.style.width = `${progress}%`;
+    }
+  }, step);
+}
+
+/* ==========================================================================
+   STRICT DEPARTMENT PRODUCT MATCHER & DOWNSIDE SHOWCASE
+   ========================================================================== */
+function getProductsForDepartment(deptId) {
+  const allProds = (typeof getSiteData === "function" && getSiteData().products)
+    ? getSiteData().products
+    : ((typeof DEFAULT_SITE_DATA !== "undefined" && Array.isArray(DEFAULT_SITE_DATA.products))
+      ? DEFAULT_SITE_DATA.products
+      : ((typeof allProductsData !== "undefined" && Array.isArray(allProductsData)) ? allProductsData : []));
+
+  if (!deptId || deptId === "all") {
+    return allProds;
+  }
+
+  const cleanDeptId = (deptId || "").toLowerCase().trim();
+
+  return allProds.filter(p => {
+    const cat = (p.category || "").toLowerCase();
+    const catName = (p.categoryName || "").toLowerCase();
+    const name = (p.name || "").toLowerCase();
+    const desc = (p.description || "").toLowerCase();
+
+    const isBabyProduct = name.includes("aptamil") || name.includes("infant") || name.includes("baby") || name.includes("cow & gate") || desc.includes("infant milk") || desc.includes("baby formula");
+
+    if (cleanDeptId === "babycare") {
+      if (name.includes("ramen") || name.includes("noodle") || name.includes("buldak")) return false;
+      return isBabyProduct || cat === "baby" || cat === "babycare" || catName.includes("baby");
+    }
+
+    // Never let baby formulas leak into non-baby departments
+    if (isBabyProduct) return false;
+
+    if (cleanDeptId === "cosmetics" || cleanDeptId === "skincare_derma") {
+      return (cat === "cosmetics" || catName.includes("cosmetic") || catName.includes("skincare") || name.includes("cerave") || name.includes("purest") || name.includes("bioderma") || name.includes("serum") || name.includes("cream")) && !name.includes("shampoo") && !name.includes("ramen");
+    }
+    if (cleanDeptId === "color_cosmetics") {
+      return (cat === "cosmetics" || cat === "color_cosmetics") && (name.includes("primer") || name.includes("blush") || name.includes("flormar") || name.includes("golden rose") || name.includes("lipstick") || name.includes("makeup"));
+    }
+    if (cleanDeptId === "perfumes") {
+      return cat === "perfumes" || catName.includes("fragrance") || catName.includes("perfume") || name.includes("perfume") || name.includes("fragrance") || name.includes("oud") || name.includes("eau de");
+    }
+    if (cleanDeptId === "grocery") {
+      return cat === "grocery" || catName.includes("grocery") || catName.includes("superstore") || name.includes("grocery") || name.includes("ramen") || name.includes("noodles") || name.includes("buldak");
+    }
+    if (cleanDeptId === "optics") {
+      return cat === "optics" || catName.includes("optics") || catName.includes("eyewear") || name.includes("ray-ban") || name.includes("aviator") || name.includes("glasses") || name.includes("lens");
+    }
+    if (cleanDeptId === "surgical") {
+      return cat === "surgical" || catName.includes("surgical") || name.includes("wheelchair") || name.includes("omron") || name.includes("accu-chek") || name.includes("meter") || name.includes("monitor") || name.includes("oximeter");
+    }
+    if (cleanDeptId === "pharmacy" || cleanDeptId === "wellness" || cleanDeptId === "homeo") {
+      return cat === "pharmacy" || cat === "homeo" || cat === "wellness" || catName.includes("pharmacy") || catName.includes("supplement") || catName.includes("homeo") || name.includes("centrum") || name.includes("seven seas") || name.includes("reckeweg") || name.includes("schwabe") || name.includes("omega") || name.includes("sachet") || name.includes("osteowhiz") || name.includes("magnibase") || name.includes("myotin") || name.includes("panadol") || name.includes("fish oil");
+    }
+    if (cleanDeptId === "organic") {
+      return cat === "organic" || catName.includes("organic") || name.includes("organic") || name.includes("herbal") || name.includes("honey");
+    }
+    if (cleanDeptId === "personal_care") {
+      return cat === "personal_care" || catName.includes("personal") || name.includes("shampoo") || name.includes("toothpaste") || name.includes("soap") || name.includes("hygiene");
+    }
+    if (cleanDeptId === "veterinary") {
+      return cat === "veterinary" || catName.includes("pet") || catName.includes("vet") || name.includes("pet") || name.includes("dog") || name.includes("cat");
+    }
+
+    return cat === cleanDeptId;
+  });
+}
+
+function renderDeptBottomProducts(deptId) {
+  const container = document.getElementById("deptBottomProductsGrid");
+  const headingEl = document.getElementById("deptProductsTitleText");
+  const eyebrowEl = document.getElementById("deptProductsEyebrow");
+  const subtextEl = document.getElementById("deptProductsSubtext");
+  const countBadge = document.getElementById("deptProductsCountBadge");
+  const resetBtn = document.getElementById("deptProductsResetBtn");
+
+  if (!container) return;
+
+  const isAll = !deptId || deptId === "all";
+  const selectedDept = !isAll && allDepartmentsData ? allDepartmentsData.find(d => d.id.toLowerCase() === deptId.toLowerCase()) : null;
+  const matchingProducts = getProductsForDepartment(deptId);
+
+  // Update UI Headings
+  if (isAll) {
+    if (headingEl) headingEl.textContent = "Featured Products Across All 13 Departments";
+    if (eyebrowEl) eyebrowEl.innerHTML = `<i class="fa-solid fa-boxes-stacked" style="color:var(--dw-red);"></i> Complete Store Inventory`;
+    if (subtextEl) subtextEl.textContent = "Browse authentic pharmaceuticals, dermatological skincare, baby formulas, optics, and imported treats.";
+    if (countBadge) countBadge.textContent = `${matchingProducts.length} Items Available`;
+    if (resetBtn) resetBtn.style.display = "none";
+  } else {
+    const deptName = selectedDept ? selectedDept.name : deptId;
+    if (headingEl) headingEl.textContent = `Products in ${deptName}`;
+    if (eyebrowEl) eyebrowEl.innerHTML = `<i class="${selectedDept && selectedDept.icon ? selectedDept.icon : 'fa-solid fa-tag'}" style="color:var(--dw-red);"></i> ${escapeHtml(selectedDept && selectedDept.badge ? selectedDept.badge : 'Specialty Catalog')}`;
+    if (subtextEl) subtextEl.textContent = `Showing 100% genuine products strictly belonging to ${deptName}, verified by licensed pharmacists.`;
+    if (countBadge) countBadge.textContent = `${matchingProducts.length} ${matchingProducts.length === 1 ? 'Item' : 'Items'} in Department`;
+    if (resetBtn) resetBtn.style.display = "inline-flex";
+  }
+
+  // Render Product Cards
+  if (matchingProducts.length > 0) {
+    container.innerHTML = matchingProducts.map(p => {
+      const pWaText = `*--- D. WATSON INQUIRY ---*\n🛍️ *Product:* ${p.name}\n💰 *Price:* ${p.price || 'Inquire'}\n🏷️ *Department:* ${selectedDept ? selectedDept.name : (p.categoryName || p.category || 'General')}\n\nHi D.Watson Chemist, please confirm stock availability and express delivery.`;
+      const pWaUrl = `https://wa.me/${allDepartmentsWhatsApp}?text=${encodeURIComponent(pWaText)}`;
+      const pJson = JSON.stringify({
+        id: p.id,
+        name: p.name,
+        brand: p.brand || "D. Watson",
+        price: p.price || "Inquire",
+        image: p.image || "assets/images/pharmacy.jpg",
+        category: p.category || "pharmacy"
+      }).replace(/'/g, "&apos;");
+
+      return `
+        <div class="dept-prod-card" onclick="openProductZoomModal('${p.id}')">
+          <div class="dept-prod-img-wrap">
+            <img src="${encodeURI(p.image || 'assets/images/pharmacy.jpg')}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+            <button type="button" class="dept-prod-zoom-btn" onclick="event.stopPropagation(); openProductZoomModal('${p.id}')" title="Zoom &amp; Inspect">
+              <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom
+            </button>
+          </div>
+          <div class="dept-prod-body">
+            <span class="dept-prod-brand">${escapeHtml(p.brand || 'D. Watson Genuine')}</span>
+            <h4 class="dept-prod-title" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h4>
+            <div class="dept-prod-footer">
+              <span class="dept-prod-price">${escapeHtml(p.price || 'Inquire')}</span>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <button type="button" class="btn-spotlight-add" style="padding:6px 12px; font-size:0.78rem;" onclick='event.stopPropagation(); handleAddToCartClick(event, ${pJson})' title="Add to Bag">
+                  <i class="fa-solid fa-bag-shopping"></i> + Bag
+                </button>
+                <a href="${pWaUrl}" target="_blank" onclick="event.stopPropagation(); handleProductOrderClick(event, '${p.id}', '${pWaUrl}')" class="dept-prod-wa-btn" title="Order on WhatsApp">
+                  <i class="fa-brands fa-whatsapp"></i> Buy
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  } else {
+    const deptTitle = selectedDept ? selectedDept.name : "this department";
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; background:#F8FAFC; border:1px dashed #CBD5E1; border-radius:20px; padding:36px 24px; text-align:center;">
+        <div style="font-size:2.4rem; color:#64748B; margin-bottom:12px;">
+          <i class="${selectedDept && selectedDept.icon ? selectedDept.icon : 'fa-solid fa-boxes-stacked'}"></i>
+        </div>
+        <h3 style="font-size:1.2rem; font-weight:800; color:var(--dw-navy); margin:0 0 8px;">Extensive In-Store Catalog at All 25+ Branches</h3>
+        <p style="font-size:0.92rem; color:#64748B; max-width:540px; margin:0 auto 18px; line-height:1.55;">
+          We carry complete inventories for <strong>${escapeHtml(deptTitle)}</strong> in our physical retail pharmacies and superstores across Islamabad, Rawalpindi, Lahore, and Abbottabad.
+        </p>
+        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+          <button type="button" onclick="handleDepartmentInquiryClick(event, '${selectedDept ? selectedDept.id : 'all'}')" class="btn btn-whatsapp" style="padding:10px 22px; font-weight:700; border-radius:10px;">
+            <i class="fa-brands fa-whatsapp"></i> Inquire ${escapeHtml(deptTitle)} on WhatsApp
+          </button>
+          <button type="button" onclick="showAllDepartments(event)" class="btn btn-outline" style="padding:10px 20px; font-weight:700; border-radius:10px;">
+            <i class="fa-solid fa-border-all"></i> View All Products
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}
+
 function renderDepartments(departments, defaultWhatsApp) {
   const container = document.getElementById("departmentsGrid");
   if (!container || !departments) return;
@@ -1225,6 +1638,10 @@ function renderDepartments(departments, defaultWhatsApp) {
   // Check URL query parameters or hash for deep linking (e.g. ?dept=pharmacy or #dept-pharmacy)
   const urlParams = new URLSearchParams(window.location.search);
   const targetDept = urlParams.get("dept") || urlParams.get("cat") || (window.location.hash ? window.location.hash.replace("#dept-", "").replace("#", "") : "");
+
+  // Initialize Top Department Hero Slider & Downside Department-Filtered Products
+  initDeptHeroSlider(allDepartmentsData, targetDept || "all");
+  renderDeptBottomProducts(targetDept || "all");
 
   if (targetDept && targetDept !== "all") {
     spotlightDepartment(targetDept);
@@ -1286,6 +1703,10 @@ function spotlightDepartment(rawDeptId) {
   if (filterBar) {
     filterBar.style.display = "none";
   }
+
+  // Synchronize Top Slider and Downside Products
+  focusDeptInSlider(selectedDept.id);
+  renderDeptBottomProducts(selectedDept.id);
 
   const waMsg = selectedDept.whatsappMsg || `Hi D.Watson, I would like to inquire about ${selectedDept.name} products.`;
   const waUrl = `https://wa.me/${allDepartmentsWhatsApp}?text=${encodeURIComponent(waMsg)}`;
@@ -1560,6 +1981,8 @@ function switchSpotlightDept(deptId) {
     window.history.pushState(null, "", `departments.html?dept=${deptId}`);
   }
   spotlightDepartment(deptId);
+  focusDeptInSlider(deptId);
+  renderDeptBottomProducts(deptId);
 }
 
 function showAllDepartments(e) {
@@ -1574,6 +1997,8 @@ function showAllDepartments(e) {
   const filterBar = document.getElementById("deptFilterBar");
   if (filterBar) filterBar.style.display = "flex";
   renderDepartmentCards(allDepartmentsData);
+  focusDeptInSlider("all");
+  renderDeptBottomProducts("all");
 }
 
 function renderDepartmentCards(deptList) {
@@ -1655,9 +2080,17 @@ function filterDepartments(categoryKey, clickedBtn) {
 
   if (categoryKey === "all") {
     renderDepartmentCards(allDepartmentsData);
+    focusDeptInSlider("all");
+    renderDeptBottomProducts("all");
   } else {
     const filtered = allDepartmentsData.filter(d => DEPT_CATEGORY_MAP[d.id] === categoryKey);
     renderDepartmentCards(filtered);
+    if (filtered.length > 0) {
+      focusDeptInSlider(filtered[0].id);
+      renderDeptBottomProducts(filtered[0].id);
+    } else {
+      renderDeptBottomProducts(categoryKey);
+    }
   }
 }
 
