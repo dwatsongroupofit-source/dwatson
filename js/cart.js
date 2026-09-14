@@ -23,6 +23,7 @@
 
   // State
   let cartItems = [];
+  let attachedRxName = "";
 
   // Load from localStorage
   function loadCart() {
@@ -174,6 +175,25 @@
       }
     },
 
+    // Handle Prescription Attachment for Mixed Orders
+    handleRxAttach: function (input) {
+      const statusEl = document.getElementById("cartRxStatusText");
+      if (!input || !input.files || !input.files[0]) {
+        attachedRxName = "";
+        if (statusEl) {
+          statusEl.textContent = "No file chosen";
+          statusEl.style.color = "#64748B";
+        }
+        return;
+      }
+      const file = input.files[0];
+      attachedRxName = file.name;
+      if (statusEl) {
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${escapeHtml(file.name)} (${Math.round(file.size / 1024)} KB)`;
+        statusEl.style.color = "#15803D";
+      }
+    },
+
     // Checkout 1: WhatsApp Consolidated Order
     submitWhatsAppOrder: function (event) {
       if (event) event.preventDefault();
@@ -233,6 +253,9 @@
       msg += `📍 *Delivery Address:* ${address || "Will share live location on WhatsApp"}\n`;
       msg += `🏥 *Delivery Branch:* ${branchName}\n`;
       msg += `📱 *Branch Dispatch WhatsApp:* ${branchWhatsApp}\n`;
+      if (attachedRxName) {
+        msg += `📎 *Doctor's Prescription Slip:* Yes (Attached: ${attachedRxName})\n`;
+      }
       if (notes) {
         msg += `📝 *Order Note:* ${notes}\n`;
       }
@@ -367,6 +390,12 @@
       void badge.offsetWidth;
       badge.classList.add("bounce");
     }
+    const mobBadge = document.getElementById("mobCartBadge");
+    if (mobBadge) {
+      mobBadge.classList.remove("bounce");
+      void mobBadge.offsetWidth;
+      mobBadge.classList.add("bounce");
+    }
   }
 
   // Escape HTML helper
@@ -405,7 +434,7 @@
       if (emptyEl) emptyEl.style.display = "block";
       if (footerEl) footerEl.style.display = "none";
       if (progressEl) progressEl.style.width = "0%";
-      if (progressMsgEl) progressMsgEl.innerHTML = `Add items to qualify for <strong>FREE Delivery</strong> across Twin Cities!`;
+      if (progressMsgEl) progressMsgEl.innerHTML = `<i class="fa-solid fa-truck-fast"></i> Add items worth <strong>PKR ${FREE_DELIVERY_THRESHOLD.toLocaleString()}</strong> to unlock <strong>FREE Express Delivery</strong>!`;
       return;
     }
 
@@ -417,13 +446,21 @@
     const neededForFree = Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal);
     const progressPct = Math.min(100, Math.round((subtotal / FREE_DELIVERY_THRESHOLD) * 100));
 
-    if (progressEl) progressEl.style.width = `${progressPct}%`;
+    if (progressEl) {
+      progressEl.style.width = `${progressPct}%`;
+      if (neededForFree === 0) {
+        progressEl.classList.add("unlocked");
+      } else {
+        progressEl.classList.remove("unlocked");
+      }
+    }
+
     if (progressMsgEl) {
       if (neededForFree === 0) {
-        progressMsgEl.innerHTML = `🎉 <strong>Congratulations!</strong> You qualified for <strong>FREE Delivery</strong>!`;
-        progressMsgEl.style.color = "#16A34A";
+        progressMsgEl.innerHTML = `🎉 <strong>Congratulations!</strong> You unlocked <strong>FREE Express Delivery</strong>!`;
+        progressMsgEl.style.color = "#15803D";
       } else {
-        progressMsgEl.innerHTML = `Add <strong>PKR ${neededForFree.toLocaleString()}</strong> more to unlock <strong>FREE Delivery</strong>!`;
+        progressMsgEl.innerHTML = `🚚 Add <strong>PKR ${neededForFree.toLocaleString()}</strong> more to get <strong>FREE Delivery</strong> (${progressPct}%)`;
         progressMsgEl.style.color = "#B91C1C";
       }
     }
@@ -671,10 +708,23 @@
               <input type="text" id="cartCustomerAddress" placeholder="Street Address / Sector (e.g. F-7/2, Islamabad) *" required autocomplete="street-address">
             </div>
             <div class="cart-field-row">
-            <div class="cart-field-row">
               <select id="cartCustomerBranch" required>
                 <option value="" disabled selected>🏥 Select Delivery Branch (Order routed to Branch WhatsApp) *</option>
               </select>
+            </div>
+            <!-- Optional Prescription Attachment for Mixed Orders -->
+            <div class="cart-rx-attach-box">
+              <div class="cart-rx-label">
+                <i class="fa-solid fa-file-prescription"></i>
+                <span>Attach Doctor's Prescription (Optional - for Rx items)</span>
+              </div>
+              <div class="cart-rx-input-wrap">
+                <label class="cart-rx-btn" for="cartRxFileInput">
+                  <i class="fa-solid fa-camera"></i> <span>Choose Slip / Photo</span>
+                </label>
+                <input type="file" id="cartRxFileInput" accept="image/*,.pdf" style="display:none;" onchange="DWCart.handleRxAttach(this)">
+                <span class="cart-rx-status" id="cartRxStatusText">No file chosen</span>
+              </div>
             </div>
             <div class="cart-field-row">
               <input type="text" id="cartCustomerNotes" placeholder="Special Note (e.g. Bring cold ice-pack)">

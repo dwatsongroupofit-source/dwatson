@@ -715,10 +715,13 @@
       </div>
       <span>Upload Rx</span>
     </a>
-    <a href="departments.html" class="mobile-nav-tab" id="mobTabDepts">
-      <i class="fa-solid fa-table-cells-large"></i>
-      <span>Departments</span>
-    </a>
+    <button type="button" class="mobile-nav-tab mobile-cart-tab" id="mobTabCart" onclick="if(window.DWCart && window.DWCart.openDrawer){window.DWCart.openDrawer();}else{window.location.href='shop.html';}" aria-label="Order Bag">
+      <div class="mobile-tab-icon-wrap">
+        <i class="fa-solid fa-basket-shopping"></i>
+        <span class="mob-cart-badge header-cart-badge" id="mobCartBadge" style="display:none;">0</span>
+      </div>
+      <span>Order Bag</span>
+    </button>
     <button type="button" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa" onclick="openFlagshipWhatsAppModal()" aria-label="WhatsApp Flagship Branches">
       <i class="fa-brands fa-whatsapp"></i>
       <span>Chat</span>

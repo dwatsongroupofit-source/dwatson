@@ -41,6 +41,13 @@ window.handleAddToCartClick = function(event, product) {
   }
 };
 
+window.handleCardQtyChange = function(event, productId, delta) {
+  if (event) event.stopPropagation();
+  if (window.DWCart && typeof window.DWCart.updateQty === "function") {
+    window.DWCart.updateQty(productId, delta);
+  }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   initWebsite();
   initOrderBranchSelector();
@@ -2444,6 +2451,13 @@ window.openProductZoomModal = function(productIdOrIndex) {
 
   currentProductZoomIndex = Math.max(0, Math.min(currentProductZoomList.length - 1, index));
   updateProductZoomDisplay();
+
+  if (currentProductZoomList[currentProductZoomIndex]) {
+    const activeId = currentProductZoomList[currentProductZoomIndex].id;
+    if (typeof window.recordProductView === "function") {
+      window.recordProductView(activeId);
+    }
+  }
 
   const modal = document.getElementById("productZoomModal");
   if (modal) {

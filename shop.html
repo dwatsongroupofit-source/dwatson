@@ -161,8 +161,108 @@
           <!-- Desktop Navigation -->
           <ul class="nav-menu" id="navMenu">
             <li><a href="index.html" class="nav-link">Home</a></li>
-            <li><a href="shop.html" class="nav-link active" style="color:#DC2626; font-weight:800;"><i class="fa-solid fa-bag-shopping"></i> Online Store</a></li>
-            <li><a href="departments.html" class="nav-link">13 Departments</a></li>
+            <li class="has-mega-menu">
+              <a href="departments.html" class="nav-link">
+                13 Departments <i class="fa-solid fa-chevron-down" style="font-size:0.68rem; margin-left:3px; opacity:0.7;"></i>
+              </a>
+              <div class="mega-menu-dropdown" aria-label="13 Specialized Departments">
+                <div class="mega-menu-header">
+                  <div class="mega-menu-title">
+                    <i class="fa-solid fa-boxes-stacked" style="color:var(--dw-red);"></i>
+                    <span>Explore 13 Specialized Departments</span>
+                  </div>
+                  <a href="departments.html" class="mega-menu-all-link">
+                    View All Details <i class="fa-solid fa-arrow-right"></i>
+                  </a>
+                </div>
+                <div class="mega-menu-grid">
+                  <a href="shop.html?cat=pharmacy" class="mega-menu-item" onclick="filterShopCategory('pharmacy', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Pharmacy &amp; Medicines</span>
+                      <span class="mega-menu-sub">Cold-chain certified</span>
+                    </div>
+                  </a>
+                  <a href="shop.html?cat=cosmetics" class="mega-menu-item" onclick="filterShopCategory('cosmetics', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Cosmetics &amp; Skincare</span>
+                      <span class="mega-menu-sub">Imported clinical derma</span>
+                    </div>
+                  </a>
+                  <a href="shop.html?cat=perfumes" class="mega-menu-item" onclick="filterShopCategory('perfumes', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-spray-can-sparkles"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Luxury Perfumes</span>
+                      <span class="mega-menu-sub">100% Original scents</span>
+                    </div>
+                  </a>
+                  <a href="shop.html?cat=color_cosmetics" class="mega-menu-item" onclick="filterShopCategory('color_cosmetics', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-brush"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Color Cosmetics</span>
+                      <span class="mega-menu-sub">Global beauty counters</span>
+                    </div>
+                  </a>
+                  <a href="shop.html?cat=haircare" class="mega-menu-item" onclick="filterShopCategory('haircare', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-pump-soap"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Haircare &amp; Salon</span>
+                      <span class="mega-menu-sub">Serums &amp; treatments</span>
+                    </div>
+                  </a>
+                  <a href="shop.html?cat=surgical" class="mega-menu-item" onclick="filterShopCategory('surgical', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Surgical &amp; Equipment</span>
+                      <span class="mega-menu-sub">Diagnostic monitors</span>
+                    </div>
+                  </a>
+                  <a href="shop.html?cat=optics" class="mega-menu-item" onclick="filterShopCategory('optics', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-glasses"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Optics &amp; Eyewear</span>
+                      <span class="mega-menu-sub">Ray-Ban, Gucci &amp; lenses</span>
+                    </div>
+                  </a>
+                  <a href="shop.html?cat=babycare" class="mega-menu-item" onclick="filterShopCategory('babycare', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-baby"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Mother &amp; Baby Care</span>
+                      <span class="mega-menu-sub">Kendamil, Aptamil</span>
+                    </div>
+                  </a>
+                  <a href="shop.html?cat=grocery" class="mega-menu-item" onclick="filterShopCategory('grocery', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-basket-shopping"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Supermarket &amp; Gourmet</span>
+                      <span class="mega-menu-sub">Imported confectionary</span>
+                    </div>
+                  </a>
+                  <a href="shop.html?cat=homeo" class="mega-menu-item" onclick="filterShopCategory('homeo', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-leaf"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Homeopathic &amp; Herbal</span>
+                      <span class="mega-menu-sub">Natural remedies</span>
+                    </div>
+                  </a>
+                  <a href="shop.html?cat=hearing_aid" class="mega-menu-item" onclick="filterShopCategory('hearing_aid', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-ear-listen"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Hearing Aids Clinic</span>
+                      <span class="mega-menu-sub">Digital audiology</span>
+                    </div>
+                  </a>
+                  <a href="shop.html?cat=crockery" class="mega-menu-item" onclick="filterShopCategory('crockery', null, true)">
+                    <div class="mega-menu-icon"><i class="fa-solid fa-mug-saucer"></i></div>
+                    <div class="mega-menu-info">
+                      <span class="mega-menu-name">Crockery &amp; Household</span>
+                      <span class="mega-menu-sub">European imports</span>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </li>
             <li><a href="branches.html" class="nav-link">⭐ Flagship Branches</a></li>
             <li><a href="journey.html" class="nav-link">The Journey &amp; Board</a></li>
             <li><a href="prescription.html" class="nav-link">Prescription</a></li>
@@ -434,54 +534,57 @@
     <!-- Sticky Horizontal Department Chips (Mobile First) -->
     <nav class="shop-sticky-filter-bar" aria-label="Department Categories">
       <div class="container">
-        <div class="shop-chips-scroll-wrap">
-          <div class="shop-chips-track" id="shopCategoryChips">
-            <button type="button" class="shop-chip active" data-cat="all" onclick="filterShopCategory('all', this)">
-              <i class="fa-solid fa-layer-group"></i> All Products
-            </button>
-            <button type="button" class="shop-chip" data-cat="pharmacy" onclick="filterShopCategory('pharmacy', this)">
-              <i class="fa-solid fa-pills"></i> Pharmacy &amp; Medicines
-            </button>
-            <button type="button" class="shop-chip" data-cat="cosmetics" onclick="filterShopCategory('cosmetics', this)">
-              <i class="fa-solid fa-wand-magic-sparkles"></i> Cosmetics &amp; Skincare
-            </button>
-            <button type="button" class="shop-chip" data-cat="perfumes" onclick="filterShopCategory('perfumes', this)">
-              <i class="fa-solid fa-spray-can-sparkles"></i> Luxury Perfumes
-            </button>
-            <button type="button" class="shop-chip" data-cat="color_cosmetics" onclick="filterShopCategory('color_cosmetics', this)">
-              <i class="fa-solid fa-brush"></i> Color Cosmetics &amp; Makeup
-            </button>
-            <button type="button" class="shop-chip" data-cat="haircare" onclick="filterShopCategory('haircare', this)">
-              <i class="fa-solid fa-pump-soap"></i> Hair Care &amp; Therapy
-            </button>
-            <button type="button" class="shop-chip" data-cat="surgical" onclick="filterShopCategory('surgical', this)">
-              <i class="fa-solid fa-heart-pulse"></i> Surgical &amp; Devices
-            </button>
-            <button type="button" class="shop-chip" data-cat="optics" onclick="filterShopCategory('optics', this)">
-              <i class="fa-solid fa-glasses"></i> Optics &amp; Eyewear
-            </button>
-            <button type="button" class="shop-chip" data-cat="babycare" onclick="filterShopCategory('babycare', this)">
-              <i class="fa-solid fa-baby"></i> Baby Care &amp; Nutrition
-            </button>
-            <button type="button" class="shop-chip" data-cat="grocery" onclick="filterShopCategory('grocery', this)">
-              <i class="fa-solid fa-cart-shopping"></i> Superstore &amp; Grocery
-            </button>
-            <button type="button" class="shop-chip" data-cat="homeo" onclick="filterShopCategory('homeo', this)">
-              <i class="fa-solid fa-leaf"></i> Homeopathic Care
-            </button>
-            <button type="button" class="shop-chip" data-cat="hearing_aid" onclick="filterShopCategory('hearing_aid', this)">
-              <i class="fa-solid fa-ear-listen"></i> Hearing &amp; Diagnostics
-            </button>
-            <button type="button" class="shop-chip" data-cat="crockery" onclick="filterShopCategory('crockery', this)">
-              <i class="fa-solid fa-utensils"></i> Crockery &amp; Household
-            </button>
-            <button type="button" class="shop-chip" data-cat="toys" onclick="filterShopCategory('toys', this)">
-              <i class="fa-solid fa-gamepad"></i> Toys &amp; Kids
-            </button>
-            <button type="button" class="shop-chip" data-cat="undergarments" onclick="filterShopCategory('undergarments', this)">
-              <i class="fa-solid fa-shirt"></i> Undergarments
-            </button>
+        <div class="shop-chips-viewport">
+          <div class="shop-chips-scroll-wrap">
+            <div class="shop-chips-track" id="shopCategoryChips">
+              <button type="button" class="shop-chip active" data-cat="all" onclick="filterShopCategory('all', this)">
+                <i class="fa-solid fa-layer-group"></i> All Products
+              </button>
+              <button type="button" class="shop-chip" data-cat="pharmacy" onclick="filterShopCategory('pharmacy', this)">
+                <i class="fa-solid fa-pills"></i> Pharmacy &amp; Medicines
+              </button>
+              <button type="button" class="shop-chip" data-cat="cosmetics" onclick="filterShopCategory('cosmetics', this)">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Cosmetics &amp; Skincare
+              </button>
+              <button type="button" class="shop-chip" data-cat="perfumes" onclick="filterShopCategory('perfumes', this)">
+                <i class="fa-solid fa-spray-can-sparkles"></i> Luxury Perfumes
+              </button>
+              <button type="button" class="shop-chip" data-cat="color_cosmetics" onclick="filterShopCategory('color_cosmetics', this)">
+                <i class="fa-solid fa-brush"></i> Color Cosmetics &amp; Makeup
+              </button>
+              <button type="button" class="shop-chip" data-cat="haircare" onclick="filterShopCategory('haircare', this)">
+                <i class="fa-solid fa-pump-soap"></i> Hair Care &amp; Therapy
+              </button>
+              <button type="button" class="shop-chip" data-cat="surgical" onclick="filterShopCategory('surgical', this)">
+                <i class="fa-solid fa-heart-pulse"></i> Surgical &amp; Devices
+              </button>
+              <button type="button" class="shop-chip" data-cat="optics" onclick="filterShopCategory('optics', this)">
+                <i class="fa-solid fa-glasses"></i> Optics &amp; Eyewear
+              </button>
+              <button type="button" class="shop-chip" data-cat="babycare" onclick="filterShopCategory('babycare', this)">
+                <i class="fa-solid fa-baby"></i> Baby Care &amp; Nutrition
+              </button>
+              <button type="button" class="shop-chip" data-cat="grocery" onclick="filterShopCategory('grocery', this)">
+                <i class="fa-solid fa-cart-shopping"></i> Superstore &amp; Grocery
+              </button>
+              <button type="button" class="shop-chip" data-cat="homeo" onclick="filterShopCategory('homeo', this)">
+                <i class="fa-solid fa-leaf"></i> Homeopathic Care
+              </button>
+              <button type="button" class="shop-chip" data-cat="hearing_aid" onclick="filterShopCategory('hearing_aid', this)">
+                <i class="fa-solid fa-ear-listen"></i> Hearing &amp; Diagnostics
+              </button>
+              <button type="button" class="shop-chip" data-cat="crockery" onclick="filterShopCategory('crockery', this)">
+                <i class="fa-solid fa-utensils"></i> Crockery &amp; Household
+              </button>
+              <button type="button" class="shop-chip" data-cat="toys" onclick="filterShopCategory('toys', this)">
+                <i class="fa-solid fa-gamepad"></i> Toys &amp; Kids
+              </button>
+              <button type="button" class="shop-chip" data-cat="undergarments" onclick="filterShopCategory('undergarments', this)">
+                <i class="fa-solid fa-shirt"></i> Undergarments
+              </button>
+            </div>
           </div>
+          <div class="shop-chips-fade-edge" aria-hidden="true" title="Swipe to explore more departments"></div>
         </div>
       </div>
     </nav>
@@ -497,6 +600,8 @@
           <button type="button" id="shopSearchClearBtn" class="shop-search-clear" onclick="clearShopSearch()" aria-label="Clear Search">
             <i class="fa-solid fa-circle-xmark"></i>
           </button>
+          <!-- Live Instant Search Autocomplete Dropdown -->
+          <div class="shop-search-autocomplete" id="shopSearchAutocomplete"></div>
         </div>
 
         <!-- Sort and Counter -->
@@ -549,7 +654,21 @@
             <i class="fa-brands fa-whatsapp"></i> Inquire via WhatsApp
           </a>
         </div>
-      </div>
+      <!-- Recently Viewed Products Section -->
+      <section class="dw-recent-viewed-section" id="dwRecentViewedSection" style="display:none;" aria-label="Recently Viewed Products">
+        <div class="recent-viewed-header">
+          <h3 class="recent-viewed-title">
+            <i class="fa-solid fa-clock-rotate-left" style="color:var(--dw-red);"></i>
+            <span>Recently Viewed Products</span>
+          </h3>
+          <button type="button" class="btn btn-outline btn-sm" onclick="clearRecentlyViewed()" style="font-size:0.75rem; padding:4px 10px;">
+            <i class="fa-solid fa-trash-can"></i> Clear
+          </button>
+        </div>
+        <div class="recent-viewed-track" id="recentViewedTrack">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </section>
     </div>
   </main>
 
@@ -569,10 +688,13 @@
       </div>
       <span>Upload Rx</span>
     </a>
-    <a href="departments.html" class="mobile-nav-tab" id="mobTabDepts">
-      <i class="fa-solid fa-table-cells-large"></i>
-      <span>Departments</span>
-    </a>
+    <button type="button" class="mobile-nav-tab mobile-cart-tab" id="mobTabCart" onclick="if(window.DWCart && window.DWCart.openDrawer){window.DWCart.openDrawer();}else{window.location.href='shop.html';}" aria-label="Order Bag">
+      <div class="mobile-tab-icon-wrap">
+        <i class="fa-solid fa-basket-shopping"></i>
+        <span class="mob-cart-badge header-cart-badge" id="mobCartBadge" style="display:none;">0</span>
+      </div>
+      <span>Order Bag</span>
+    </button>
     <button type="button" class="mobile-nav-tab mobile-wa-tab" id="mobTabWa" onclick="if(typeof openFlagshipWhatsAppModal === 'function'){openFlagshipWhatsAppModal();}else{window.open('https://wa.me/923329716666?text=Hi%20D.Watson%20Chemist,%20I%20would%20like%20to%20place%20an%20order.','_blank');}" aria-label="WhatsApp Flagship Branches">
       <i class="fa-brands fa-whatsapp"></i>
       <span>Chat</span>
@@ -868,14 +990,34 @@
           if (sd && sd.company && sd.company.whatsapp) defaultWa = sd.company.whatsapp;
         } catch (e) {}
 
+        const cartItemsList = (window.DWCart && typeof window.DWCart.getItems === "function") ? window.DWCart.getItems() : [];
+
         grid.innerHTML = finalProducts
           .map((p) => {
             const fullImg = p.image || "assets/images/pharmacy.jpg";
-            let waText = `*--- D. WATSON DIRECT ORDER ---*\n🛍️ *Product:* ${p.name}\n💰 *Price:* ${p.price || 'Inquire'}\n🏷️ *Brand:* ${p.brand || 'D. Watson'}\n📸 *Photo:* ${fullImg}\n\nHi D.Watson Chemist, please confirm stock availability and express delivery to my address.`;
-            const waUrl = `https://wa.me/${defaultWa}?text=${encodeURIComponent(waText)}`;
+            const inCartItem = cartItemsList.find(i => i.id === p.id);
+            const inCartQty = inCartItem ? (inCartItem.qty || 1) : 0;
 
-            // Escape string for onclick handlers
-            const safeProductJson = JSON.stringify(p).replace(/'/g, "\\'");
+            let actionHtml = '';
+            if (inCartQty > 0) {
+              actionHtml = `
+                <div class="shop-card-stepper" data-product-id="${p.id}">
+                  <button type="button" class="card-stepper-btn minus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${p.id}', -1)" aria-label="Decrease quantity">
+                    <i class="fa-solid ${inCartQty === 1 ? 'fa-trash-can' : 'fa-minus'}"></i>
+                  </button>
+                  <span class="card-stepper-qty">${inCartQty} in Bag</span>
+                  <button type="button" class="card-stepper-btn plus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${p.id}', 1)" aria-label="Increase quantity">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+              `;
+            } else {
+              actionHtml = `
+                <button type="button" class="shop-btn-cart" onclick='handleAddToCartClick(event, ${JSON.stringify(p)})' title="Add to Order Bag" style="width:100%; justify-content:center;">
+                  <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+              `;
+            }
 
             return `
               <div class="shop-card" data-id="${p.id}">
@@ -894,9 +1036,7 @@
                   <h3 class="shop-card-title" onclick="openProductZoomModal('${p.id}')" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h3>
                   <div class="shop-card-price">${escapeHtml(p.price || "Inquire")}</div>
                   <div class="shop-card-actions">
-                    <button type="button" class="shop-btn-cart" onclick='handleAddToCartClick(event, ${JSON.stringify(p)})' title="Add to Order Bag" style="width:100%; justify-content:center;">
-                      <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
-                    </button>
+                    ${actionHtml}
                   </div>
                 </div>
               </div>
@@ -989,6 +1129,82 @@
         }
       };
 
+      // Handle card quantity +/- change directly on card
+      window.handleCardQtyChange = function (event, productId, delta) {
+        if (event) event.stopPropagation();
+        if (window.DWCart && typeof window.DWCart.updateQty === "function") {
+          window.DWCart.updateQty(productId, delta);
+        }
+      };
+
+      // Real-time synchronization of card steppers when cart updates
+      function syncAllCardSteppers() {
+        if (!window.DWCart || typeof window.DWCart.getItems !== "function") return;
+        const currentCart = window.DWCart.getItems();
+
+        // 1. Sync main catalog cards
+        document.querySelectorAll(".shop-card[data-id]").forEach(card => {
+          const id = card.getAttribute("data-id");
+          const actionsEl = card.querySelector(".shop-card-actions");
+          if (!actionsEl) return;
+          const cartItem = currentCart.find(i => i.id === id);
+          const inCartQty = cartItem ? (cartItem.qty || 1) : 0;
+          const productObj = allProducts.find(p => p.id === id);
+
+          if (inCartQty > 0) {
+            actionsEl.innerHTML = `
+              <div class="shop-card-stepper" data-product-id="${id}">
+                <button type="button" class="card-stepper-btn minus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${id}', -1)" aria-label="Decrease quantity">
+                  <i class="fa-solid ${inCartQty === 1 ? 'fa-trash-can' : 'fa-minus'}"></i>
+                </button>
+                <span class="card-stepper-qty">${inCartQty} in Bag</span>
+                <button type="button" class="card-stepper-btn plus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${id}', 1)" aria-label="Increase quantity">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            `;
+          } else if (productObj) {
+            actionsEl.innerHTML = `
+              <button type="button" class="shop-btn-cart" onclick='handleAddToCartClick(event, ${JSON.stringify(productObj)})' title="Add to Order Bag" style="width:100%; justify-content:center;">
+                <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+              </button>
+            `;
+          }
+        });
+
+        // 2. Sync spotlight cards
+        document.querySelectorAll(".spotlight-product-card[data-product-id]").forEach(card => {
+          const id = card.getAttribute("data-product-id");
+          const actionsEl = card.querySelector(".spotlight-card-actions");
+          if (!actionsEl) return;
+          const cartItem = currentCart.find(i => i.id === id);
+          const inCartQty = cartItem ? (cartItem.qty || 1) : 0;
+          const productObj = allProducts.find(p => p.id === id);
+
+          if (inCartQty > 0) {
+            actionsEl.innerHTML = `
+              <div class="shop-card-stepper" data-product-id="${id}">
+                <button type="button" class="card-stepper-btn minus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${id}', -1)" aria-label="Decrease quantity">
+                  <i class="fa-solid ${inCartQty === 1 ? 'fa-trash-can' : 'fa-minus'}"></i>
+                </button>
+                <span class="card-stepper-qty">${inCartQty} in Bag</span>
+                <button type="button" class="card-stepper-btn plus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${id}', 1)" aria-label="Increase quantity">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            `;
+          } else if (productObj) {
+            actionsEl.innerHTML = `
+              <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, ${JSON.stringify(productObj)})'>
+                <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+              </button>
+            `;
+          }
+        });
+      }
+
+      window.addEventListener("dwatson_cart_updated", syncAllCardSteppers);
+
       // Multi-Product Carousel Track Controller (Amazon/Daraz Style Spotlight)
       window.scrollSpotlightTrack = function(direction) {
         const viewport = document.getElementById("spotlightCardsViewport");
@@ -1056,10 +1272,165 @@
         setTimeout(startAutoNudge, 800);
       }
 
+      // ==========================================
+      // Live Instant Autocomplete Dropdown Logic
+      // ==========================================
+      function initAutocomplete() {
+        const input = document.getElementById("shopSearchInput");
+        const acBox = document.getElementById("shopSearchAutocomplete");
+        if (!input || !acBox) return;
+
+        input.addEventListener("input", () => {
+          const q = input.value.trim().toLowerCase();
+          if (q.length < 2) {
+            acBox.classList.remove("open");
+            acBox.innerHTML = "";
+            return;
+          }
+
+          const matches = allProducts.filter(p => {
+            const name = (p.name || "").toLowerCase();
+            const brand = (p.brand || "").toLowerCase();
+            const cat = (p.categoryName || p.category || "").toLowerCase();
+            return name.includes(q) || brand.includes(q) || cat.includes(q);
+          }).slice(0, 6);
+
+          if (!matches.length) {
+            acBox.innerHTML = `<div style="padding:10px 14px; color:#64748B; font-size:0.8rem; text-align:center;">No matching products found</div>`;
+            acBox.classList.add("open");
+            return;
+          }
+
+          acBox.innerHTML = matches.map(p => {
+            return `
+              <div class="ac-item" onclick="openProductZoomModal('${p.id}'); document.getElementById('shopSearchAutocomplete').classList.remove('open');">
+                <img src="${encodeURI(p.image || 'assets/images/pharmacy.jpg')}" alt="${escapeHtml(p.name)}" class="ac-thumb" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+                <div class="ac-info">
+                  <div class="ac-title">${escapeHtml(p.name)}</div>
+                  <div class="ac-meta">
+                    <span>${escapeHtml(p.brand || 'D. Watson')}</span>
+                    <span class="ac-price">${escapeHtml(p.price || 'Inquire')}</span>
+                  </div>
+                </div>
+                <button type="button" class="ac-add-btn" onclick='event.stopPropagation(); handleAddToCartClick(event, ${JSON.stringify(p)});' title="Quick Add to Bag">
+                  + Bag
+                </button>
+              </div>
+            `;
+          }).join("");
+
+          acBox.classList.add("open");
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!input.contains(e.target) && !acBox.contains(e.target)) {
+            acBox.classList.remove("open");
+          }
+        });
+      }
+
+      // ==========================================
+      // Recently Viewed Products Track Logic
+      // ==========================================
+      const RECENT_STORAGE_KEY = "dwatson_recent_viewed_v1";
+
+      window.recordProductView = function(productId) {
+        if (!productId) return;
+        try {
+          let recent = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY) || "[]");
+          recent = recent.filter(id => id !== productId);
+          recent.unshift(productId);
+          recent = recent.slice(0, 8);
+          localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(recent));
+          renderRecentlyViewed();
+        } catch (e) {}
+      };
+
+      window.clearRecentlyViewed = function() {
+        try {
+          localStorage.removeItem(RECENT_STORAGE_KEY);
+          renderRecentlyViewed();
+        } catch (e) {}
+      };
+
+      function renderRecentlyViewed() {
+        const section = document.getElementById("dwRecentViewedSection");
+        const track = document.getElementById("recentViewedTrack");
+        if (!section || !track) return;
+
+        let recentIds = [];
+        try {
+          recentIds = JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY) || "[]");
+        } catch (e) {}
+
+        if (!recentIds.length || !allProducts.length) {
+          section.style.display = "none";
+          return;
+        }
+
+        const items = recentIds
+          .map(id => allProducts.find(p => p.id === id))
+          .filter(Boolean);
+
+        if (!items.length) {
+          section.style.display = "none";
+          return;
+        }
+
+        section.style.display = "block";
+        const currentCart = (window.DWCart && typeof window.DWCart.getItems === "function") ? window.DWCart.getItems() : [];
+
+        track.innerHTML = items.map(p => {
+          const inCartItem = currentCart.find(i => i.id === p.id);
+          const inCartQty = inCartItem ? (inCartItem.qty || 1) : 0;
+          let btnHtml = '';
+          if (inCartQty > 0) {
+            btnHtml = `
+              <div class="shop-card-stepper" data-product-id="${p.id}">
+                <button type="button" class="card-stepper-btn minus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${p.id}', -1)">
+                  <i class="fa-solid ${inCartQty === 1 ? 'fa-trash-can' : 'fa-minus'}"></i>
+                </button>
+                <span class="card-stepper-qty">${inCartQty} in Bag</span>
+                <button type="button" class="card-stepper-btn plus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${p.id}', 1)">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            `;
+          } else {
+            btnHtml = `
+              <button type="button" class="shop-btn-cart" onclick='event.stopPropagation(); handleAddToCartClick(event, ${JSON.stringify(p)});' style="width:100%; justify-content:center;">
+                <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+              </button>
+            `;
+          }
+
+          return `
+            <div class="shop-card" data-id="${p.id}">
+              <div class="shop-card-img-wrap" onclick="openProductZoomModal('${p.id}')">
+                <img src="${encodeURI(p.image || 'assets/images/pharmacy.jpg')}" alt="${escapeHtml(p.name)}" loading="lazy">
+                <button type="button" class="shop-card-zoom-btn" onclick="event.stopPropagation(); openProductZoomModal('${p.id}')">
+                  <i class="fa-solid fa-magnifying-glass-plus"></i>
+                </button>
+              </div>
+              <div class="shop-card-body">
+                <span class="shop-card-brand">${escapeHtml(p.brand || 'D. Watson')}</span>
+                <h4 class="shop-card-title" onclick="openProductZoomModal('${p.id}')">${escapeHtml(p.name)}</h4>
+                <div class="shop-card-price">${escapeHtml(p.price || 'Inquire')}</div>
+                <div class="shop-card-actions">
+                  ${btnHtml}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
       // Wire zoom modal add-to-cart button and init
       window.addEventListener("DOMContentLoaded", () => {
         initShop();
         initSpotlightCarousel();
+        initAutocomplete();
+        setTimeout(renderRecentlyViewed, 500);
 
         // Connect cloud update listener
         window.addEventListener("dwatson_cloud_synced", () => {
@@ -1067,6 +1438,7 @@
           if (sd && Array.isArray(sd.products)) {
             allProducts = sd.products;
             renderShop();
+            renderRecentlyViewed();
           }
         });
 
