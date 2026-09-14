@@ -17,8 +17,8 @@
   "use strict";
 
   const STORAGE_KEY = "dwatson_cart_items_v1";
-  const DEFAULT_DELIVERY_FEE = 200;
-  const FREE_DELIVERY_THRESHOLD = 3000;
+  const DEFAULT_DELIVERY_FEE = 0;
+  const FREE_DELIVERY_THRESHOLD = 0;
   const DEFAULT_HELPLINE = "923329716666";
 
   // State
@@ -134,9 +134,7 @@
     },
 
     getDeliveryFee: function () {
-      const sub = this.getSubtotal();
-      if (sub === 0) return 0;
-      return sub >= FREE_DELIVERY_THRESHOLD ? 0 : DEFAULT_DELIVERY_FEE;
+      return 0;
     },
 
     getTotal: function () {
@@ -245,7 +243,7 @@
 
       msg += `\n─────────────────────\n`;
       msg += `💵 *Subtotal:* PKR ${subtotal.toLocaleString()}\n`;
-      msg += `🚚 *Delivery Fee:* ${fee === 0 ? "FREE (Orders over PKR 3,000)" : `PKR ${fee}`}\n`;
+      msg += `🚚 *Delivery Fee:* FREE (Inside city & nearby areas)\n`;
       msg += `💰 *TOTAL PAYABLE:* PKR ${total.toLocaleString()} (Cash on Delivery)\n`;
       msg += `─────────────────────\n\n`;
       msg += `👤 *Customer Name:* ${name}\n`;
@@ -442,27 +440,15 @@
     if (emptyEl) emptyEl.style.display = "none";
     if (footerEl) footerEl.style.display = "block";
 
-    // Update free delivery bar
-    const neededForFree = Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal);
-    const progressPct = Math.min(100, Math.round((subtotal / FREE_DELIVERY_THRESHOLD) * 100));
-
+    // Update free delivery badge
     if (progressEl) {
-      progressEl.style.width = `${progressPct}%`;
-      if (neededForFree === 0) {
-        progressEl.classList.add("unlocked");
-      } else {
-        progressEl.classList.remove("unlocked");
-      }
+      progressEl.style.width = "100%";
+      progressEl.classList.add("unlocked");
     }
 
     if (progressMsgEl) {
-      if (neededForFree === 0) {
-        progressMsgEl.innerHTML = `🎉 <strong>Congratulations!</strong> You unlocked <strong>FREE Express Delivery</strong>!`;
-        progressMsgEl.style.color = "#15803D";
-      } else {
-        progressMsgEl.innerHTML = `🚚 Add <strong>PKR ${neededForFree.toLocaleString()}</strong> more to get <strong>FREE Delivery</strong> (${progressPct}%)`;
-        progressMsgEl.style.color = "#B91C1C";
-      }
+      progressMsgEl.innerHTML = `🚚 <strong>FREE Delivery</strong> to inside city &amp; nearby areas!`;
+      progressMsgEl.style.color = "#15803D";
     }
 
     // Render items list
@@ -505,11 +491,7 @@
 
     if (subtotalEl) subtotalEl.textContent = `PKR ${subtotal.toLocaleString()}`;
     if (feeEl) {
-      if (fee === 0) {
-        feeEl.innerHTML = `<span style="color:#16A34A; font-weight:700;">FREE</span>`;
-      } else {
-        feeEl.textContent = `PKR ${fee}`;
-      }
+      feeEl.innerHTML = `<span style="color:#16A34A; font-weight:700;">FREE</span> <span style="font-size:0.75rem; color:#64748B; font-weight:500;">(Inside City &amp; Nearby)</span>`;
     }
     if (totalEl) totalEl.textContent = `PKR ${total.toLocaleString()}`;
   }
@@ -645,13 +627,13 @@
         </button>
       </div>
 
-      <!-- Free Delivery Progress Bar -->
+      <!-- Free Delivery Banner -->
       <div class="cart-progress-wrap">
         <div class="cart-progress-text" id="dwCartProgressMsg">
-          Add items to qualify for <strong>FREE Delivery</strong> across Twin Cities!
+          🚚 <strong>FREE Delivery</strong> to inside city &amp; nearby areas!
         </div>
-        <div class="cart-progress-bar">
-          <div class="cart-progress-fill" id="dwCartProgressFill" style="width:0%;"></div>
+        <div class="cart-delivery-subtext">
+          Fast doorstep dispatch • Standard nominal courier applies only for outer/distant locations
         </div>
       </div>
 

@@ -71,10 +71,10 @@ const DEFAULT_SITE_DATA = {
       messenger: "https://m.me/DWatsonChemist"
     },
 
-    // Express Home Delivery Rules & Policies
-    deliveryDefaultFee: 200,
-    deliveryMinOrder: 1000,
-    deliveryFreeThreshold: 3000,
+    // Express Home Delivery Rules & Policies (Free inside city & nearby areas)
+    deliveryDefaultFee: 0,
+    deliveryMinOrder: 0,
+    deliveryFreeThreshold: 0,
 
     // Live Chat Configuration (Disabled in favor of Flagship WhatsApp)
     crispEnabled: false,

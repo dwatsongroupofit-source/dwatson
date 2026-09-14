@@ -4915,16 +4915,16 @@ function updateBranchDeliveryStatus() {
         </div>
         <div class="delivery-policy-grid">
           <div class="policy-grid-item">
-            <span class="policy-label">Standard Delivery Fee</span>
-            <span class="policy-value">PKR ${fee}</span>
+            <span class="policy-label">Home Delivery</span>
+            <span class="policy-value" style="color:#16A34A; font-weight:700;">FREE</span>
           </div>
           <div class="policy-grid-item">
-            <span class="policy-label">Minimum Purchase</span>
-            <span class="policy-value">PKR ${minOrder}</span>
+            <span class="policy-label">Coverage Area</span>
+            <span class="policy-value">Inside City &amp; Nearby</span>
           </div>
           <div class="policy-grid-item">
-            <span class="policy-label">Free Delivery Over</span>
-            <span class="policy-value">PKR ${freeThreshold}</span>
+            <span class="policy-label">Outer Locations</span>
+            <span class="policy-value">Standard Courier</span>
           </div>
         </div>
       </div>
@@ -4984,18 +4984,10 @@ function handleOrderAmountInput() {
     return;
   }
 
-  if (amount >= freeThreshold) {
+  if (amount > 0) {
     feedback.style.display = "block";
     feedback.className = "rx-amount-feedback valid";
-    feedback.innerHTML = `🎉 <strong>Free Express Delivery Applied!</strong> Delivery Fee: PKR 0 (Total: PKR ${amount.toLocaleString()}).`;
-  } else if (amount >= minOrder) {
-    feedback.style.display = "block";
-    feedback.className = "rx-amount-feedback valid";
-    feedback.innerHTML = `✓ Meets minimum order requirement (PKR ${minOrder}). Delivery Fee: PKR ${fee} (Total: PKR ${(amount + fee).toLocaleString()}).`;
-  } else {
-    feedback.style.display = "block";
-    feedback.className = "rx-amount-feedback warning";
-    feedback.innerHTML = `⚠️ Order is below minimum PKR ${minOrder} required for home delivery dispatch. Add essentials or choose In-Store Pickup.`;
+    feedback.innerHTML = `🎉 <strong>Free Delivery Applied!</strong> Free home delivery inside city &amp; nearby areas (Total: PKR ${amount.toLocaleString()}).`;
   }
 }
 
@@ -5300,9 +5292,7 @@ function dispatchRxWhatsApp(prescriptionPhotoUrl = "") {
     msg += `🚚 *Fulfillment:* Express Home Delivery\n`;
     msg += `⚡ *Branch Delivery Status:* ${isExpress ? "AVAILABLE" : "UNAVAILABLE (In-Store Pickup Only)"}\n`;
     if (isExpress) {
-      const isFree = orderAmount >= 3000;
-      msg += `💵 *Delivery Charges:* PKR ${isFree ? "0 (Free Delivery Applied)" : branchFee}\n`;
-      msg += `📌 *Min Order Requirement:* PKR ${minOrder}\n`;
+      msg += `💵 *Delivery Charges:* FREE (Inside city & nearby areas)\n`;
     }
     if (orderAmount > 0) {
       msg += `💰 *Estimated Order Value:* PKR ${orderAmount.toLocaleString()}\n`;
@@ -5419,7 +5409,7 @@ async function handlePrescriptionSubmit(e, mode = "all") {
         branch: branchName,
         fulfillment: rxFulfillmentMode,
         address: address,
-        deliveryFee: rxFulfillmentMode === "delivery" ? (orderAmount >= 3000 ? 0 : branchFee) : 0,
+        deliveryFee: 0,
         minOrderAmount: minOrder,
         estimatedAmount: orderAmount,
         prescription_image: prescriptionImageUrl,

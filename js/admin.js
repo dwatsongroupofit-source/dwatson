@@ -2357,9 +2357,9 @@ function populateCompanySettingsForm() {
   setVal("setAnnouncement", c.announcement);
   setVal("setAboutShort", c.aboutShort);
   setVal("setAboutHistory", c.aboutHistory);
-  setVal("setDeliveryFee", c.deliveryDefaultFee !== undefined ? c.deliveryDefaultFee : 200);
-  setVal("setDeliveryMinOrder", c.deliveryMinOrder !== undefined ? c.deliveryMinOrder : 1000);
-  setVal("setDeliveryFreeThreshold", c.deliveryFreeThreshold !== undefined ? c.deliveryFreeThreshold : 3000);
+  setVal("setDeliveryFee", c.deliveryDefaultFee !== undefined ? c.deliveryDefaultFee : 0);
+  setVal("setDeliveryMinOrder", c.deliveryMinOrder !== undefined ? c.deliveryMinOrder : 0);
+  setVal("setDeliveryFreeThreshold", c.deliveryFreeThreshold !== undefined ? c.deliveryFreeThreshold : 0);
 
   // Live Chat / Concierge Settings (Crisp disabled in favor of Flagship WhatsApp)
   const crispEnabledEl = document.getElementById("setCrispEnabled");
@@ -2403,15 +2403,15 @@ window.saveCompanySettings = function(e) {
 
   if (delFeeEl) {
     const val = parseInt(delFeeEl.value, 10);
-    adminData.company.deliveryDefaultFee = isNaN(val) ? 200 : val;
+    adminData.company.deliveryDefaultFee = isNaN(val) ? 0 : val;
   }
   if (minOrderEl) {
     const val = parseInt(minOrderEl.value, 10);
-    adminData.company.deliveryMinOrder = isNaN(val) ? 1000 : val;
+    adminData.company.deliveryMinOrder = isNaN(val) ? 0 : val;
   }
   if (freeThreshEl) {
     const val = parseInt(freeThreshEl.value, 10);
-    adminData.company.deliveryFreeThreshold = isNaN(val) ? 3000 : val;
+    adminData.company.deliveryFreeThreshold = isNaN(val) ? 0 : val;
   }
 
   saveSiteData(adminData);
