@@ -22,6 +22,25 @@ window.slideProducts = function(direction) {
   }
 };
 
+// Global Trending Product Spotlight Slider Controls
+window.scrollSpotlightTrack = function(direction) {
+  const viewport = document.getElementById("spotlightCardsViewport");
+  if (!viewport) return;
+  const firstCard = viewport.querySelector(".spotlight-product-card");
+  const step = firstCard ? (firstCard.offsetWidth + 16) : Math.max(viewport.clientWidth * 0.75, 240);
+  viewport.scrollBy({ left: direction * step, behavior: "smooth" });
+};
+
+// Global Cart Add Handler for Spotlight & Product Cards
+window.handleAddToCartClick = function(event, product) {
+  if (event) event.stopPropagation();
+  if (window.DWCart && typeof window.DWCart.addItem === "function") {
+    window.DWCart.addItem(product, 1);
+  } else {
+    console.warn("DWCart not yet loaded.");
+  }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   initWebsite();
   initOrderBranchSelector();
@@ -93,6 +112,7 @@ function initWebsite() {
   initHelplineDropdown();
   initWhatsAppDropdown();
   initPWAInstall();
+  initSpotlightCarousel();
   ensureFloatingWhatsAppWidget(data.company.whatsapp);
   setupCustomerInfoAutoSync();
 }
@@ -236,7 +256,26 @@ function renderHeaderAndCompanyInfo(company) {
 function renderHeroSlider(slides) {
   const sliderContainer = document.getElementById("heroSliderWrapper");
   const dotsContainer = document.getElementById("heroSliderDots");
-  if (!sliderContainer || !slides || !slides.length) return;
+  const prevBtn = document.getElementById("sliderPrevBtn");
+  const nextBtn = document.getElementById("sliderNextBtn");
+  const progressBar = document.getElementById("sliderProgressBar");
+
+  if (!sliderContainer) return;
+
+  if (!slides || !slides.length) {
+    sliderContainer.innerHTML = "";
+    if (dotsContainer) dotsContainer.innerHTML = "";
+    if (prevBtn) prevBtn.style.display = "none";
+    if (nextBtn) nextBtn.style.display = "none";
+    if (progressBar) progressBar.style.display = "none";
+    if (sliderInterval) clearInterval(sliderInterval);
+    if (progressInterval) clearInterval(progressInterval);
+    return;
+  }
+
+  if (prevBtn) prevBtn.style.display = slides.length > 1 ? "" : "none";
+  if (nextBtn) nextBtn.style.display = slides.length > 1 ? "" : "none";
+  if (progressBar) progressBar.style.display = slides.length > 1 ? "" : "none";
 
   sliderContainer.innerHTML = "";
   if (dotsContainer) dotsContainer.innerHTML = "";
@@ -356,6 +395,61 @@ function prevSlide() {
 
 document.getElementById("sliderPrevBtn")?.addEventListener("click", prevSlide);
 document.getElementById("sliderNextBtn")?.addEventListener("click", nextSlide);
+
+/**
+ * Trending Products Multi-Product Carousel Controller
+ */
+function initSpotlightCarousel() {
+  const viewport = document.getElementById("spotlightCardsViewport");
+  if (!viewport) return;
+
+  if (viewport._spotlightInit) return;
+  viewport._spotlightInit = true;
+
+  let autoNudgeTimer = null;
+  let isUserInteracting = false;
+
+  function doAutoSlide() {
+    if (!viewport || isUserInteracting) return;
+    const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+    if (maxScroll <= 8) return;
+
+    const firstCard = viewport.querySelector(".spotlight-product-card");
+    const step = firstCard ? (firstCard.offsetWidth + 16) : 248;
+
+    if (viewport.scrollLeft >= maxScroll - 20) {
+      viewport.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      viewport.scrollBy({ left: step, behavior: "smooth" });
+    }
+  }
+
+  function startAutoNudge() {
+    if (autoNudgeTimer) clearInterval(autoNudgeTimer);
+    autoNudgeTimer = setInterval(doAutoSlide, 3200);
+  }
+
+  function pauseAutoNudge() {
+    if (autoNudgeTimer) clearInterval(autoNudgeTimer);
+  }
+
+  viewport.addEventListener("mouseenter", pauseAutoNudge);
+  viewport.addEventListener("mouseleave", () => {
+    isUserInteracting = false;
+    startAutoNudge();
+  });
+  viewport.addEventListener("touchstart", () => {
+    isUserInteracting = true;
+    pauseAutoNudge();
+  }, { passive: true });
+  viewport.addEventListener("touchend", () => {
+    isUserInteracting = false;
+    startAutoNudge();
+  }, { passive: true });
+
+  startAutoNudge();
+}
+window.initSpotlightCarousel = initSpotlightCarousel;
 
 /**
  * Render Trust & Stats Bar

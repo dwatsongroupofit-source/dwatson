@@ -1482,15 +1482,15 @@ function getSiteData() {
           deliveryDefaultFee: (parsed.company && parsed.company.deliveryDefaultFee !== undefined) ? parsed.company.deliveryDefaultFee : DEFAULT_SITE_DATA.company.deliveryDefaultFee,
           deliveryMinOrder: (parsed.company && parsed.company.deliveryMinOrder !== undefined) ? parsed.company.deliveryMinOrder : DEFAULT_SITE_DATA.company.deliveryMinOrder,
           deliveryFreeThreshold: (parsed.company && parsed.company.deliveryFreeThreshold !== undefined) ? parsed.company.deliveryFreeThreshold : DEFAULT_SITE_DATA.company.deliveryFreeThreshold,
-          historyTimeline: Array.isArray(parsed.company && parsed.company.historyTimeline) && parsed.company.historyTimeline.length ? parsed.company.historyTimeline : DEFAULT_SITE_DATA.company.historyTimeline,
+          historyTimeline: Array.isArray(parsed.company && parsed.company.historyTimeline) ? parsed.company.historyTimeline : DEFAULT_SITE_DATA.company.historyTimeline,
           adminAuth: {
             ...DEFAULT_SITE_DATA.company.adminAuth,
             ...((parsed.company && parsed.company.adminAuth) || {})
           }
         },
-        heroSlides: (Array.isArray(parsed.heroSlides) && parsed.heroSlides.length) ? parsed.heroSlides : DEFAULT_SITE_DATA.heroSlides,
-        management: (Array.isArray(parsed.management) && parsed.management.length) ? parsed.management : DEFAULT_SITE_DATA.management,
-        departments: (Array.isArray(parsed.departments) && parsed.departments.length) ? parsed.departments.map(d => {
+        heroSlides: Array.isArray(parsed.heroSlides) ? parsed.heroSlides : DEFAULT_SITE_DATA.heroSlides,
+        management: Array.isArray(parsed.management) ? parsed.management : DEFAULT_SITE_DATA.management,
+        departments: Array.isArray(parsed.departments) ? parsed.departments.map(d => {
           const def = DEFAULT_SITE_DATA.departments.find(dd => dd.id === d.id);
           return {
             ...(def || {}),
@@ -1498,8 +1498,8 @@ function getSiteData() {
             image: d.image || (def ? def.image : "assets/images/Shop Inside/Medicine.jpeg")
           };
         }) : DEFAULT_SITE_DATA.departments,
-        categories: (Array.isArray(parsed.categories) && parsed.categories.length) ? parsed.categories : DEFAULT_SITE_DATA.categories,
-        brands: (Array.isArray(parsed.brands) && parsed.brands.length) ? parsed.brands : (DEFAULT_SITE_DATA.brands || []),
+        categories: Array.isArray(parsed.categories) ? parsed.categories : DEFAULT_SITE_DATA.categories,
+        brands: Array.isArray(parsed.brands) ? parsed.brands : (DEFAULT_SITE_DATA.brands || []),
         // PRODUCTS: Admin changes in localStorage take priority.
         // If localStorage products array is empty/missing, always show the hardcoded defaults.
         products: resolvedProducts,
@@ -1515,8 +1515,8 @@ function getSiteData() {
             minOrderAmount: b.minOrderAmount !== undefined ? b.minOrderAmount : (def?.minOrderAmount !== undefined ? def.minOrderAmount : 1000)
           };
         }) : DEFAULT_SITE_DATA.branches,
-        gallery: Array.isArray(parsed.gallery) && parsed.gallery.length ? parsed.gallery : DEFAULT_SITE_DATA.gallery,
-        faqs: Array.isArray(parsed.faqs) && parsed.faqs.length ? parsed.faqs : DEFAULT_SITE_DATA.faqs
+        gallery: Array.isArray(parsed.gallery) ? parsed.gallery : DEFAULT_SITE_DATA.gallery,
+        faqs: Array.isArray(parsed.faqs) ? parsed.faqs : DEFAULT_SITE_DATA.faqs
       };
     }
   } catch (e) {

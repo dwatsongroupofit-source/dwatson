@@ -256,6 +256,243 @@
     </div>
   </section>
 
+  <!-- Multi-Product Trending Carousel Track (Amazon/Daraz Style Spotlight) -->
+  <section class="shop-spotlight-carousel-section" aria-label="Top Deals & Trending Products">
+    <div class="container">
+      <div class="spotlight-track-header">
+        <div>
+          <span class="spotlight-hot-badge"><i class="fa-solid fa-fire"></i> Hot Deals &amp; Best Sellers</span>
+          <h2 class="spotlight-track-title">Featured Trending Products</h2>
+          <p class="spotlight-track-sub">100% genuine guaranteed medicines, mother &amp; baby care, diagnostic devices &amp; imported treats.</p>
+        </div>
+        <div class="spotlight-track-controls">
+          <button type="button" class="spotlight-arrow-btn" id="spotlightTrackPrev" onclick="scrollSpotlightTrack(-1)" aria-label="Previous Products">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button type="button" class="spotlight-arrow-btn" id="spotlightTrackNext" onclick="scrollSpotlightTrack(1)" aria-label="Next Products">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="spotlight-cards-viewport" id="spotlightCardsViewport">
+        <div class="spotlight-cards-track">
+          
+          <!-- Card 1: Kendamil Infant Milk -->
+          <div class="spotlight-product-card" data-product-id="p7">
+            <span class="spotlight-card-badge"><i class="fa-solid fa-crown"></i> Best Seller</span>
+            <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p7')">
+              <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789038824/z86e3yeizdcif2p4qqxj.jpg" alt="Kendamil First Infant Milk Stage 1" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+            </div>
+            <div class="spotlight-card-body">
+              <span class="spotlight-card-brand">Kendamil UK</span>
+              <h3 class="spotlight-card-name" onclick="openProductZoomModal('p7')" title="Kendamil First Infant Milk (Stage 1)">Kendamil First Infant Milk (Stage 1)</h3>
+              <div class="spotlight-card-price-row">
+                <span class="spotlight-card-price">PKR 9,950</span>
+                <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+              </div>
+              <div class="spotlight-card-actions">
+                <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p7","name":"First Infant Milk (Stage 1)","brand":"Kendamil","price":"PKR 9,950","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789038824/z86e3yeizdcif2p4qqxj.jpg","category":"grocery"})'>
+                  <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: CODL Omega-3 Fish Oil -->
+          <div class="spotlight-product-card" data-product-id="p2">
+            <span class="spotlight-card-badge"><i class="fa-solid fa-heart-pulse"></i> Cold-Chain</span>
+            <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p2')">
+              <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789036146/q57j8z9ijuuw07wlo7qh.jpg" alt="CODL Omega-3 Fish Oil 1000mg" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+            </div>
+            <div class="spotlight-card-body">
+              <span class="spotlight-card-brand">BIOLIFE</span>
+              <h3 class="spotlight-card-name" onclick="openProductZoomModal('p2')" title="CODL Omega-3 Fish Oil 1000mg">CODL Omega-3 Fish Oil 1000mg</h3>
+              <div class="spotlight-card-price-row">
+                <span class="spotlight-card-price">PKR 1,990</span>
+                <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+              </div>
+              <div class="spotlight-card-actions">
+                <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p2","name":"CODL Omega-3 Fish Oil 1000mg","brand":"BIOLIFE","price":"PKR 1,990","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789036146/q57j8z9ijuuw07wlo7qh.jpg","category":"pharmacy"})'>
+                  <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Accu-Chek Instant Blood Glucose Meter -->
+          <div class="spotlight-product-card" data-product-id="p12">
+            <span class="spotlight-card-badge"><i class="fa-solid fa-microchip"></i> Diagnostics</span>
+            <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p12')">
+              <img src="assets/images/Accu-Chek Instant Blood Glucose Meter.jpg" alt="Accu-Chek Instant Blood Glucose Meter" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+            </div>
+            <div class="spotlight-card-body">
+              <span class="spotlight-card-brand">Roche</span>
+              <h3 class="spotlight-card-name" onclick="openProductZoomModal('p12')" title="Accu-Chek Instant Blood Glucose Meter">Accu-Chek Instant Meter</h3>
+              <div class="spotlight-card-price-row">
+                <span class="spotlight-card-price">PKR 3,950</span>
+                <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+              </div>
+              <div class="spotlight-card-actions">
+                <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p12","name":"Accu-Chek Instant Blood Glucose Meter","brand":"Roche Diagnostics","price":"PKR 3,950","image":"assets/images/Accu-Chek Instant Blood Glucose Meter.jpg","category":"surgical"})'>
+                  <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Myotin Sachet -->
+          <div class="spotlight-product-card" data-product-id="p3">
+            <span class="spotlight-card-badge"><i class="fa-solid fa-venus"></i> Wellness</span>
+            <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p3')">
+              <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789036161/umu4cfnchzwmlwcepijr.jpg" alt="Myotin Sachet" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+            </div>
+            <div class="spotlight-card-body">
+              <span class="spotlight-card-brand">MEDI GREEN</span>
+              <h3 class="spotlight-card-name" onclick="openProductZoomModal('p3')" title="Myotin Sachet (PCOS Support)">Myotin Sachet (PCOS Support)</h3>
+              <div class="spotlight-card-price-row">
+                <span class="spotlight-card-price">PKR 1,150</span>
+                <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+              </div>
+              <div class="spotlight-card-actions">
+                <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p3","name":"Myotin Sachet","brand":"MEDI GREEN","price":"PKR 1,150","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789036161/umu4cfnchzwmlwcepijr.jpg","category":"pharmacy"})'>
+                  <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 5: Omron M2 BP Monitor -->
+          <div class="spotlight-product-card" data-product-id="p11">
+            <span class="spotlight-card-badge"><i class="fa-solid fa-heart-pulse"></i> Precision</span>
+            <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p11')">
+              <img src="assets/images/Omron M2 Basic Digital BP Monitor.jpg" alt="Omron M2 Basic Digital BP Monitor" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+            </div>
+            <div class="spotlight-card-body">
+              <span class="spotlight-card-brand">Omron Japan</span>
+              <h3 class="spotlight-card-name" onclick="openProductZoomModal('p11')" title="Omron M2 Basic Digital BP Monitor">Omron M2 Digital BP Monitor</h3>
+              <div class="spotlight-card-price-row">
+                <span class="spotlight-card-price">PKR 9,850</span>
+                <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+              </div>
+              <div class="spotlight-card-actions">
+                <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p11","name":"Omron M2 Basic Digital BP Monitor","brand":"Omron Healthcare","price":"PKR 9,850","image":"assets/images/Omron M2 Basic Digital BP Monitor.jpg","category":"surgical"})'>
+                  <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 6: Samyang Buldak Korean Ramen -->
+          <div class="spotlight-product-card" data-product-id="p1">
+            <span class="spotlight-card-badge"><i class="fa-solid fa-fire"></i> Viral Food</span>
+            <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p1')">
+              <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789036124/m0k4bj9oxmhgfxwogmz2.jpg" alt="Samyang Buldak all Flav Ramen Noodles" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+            </div>
+            <div class="spotlight-card-body">
+              <span class="spotlight-card-brand">Samyang</span>
+              <h3 class="spotlight-card-name" onclick="openProductZoomModal('p1')" title="Samyang Buldak All Flav Ramen Noodles">Samyang Buldak Ramen Noodles</h3>
+              <div class="spotlight-card-price-row">
+                <span class="spotlight-card-price">PKR 490</span>
+                <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+              </div>
+              <div class="spotlight-card-actions">
+                <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p1","name":"Samyang Buldak all Flav Ramen Noodles","brand":"Samyang Buldak","price":"PKR 490","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789036124/m0k4bj9oxmhgfxwogmz2.jpg","category":"grocery"})'>
+                  <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 7: Magnibase Magnesium Glycinate -->
+          <div class="spotlight-product-card" data-product-id="p6">
+            <span class="spotlight-card-badge"><i class="fa-solid fa-shield-halved"></i> Calming</span>
+            <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p6')">
+              <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789038344/gpnlsaigcqb4usufpkyp.png" alt="Magnibase Magnesium Glycinate 500mg" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+            </div>
+            <div class="spotlight-card-body">
+              <span class="spotlight-card-brand">NutriBase</span>
+              <h3 class="spotlight-card-name" onclick="openProductZoomModal('p6')" title="Magnibase Magnesium Glycinate 500mg">Magnibase Magnesium 500mg</h3>
+              <div class="spotlight-card-price-row">
+                <span class="spotlight-card-price">PKR 2,495</span>
+                <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+              </div>
+              <div class="spotlight-card-actions">
+                <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p6","name":"Magnibase Magnesium Glycinate 500mg","brand":"NutriBase","price":"PKR 2,495","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789038344/gpnlsaigcqb4usufpkyp.png","category":"pharmacy"})'>
+                  <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 8: Cow & Gate Infant Milk -->
+          <div class="spotlight-product-card" data-product-id="p8">
+            <span class="spotlight-card-badge"><i class="fa-solid fa-baby"></i> Infant Care</span>
+            <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p8')">
+              <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789039001/m1qfr2nnciwnyvlp6a43.jpg" alt="Cow & Gate First Infant Milk (Stage 1)" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+            </div>
+            <div class="spotlight-card-body">
+              <span class="spotlight-card-brand">Cow &amp; Gate</span>
+              <h3 class="spotlight-card-name" onclick="openProductZoomModal('p8')" title="Cow & Gate First Infant Milk (Stage 1)">Cow &amp; Gate Infant Milk (1)</h3>
+              <div class="spotlight-card-price-row">
+                <span class="spotlight-card-price">PKR 9,700</span>
+                <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+              </div>
+              <div class="spotlight-card-actions">
+                <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p8","name":"Cow & Gate First Infant Milk (Stage 1)","brand":"Cow & Gate","price":"PKR 9,700","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789039001/m1qfr2nnciwnyvlp6a43.jpg","category":"grocery"})'>
+                  <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 9: Osteowhiz Bone Health -->
+          <div class="spotlight-product-card" data-product-id="p4">
+            <span class="spotlight-card-badge"><i class="fa-solid fa-bone"></i> Bone Care</span>
+            <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p4')">
+              <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789037342/rg9ingqxnal1skszkuna.jpg" alt="Osteowhiz Bone Health" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+            </div>
+            <div class="spotlight-card-body">
+              <span class="spotlight-card-brand">NutraWhiz</span>
+              <h3 class="spotlight-card-name" onclick="openProductZoomModal('p4')" title="Osteowhiz Bone Health">Osteowhiz Bone &amp; Joint</h3>
+              <div class="spotlight-card-price-row">
+                <span class="spotlight-card-price">PKR 1,150</span>
+                <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+              </div>
+              <div class="spotlight-card-actions">
+                <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p4","name":"Osteowhiz","brand":"NutraWhiz","price":"PKR 1,150","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789037342/rg9ingqxnal1skszkuna.jpg","category":"pharmacy"})'>
+                  <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 10: Aptamil Advance 1 -->
+          <div class="spotlight-product-card" data-product-id="p10">
+            <span class="spotlight-card-badge"><i class="fa-solid fa-shield-heart"></i> Infant Formula</span>
+            <div class="spotlight-card-img-wrap" onclick="openProductZoomModal('p10')">
+              <img src="https://res.cloudinary.com/bempxyod/image/upload/v1789039555/gnuvyvl01ytjreyjpcla.jpg" alt="Aptamil Advance 1 Infant Formula" class="spotlight-card-img" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';" loading="lazy">
+            </div>
+            <div class="spotlight-card-body">
+              <span class="spotlight-card-brand">Nutricia</span>
+              <h3 class="spotlight-card-name" onclick="openProductZoomModal('p10')" title="Aptamil Advance 1 (Infant Formula)">Aptamil Advance 1 Formula</h3>
+              <div class="spotlight-card-price-row">
+                <span class="spotlight-card-price">PKR 7,650</span>
+                <span class="spotlight-card-stock"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+              </div>
+              <div class="spotlight-card-actions">
+                <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, {"id":"p10","name":"Aptamil Advance 1 (Infant Formula)","brand":"Nutricia","price":"PKR 7,650","image":"https://res.cloudinary.com/bempxyod/image/upload/v1789039555/gnuvyvl01ytjreyjpcla.jpg","category":"grocery"})'>
+                  <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Departments Showcase Section -->
   <section class="departments-section" id="departments">
     <div class="container">
