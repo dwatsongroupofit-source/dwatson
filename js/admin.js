@@ -531,7 +531,19 @@ function renderSlidesList() {
   if (!container) return;
 
   if (!adminData.heroSlides || !adminData.heroSlides.length) {
-    container.innerHTML = `<p style="color: #64748B;">No slides configured. Click "+ Add New Slide" above.</p>`;
+    container.innerHTML = `
+      <div style="padding: 24px; background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 12px; text-align: center;">
+        <p style="color: #64748B; margin-bottom: 14px; font-weight: 600;">No slides currently configured in Admin.</p>
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="openSlideModal(-1)">
+            <i class="fa-solid fa-plus"></i> Add New Slide
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="restoreDefaultSlides()" style="border-color: #0284C7; color: #0284C7; font-weight: 700;">
+            <i class="fa-solid fa-rotate-left"></i> Restore 5 Default Slides
+          </button>
+        </div>
+      </div>
+    `;
     return;
   }
 
@@ -688,6 +700,18 @@ window.deleteSlide = function(idx) {
     }
     renderSlidesList();
     showToast("Slide removed.");
+  }
+};
+
+window.restoreDefaultSlides = async function() {
+  if (confirm("Restore the 5 official default hero slides to your Admin Panel and Cloud Database?")) {
+    adminData.heroSlides = JSON.parse(JSON.stringify(DEFAULT_SITE_DATA.heroSlides));
+    saveSiteData(adminData);
+    if (typeof window.CloudDB !== "undefined" && typeof window.CloudDB.saveHeroSlides === "function") {
+      await window.CloudDB.saveHeroSlides(adminData.heroSlides).catch(() => null);
+    }
+    renderSlidesList();
+    showToast("5 default hero slides restored successfully!", "success");
   }
 };
 
