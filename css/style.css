@@ -346,6 +346,32 @@ h1, h2, h3, h4, h5, h6 {
   color: #FFFFFF;
 }
 
+.topbar-email-link {
+  color: #CBD5E1;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.topbar-email-link:hover {
+  color: #FFFFFF;
+}
+
+.topbar-email-link i {
+  color: #F87171;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 1080px) {
+  .topbar-email-link span {
+    display: none;
+  }
+}
+
 .portal-link-btn, .system-link-btn {
   background: rgba(220, 38, 38, 0.2) !important;
   border: 1px solid rgba(239, 68, 68, 0.5) !important;
