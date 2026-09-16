@@ -12341,8 +12341,9 @@ textarea.form-control {
 }
 
 /* Shop Controls Bar (Search + Sort + Count) */
+/* Shop Controls Bar (Search + Sort + Count) */
 .shop-controls-bar {
-  padding: 20px 0 16px;
+  padding: 16px 0 14px;
   display: flex;
   gap: 14px;
   align-items: center;
@@ -12354,6 +12355,31 @@ textarea.form-control {
   position: relative;
   flex: 1;
   min-width: 260px;
+}
+
+@media (max-width: 768px) {
+  /* Hide duplicate lower search bar on mobile as top sticky header already provides instant search */
+  .shop-controls-bar .shop-search-box {
+    display: none !important;
+  }
+  .shop-controls-bar {
+    padding: 10px 0 6px;
+    margin-bottom: 6px;
+  }
+  .shop-sort-controls {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  .shop-count-indicator {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+  .shop-sort-select {
+    font-size: 0.8rem;
+    padding: 8px 10px;
+  }
 }
 
 .shop-search-input {
@@ -13533,60 +13559,99 @@ textarea.form-control {
 }
 /* ===== END SEARCH DROPDOWN FIX ===== */
 
+/* Core Search Widget Styles (Base - Mobile & Desktop) */
+.header-search-widget {
+  position: relative;
+  width: 100%;
+}
+
+.search-widget-bar {
+  display: flex !important;
+  align-items: stretch !important;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #FFFFFF;
+  height: 46px;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.search-widget-bar:focus-within {
+  border-color: #DC2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.search-widget-input {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  border: none !important;
+  outline: none !important;
+  padding: 0 14px !important;
+  font-size: 0.88rem !important;
+  color: #0F172A !important;
+  background: transparent !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.search-widget-input::placeholder {
+  color: #94A3B8;
+  font-size: 0.84rem;
+}
+
+.search-widget-btn {
+  background: #0F172A;
+  border: none;
+  color: #FFFFFF;
+  padding: 0 16px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.search-widget-btn:hover {
+  background: #DC2626;
+}
+
 /* ===== DESKTOP HEADER SEARCH BAR FIX ===== */
 @media (min-width: 992px) {
-  .header-search-widget {
+  .site-header .header-search-widget,
+  .sticky-header-wrap .header-search-widget {
     position: relative;
     flex: 1 1 auto;
     max-width: 320px;
     min-width: 180px;
   }
 
-  .search-widget-bar {
-    display: flex;
-    align-items: stretch;
+  .site-header .search-widget-bar,
+  .sticky-header-wrap .search-widget-bar {
     border: 2px solid #264573;
     border-radius: 6px;
-    overflow: hidden;
-    background: #fff;
     height: 42px;
   }
 
-  .search-widget-bar:focus-within {
+  .site-header .search-widget-bar:focus-within,
+  .sticky-header-wrap .search-widget-bar:focus-within {
     border-color: #e63946;
     box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
   }
 
-  .search-widget-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    padding: 0 14px;
-    font-size: 0.88rem;
-    color: #1e293b;
-    background: transparent;
-    height: 100%;
-  }
-
-  .search-widget-input::placeholder {
-    color: #94a3b8;
-    font-size: 0.84rem;
-  }
-
-  .search-widget-btn {
+  .site-header .search-widget-btn,
+  .sticky-header-wrap .search-widget-btn {
     background: #264573;
-    border: none;
-    color: #fff;
-    padding: 0 16px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
   }
 
-  .search-widget-btn:hover {
+  .site-header .search-widget-btn:hover,
+  .sticky-header-wrap .search-widget-btn:hover {
     background: #e63946;
   }
 

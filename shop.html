@@ -76,7 +76,7 @@
 
   <script>
     (function() {
-      var CURRENT_CACHE_VER = "37.0";
+      var CURRENT_CACHE_VER = "38.0";
       var stored = localStorage.getItem("dw_cache_version");
       if (stored !== CURRENT_CACHE_VER) {
         localStorage.setItem("dw_cache_version", CURRENT_CACHE_VER);
@@ -99,8 +99,8 @@
   </script>
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=37.0">
-  <link rel="stylesheet" href="css/responsive.css?v=37.0">
+  <link rel="stylesheet" href="css/style.css?v=38.0">
+  <link rel="stylesheet" href="css/responsive.css?v=38.0">
 </head>
 <body class="site-body">
 
@@ -867,7 +867,7 @@
   <script src="js/cloud-db.js?v=2.0"></script>
   <script src="js/data.js?v=36.0"></script>
   <script src="js/cart.js?v=36.0"></script>
-  <script src="js/main.js?v=37.0"></script>
+  <script src="js/main.js?v=38.0"></script>
 
   <!-- Dedicated Shop Page Interactive Controller -->
   <script>
@@ -907,9 +907,11 @@
           currentSearch = searchParam.trim();
           const searchInput = document.getElementById("shopSearchInput");
           if (searchInput) searchInput.value = currentSearch;
+          const mobileInput = document.getElementById("mobileSearchInputLive");
+          if (mobileInput) mobileInput.value = currentSearch;
         }
 
-        // Bind Search Input
+        // Bind Desktop In-Catalog Search Input
         const searchInput = document.getElementById("shopSearchInput");
         const clearBtn = document.getElementById("shopSearchClearBtn");
         if (searchInput) {
@@ -919,6 +921,28 @@
             renderShop();
           });
         }
+
+        // Bind Top Sticky Mobile Search Input directly to live filter the catalog
+        const mobileInput = document.getElementById("mobileSearchInputLive");
+        if (mobileInput) {
+          mobileInput.addEventListener("input", function (e) {
+            currentSearch = e.target.value.trim();
+            if (searchInput) searchInput.value = currentSearch;
+            renderShop();
+          });
+        }
+
+        // Override mobile search action to instantly filter catalog on shop.html
+        window.handleMobileSearchSubmit = function () {
+          const mInput = document.getElementById("mobileSearchInputLive");
+          if (mInput) {
+            currentSearch = mInput.value.trim();
+            if (searchInput) searchInput.value = currentSearch;
+            renderShop();
+            const grid = document.getElementById("shopProductGrid");
+            if (grid) grid.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        };
 
         renderShop();
       }
@@ -1177,8 +1201,10 @@
       // Clear search
       window.clearShopSearch = function () {
         const input = document.getElementById("shopSearchInput");
+        const mInput = document.getElementById("mobileSearchInputLive");
         const clearBtn = document.getElementById("shopSearchClearBtn");
         if (input) input.value = "";
+        if (mInput) mInput.value = "";
         if (clearBtn) clearBtn.style.display = "none";
         currentSearch = "";
         renderShop();
@@ -1190,7 +1216,9 @@
         currentSearch = "";
         currentSort = "featured";
         const input = document.getElementById("shopSearchInput");
+        const mInput = document.getElementById("mobileSearchInputLive");
         if (input) input.value = "";
+        if (mInput) mInput.value = "";
         const clearBtn = document.getElementById("shopSearchClearBtn");
         if (clearBtn) clearBtn.style.display = "none";
         const sortSelect = document.getElementById("shopSortSelect");

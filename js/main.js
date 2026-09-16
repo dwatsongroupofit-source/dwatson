@@ -6023,6 +6023,12 @@ function initMobileLiveSearch() {
   const dropdown = document.getElementById("mobileSearchDropdown");
   if (!input || !dropdown) return;
 
+  // On shop page, avoid dropdown popup so typing live-filters the product catalog directly
+  if (window.location.pathname.includes("shop")) {
+    dropdown.style.display = "none";
+    return;
+  }
+
   let debounceTimer;
 
   const renderDropdown = (query) => {
