@@ -262,20 +262,29 @@
 <body class="page-home">
 
   <!-- Mobile App Top Bar (Sticky Header matching dwatson.pk) -->
-  <div class="mobile-app-header" id="mobileAppHeader">
-    <button type="button" class="mobile-app-menu-btn" onclick="openMobileMenu()" aria-label="Open Navigation Menu">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-    <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
-      <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" class="mobile-app-emblem" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
-    </a>
-    <div class="mobile-app-search-wrap" onclick="openGlobalSearch()" role="button" aria-label="Open search">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" placeholder="Search medicines, skincare, brands..." readonly>
+      <div class="mobile-app-header" id="mobileAppHeader">
+
+    <div class="mobile-app-header-signin">
+      <a href="admin.html" title="Admin Login"><i class="fa-solid fa-lock" style="font-size: 1.1rem;"></i></a>
     </div>
-    <div class="mobile-app-live-status">
-      <span class="live-branch-label">Twin Cities</span>
-      <span class="live-branch-val"><i class="fa-solid fa-circle-check"></i> Open 24/7</span>
+<div class="mobile-app-header-main">
+      <button type="button" class="mobile-app-menu-btn" onclick="openMobileMenu()" aria-label="Open Navigation Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
+        <!-- Using text or a clear logo if svg is not available -->
+        <h2 class="mobile-app-logo-text-chunky">D.Watson</h2>
+      </a>
+      <button type="button" class="mobile-app-cart-btn" onclick="if(typeof toggleCartModal==='function') toggleCartModal(); else if(typeof openCartModal==='function') openCartModal();" aria-label="Open Cart">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span class="mobile-header-cart-badge" id="mobileHeaderCartBadge">0</span>
+      </button>
+    </div>
+    
+    <div class="mobile-app-search-wrap">
+      <input type="text" id="mobileSearchInputLive" placeholder="Search entire store here..." autocomplete="off">
+      <button class="mobile-app-search-action" onclick="window.handleMobileSearchSubmit()">Search</button>
+      <div class="search-widget-dropdown" id="mobileSearchDropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background:white; z-index:1000; box-shadow:0 4px 6px rgba(0,0,0,0.1);"></div>
     </div>
   </div>
 
@@ -285,8 +294,8 @@
     <div class="top-bar">
       <div class="container top-bar-inner">
         <div class="announcement-text">
-          <span class="badge-live">24/7 Live Service</span>
-          <span id="topAnnouncement">✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • Express Delivery Available Across Pakistan</span>
+          <span class="badge-live">Live Pharmacy</span>
+          <span id="topAnnouncement">✨ 100% Genuine Medicines Guaranteed • Universal Helpline: 051-8438111 • Express Delivery Available Across Pakistan</span>
         </div>
         <div class="top-bar-links">
           <a href="mailto:dwatsonconsultation@gmail.com" class="topbar-email-link" title="Email Consultation &amp; Inquiries">
@@ -304,7 +313,7 @@
               <div class="helpline-dropdown-list" id="helplineDropdownList"></div>
             </div>
           </div>
-          <a href="admin.html" class="portal-link-btn" title="Open Admin Panel"><i class="fa-solid fa-lock"></i> Admin Panel</a>
+          <a href="admin.html" class="portal-link-btn" title="Open Admin Panel"><i class="fa-solid fa-lock" style="font-size: 1.1rem;"></i></a>
         </div>
       </div>
     </div>
@@ -331,11 +340,15 @@
 
           <!-- Right Action Button -->
           <div class="nav-actions">
-            <button class="header-search-btn" id="headerSearchBtn" onclick="openGlobalSearch()" aria-label="Search Medicines and Products">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <span class="search-btn-label">Search</span>
-              <span class="search-kbd-shortcut">/</span>
-            </button>
+            <div class="header-search-widget" id="headerSearchWidget">
+              <form class="search-widget-bar" id="headerSearchForm" action="shop.html" method="GET" onsubmit="event.preventDefault(); if (typeof handleHeaderSearchSubmit === 'function') handleHeaderSearchSubmit(); else window.location.href='shop.html?search=' + encodeURIComponent(document.getElementById('headerSearchInput').value);">
+                <input type="text" class="search-widget-input" id="headerSearchInput" name="search" placeholder="Search medicines, skincare, brands..." autocomplete="off" aria-label="Search medicines and products">
+                <button type="submit" class="search-widget-btn" aria-label="Search">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+              </form>
+              <div class="search-widget-dropdown" id="headerSearchDropdown" style="display:none;"></div>
+            </div>
             <button type="button" class="btn btn-outline btn-sm" onclick="DWCart.openDrawer()" aria-label="Open Order Bag" style="display:inline-flex; align-items:center; gap:6px;">
               <i class="fa-solid fa-bag-shopping" style="color:var(--dw-red);"></i>
               <span>Bag</span>

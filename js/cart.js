@@ -507,7 +507,7 @@
     }
 
     // Also update any header cart icons if present
-    const headerBadges = document.querySelectorAll(".header-cart-badge");
+    const headerBadges = document.querySelectorAll(".header-cart-badge, .mobile-header-cart-badge");
     headerBadges.forEach((el) => {
       el.textContent = count;
       el.style.display = count > 0 ? "inline-flex" : "none";

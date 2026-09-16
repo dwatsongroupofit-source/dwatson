@@ -116,6 +116,8 @@ function initWebsite() {
   initHeaderScroll();
   initMobileMenu();
   initGlobalSearch();
+  initMainHeaderSearch();
+  initMobileSearchAnimation();
   initHelplineDropdown();
   initWhatsAppDropdown();
   initPWAInstall();
@@ -4625,6 +4627,191 @@ window.searchByChip = function(query) {
   }
 };
 
+/**
+ * ==========================================================================
+ * Main Page & Online Store Header Search Widget & Instant Dropdown
+ * ==========================================================================
+ */
+function formatSearchPrice(priceStr) {
+  if (!priceStr) return "Rs. Inquire";
+  if (typeof priceStr === "number") {
+    return `Rs. ${priceStr.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+  const clean = priceStr.toString().replace(/[^0-9.]/g, "");
+  const num = parseFloat(clean);
+  if (!isNaN(num) && num > 0) {
+    return `Rs. ${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+  return String(priceStr).replace(/PKR/gi, "Rs.");
+}
+
+function getSearchPackText(p) {
+  if (p.pack) return escapeHtml(p.pack);
+  if (p.packSize) return escapeHtml(p.packSize);
+  if (p.unit) return escapeHtml(p.unit);
+  const cat = (p.categoryName || p.category || "").toLowerCase();
+  if (cat.includes("pharma") || cat.includes("medicine")) {
+    return "Pack of 1 Medical";
+  }
+  return escapeHtml(p.brand ? `Pack of 1 • ${p.brand}` : "Pack of 1");
+}
+
+window.handleSearchAddToCart = function(event, productId) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  const siteData = typeof getSiteData === "function" ? getSiteData() : null;
+  const products = (siteData && siteData.products) ? siteData.products : (allProductsData || []);
+  const product = products.find(p => String(p.id) === String(productId));
+  if (!product) return;
+
+  if (window.DWCart && typeof window.DWCart.addItem === "function") {
+    window.DWCart.addItem(product, 1);
+  }
+
+  const btn = event && event.currentTarget;
+  if (btn) {
+    const origHtml = btn.innerHTML;
+    btn.innerHTML = `<i class="fa-solid fa-check"></i> Added`;
+    btn.style.background = "#16A34A";
+    setTimeout(() => {
+      btn.innerHTML = origHtml;
+      btn.style.background = "";
+    }, 1200);
+  }
+};
+
+let headerSearchDebounce = null;
+
+function initMainHeaderSearch() {
+  const input = document.getElementById("headerSearchInput");
+  const form = document.getElementById("headerSearchForm");
+  const dropdown = document.getElementById("headerSearchDropdown");
+  const widget = document.getElementById("headerSearchWidget");
+
+  if (!input || !dropdown) return;
+
+  const renderDropdown = (query) => {
+    const term = (query || "").trim().toLowerCase();
+    if (!term || term.length < 1) {
+      dropdown.style.display = "none";
+      dropdown.innerHTML = "";
+      return;
+    }
+
+    const siteData = typeof getSiteData === "function" ? getSiteData() : null;
+    const products = (siteData && siteData.products) ? siteData.products : (allProductsData || []);
+
+    const matches = products.filter(p => {
+      const name = String(p.name || "").toLowerCase();
+            const brand = String(p.brand || "").toLowerCase();
+            const desc = String(p.description || "").toLowerCase();
+            const cat = String(p.category || "").toLowerCase();
+            const tag = String(p.tag || "").toLowerCase();
+            
+            let isMatch = name.includes(term) || brand.includes(term) || desc.includes(term) || cat.includes(term) || tag.includes(term);
+            
+            // Keyword synonym matching
+            if (!isMatch) {
+              if (term === "cleanser" && (cat.includes("cosmetic") || cat.includes("skincare") || name.includes("wash") || name.includes("scrub"))) isMatch = true;
+            }
+            return isMatch;
+    });
+
+    if (matches.length === 0) {
+      dropdown.innerHTML = `
+        <div class="search-drop-header">
+          <span class="search-drop-heading">Products</span>
+          <span style="font-size:0.8rem; color:#94A3B8;">0 found</span>
+        </div>
+        <div style="padding:24px 16px; text-align:center; color:#64748B; font-size:0.86rem;">
+          No direct products found for "<strong>${escapeHtml(query)}</strong>"
+          <div style="margin-top:10px;">
+            <a href="shop.html?search=${encodeURIComponent(query)}" style="color:#2563EB; font-weight:700; text-decoration:none;">Browse Online Store &rarr;</a>
+          </div>
+        </div>
+      `;
+      dropdown.style.display = "block";
+      return;
+    }
+
+    const displayProducts = matches.slice(0, 6);
+    dropdown.innerHTML = `
+      <div class="search-drop-header">
+        <span class="search-drop-heading">Products</span>
+        <a href="shop.html?search=${encodeURIComponent(query)}" class="search-drop-see-all">See All ${matches.length}</a>
+      </div>
+      <div class="search-drop-list">
+        ${displayProducts.map(p => {
+          const pName = escapeHtml(p.name);
+          const pImg = encodeURI(p.image || "assets/images/pharmacy.jpg");
+          const packText = getSearchPackText(p);
+          const priceFormatted = formatSearchPrice(p.price);
+
+          return `
+            <div class="search-drop-item" onclick="if(typeof openProductZoomModal==='function') openProductZoomModal('${p.id}');">
+              <div class="search-drop-img-wrap">
+                <img src="${pImg}" alt="${pName}" class="search-drop-img" loading="lazy" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+              </div>
+              <div class="search-drop-info">
+                <div class="search-drop-title" title="${pName}">${pName}</div>
+                <div class="search-drop-pack">${packText}</div>
+                <div class="search-drop-price">${priceFormatted}</div>
+              </div>
+              <div class="search-drop-action">
+                <button type="button" class="btn-search-add-cart" onclick="handleSearchAddToCart(event, '${p.id}')">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+    dropdown.style.display = "block";
+  };
+
+  input.addEventListener("input", (e) => {
+    clearTimeout(headerSearchDebounce);
+    headerSearchDebounce = setTimeout(() => {
+      renderDropdown(e.target.value);
+    }, 120);
+  });
+
+  input.addEventListener("focus", () => {
+    if (input.value.trim().length >= 1) {
+      renderDropdown(input.value.trim());
+    }
+  });
+
+  window.handleHeaderSearchSubmit = function() {
+    const val = input.value.trim();
+    if (val) {
+      window.location.href = `shop.html?search=${encodeURIComponent(val)}`;
+    }
+  };
+
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      window.handleHeaderSearchSubmit();
+    });
+  }
+
+  document.addEventListener("click", (e) => {
+    if (widget && !widget.contains(e.target)) {
+      dropdown.style.display = "none";
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      dropdown.style.display = "none";
+    }
+  });
+}
+
 function renderGlobalSearchResults(term) {
   const container = document.getElementById("globalSearchResults");
   if (!container) return;
@@ -4636,10 +4823,13 @@ function renderGlobalSearchResults(term) {
   if (!query) {
     const recommended = products.slice(0, 8);
     container.innerHTML = `
-      <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#94A3B8; margin-bottom:10px; padding:0 4px;">
-        <i class="fa-solid fa-sparkles" style="color:var(--dw-red);"></i> Recommended Products &amp; Medicines
+      <div class="search-drop-header" style="border-radius:8px 8px 0 0; margin-bottom:4px;">
+        <span class="search-drop-heading"><i class="fa-solid fa-sparkles" style="color:var(--dw-red);"></i> Recommended Products</span>
+        <a href="shop.html" class="search-drop-see-all">View All</a>
       </div>
-      ${recommended.map(p => renderSearchResultItem(p, data.company.whatsapp)).join("")}
+      <div class="search-drop-list">
+        ${recommended.map(p => renderSearchResultItem(p)).join("")}
+      </div>
     `;
     return;
   }
@@ -4668,33 +4858,37 @@ function renderGlobalSearchResults(term) {
   }
 
   container.innerHTML = `
-    <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#64748B; margin-bottom:10px; padding:0 4px;">
-      Found ${matches.length} ${matches.length === 1 ? 'Product' : 'Products'}
+    <div class="search-drop-header" style="border-radius:8px 8px 0 0; margin-bottom:4px;">
+      <span class="search-drop-heading">Products</span>
+      <a href="shop.html?search=${encodeURIComponent(term)}" class="search-drop-see-all" onclick="closeGlobalSearch()">See All ${matches.length}</a>
     </div>
-    ${matches.map(p => renderSearchResultItem(p, data.company.whatsapp)).join("")}
+    <div class="search-drop-list">
+      ${matches.map(p => renderSearchResultItem(p)).join("")}
+    </div>
   `;
 }
 
-function renderSearchResultItem(p, fallbackWa) {
+function renderSearchResultItem(p) {
   const pName = escapeHtml(p.name);
-  const pBrand = escapeHtml(p.brand || "D. Watson Certified");
-  const pPrice = escapeHtml(p.price || "Inquire");
-  const pCat = escapeHtml(p.categoryName || p.category || "Healthcare");
+  const pPrice = formatSearchPrice(p.price);
+  const packText = getSearchPackText(p);
   const pImg = encodeURI(p.image || "assets/images/pharmacy.jpg");
-  const waMsg = encodeURIComponent(`Hi D. Watson Chemist, I would like to order: ${p.name} (${p.price || 'Inquire'}). Please confirm stock and delivery.`);
-  const waUrl = `https://wa.me/${fallbackWa}?text=${waMsg}`;
 
   return `
-    <div class="search-result-item" onclick="closeGlobalSearch(); openProductZoomModal('${p.id}')">
-      <img src="${pImg}" alt="${pName}" class="search-result-img" loading="lazy" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
-      <div class="search-result-info">
-        <div class="search-result-title">${pName}</div>
-        <div class="search-result-meta">${pBrand} &bull; ${pCat}</div>
-        <div class="search-result-price">${pPrice}</div>
+    <div class="search-drop-item" onclick="closeGlobalSearch(); openProductZoomModal('${p.id}')">
+      <div class="search-drop-img-wrap">
+        <img src="${pImg}" alt="${pName}" class="search-drop-img" loading="lazy" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
       </div>
-      <a href="${waUrl}" target="_blank" class="btn-search-wa" onclick="event.stopPropagation(); handleProductOrderClick(event, '${p.id}', '${waUrl}');" title="Order on WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span>
-      </a>
+      <div class="search-drop-info">
+        <div class="search-drop-title" title="${pName}">${pName}</div>
+        <div class="search-drop-pack">${packText}</div>
+        <div class="search-drop-price">${pPrice}</div>
+      </div>
+      <div class="search-drop-action">
+        <button type="button" class="btn-search-add-cart" onclick="handleSearchAddToCart(event, '${p.id}')">
+          Add to Cart
+        </button>
+      </div>
     </div>
   `;
 }
@@ -5692,11 +5886,26 @@ function ensureFlagshipWhatsAppModal() {
 }
 
 /**
- * Open Flagship Branches WhatsApp Modal (ONLY Flash Tag / Flagship Branches)
+ * Open Flagship Branches WhatsApp Modal (Supports Product Context for Branch-wise Inquiries)
  */
-window.openFlagshipWhatsAppModal = function(selectedBranchId) {
+window.openFlagshipWhatsAppModal = function(selectedBranchId, productContext) {
   const modal = ensureFlagshipWhatsAppModal();
   const listEl = document.getElementById("flagshipWhatsAppList");
+  const headerTextEl = modal.querySelector(".flagship-wa-header-text");
+
+  if (headerTextEl) {
+    if (productContext && productContext.name) {
+      headerTextEl.innerHTML = `
+        <h3><i class="fa-brands fa-whatsapp"></i> Inquire at Branch</h3>
+        <p>Select your nearest branch for <strong>${escapeHtml(productContext.name)}</strong> (${escapeHtml(productContext.price || 'Inquire')})</p>
+      `;
+    } else {
+      headerTextEl.innerHTML = `
+        <h3><i class="fa-brands fa-whatsapp"></i> WhatsApp Flagship Branches</h3>
+        <p>Select a flagship branch to connect directly on WhatsApp</p>
+      `;
+    }
+  }
 
   if (listEl) {
     const siteData = typeof getSiteData === "function" ? getSiteData() : null;
@@ -5707,10 +5916,16 @@ window.openFlagshipWhatsAppModal = function(selectedBranchId) {
 
     listEl.innerHTML = displayList.map(b => {
       const cleanWa = String(b.whatsapp || "923329716666").replace(/[^0-9]/g, "");
-      const waLink = `https://wa.me/${cleanWa}?text=${encodeURIComponent('Hello D.Watson ' + b.name + ', I would like to inquire about medicines & order.')}`;
+      let msg = '';
+      if (productContext && productContext.name) {
+        msg = `*--- D. WATSON BRANCH INQUIRY ---*\n🏪 *Branch:* D. Watson ${b.name}\n🛍️ *Product:* ${productContext.name}\n💰 *Price:* ${productContext.price || 'Inquire'}\n🏷️ *Brand:* ${productContext.brand || 'D. Watson'}\n\nHi D.Watson Chemist, please confirm stock availability and express delivery from your ${b.name} branch.`;
+      } else {
+        msg = `Hello D.Watson ${b.name}, I would like to inquire about medicines & order.`;
+      }
+      const waLink = `https://wa.me/${cleanWa}?text=${encodeURIComponent(msg)}`;
       const isSelected = (selectedBranchId && b.id === selectedBranchId);
       return `
-        <a href="${waLink}" target="_blank" class="flagship-wa-card ${isSelected ? 'selected' : ''}" onclick="closeFlagshipWhatsAppModal()">
+        <a href="${waLink}" target="_blank" rel="noopener" class="flagship-wa-card ${isSelected ? 'selected' : ''}" onclick="closeFlagshipWhatsAppModal()">
           <div class="flagship-wa-details">
             <div style="display:flex; align-items:center; gap:5px; margin-bottom:4px;">
               <span class="flagship-wa-flash-badge"><i class="fa-solid fa-bolt"></i> Flagship</span>
@@ -5721,7 +5936,7 @@ window.openFlagshipWhatsAppModal = function(selectedBranchId) {
           </div>
           <span class="flagship-wa-connect-btn">
             <i class="fa-brands fa-whatsapp"></i>
-            <span>Connect</span>
+            <span>Inquire</span>
           </span>
         </a>
       `;
@@ -5749,4 +5964,161 @@ window.openBranchMessengerCard = function(branchId) {
   openFlagshipWhatsAppModal(branchId);
 };
 
+
+
+
+/**
+ * Mobile Search Placeholder Animation
+ */
+function initMobileSearchAnimation() {
+  const input = document.getElementById("mobileSearchInputPlaceholder");
+  if (!input) return;
+
+  const placeholders = [
+    "Search catalog...",
+    "Search medicines...",
+    "Search skincare...",
+    "Search baby care...",
+    "Search vitamins...",
+    "Search cosmetics..."
+  ];
+  
+  let currentWordIdx = 0;
+  let charIdx = 0;
+  let isDeleting = false;
+  let typingSpeed = 80;
+  
+  function typeEffect() {
+    const currentWord = placeholders[currentWordIdx];
+    
+    if (isDeleting) {
+      input.placeholder = currentWord.substring(0, charIdx - 1);
+      charIdx--;
+      typingSpeed = 40;
+    } else {
+      input.placeholder = currentWord.substring(0, charIdx + 1);
+      charIdx++;
+      typingSpeed = 100;
+    }
+    
+    if (!isDeleting && charIdx === currentWord.length) {
+      typingSpeed = 2000; // Pause at the end of the word
+      isDeleting = true;
+    } else if (isDeleting && charIdx === 0) {
+      isDeleting = false;
+      currentWordIdx = (currentWordIdx + 1) % placeholders.length;
+      typingSpeed = 500; // Pause before typing the next word
+    }
+    
+    setTimeout(typeEffect, typingSpeed);
+  }
+  
+  // Start the animation
+  setTimeout(typeEffect, 1000);
+}
+
+
+function initMobileLiveSearch() {
+  const input = document.getElementById("mobileSearchInputLive");
+  const dropdown = document.getElementById("mobileSearchDropdown");
+  if (!input || !dropdown) return;
+
+  let debounceTimer;
+
+  const renderDropdown = (query) => {
+    const term = (query || "").trim().toLowerCase();
+    if (!term) {
+      dropdown.style.display = "none";
+      return;
+    }
+
+    const data = typeof getSiteData === 'function' ? getSiteData() : window.allSiteData;
+    const products = data ? (data.products || []) : [];
+    
+    let matches = products.filter(p => p.name.toLowerCase().includes(term) || (p.category && p.category.toLowerCase().includes(term)));
+    
+    if (matches.length === 0) {
+      dropdown.innerHTML = `
+        <div class="search-drop-header">
+          <span class="search-drop-heading">Products</span>
+          <span style="font-size:0.8rem; color:#94A3B8;">0 found</span>
+        </div>
+        <div style="padding:24px 16px; text-align:center; color:#64748B; font-size:0.86rem;">
+          No direct products found for "<strong>${escapeHtml(query)}</strong>"
+          <div style="margin-top:10px;">
+            <a href="shop.html?search=${encodeURIComponent(query)}" style="color:#2563EB; font-weight:700; text-decoration:none;">Browse Online Store &rarr;</a>
+          </div>
+        </div>
+      `;
+      dropdown.style.display = "block";
+      return;
+    }
+
+    const displayProducts = matches.slice(0, 6);
+    dropdown.innerHTML = `
+      <div class="search-drop-header">
+        <span class="search-drop-heading">Products</span>
+        <a href="shop.html?search=${encodeURIComponent(query)}" class="search-drop-see-all">See All ${matches.length}</a>
+      </div>
+      <div class="search-drop-list">
+        ${displayProducts.map(p => {
+          const pName = typeof escapeHtml === 'function' ? escapeHtml(p.name) : p.name;
+          const pImg = encodeURI(p.image || "assets/images/pharmacy.jpg");
+          const packText = typeof getSearchPackText === 'function' ? getSearchPackText(p) : 'Pack of 1';
+          const priceFormatted = typeof formatSearchPrice === 'function' ? formatSearchPrice(p.price) : ('Rs. ' + p.price);
+
+          return `
+            <div class="search-drop-item" onclick="if(typeof openProductZoomModal==='function') openProductZoomModal('${p.id}');">
+              <div class="search-drop-img-wrap">
+                <img src="${pImg}" alt="${pName}" class="search-drop-img" loading="lazy" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
+              </div>
+              <div class="search-drop-info">
+                <div class="search-drop-title" title="${pName}">${pName}</div>
+                <div class="search-drop-pack">${packText}</div>
+                <div class="search-drop-price">${priceFormatted}</div>
+              </div>
+              <div class="search-drop-action">
+                <button type="button" class="btn-search-add-cart" onclick="if(typeof handleSearchAddToCart==='function') handleSearchAddToCart(event, '${p.id}')">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+    dropdown.style.display = "block";
+  };
+
+  input.addEventListener("input", (e) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      renderDropdown(e.target.value);
+    }, 120);
+  });
+
+  input.addEventListener("focus", () => {
+    if (input.value.trim()) {
+      renderDropdown(input.value);
+    }
+  });
+
+  window.handleMobileSearchSubmit = function() {
+    const val = input.value.trim();
+    if (val) {
+      window.location.href = `shop.html?search=${encodeURIComponent(val)}`;
+    }
+  };
+
+  document.addEventListener("click", (e) => {
+    const wrap = document.querySelector(".mobile-app-search-wrap");
+    if (wrap && !wrap.contains(e.target)) {
+      dropdown.style.display = "none";
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initMobileLiveSearch();
+});
 

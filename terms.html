@@ -94,20 +94,29 @@
 <body class="page-terms">
 
   <!-- Mobile App Header -->
-  <div class="mobile-app-header" id="mobileAppHeader">
-    <button type="button" class="mobile-app-menu-btn" onclick="openMobileMenu()" aria-label="Open Navigation Menu">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-    <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
-      <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" class="mobile-app-emblem" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
-    </a>
-    <div class="mobile-app-search-wrap" onclick="openGlobalSearch()" role="button" aria-label="Open search">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" placeholder="Search medicines, skincare, brands..." readonly>
+      <div class="mobile-app-header" id="mobileAppHeader">
+
+    <div class="mobile-app-header-signin">
+      <a href="admin.html" title="Admin Login"><i class="fa-solid fa-lock" style="font-size: 1.1rem;"></i></a>
     </div>
-    <div class="mobile-app-live-status">
-      <span class="live-branch-label">24/7 Helpline</span>
-      <span class="live-branch-val"><i class="fa-solid fa-phone"></i> 051-8438111</span>
+<div class="mobile-app-header-main">
+      <button type="button" class="mobile-app-menu-btn" onclick="openMobileMenu()" aria-label="Open Navigation Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
+        <!-- Using text or a clear logo if svg is not available -->
+        <h2 class="mobile-app-logo-text-chunky">D.Watson</h2>
+      </a>
+      <button type="button" class="mobile-app-cart-btn" onclick="if(typeof toggleCartModal==='function') toggleCartModal(); else if(typeof openCartModal==='function') openCartModal();" aria-label="Open Cart">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span class="mobile-header-cart-badge" id="mobileHeaderCartBadge">0</span>
+      </button>
+    </div>
+    
+    <div class="mobile-app-search-wrap">
+      <input type="text" id="mobileSearchInputLive" placeholder="Search entire store here..." autocomplete="off">
+      <button class="mobile-app-search-action" onclick="window.handleMobileSearchSubmit()">Search</button>
+      <div class="search-widget-dropdown" id="mobileSearchDropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background:white; z-index:1000; box-shadow:0 4px 6px rgba(0,0,0,0.1);"></div>
     </div>
   </div>
 
@@ -136,7 +145,7 @@
               <div class="helpline-dropdown-list" id="helplineDropdownList"></div>
             </div>
           </div>
-          <a href="admin.html" class="portal-link-btn" title="Open Admin Panel"><i class="fa-solid fa-lock"></i> Admin Panel</a>
+          <a href="admin.html" class="portal-link-btn" title="Open Admin Panel"><i class="fa-solid fa-lock" style="font-size: 1.1rem;"></i></a>
         </div>
       </div>
     </div>

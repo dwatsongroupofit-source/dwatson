@@ -76,7 +76,7 @@
 
   <script>
     (function() {
-      var CURRENT_CACHE_VER = "36.0";
+      var CURRENT_CACHE_VER = "37.0";
       var stored = localStorage.getItem("dw_cache_version");
       if (stored !== CURRENT_CACHE_VER) {
         localStorage.setItem("dw_cache_version", CURRENT_CACHE_VER);
@@ -99,26 +99,35 @@
   </script>
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/style.css?v=36.0">
-  <link rel="stylesheet" href="css/responsive.css?v=36.0">
+  <link rel="stylesheet" href="css/style.css?v=37.0">
+  <link rel="stylesheet" href="css/responsive.css?v=37.0">
 </head>
 <body class="site-body">
 
   <!-- Mobile App Top Bar (Sticky Header matching dwatson.pk) -->
-  <div class="mobile-app-header" id="mobileAppHeader">
-    <button type="button" class="mobile-app-menu-btn" onclick="openMobileMenu()" aria-label="Open Navigation Menu">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-    <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
-      <img src="assets/images/logo.svg" alt="D. Watson Chemist &amp; Superstore" class="mobile-app-emblem" onerror="this.onerror=null; this.src='assets/images/logo-official.png';">
-    </a>
-    <div class="mobile-app-search-wrap" onclick="focusShopSearch()" role="button" aria-label="Search catalog">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" placeholder="Search catalog..." readonly>
+      <div class="mobile-app-header" id="mobileAppHeader">
+
+    <div class="mobile-app-header-signin">
+      <a href="admin.html" title="Admin Login"><i class="fa-solid fa-lock" style="font-size: 1.1rem;"></i></a>
     </div>
-    <div class="mobile-app-live-status">
-      <span class="live-branch-label">Twin Cities</span>
-      <span class="live-branch-val"><i class="fa-solid fa-circle-check"></i> Open 24/7</span>
+<div class="mobile-app-header-main">
+      <button type="button" class="mobile-app-menu-btn" onclick="openMobileMenu()" aria-label="Open Navigation Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <a href="index.html" class="mobile-app-emblem-link" title="D. Watson Home">
+        <!-- Using text or a clear logo if svg is not available -->
+        <h2 class="mobile-app-logo-text-chunky">D.Watson</h2>
+      </a>
+      <button type="button" class="mobile-app-cart-btn" onclick="if(typeof toggleCartModal==='function') toggleCartModal(); else if(typeof openCartModal==='function') openCartModal();" aria-label="Open Cart">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span class="mobile-header-cart-badge" id="mobileHeaderCartBadge">0</span>
+      </button>
+    </div>
+    
+    <div class="mobile-app-search-wrap">
+      <input type="text" id="mobileSearchInputLive" placeholder="Search entire store here..." autocomplete="off">
+      <button class="mobile-app-search-action" onclick="window.handleMobileSearchSubmit()">Search</button>
+      <div class="search-widget-dropdown" id="mobileSearchDropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background:white; z-index:1000; box-shadow:0 4px 6px rgba(0,0,0,0.1);"></div>
     </div>
   </div>
 
@@ -128,8 +137,8 @@
     <div class="top-bar">
       <div class="container top-bar-inner">
         <div class="announcement-text">
-          <span class="badge-live">24/7 Live Express</span>
-          <span id="topAnnouncement">✨ 100% Genuine Medicines Guaranteed • 24/7 Universal Helpline: 051-8438111 • Express Doorstep Delivery</span>
+          <span class="badge-live">Live Pharmacy</span>
+          <span id="topAnnouncement">✨ 100% Genuine Medicines Guaranteed • Universal Helpline: 051-8438111 • Express Doorstep Delivery</span>
         </div>
         <div class="top-bar-links">
           <a href="mailto:dwatsonconsultation@gmail.com" class="topbar-email-link" title="Email Consultation &amp; Inquiries">
@@ -147,7 +156,7 @@
               <div class="helpline-dropdown-list" id="helplineDropdownList"></div>
             </div>
           </div>
-          <a href="admin.html" class="portal-link-btn" title="Open Admin Panel"><i class="fa-solid fa-lock"></i> Admin Panel</a>
+          <a href="admin.html" class="portal-link-btn" title="Open Admin Panel"><i class="fa-solid fa-lock" style="font-size: 1.1rem;"></i></a>
         </div>
       </div>
     </div>
@@ -274,11 +283,15 @@
 
           <!-- Right Action Button -->
           <div class="nav-actions">
-            <button class="header-search-btn" id="headerSearchBtn" onclick="openGlobalSearch()" aria-label="Search Medicines and Products">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <span class="search-btn-label">Search</span>
-              <span class="search-kbd-shortcut">/</span>
-            </button>
+            <div class="header-search-widget" id="headerSearchWidget">
+              <form class="search-widget-bar" id="headerSearchForm" action="shop.html" method="GET" onsubmit="event.preventDefault(); if (typeof handleHeaderSearchSubmit === 'function') handleHeaderSearchSubmit(); else window.location.href='shop.html?search=' + encodeURIComponent(document.getElementById('headerSearchInput').value);">
+                <input type="text" class="search-widget-input" id="headerSearchInput" name="search" placeholder="Search medicines, skincare, brands..." autocomplete="off" aria-label="Search medicines and products">
+                <button type="submit" class="search-widget-btn" aria-label="Search">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+              </form>
+              <div class="search-widget-dropdown" id="headerSearchDropdown" style="display:none;"></div>
+            </div>
             <button type="button" class="btn btn-outline btn-sm" onclick="DWCart.openDrawer()" aria-label="Open Cart Bag" style="display:inline-flex; align-items:center; gap:6px;">
               <i class="fa-solid fa-bag-shopping" style="color:var(--dw-red);"></i>
               <span>Bag</span>
@@ -597,14 +610,18 @@
       <!-- Search, Sort & Counter Controls -->
       <div class="shop-controls-bar">
         <!-- Live Instant Search -->
-        <div class="shop-search-box">
-          <i class="fa-solid fa-magnifying-glass shop-search-icon"></i>
-          <input type="text" id="shopSearchInput" class="shop-search-input" placeholder="Search medicines, formula, skincare, brands..." autocomplete="off">
-          <button type="button" id="shopSearchClearBtn" class="shop-search-clear" onclick="clearShopSearch()" aria-label="Clear Search">
-            <i class="fa-solid fa-circle-xmark"></i>
-          </button>
+        <div class="shop-search-box header-search-widget" style="margin:0; max-width:100%;">
+          <div class="search-widget-bar" style="border-radius:10px; height:46px;">
+            <input type="text" id="shopSearchInput" class="search-widget-input" placeholder="Search medicines, formula, skincare, brands..." autocomplete="off">
+            <button type="button" id="shopSearchClearBtn" class="shop-search-clear" onclick="clearShopSearch()" aria-label="Clear Search" style="display:none; position:relative; right:auto; top:auto; transform:none; margin-right:8px; border:none; background:none; cursor:pointer; color:#94A3B8; font-size:1.1rem;">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+            <button type="button" class="search-widget-btn" aria-label="Search" onclick="applyShopSearchFromInput()">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
           <!-- Live Instant Search Autocomplete Dropdown -->
-          <div class="shop-search-autocomplete" id="shopSearchAutocomplete"></div>
+          <div class="search-widget-dropdown shop-search-autocomplete" id="shopSearchAutocomplete" style="display:none; width:100%; min-width:100%;"></div>
         </div>
 
         <!-- Sort and Counter -->
@@ -850,7 +867,7 @@
   <script src="js/cloud-db.js?v=2.0"></script>
   <script src="js/data.js?v=36.0"></script>
   <script src="js/cart.js?v=36.0"></script>
-  <script src="js/main.js?v=36.0"></script>
+  <script src="js/main.js?v=37.0"></script>
 
   <!-- Dedicated Shop Page Interactive Controller -->
   <script>
@@ -906,6 +923,16 @@
         renderShop();
       }
 
+      function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
       function parsePrice(str) {
         if (typeof str === "number") return str;
         if (!str || typeof str !== "string") return 0;
@@ -916,39 +943,32 @@
 
       function filterProducts() {
         return allProducts.filter((p) => {
-          // Category match
+          // Category filter
           if (currentCategory !== "all") {
             const cat = (p.category || "").toLowerCase();
             const catName = (p.categoryName || "").toLowerCase();
-            const name = (p.name || "").toLowerCase();
-
-            let matchesCat = (cat === currentCategory || catName.includes(currentCategory));
-
-            // Department keyword matching
-            if (currentCategory === "pharmacy" && (cat.includes("pharma") || catName.includes("medicine") || name.includes("vitamin") || name.includes("sachet") || name.includes("supplement"))) matchesCat = true;
-            if (currentCategory === "cosmetics" && (cat.includes("cosmetic") || catName.includes("skincare") || name.includes("balm") || name.includes("mist") || name.includes("sunscreen"))) matchesCat = true;
-            if (currentCategory === "perfumes" && (cat.includes("perfume") || catName.includes("fragrance") || name.includes("perfume") || name.includes("eau de"))) matchesCat = true;
-            if (currentCategory === "surgical" && (cat.includes("surgical") || catName.includes("device") || name.includes("monitor") || name.includes("glucose") || name.includes("heating pad") || name.includes("vaporizer") || name.includes("wheelchair") || name.includes("omron"))) matchesCat = true;
-            if (currentCategory === "babycare" && (cat.includes("baby") || catName.includes("baby") || name.includes("milk") || name.includes("aptamil") || name.includes("infant") || name.includes("kendamil") || name.includes("cow & gate"))) matchesCat = true;
-            if (currentCategory === "grocery" && (cat.includes("grocery") || catName.includes("supermarket") || name.includes("noodles") || name.includes("ramen") || name.includes("buldak") || name.includes("milk"))) matchesCat = true;
-            if (currentCategory === "optics" && (cat.includes("optic") || catName.includes("eyewear") || name.includes("glasses") || name.includes("ray-ban"))) matchesCat = true;
-
-            if (!matchesCat) return false;
+            const catMap = {
+              pharmacy: ["pharmacy","medicine","vitamin","supplement"],
+              cosmetics: ["cosmetic","skincare","beauty","k-beauty","makeup","serum","toner","moisturizer","sunscreen"],
+              haircare: ["haircare","hair","shampoo","conditioner","treatment"],
+              surgical: ["surgical","medical","equipment","bp","monitor","glucometer"],
+              optics: ["optic","eyewear","glass","lens","eye"],
+              grocery: ["baby","gourmet","food","infant","nutrition"]
+            };
+            const mapped = catMap[currentCategory] || [currentCategory];
+            const matched = mapped.some(k => cat.includes(k) || catName.includes(k));
+            if (!matched) return false;
           }
-
-          // Search query match
+          // Search filter
           if (currentSearch) {
             const q = currentSearch.toLowerCase();
             const name = (p.name || "").toLowerCase();
             const brand = (p.brand || "").toLowerCase();
-            const desc = (p.description || "").toLowerCase();
             const cat = (p.categoryName || p.category || "").toLowerCase();
-
-            if (!name.includes(q) && !brand.includes(q) && !desc.includes(q) && !cat.includes(q)) {
-              return false;
-            }
+            const desc = (p.description || "").toLowerCase();
+            const tag = (p.tag || "").toLowerCase();
+            if (!name.includes(q) && !brand.includes(q) && !cat.includes(q) && !desc.includes(q) && !tag.includes(q)) return false;
           }
-
           return true;
         });
       }
@@ -969,16 +989,18 @@
         const grid = document.getElementById("shopProductGrid");
         const emptyState = document.getElementById("shopEmptyState");
         const countText = document.getElementById("shopCountText");
+        const countEl = document.getElementById("shopResultCount");
         if (!grid) return;
 
         let filtered = filterProducts();
         let finalProducts = sortProducts(filtered);
 
-        if (countText) {
-          countText.textContent = `Showing ${finalProducts.length} ${finalProducts.length === 1 ? "Product" : "Products"}`;
-        }
+        const countStr = `${finalProducts.length} ${finalProducts.length === 1 ? "Product" : "Products"}`;
+        if (countText) countText.textContent = `Showing ${countStr}`;
+        if (countEl) countEl.textContent = countStr;
 
         if (!finalProducts.length) {
+          grid.innerHTML = "";
           grid.style.display = "none";
           if (emptyState) emptyState.style.display = "block";
           return;
@@ -1000,6 +1022,8 @@
             const fullImg = p.image || "assets/images/pharmacy.jpg";
             const inCartItem = cartItemsList.find(i => i.id === p.id);
             const inCartQty = inCartItem ? (inCartItem.qty || 1) : 0;
+            const priceDisplay = p.price ? (p.price.startsWith("Rs.") || p.price.startsWith("PKR") ? p.price : `Rs. ${p.price}`) : "Inquire";
+            const waText = encodeURIComponent(`Hi D.Watson Chemist, I would like to order: ${p.name} (${priceDisplay})`);
 
             let actionHtml = '';
             if (inCartQty > 0) {
@@ -1016,8 +1040,11 @@
               `;
             } else {
               actionHtml = `
-                <button type="button" class="shop-btn-cart" onclick='handleAddToCartClick(event, ${JSON.stringify(p)})' title="Add to Order Bag" style="width:100%; justify-content:center;">
+                <button type="button" class="shop-btn-cart" onclick='handleAddToCartClick(event, ${JSON.stringify(p)})' title="Add to Order Bag">
                   <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+                </button>
+                <button type="button" class="shop-btn-wa" onclick='event.stopPropagation(); openProductBranchInquiry("${p.id}")' title="Inquire at nearest branch via WhatsApp" aria-label="Branch WhatsApp Inquiry">
+                  <i class="fa-brands fa-whatsapp"></i>
                 </button>
               `;
             }
@@ -1026,7 +1053,7 @@
               <div class="shop-card" data-id="${p.id}">
                 <div class="shop-card-img-wrap" onclick="openProductZoomModal('${p.id}')" title="Zoom &amp; Inspect ${escapeHtml(p.name)}">
                   <img src="${encodeURI(fullImg)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
-                  <span class="shop-card-badge">${escapeHtml(p.tag || "Verified Authentic")}</span>
+                  <span class="shop-card-badge">${escapeHtml(p.tag || "VERIFIED GENUINE")}</span>
                   <button type="button" class="shop-card-zoom-btn" onclick="event.stopPropagation(); openProductZoomModal('${p.id}')" aria-label="Zoom Product">
                     <i class="fa-solid fa-magnifying-glass-plus"></i>
                   </button>
@@ -1037,7 +1064,7 @@
                     <span class="shop-card-stock">In Stock</span>
                   </div>
                   <h3 class="shop-card-title" onclick="openProductZoomModal('${p.id}')" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</h3>
-                  <div class="shop-card-price">${escapeHtml(p.price || "Inquire")}</div>
+                  <div class="shop-card-price">${escapeHtml(priceDisplay)}</div>
                   <div class="shop-card-actions">
                     ${actionHtml}
                   </div>
@@ -1048,15 +1075,76 @@
           .join("");
       }
 
-      function escapeHtml(str) {
-        if (!str) return "";
-        return String(str)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
+      // Branch-wise WhatsApp product inquiry
+      window.openProductBranchInquiry = function (productId) {
+        const prod = allProducts.find(p => p.id === productId);
+        if (!prod) return;
+        const priceDisplay = prod.price ? (prod.price.startsWith("Rs.") || prod.price.startsWith("PKR") ? prod.price : `Rs. ${prod.price}`) : "Inquire";
+        if (typeof openFlagshipWhatsAppModal === "function") {
+          openFlagshipWhatsAppModal(null, {
+            id: prod.id,
+            name: prod.name,
+            price: priceDisplay,
+            brand: prod.brand
+          });
+        }
+      };
+
+      // Handle card quantity +/- change directly on card
+      window.handleCardQtyChange = function (event, productId, delta) {
+        if (event) event.stopPropagation();
+        if (window.DWCart && typeof window.DWCart.updateQty === "function") {
+          window.DWCart.updateQty(productId, delta);
+        }
+      };
+
+      // Add to cart click handler
+      window.handleAddToCartClick = function (event, product) {
+        if (event) event.stopPropagation();
+        if (window.DWCart) {
+          window.DWCart.addItem(product, 1);
+        }
+      };
+
+      // Real-time synchronization of card steppers when cart updates
+      function syncAllCardSteppers() {
+        if (!window.DWCart || typeof window.DWCart.getItems !== "function") return;
+        const currentCart = window.DWCart.getItems();
+
+        document.querySelectorAll(".shop-card[data-id]").forEach(card => {
+          const id = card.getAttribute("data-id");
+          const actionsEl = card.querySelector(".shop-card-actions");
+          if (!actionsEl) return;
+          const cartItem = currentCart.find(i => i.id === id);
+          const inCartQty = cartItem ? (cartItem.qty || 1) : 0;
+          const productObj = allProducts.find(p => p.id === id);
+
+          if (inCartQty > 0) {
+            actionsEl.innerHTML = `
+              <div class="shop-card-stepper" data-product-id="${id}">
+                <button type="button" class="card-stepper-btn minus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${id}', -1)" aria-label="Decrease quantity">
+                  <i class="fa-solid ${inCartQty === 1 ? 'fa-trash-can' : 'fa-minus'}"></i>
+                </button>
+                <span class="card-stepper-qty">${inCartQty} in Bag</span>
+                <button type="button" class="card-stepper-btn plus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${id}', 1)" aria-label="Increase quantity">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            `;
+          } else if (productObj) {
+            actionsEl.innerHTML = `
+              <button type="button" class="shop-btn-cart" onclick='handleAddToCartClick(event, ${JSON.stringify(productObj)})' title="Add to Order Bag">
+                <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
+              </button>
+              <button type="button" class="shop-btn-wa" onclick='event.stopPropagation(); openProductBranchInquiry("${productObj.id}")' title="Inquire at nearest branch via WhatsApp" aria-label="Branch WhatsApp Inquiry">
+                <i class="fa-brands fa-whatsapp"></i>
+              </button>
+            `;
+          }
+        });
       }
+
+      window.addEventListener("dwatson_cart_updated", syncAllCardSteppers);
 
       // Filter category chip click
       window.filterShopCategory = function (cat, btnEl, scrollToGrid = false) {
@@ -1114,223 +1202,6 @@
 
         renderShop();
       };
-
-      // Focus search on mobile tap
-      window.focusShopSearch = function () {
-        const input = document.getElementById("shopSearchInput");
-        if (input) {
-          input.focus();
-          input.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-      };
-
-      // Add to cart click handler
-      window.handleAddToCartClick = function (event, product) {
-        if (event) event.stopPropagation();
-        if (window.DWCart) {
-          window.DWCart.addItem(product, 1);
-        }
-      };
-
-      // Handle card quantity +/- change directly on card
-      window.handleCardQtyChange = function (event, productId, delta) {
-        if (event) event.stopPropagation();
-        if (window.DWCart && typeof window.DWCart.updateQty === "function") {
-          window.DWCart.updateQty(productId, delta);
-        }
-      };
-
-      // Real-time synchronization of card steppers when cart updates
-      function syncAllCardSteppers() {
-        if (!window.DWCart || typeof window.DWCart.getItems !== "function") return;
-        const currentCart = window.DWCart.getItems();
-
-        // 1. Sync main catalog cards
-        document.querySelectorAll(".shop-card[data-id]").forEach(card => {
-          const id = card.getAttribute("data-id");
-          const actionsEl = card.querySelector(".shop-card-actions");
-          if (!actionsEl) return;
-          const cartItem = currentCart.find(i => i.id === id);
-          const inCartQty = cartItem ? (cartItem.qty || 1) : 0;
-          const productObj = allProducts.find(p => p.id === id);
-
-          if (inCartQty > 0) {
-            actionsEl.innerHTML = `
-              <div class="shop-card-stepper" data-product-id="${id}">
-                <button type="button" class="card-stepper-btn minus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${id}', -1)" aria-label="Decrease quantity">
-                  <i class="fa-solid ${inCartQty === 1 ? 'fa-trash-can' : 'fa-minus'}"></i>
-                </button>
-                <span class="card-stepper-qty">${inCartQty} in Bag</span>
-                <button type="button" class="card-stepper-btn plus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${id}', 1)" aria-label="Increase quantity">
-                  <i class="fa-solid fa-plus"></i>
-                </button>
-              </div>
-            `;
-          } else if (productObj) {
-            actionsEl.innerHTML = `
-              <button type="button" class="shop-btn-cart" onclick='handleAddToCartClick(event, ${JSON.stringify(productObj)})' title="Add to Order Bag" style="width:100%; justify-content:center;">
-                <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
-              </button>
-            `;
-          }
-        });
-
-        // 2. Sync spotlight cards
-        document.querySelectorAll(".spotlight-product-card[data-product-id]").forEach(card => {
-          const id = card.getAttribute("data-product-id");
-          const actionsEl = card.querySelector(".spotlight-card-actions");
-          if (!actionsEl) return;
-          const cartItem = currentCart.find(i => i.id === id);
-          const inCartQty = cartItem ? (cartItem.qty || 1) : 0;
-          const productObj = allProducts.find(p => p.id === id);
-
-          if (inCartQty > 0) {
-            actionsEl.innerHTML = `
-              <div class="shop-card-stepper" data-product-id="${id}">
-                <button type="button" class="card-stepper-btn minus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${id}', -1)" aria-label="Decrease quantity">
-                  <i class="fa-solid ${inCartQty === 1 ? 'fa-trash-can' : 'fa-minus'}"></i>
-                </button>
-                <span class="card-stepper-qty">${inCartQty} in Bag</span>
-                <button type="button" class="card-stepper-btn plus" onclick="event.stopPropagation(); handleCardQtyChange(event, '${id}', 1)" aria-label="Increase quantity">
-                  <i class="fa-solid fa-plus"></i>
-                </button>
-              </div>
-            `;
-          } else if (productObj) {
-            actionsEl.innerHTML = `
-              <button type="button" class="btn-spotlight-add" onclick='handleAddToCartClick(event, ${JSON.stringify(productObj)})'>
-                <i class="fa-solid fa-bag-shopping"></i> + Add to Bag
-              </button>
-            `;
-          }
-        });
-      }
-
-      window.addEventListener("dwatson_cart_updated", syncAllCardSteppers);
-
-      // Multi-Product Carousel Track Controller (Amazon/Daraz Style Spotlight)
-      window.scrollSpotlightTrack = function(direction) {
-        const viewport = document.getElementById("spotlightCardsViewport");
-        if (!viewport) return;
-        const firstCard = viewport.querySelector(".spotlight-product-card");
-        const step = firstCard ? (firstCard.offsetWidth + 16) : Math.max(viewport.clientWidth * 0.75, 240);
-        viewport.scrollBy({ left: direction * step, behavior: "smooth" });
-      };
-
-      function initSpotlightCarousel() {
-        const viewport = document.getElementById("spotlightCardsViewport");
-        if (!viewport) return;
-
-        let autoNudgeTimer = null;
-        let isUserInteracting = false;
-
-        function doAutoSlide() {
-          if (!viewport || isUserInteracting) return;
-          const maxScroll = viewport.scrollWidth - viewport.clientWidth;
-          if (maxScroll <= 8) return; // Nothing to scroll yet
-
-          const firstCard = viewport.querySelector(".spotlight-product-card");
-          const step = firstCard ? (firstCard.offsetWidth + 16) : 248;
-
-          if (viewport.scrollLeft >= maxScroll - 20) {
-            viewport.scrollTo({ left: 0, behavior: "smooth" });
-          } else {
-            viewport.scrollBy({ left: step, behavior: "smooth" });
-          }
-        }
-
-        function startAutoNudge() {
-          if (autoNudgeTimer) clearInterval(autoNudgeTimer);
-          autoNudgeTimer = setInterval(doAutoSlide, 3200);
-        }
-
-        function pauseAutoNudge() {
-          if (autoNudgeTimer) clearInterval(autoNudgeTimer);
-        }
-
-        viewport.addEventListener("mouseenter", pauseAutoNudge);
-        viewport.addEventListener("mouseleave", () => {
-          isUserInteracting = false;
-          startAutoNudge();
-        });
-
-        viewport.addEventListener("touchstart", () => {
-          isUserInteracting = true;
-          pauseAutoNudge();
-        }, { passive: true });
-
-        viewport.addEventListener("touchend", () => {
-          setTimeout(() => {
-            isUserInteracting = false;
-            startAutoNudge();
-          }, 2000);
-        }, { passive: true });
-
-        viewport.addEventListener("touchcancel", () => {
-          isUserInteracting = false;
-          startAutoNudge();
-        }, { passive: true });
-
-        // Start auto-slide after brief delay to ensure images/DOM loaded
-        setTimeout(startAutoNudge, 800);
-      }
-
-      // ==========================================
-      // Live Instant Autocomplete Dropdown Logic
-      // ==========================================
-      function initAutocomplete() {
-        const input = document.getElementById("shopSearchInput");
-        const acBox = document.getElementById("shopSearchAutocomplete");
-        if (!input || !acBox) return;
-
-        input.addEventListener("input", () => {
-          const q = input.value.trim().toLowerCase();
-          if (q.length < 2) {
-            acBox.classList.remove("open");
-            acBox.innerHTML = "";
-            return;
-          }
-
-          const matches = allProducts.filter(p => {
-            const name = (p.name || "").toLowerCase();
-            const brand = (p.brand || "").toLowerCase();
-            const cat = (p.categoryName || p.category || "").toLowerCase();
-            return name.includes(q) || brand.includes(q) || cat.includes(q);
-          }).slice(0, 6);
-
-          if (!matches.length) {
-            acBox.innerHTML = `<div style="padding:10px 14px; color:#64748B; font-size:0.8rem; text-align:center;">No matching products found</div>`;
-            acBox.classList.add("open");
-            return;
-          }
-
-          acBox.innerHTML = matches.map(p => {
-            return `
-              <div class="ac-item" onclick="openProductZoomModal('${p.id}'); document.getElementById('shopSearchAutocomplete').classList.remove('open');">
-                <img src="${encodeURI(p.image || 'assets/images/pharmacy.jpg')}" alt="${escapeHtml(p.name)}" class="ac-thumb" onerror="this.onerror=null; this.src='assets/images/pharmacy.jpg';">
-                <div class="ac-info">
-                  <div class="ac-title">${escapeHtml(p.name)}</div>
-                  <div class="ac-meta">
-                    <span>${escapeHtml(p.brand || 'D. Watson')}</span>
-                    <span class="ac-price">${escapeHtml(p.price || 'Inquire')}</span>
-                  </div>
-                </div>
-                <button type="button" class="ac-add-btn" onclick='event.stopPropagation(); handleAddToCartClick(event, ${JSON.stringify(p)});' title="Quick Add to Bag">
-                  + Bag
-                </button>
-              </div>
-            `;
-          }).join("");
-
-          acBox.classList.add("open");
-        });
-
-        document.addEventListener("click", (e) => {
-          if (!input.contains(e.target) && !acBox.contains(e.target)) {
-            acBox.classList.remove("open");
-          }
-        });
-      }
 
       // ==========================================
       // Recently Viewed Products Track Logic
