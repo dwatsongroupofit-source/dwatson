@@ -1269,7 +1269,7 @@ window.openBranchModal = function(index = -1) {
     image: "assets/images/store_flagship.jpg",
     services: ["24/7 Pharmacy", "Cosmetics", "Superstore", "Optics"],
     mapUrl: "https://maps.google.com/?q=D.+Watson",
-    whatsapp: "923329716666"
+    whatsapp: "923457666669"
   } : adminData.branches[index];
 
   modalTitle.textContent = isNew ? "Add New Store Branch" : `Edit: ${branch.name}`;
@@ -1356,8 +1356,8 @@ window.openBranchModal = function(index = -1) {
       <div class="form-grid-2">
         <div class="admin-form-group">
           <label>WhatsApp Number for Prescription Order</label>
-          <input type="text" class="admin-form-input" id="branchWhatsapp" value="${escapeAdminHtml(branch.whatsapp || '923329716666')}" placeholder="e.g. 923329716666" required>
-          <small style="color:#64748B; font-size:0.78rem;">Country code first without + (e.g. 923329716666).</small>
+          <input type="text" class="admin-form-input" id="branchWhatsapp" value="${escapeAdminHtml(branch.whatsapp || '923457666669')}" placeholder="e.g. 923457666669" required>
+          <small style="color:#64748B; font-size:0.78rem;">Country code first without + (e.g. 923457666669).</small>
         </div>
         <div class="admin-form-group" style="display:flex; flex-direction:column; justify-content:center;">
           <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:15px;">
@@ -1436,7 +1436,7 @@ window.saveBranchModal = function(e) {
     image: document.getElementById("branchImage").value.trim() || "assets/images/store_flagship.jpg",
     services: ["Pharmacy", "Superstore", "Cosmetics", "Optics"],
     mapUrl: document.getElementById("branchMap").value.trim() || `https://maps.google.com/?q=${encodeURIComponent(document.getElementById("branchName").value)}`,
-    whatsapp: document.getElementById("branchWhatsapp").value.trim() || "923329716666"
+    whatsapp: document.getElementById("branchWhatsapp").value.trim() || "923457666669"
   };
 
   if (editItemIndex === -1) {

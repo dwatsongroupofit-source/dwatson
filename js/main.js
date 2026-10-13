@@ -572,7 +572,7 @@ function renderLeadership(management) {
  * Render Department Showcase with Multi-Category Filtering & Mobile Drawers
  */
 let allDepartmentsData = [];
-let allDepartmentsWhatsApp = "923329716666";
+let allDepartmentsWhatsApp = "923457666669";
 
 const DEPT_CATEGORY_MAP = {
   pharmacy: "healthcare",
@@ -735,7 +735,7 @@ function renderHomeFlagshipBranches(branches, filter = "all") {
 
   container.innerHTML = selectedBranches.map((b) => {
     const rawPhone = (b.phone || "051-8438111").split("/")[0].replace(/[^0-9]/g, "");
-    const waNum = b.whatsapp || "923329716666";
+    const waNum = b.whatsapp || "923457666669";
     const waText = `Hi D.Watson Chemist (${b.name}), I am inquiring about medicine stock and express delivery.`;
     const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waText)}`;
     const mapUrl = b.mapUrl || `https://maps.google.com/?q=${encodeURIComponent("D. Watson " + b.name)}`;
@@ -821,7 +821,7 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
         <div style="font-size:2rem; color:#64748B; margin-bottom:10px;"><i class="fa-solid fa-boxes-stacked"></i></div>
         <h4 style="font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:6px;">No Products Currently Featured</h4>
         <p style="font-size:0.9rem; color:#64748B; max-width:480px; margin:0 auto 16px;">Browse our 13 specialized departments or contact our 24/7 helpline via WhatsApp.</p>
-        <a href="https://wa.me/${defaultWhatsApp || (data.company && data.company.whatsapp) || '923329716666'}?text=${encodeURIComponent('Hi D.Watson Chemist, I would like to inquire about product availability.')}" target="_blank" class="home-product-buy-btn" style="padding:10px 20px; font-size:0.9rem; display:inline-flex;">
+        <a href="https://wa.me/${defaultWhatsApp || (data.company && data.company.whatsapp) || '923457666669'}?text=${encodeURIComponent('Hi D.Watson Chemist, I would like to inquire about product availability.')}" target="_blank" class="home-product-buy-btn" style="padding:10px 20px; font-size:0.9rem; display:inline-flex;">
           <i class="fa-brands fa-whatsapp"></i> WhatsApp Helpline
         </a>
       </div>
@@ -833,7 +833,7 @@ function renderHomeProducts(products, defaultWhatsApp, filterCategory = "all") {
 
   if (filterCategory) currentHomeProductCategory = filterCategory;
 
-  const waNum = defaultWhatsApp || (data.company && data.company.whatsapp) || "923329716666";
+  const waNum = defaultWhatsApp || (data.company && data.company.whatsapp) || "923457666669";
 
   let displayList = [];
   if (currentHomeProductCategory === "all") {
@@ -2121,7 +2121,7 @@ function renderProductCards(products, defaultWhatsApp) {
   if (!container) return;
 
   currentProductZoomList = products || [];
-  const waNum = defaultWhatsApp || "923329716666";
+  const waNum = defaultWhatsApp || "923457666669";
 
   if (currentProductZoomList.length === 0) {
     container.innerHTML = `
@@ -2475,7 +2475,7 @@ function updateProductZoomDisplay() {
   if (!p) return;
 
   const data = getSiteData();
-  const waNum = data.company && data.company.whatsapp ? data.company.whatsapp : "923329716666";
+  const waNum = data.company && data.company.whatsapp ? data.company.whatsapp : "923457666669";
 
   const catEl = document.getElementById("zoomModalCategory");
   const counterEl = document.getElementById("zoomModalCounter");
@@ -2791,7 +2791,7 @@ function updateBranchZoomDisplay() {
   if (!b) return;
 
   const rawPhone = (b.phone || "051-8438111").split("/")[0].replace(/[^0-9]/g, "");
-  const waNum = b.whatsapp || "923329716666";
+  const waNum = b.whatsapp || "923457666669";
   const waText = `Hi D.Watson Chemist (${b.name}), I am inquiring about medicine stock and express delivery to my location.`;
   const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waText)}`;
   const mapUrl = b.mapUrl || `https://maps.google.com/?q=${encodeURIComponent("D. Watson " + b.name)}`;
@@ -3292,7 +3292,7 @@ function renderActiveBranchDetail(b) {
   if (!detailPane || !b) return;
 
   const phoneCall = getBranchPhone(b.phone);
-  const waNumber = b.whatsapp || "923329716666";
+  const waNumber = b.whatsapp || "923457666669";
   const waMsg = encodeURIComponent(`Hi D. Watson ${b.name}, I need assistance with medicine availability / delivery.`);
   const liveStatus = getBranchLiveStatus(b.timings, b.is24Hours);
   const distBadge = (typeof b.distanceKm === "number") ? `
@@ -4367,7 +4367,7 @@ function initOrderBranchSelector() {
       const data = getSiteData();
       const branches = data.branches || [];
       const selectedBranchObj = branches.find(b => b.name === selectedBranchName || b.name.includes(selectedBranchName));
-      const activeWa = (selectedBranchObj && selectedBranchObj.whatsapp) ? selectedBranchObj.whatsapp.replace(/\D/g, "") : ((data.company && data.company.whatsapp) || "923329716666").replace(/\D/g, "");
+      const activeWa = (selectedBranchObj && selectedBranchObj.whatsapp) ? selectedBranchObj.whatsapp.replace(/\D/g, "") : ((data.company && data.company.whatsapp) || "923457666669").replace(/\D/g, "");
       
       const randomCode = Math.floor(1000 + Math.random() * 9000);
       const timestamp = new Date().toLocaleString();
@@ -5518,7 +5518,7 @@ function dispatchRxWhatsApp(prescriptionPhotoUrl = "") {
     msg += `\n📸 _Attaching prescription photo now for verification._`;
   }
 
-  const waNumber = (branch && branch.whatsapp) ? branch.whatsapp : "923329716666";
+  const waNumber = (branch && branch.whatsapp) ? branch.whatsapp : "923457666669";
   const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
   window.open(waUrl, "_blank");
 }
@@ -5716,7 +5716,7 @@ function handleContactSubmit(e) {
   waMsg += `📌 *Topic:* ${subject}\n`;
   waMsg += `📝 *Message:* ${message}\n`;
 
-  const waUrl = `https://wa.me/923329716666?text=${encodeURIComponent(waMsg)}`;
+  const waUrl = `https://wa.me/923457666669?text=${encodeURIComponent(waMsg)}`;
   window.open(waUrl, "_blank");
 }
 
@@ -5915,7 +5915,7 @@ window.openFlagshipWhatsAppModal = function(selectedBranchId, productContext) {
     const displayList = flagshipList.length ? flagshipList : branches.slice(0, 7);
 
     listEl.innerHTML = displayList.map(b => {
-      const cleanWa = String(b.whatsapp || "923329716666").replace(/[^0-9]/g, "");
+      const cleanWa = String(b.whatsapp || "923457666669").replace(/[^0-9]/g, "");
       let msg = '';
       if (productContext && productContext.name) {
         msg = `*--- D. WATSON BRANCH INQUIRY ---*\n🏪 *Branch:* D. Watson ${b.name}\n🛍️ *Product:* ${productContext.name}\n💰 *Price:* ${productContext.price || 'Inquire'}\n🏷️ *Brand:* ${productContext.brand || 'D. Watson'}\n\nHi D.Watson Chemist, please confirm stock availability and express delivery from your ${b.name} branch.`;

@@ -12,8 +12,8 @@ const DEFAULT_SITE_DATA = {
     badge: "Est. 1978 • Pakistan's Premier Pharmacy & Superstore Chain",
     phone: "051-8438111",
     helpline: "051-8438111",
-    whatsapp: "923329716666",
-    whatsappDisplay: "0332-9716666",
+    whatsapp: "923457666669",
+    whatsappDisplay: "0345-7666669",
     messenger: "https://m.me/DWatsonChemist",
     email: "dwatsonconsultation@gmail.com",
     website: "https://dwatson.co",
@@ -67,7 +67,7 @@ const DEFAULT_SITE_DATA = {
     social: {
       facebook: "https://www.facebook.com/DWatsonChemist/",
       instagram: "https://www.instagram.com/dwatson_chemist/",
-      whatsapp: "https://wa.me/923329716666",
+      whatsapp: "https://wa.me/923457666669",
       messenger: "https://m.me/DWatsonChemist"
     },
 
@@ -163,7 +163,7 @@ const DEFAULT_SITE_DATA = {
       ctaPrimaryText: "Explore Skincare",
       ctaPrimaryLink: "#products",
       ctaSecondaryText: "Order on WhatsApp",
-      ctaSecondaryLink: "https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20am%20inquiring%20about%20Korean%20Skincare%20products.",
+      ctaSecondaryLink: "https://wa.me/923457666669?text=Hi%20D.Watson,%20I%20am%20inquiring%20about%20Korean%20Skincare%20products.",
       theme: "blue-red"
     },
     {
@@ -176,7 +176,7 @@ const DEFAULT_SITE_DATA = {
       ctaPrimaryText: "View Cosmetics",
       ctaPrimaryLink: "#departments",
       ctaSecondaryText: "WhatsApp Beauty Desk",
-      ctaSecondaryLink: "https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20am%20inquiring%20about%20Golden%20Rose%20Cosmetics.",
+      ctaSecondaryLink: "https://wa.me/923457666669?text=Hi%20D.Watson,%20I%20am%20inquiring%20about%20Golden%20Rose%20Cosmetics.",
       theme: "red-blue"
     },
     {
@@ -189,7 +189,7 @@ const DEFAULT_SITE_DATA = {
       ctaPrimaryText: "Discover Haircare",
       ctaPrimaryLink: "#departments",
       ctaSecondaryText: "Inquire on WhatsApp",
-      ctaSecondaryLink: "https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20am%20inquiring%20about%20Urban%20Care%20Hair%20Products.",
+      ctaSecondaryLink: "https://wa.me/923457666669?text=Hi%20D.Watson,%20I%20am%20inquiring%20about%20Urban%20Care%20Hair%20Products.",
       theme: "blue-red"
     },
     {
@@ -202,7 +202,7 @@ const DEFAULT_SITE_DATA = {
       ctaPrimaryText: "Explore Beauty Lounge",
       ctaPrimaryLink: "#departments",
       ctaSecondaryText: "WhatsApp Delivery",
-      ctaSecondaryLink: "https://wa.me/923329716666?text=Hi%20D.Watson,%20I%20want%20to%20order%20Flormar%20Cosmetics.",
+      ctaSecondaryLink: "https://wa.me/923457666669?text=Hi%20D.Watson,%20I%20want%20to%20order%20Flormar%20Cosmetics.",
       theme: "red-blue"
     },
     {
@@ -647,7 +647,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/D-Watson_f6.jpg",
       services: ["Pharmacy", "Luxury Cosmetics", "Grocery Essentials", "Optics", "Undergarments", "Surgical"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+F-6+Super+Market+Islamabad",
-      whatsapp: "923329716666"
+      whatsapp: "923457666669"
     },
     {
       id: "b_pwd",
@@ -936,7 +936,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/bahria-phase4.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Optics Boutique"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Bahria+Town+Phase+4+Rawalpindi",
-      whatsapp: "923329716666"
+      whatsapp: "923457666669"
     },
     {
       id: "b_bahria6",
@@ -950,7 +950,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/bahria-phase6.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Optics"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Bahria+Town+Phase+6",
-      whatsapp: "923329716666"
+      whatsapp: "923457666669"
     },
     {
       id: "b_chaklala",
@@ -964,7 +964,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/chaklala.jpg",
       services: ["Pharmacy", "Cosmetics", "Superstore Essentials"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Chaklala+Scheme+3",
-      whatsapp: "923329716666"
+      whatsapp: "923457666669"
     },
     {
       id: "b_lahore",
@@ -978,7 +978,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/gulberg-lahore.jpg",
       services: ["Pharmacy", "Luxury Cosmetics", "Gourmet Supermarket", "Optics", "Surgical"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Gulberg+Lahore",
-      whatsapp: "923329716666"
+      whatsapp: "923457666669"
     },
     {
       id: "b_abbottabad",
@@ -992,7 +992,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/abbottabad.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Surgical"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Abbottabad",
-      whatsapp: "923329716666"
+      whatsapp: "923457666669"
     },
     {
       id: "b_swat",
@@ -1006,7 +1006,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/swat.jpg",
       services: ["Pharmacy", "Superstore", "Cosmetics", "Optics"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Swat",
-      whatsapp: "923329716666"
+      whatsapp: "923457666669"
     },
     {
       id: "b_mansehra",
@@ -1020,7 +1020,7 @@ const DEFAULT_SITE_DATA = {
       image: "assets/images/branches/mansehra.jpg",
       services: ["Pharmacy", "Cosmetics", "Superstore", "Surgical"],
       mapUrl: "https://maps.google.com/?q=D.+Watson+Mansehra",
-      whatsapp: "923329716666"
+      whatsapp: "923457666669"
     }
   ],
 
@@ -1396,7 +1396,7 @@ const DEFAULT_SITE_DATA = {
   faqs: [
     {
       q: "How can I verify medicine availability or send my prescription?",
-      a: "You can click the 'Upload Prescription' button on our website or text our WhatsApp team directly at 0332-9716666. Our registered pharmacists will verify stock immediately and assist you with fast home delivery.",
+      a: "You can click the 'Upload Prescription' button on our website or text our WhatsApp team directly at 0345-7666669. Our registered pharmacists will verify stock immediately and assist you with fast home delivery.",
       cat: "Pharmacy"
     },
     {
@@ -1411,7 +1411,7 @@ const DEFAULT_SITE_DATA = {
     },
     {
       q: "Do you offer express home delivery for medicines and superstore goods?",
-      a: "Yes! We offer prompt home delivery across Islamabad, Rawalpindi, and Lahore. Simply place your order via WhatsApp (0332-9716666) or call our centralized helpline (051-8438111).",
+      a: "Yes! We offer prompt home delivery across Islamabad, Rawalpindi, and Lahore. Simply place your order via WhatsApp (0345-7666669) or call our centralized helpline (051-8438111).",
       cat: "Delivery"
     },
     {

@@ -19,7 +19,7 @@
   const STORAGE_KEY = "dwatson_cart_items_v1";
   const DEFAULT_DELIVERY_FEE = 0;
   const FREE_DELIVERY_THRESHOLD = 0;
-  const DEFAULT_HELPLINE = "923329716666";
+  const DEFAULT_HELPLINE = "923457666669";
 
   // State
   let cartItems = [];
@@ -751,11 +751,11 @@
 
     let html = `<option value="" disabled selected>🏥 Select Delivery Branch (Order routed to Branch WhatsApp) *</option>`;
     if (!deliveryBranches.length) {
-      html += `<option value="central_helpline" data-whatsapp="923329716666" data-name="D. Watson Central Delivery Desk" selected>🏥 D. Watson Central Delivery Desk (051-8438111)</option>`;
+      html += `<option value="central_helpline" data-whatsapp="923457666669" data-name="D. Watson Central Delivery Desk" selected>🏥 D. Watson Central Delivery Desk (051-8438111)</option>`;
     } else {
       deliveryBranches.forEach((b) => {
         const badge = b.isFlagship ? "⭐ " : "";
-        const wa = b.whatsapp ? String(b.whatsapp).replace(/[^0-9]/g, "") : "923329716666";
+        const wa = b.whatsapp ? String(b.whatsapp).replace(/[^0-9]/g, "") : "923457666669";
         const cleanName = b.name || "D. Watson Branch";
         const city = b.city ? ` [${b.city}]` : "";
         html += `<option value="${escapeHtml(b.id || cleanName)}" data-whatsapp="${escapeHtml(wa)}" data-name="${escapeHtml(cleanName)}" data-city="${escapeHtml(b.city || '')}">${badge}${escapeHtml(cleanName)}${escapeHtml(city)} — Express Delivery</option>`;
